@@ -1,0 +1,3 @@
+import {OverlayRoot,OverlayTrigger,OverlayPortal,OverlayBackdrop,OverlayPopup,OverlayClose,OverlayTitle,OverlayDescription,OverlaySection,type OverlayPopupProps} from "./overlay.native";
+export const Sheet=OverlayRoot,SheetTrigger=OverlayTrigger,SheetPortal=OverlayPortal,SheetOverlay=OverlayBackdrop,SheetClose=OverlayClose,SheetTitle=OverlayTitle,SheetDescription=OverlayDescription,SheetHeader=OverlaySection,SheetFooter=OverlaySection;
+export function SheetContent({side="right",children,...props}:OverlayPopupProps){return <OverlayPopup {...props} side={side}>{children}<OverlayClose aria-label="Fechar painel">Fechar</OverlayClose></OverlayPopup>}

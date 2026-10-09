@@ -1,0 +1,1042 @@
+{
+  "description": "Catraca de tools/token-check.mjs: ocorrências permitidas por arquivo e regra. Só pode diminuir; aumento ou arquivo novo com violação reprova `pnpm tokens`. Regenerar apenas com `node tools/token-check.mjs --update-baseline` (recusa aumento). Na raiz legada (legacyScope) toda regra é catraca, inclusive as absolutas. `totals` precisa bater com a soma das entradas; tools/ratchet-guard.mjs compara este arquivo com o da base no CI. `css-important` é de tolerância zero: fica em `rules` com cota zero e nenhuma entrada pode contá-la.",
+  "rules": [
+    "tailwind-palette-class",
+    "arbitrary-color",
+    "arbitrary-dimension",
+    "hsl-triple",
+    "z-index-literal",
+    "css-important"
+  ],
+  "totals": {
+    "tailwind-palette-class": 5793,
+    "arbitrary-color": 20,
+    "arbitrary-dimension": 539,
+    "hsl-triple": 0,
+    "z-index-literal": 328,
+    "color-literal": 26,
+    "number-literal": 2
+  },
+  "files": {
+    "app/admin/admin-layout-client.tsx": {
+      "tailwind-palette-class": 4
+    },
+    "app/admin/categorias/loading.tsx": {
+      "tailwind-palette-class": 2
+    },
+    "app/admin/email/loading.tsx": {
+      "tailwind-palette-class": 3
+    },
+    "app/admin/layout.tsx": {
+      "color-literal": 1
+    },
+    "app/cadastro/page.tsx": {
+      "tailwind-palette-class": 5
+    },
+    "app/entrar/page.tsx": {
+      "tailwind-palette-class": 5
+    },
+    "app/layout.tsx": {
+      "color-literal": 1
+    },
+    "app/login/page.tsx": {
+      "tailwind-palette-class": 5
+    },
+    "app/reset-password/page.tsx": {
+      "tailwind-palette-class": 5
+    },
+    "apps/clients/web/src/app/(public)/[locadora]/(auth)/cadastro/page.tsx": {
+      "tailwind-palette-class": 5
+    },
+    "apps/clients/web/src/app/(public)/[locadora]/(auth)/entrar/page.tsx": {
+      "tailwind-palette-class": 5
+    },
+    "lib/category-design.tsx": {
+      "color-literal": 3,
+      "number-literal": 2
+    },
+    "lib/utils/category-helpers.tsx": {
+      "tailwind-palette-class": 2,
+      "arbitrary-color": 2,
+      "arbitrary-dimension": 1,
+      "color-literal": 21
+    },
+    "packages/frontend/src/entities/orcamento/model/registro-utils.ts": {
+      "tailwind-palette-class": 30
+    },
+    "packages/frontend/src/entities/orcamento/model/registro.ts": {
+      "tailwind-palette-class": 19
+    },
+    "packages/frontend/src/features/abas-categoria/ui/Abas.web.tsx": {
+      "tailwind-palette-class": 13,
+      "arbitrary-color": 3,
+      "arbitrary-dimension": 4
+    },
+    "packages/frontend/src/features/bloco-preco/ui/Bloco.web.tsx": {
+      "tailwind-palette-class": 8
+    },
+    "packages/frontend/src/features/enviar-contato/ui/ContactForm.web.tsx": {
+      "tailwind-palette-class": 1
+    },
+    "packages/frontend/src/features/mapa-loja/ui/Mapa.web.tsx": {
+      "tailwind-palette-class": 3,
+      "arbitrary-dimension": 2
+    },
+    "packages/frontend/src/pages/admin-entrada/ui/AdminIndexPage.web.tsx": {
+      "tailwind-palette-class": 4
+    },
+    "packages/frontend/src/pages/admin-login/ui/AdminLoginPage.web.tsx": {
+      "tailwind-palette-class": 3
+    },
+    "packages/frontend/src/pages/api-docs/ui/ApiDocsPage.web.tsx": {
+      "tailwind-palette-class": 13
+    },
+    "packages/frontend/src/pages/area-cliente/ui/AreaClientePage.web.tsx": {
+      "tailwind-palette-class": 144,
+      "arbitrary-dimension": 6,
+      "z-index-literal": 9
+    },
+    "packages/frontend/src/pages/auth-callback/ui/AuthCallbackPage.web.tsx": {
+      "tailwind-palette-class": 7
+    },
+    "packages/frontend/src/pages/cadastro/ui/CadastroPage.web.tsx": {
+      "tailwind-palette-class": 61,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 2
+    },
+    "packages/frontend/src/pages/categorias/ui/CategoriaDialog.web.tsx": {
+      "tailwind-palette-class": 31,
+      "arbitrary-color": 2,
+      "arbitrary-dimension": 19,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/categorias/ui/CategoriasPage.web.tsx": {
+      "tailwind-palette-class": 45,
+      "arbitrary-color": 1,
+      "arbitrary-dimension": 4,
+      "z-index-literal": 7
+    },
+    "packages/frontend/src/pages/categorias/ui/VerCategoria.web.tsx": {
+      "tailwind-palette-class": 29,
+      "arbitrary-color": 1,
+      "arbitrary-dimension": 5,
+      "z-index-literal": 2
+    },
+    "packages/frontend/src/pages/configuracoes/ui/ConfiguracoesPage.web.tsx": {
+      "tailwind-palette-class": 27,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/configuracoes/ui/HeaderFooterPreview.web.tsx": {
+      "tailwind-palette-class": 54,
+      "arbitrary-dimension": 2
+    },
+    "packages/frontend/src/pages/configuracoes/ui/HeroCarouselManager.web.tsx": {
+      "tailwind-palette-class": 15
+    },
+    "packages/frontend/src/pages/configuracoes/ui/HeroCarouselPreview.web.tsx": {
+      "tailwind-palette-class": 63,
+      "arbitrary-dimension": 8,
+      "z-index-literal": 4
+    },
+    "packages/frontend/src/pages/configuracoes/ui/SettingsBlock.web.tsx": {
+      "tailwind-palette-class": 13,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/configuracoes/ui/SettingsNavigationBar.web.tsx": {
+      "tailwind-palette-class": 13,
+      "arbitrary-dimension": 2,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/configuracoes/ui/SettingsPreviews.web.tsx": {
+      "tailwind-palette-class": 108
+    },
+    "packages/frontend/src/pages/contato/ui/ContatoPage.web.tsx": {
+      "tailwind-palette-class": 70,
+      "z-index-literal": 11
+    },
+    "packages/frontend/src/pages/cookies/model/document-content.ts": {
+      "tailwind-palette-class": 79,
+      "arbitrary-dimension": 26,
+      "z-index-literal": 8
+    },
+    "packages/frontend/src/pages/cookies/ui/CookiesPage.web.tsx": {
+      "tailwind-palette-class": 29,
+      "arbitrary-dimension": 2,
+      "z-index-literal": 3
+    },
+    "packages/frontend/src/pages/dashboard/model/tipos.web.ts": {
+      "tailwind-palette-class": 50
+    },
+    "packages/frontend/src/pages/dashboard/ui/Atalhos.web.tsx": {
+      "tailwind-palette-class": 14,
+      "z-index-literal": 2
+    },
+    "packages/frontend/src/pages/dashboard/ui/Categoria.web.tsx": {
+      "tailwind-palette-class": 1,
+      "arbitrary-dimension": 6
+    },
+    "packages/frontend/src/pages/dashboard/ui/DashboardPage.web.tsx": {
+      "tailwind-palette-class": 17,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/dashboard/ui/Destaques.web.tsx": {
+      "tailwind-palette-class": 42,
+      "z-index-literal": 6
+    },
+    "packages/frontend/src/pages/dashboard/ui/Distribuicao.web.tsx": {
+      "tailwind-palette-class": 3,
+      "arbitrary-dimension": 10
+    },
+    "packages/frontend/src/pages/dashboard/ui/Expandidos.web.tsx": {
+      "tailwind-palette-class": 21
+    },
+    "packages/frontend/src/pages/dashboard/ui/Grade.web.tsx": {
+      "tailwind-palette-class": 18,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/dashboard/ui/Graficos.web.tsx": {
+      "tailwind-palette-class": 25,
+      "arbitrary-dimension": 4
+    },
+    "packages/frontend/src/pages/dashboard/ui/Kpis.web.tsx": {
+      "tailwind-palette-class": 13
+    },
+    "packages/frontend/src/pages/dashboard/ui/Metricas.web.tsx": {
+      "tailwind-palette-class": 33,
+      "z-index-literal": 3
+    },
+    "packages/frontend/src/pages/dashboard/ui/Recentes.web.tsx": {
+      "tailwind-palette-class": 44,
+      "arbitrary-dimension": 6,
+      "z-index-literal": 2
+    },
+    "packages/frontend/src/pages/dashboard/ui/Tendencia.web.tsx": {
+      "tailwind-palette-class": 1,
+      "arbitrary-dimension": 8
+    },
+    "packages/frontend/src/pages/email-admin/ui/EmailAdminPage.web.tsx": {
+      "tailwind-palette-class": 19,
+      "arbitrary-dimension": 9
+    },
+    "packages/frontend/src/pages/email-admin/ui/email-composer-dialog.web.tsx": {
+      "tailwind-palette-class": 16,
+      "arbitrary-dimension": 6,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/email-admin/ui/email-folder-list.web.tsx": {
+      "tailwind-palette-class": 23,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/email-admin/ui/email-full-view-dialog.web.tsx": {
+      "tailwind-palette-class": 11,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/email-admin/ui/email-layout-container.web.tsx": {
+      "tailwind-palette-class": 10,
+      "arbitrary-dimension": 4
+    },
+    "packages/frontend/src/pages/email-admin/ui/email-message-list.web.tsx": {
+      "tailwind-palette-class": 38,
+      "arbitrary-dimension": 2
+    },
+    "packages/frontend/src/pages/email-admin/ui/email-viewer.web.tsx": {
+      "tailwind-palette-class": 46,
+      "arbitrary-dimension": 1
+    },
+    "packages/frontend/src/pages/enderecos/ui/EnderecosPage.web.tsx": {
+      "tailwind-palette-class": 81,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 10
+    },
+    "packages/frontend/src/pages/entrar/ui/EntrarPage.web.tsx": {
+      "tailwind-palette-class": 43,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 2
+    },
+    "packages/frontend/src/pages/equipamento-detalhe/ui/EquipamentoDetalhePage.web.tsx": {
+      "tailwind-palette-class": 87,
+      "arbitrary-dimension": 3,
+      "z-index-literal": 8
+    },
+    "packages/frontend/src/pages/equipamento-detalhe/ui/EquipamentoGaleria.web.tsx": {
+      "tailwind-palette-class": 22,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/equipamento-detalhe/ui/EquipamentoPeriodo.web.tsx": {
+      "tailwind-palette-class": 18
+    },
+    "packages/frontend/src/pages/equipamento-detalhe/ui/EquipamentoPreco.web.tsx": {
+      "tailwind-palette-class": 22
+    },
+    "packages/frontend/src/pages/equipamento-detalhe/ui/EquipamentoTrilha.web.tsx": {
+      "tailwind-palette-class": 13
+    },
+    "packages/frontend/src/pages/equipamento-detalhe/ui/EquipamentoVoltar.web.tsx": {
+      "tailwind-palette-class": 2
+    },
+    "packages/frontend/src/pages/equipamentos-admin/ui/CartaoPeriodo.web.tsx": {
+      "tailwind-palette-class": 11
+    },
+    "packages/frontend/src/pages/equipamentos-admin/ui/Detalhe.web.tsx": {
+      "tailwind-palette-class": 5,
+      "arbitrary-dimension": 2
+    },
+    "packages/frontend/src/pages/equipamentos-admin/ui/Editar.web.tsx": {
+      "tailwind-palette-class": 111,
+      "arbitrary-dimension": 7,
+      "z-index-literal": 4
+    },
+    "packages/frontend/src/pages/equipamentos-admin/ui/GerenciadorUnidades.web.tsx": {
+      "tailwind-palette-class": 30,
+      "z-index-literal": 2
+    },
+    "packages/frontend/src/pages/equipamentos-admin/ui/Lista.web.tsx": {
+      "tailwind-palette-class": 52,
+      "arbitrary-dimension": 4,
+      "z-index-literal": 5
+    },
+    "packages/frontend/src/pages/equipamentos-admin/ui/ModalZoomImagem.web.tsx": {
+      "tailwind-palette-class": 12,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/equipamentos-admin/ui/Novo.web.tsx": {
+      "tailwind-palette-class": 54,
+      "arbitrary-dimension": 3,
+      "z-index-literal": 3
+    },
+    "packages/frontend/src/pages/equipamentos-admin/ui/SecaoEspecificacoes.web.tsx": {
+      "tailwind-palette-class": 20
+    },
+    "packages/frontend/src/pages/equipamentos-admin/ui/SeletorPreco.web.tsx": {
+      "tailwind-palette-class": 18
+    },
+    "packages/frontend/src/pages/equipamentos-admin/ui/VerEquipamento.web.tsx": {
+      "tailwind-palette-class": 87,
+      "z-index-literal": 4
+    },
+    "packages/frontend/src/pages/equipamentos-scroll/ui/EquipamentosScrollPage.web.tsx": {
+      "tailwind-palette-class": 1
+    },
+    "packages/frontend/src/pages/equipamentos/ui/EquipamentosPage.web.tsx": {
+      "tailwind-palette-class": 44,
+      "arbitrary-dimension": 2,
+      "z-index-literal": 5
+    },
+    "packages/frontend/src/pages/financeiro/model/tipos.ts": {
+      "tailwind-palette-class": 12,
+      "arbitrary-dimension": 8
+    },
+    "packages/frontend/src/pages/financeiro/ui/Aliquotas.web.tsx": {
+      "tailwind-palette-class": 74,
+      "arbitrary-color": 1,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 2
+    },
+    "packages/frontend/src/pages/financeiro/ui/Cartoes.web.tsx": {
+      "tailwind-palette-class": 13,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/financeiro/ui/Detalhe.web.tsx": {
+      "tailwind-palette-class": 177,
+      "arbitrary-dimension": 30,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/financeiro/ui/ExcluirLancamento.web.tsx": {
+      "tailwind-palette-class": 2,
+      "arbitrary-dimension": 3
+    },
+    "packages/frontend/src/pages/financeiro/ui/ExcluirReajuste.web.tsx": {
+      "tailwind-palette-class": 2,
+      "arbitrary-dimension": 3
+    },
+    "packages/frontend/src/pages/financeiro/ui/FinanceiroPage.web.tsx": {
+      "tailwind-palette-class": 26,
+      "arbitrary-dimension": 2
+    },
+    "packages/frontend/src/pages/financeiro/ui/Painel.web.tsx": {
+      "tailwind-palette-class": 8
+    },
+    "packages/frontend/src/pages/financeiro/ui/Tabela.web.tsx": {
+      "tailwind-palette-class": 70,
+      "arbitrary-color": 2,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/grid-motion/ui/GridMotionPage.web.tsx": {
+      "tailwind-palette-class": 3,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/historico-detalhe/ui/AcoesLocacao.web.tsx": {
+      "tailwind-palette-class": 4
+    },
+    "packages/frontend/src/pages/historico-detalhe/ui/HistoricoDetalhePage.web.tsx": {
+      "tailwind-palette-class": 333,
+      "arbitrary-dimension": 7,
+      "z-index-literal": 3
+    },
+    "packages/frontend/src/pages/historico-detalhe/ui/LinhaDoTempo.web.tsx": {
+      "tailwind-palette-class": 13,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/historico/ui/HistoricoPage.web.tsx": {
+      "tailwind-palette-class": 94,
+      "arbitrary-dimension": 2,
+      "z-index-literal": 8
+    },
+    "packages/frontend/src/pages/home/ui/HomePage.web.tsx": {
+      "tailwind-palette-class": 1
+    },
+    "packages/frontend/src/pages/locacoes/model/tipos.web.ts": {
+      "tailwind-palette-class": 30
+    },
+    "packages/frontend/src/pages/locacoes/ui/Dialogo.web.tsx": {
+      "tailwind-palette-class": 30
+    },
+    "packages/frontend/src/pages/locacoes/ui/LocacoesPage.web.tsx": {
+      "tailwind-palette-class": 25,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/locacoes/ui/Tabela.web.tsx": {
+      "tailwind-palette-class": 26,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/login/ui/LoginPage.web.tsx": {
+      "tailwind-palette-class": 38,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 2
+    },
+    "packages/frontend/src/pages/logistica/ui/Checklist.web.tsx": {
+      "tailwind-palette-class": 6
+    },
+    "packages/frontend/src/pages/logistica/ui/Dialogo.web.tsx": {
+      "tailwind-palette-class": 15
+    },
+    "packages/frontend/src/pages/logistica/ui/Filtros.web.tsx": {
+      "tailwind-palette-class": 6,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/logistica/ui/GanttView.web.tsx": {
+      "tailwind-palette-class": 44,
+      "arbitrary-dimension": 10,
+      "z-index-literal": 2
+    },
+    "packages/frontend/src/pages/logistica/ui/LogisticaPage.web.tsx": {
+      "tailwind-palette-class": 8
+    },
+    "packages/frontend/src/pages/logistica/ui/LogisticsCalendar.web.tsx": {
+      "tailwind-palette-class": 33
+    },
+    "packages/frontend/src/pages/logistica/ui/Tabela.web.tsx": {
+      "tailwind-palette-class": 21,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/manutencao/ui/Dialogo.web.tsx": {
+      "tailwind-palette-class": 12
+    },
+    "packages/frontend/src/pages/manutencao/ui/Filtros.web.tsx": {
+      "tailwind-palette-class": 6,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/manutencao/ui/ManutencaoPage.web.tsx": {
+      "tailwind-palette-class": 8
+    },
+    "packages/frontend/src/pages/manutencao/ui/Tabela.web.tsx": {
+      "tailwind-palette-class": 21,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/notificacoes/ui/NotificacoesPage.web.tsx": {
+      "tailwind-palette-class": 53,
+      "arbitrary-dimension": 5,
+      "z-index-literal": 7
+    },
+    "packages/frontend/src/pages/orcamento/ui/ConfirmarEndereco.web.tsx": {
+      "tailwind-palette-class": 5
+    },
+    "packages/frontend/src/pages/orcamento/ui/OrcamentoPage.web.tsx": {
+      "tailwind-palette-class": 105,
+      "arbitrary-dimension": 3,
+      "z-index-literal": 8
+    },
+    "packages/frontend/src/pages/orcamento/ui/QuoteForm.web.tsx": {
+      "tailwind-palette-class": 36
+    },
+    "packages/frontend/src/pages/orcamento/ui/SalvarEndereco.web.tsx": {
+      "tailwind-palette-class": 19
+    },
+    "packages/frontend/src/pages/orcamento/ui/SalvarInformacoes.web.tsx": {
+      "tailwind-palette-class": 15
+    },
+    "packages/frontend/src/pages/orcamento/ui/SelecionarEndereco.web.tsx": {
+      "tailwind-palette-class": 7
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/Boleto.web.tsx": {
+      "tailwind-palette-class": 42,
+      "arbitrary-dimension": 14
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/Calendario.web.tsx": {
+      "tailwind-palette-class": 2,
+      "arbitrary-dimension": 1
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/CarregandoDetalhe.web.tsx": {
+      "tailwind-palette-class": 3
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/CarregandoLista.web.tsx": {
+      "tailwind-palette-class": 2
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/Cliente.web.tsx": {
+      "tailwind-palette-class": 32,
+      "arbitrary-dimension": 7
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/Detalhe.web.tsx": {
+      "tailwind-palette-class": 31
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/EditarCliente.web.tsx": {
+      "tailwind-palette-class": 9,
+      "arbitrary-dimension": 3
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/EditarEntrega.web.tsx": {
+      "tailwind-palette-class": 11,
+      "arbitrary-dimension": 3
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/EditarPeriodo.web.tsx": {
+      "tailwind-palette-class": 31,
+      "arbitrary-dimension": 12
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/Entrega.web.tsx": {
+      "tailwind-palette-class": 20,
+      "arbitrary-dimension": 3
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/Excluir.web.tsx": {
+      "tailwind-palette-class": 2,
+      "arbitrary-dimension": 3
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/Kanban.web.tsx": {
+      "tailwind-palette-class": 12,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/Lista.web.tsx": {
+      "tailwind-palette-class": 4
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/Multa.web.tsx": {
+      "tailwind-palette-class": 10,
+      "arbitrary-dimension": 3
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/Painel.web.tsx": {
+      "tailwind-palette-class": 15,
+      "arbitrary-dimension": 5,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/Reajuste.web.tsx": {
+      "tailwind-palette-class": 25,
+      "arbitrary-dimension": 4
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/Rejeicao.web.tsx": {
+      "tailwind-palette-class": 25,
+      "arbitrary-dimension": 1
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/Rejeitar.web.tsx": {
+      "tailwind-palette-class": 5,
+      "arbitrary-dimension": 4
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/RemoverAprovacao.web.tsx": {
+      "tailwind-palette-class": 2,
+      "arbitrary-dimension": 3
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/RemoverItem.web.tsx": {
+      "tailwind-palette-class": 2,
+      "arbitrary-dimension": 3
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/RemoverReajuste.web.tsx": {
+      "tailwind-palette-class": 2,
+      "arbitrary-dimension": 3
+    },
+    "packages/frontend/src/pages/orcamentos-admin/ui/Tabela.web.tsx": {
+      "tailwind-palette-class": 45,
+      "arbitrary-color": 1,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/perfil/ui/PerfilPage.web.tsx": {
+      "tailwind-palette-class": 70,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 5
+    },
+    "packages/frontend/src/pages/permissoes/ui/PermissoesPage.web.tsx": {
+      "tailwind-palette-class": 21
+    },
+    "packages/frontend/src/pages/playground/ui/IconCustomizationPage.web.tsx": {
+      "tailwind-palette-class": 1,
+      "arbitrary-dimension": 1
+    },
+    "packages/frontend/src/pages/playground/ui/PlaygroundPage.web.tsx": {
+      "tailwind-palette-class": 27,
+      "arbitrary-color": 1,
+      "arbitrary-dimension": 10,
+      "z-index-literal": 6
+    },
+    "packages/frontend/src/pages/politica-devolucao/model/document-content.ts": {
+      "tailwind-palette-class": 10,
+      "arbitrary-dimension": 5,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/politica-devolucao/ui/PoliticaDevolucaoPage.web.tsx": {
+      "tailwind-palette-class": 29,
+      "arbitrary-dimension": 2,
+      "z-index-literal": 3
+    },
+    "packages/frontend/src/pages/privacidade/model/document-content.ts": {
+      "tailwind-palette-class": 9,
+      "arbitrary-dimension": 4,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/pages/privacidade/ui/PrivacidadePage.web.tsx": {
+      "tailwind-palette-class": 29,
+      "arbitrary-dimension": 2,
+      "z-index-literal": 3
+    },
+    "packages/frontend/src/pages/recuperar-senha/ui/RecuperarSenhaPage.web.tsx": {
+      "tailwind-palette-class": 33,
+      "arbitrary-dimension": 3,
+      "z-index-literal": 2
+    },
+    "packages/frontend/src/pages/reset-password/ui/ResetPasswordPage.web.tsx": {
+      "tailwind-palette-class": 45,
+      "arbitrary-dimension": 3,
+      "z-index-literal": 2
+    },
+    "packages/frontend/src/pages/sobre/ui/SobrePage.web.tsx": {
+      "tailwind-palette-class": 65,
+      "arbitrary-dimension": 2,
+      "z-index-literal": 7
+    },
+    "packages/frontend/src/pages/termos/ui/TermosPage.web.tsx": {
+      "tailwind-palette-class": 39,
+      "arbitrary-dimension": 6,
+      "z-index-literal": 5
+    },
+    "packages/frontend/src/pages/teste-toast/ui/TesteToastPage.web.tsx": {
+      "tailwind-palette-class": 49
+    },
+    "packages/frontend/src/pages/whatsapp-admin/ui/DialogoCompleto.web.tsx": {
+      "tailwind-palette-class": 2,
+      "arbitrary-dimension": 1
+    },
+    "packages/frontend/src/pages/whatsapp-admin/ui/DialogoCompositor.web.tsx": {
+      "tailwind-palette-class": 4
+    },
+    "packages/frontend/src/pages/whatsapp-admin/ui/Layout.web.tsx": {
+      "tailwind-palette-class": 7,
+      "arbitrary-dimension": 3
+    },
+    "packages/frontend/src/pages/whatsapp-admin/ui/ListaConversas.web.tsx": {
+      "tailwind-palette-class": 18
+    },
+    "packages/frontend/src/pages/whatsapp-admin/ui/ListaMensagens.web.tsx": {
+      "tailwind-palette-class": 11
+    },
+    "packages/frontend/src/pages/whatsapp-admin/ui/Visualizador.web.tsx": {
+      "tailwind-palette-class": 18
+    },
+    "packages/frontend/src/pages/whatsapp-admin/ui/WhatsAppAdminPage.web.tsx": {
+      "arbitrary-dimension": 2
+    },
+    "packages/frontend/src/shared/lib/category-helpers.native.tsx": {
+      "arbitrary-dimension": 1
+    },
+    "packages/frontend/src/shared/lib/category-helpers.web.tsx": {
+      "tailwind-palette-class": 1,
+      "arbitrary-color": 2,
+      "arbitrary-dimension": 1
+    },
+    "packages/frontend/src/widgets/cabecalho-admin-barra/ui/Acoes.web.tsx": {
+      "tailwind-palette-class": 53,
+      "arbitrary-dimension": 5
+    },
+    "packages/frontend/src/widgets/cabecalho-admin-barra/ui/Barra.web.tsx": {
+      "tailwind-palette-class": 18
+    },
+    "packages/frontend/src/widgets/cabecalho-admin-barra/ui/BarraDesktop.web.tsx": {
+      "tailwind-palette-class": 3
+    },
+    "packages/frontend/src/widgets/cabecalho-admin-barra/ui/BarraMobile.web.tsx": {
+      "tailwind-palette-class": 10,
+      "z-index-literal": 2
+    },
+    "packages/frontend/src/widgets/cabecalho-admin/ui/Cabecalho.web.tsx": {
+      "tailwind-palette-class": 10,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/widgets/cabecalho/ui/AreaCliente.web.tsx": {
+      "tailwind-palette-class": 36,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 2
+    },
+    "packages/frontend/src/widgets/cabecalho/ui/Busca.web.tsx": {
+      "tailwind-palette-class": 62,
+      "arbitrary-dimension": 3,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/widgets/cabecalho/ui/Cabecalho.web.tsx": {
+      "tailwind-palette-class": 117,
+      "arbitrary-dimension": 1
+    },
+    "packages/frontend/src/widgets/calendario/ui/aggregated-events-popover.web.tsx": {
+      "tailwind-palette-class": 3
+    },
+    "packages/frontend/src/widgets/calendario/ui/all-day-section.web.tsx": {
+      "tailwind-palette-class": 3,
+      "arbitrary-dimension": 1
+    },
+    "packages/frontend/src/widgets/calendario/ui/calendar-filters.web.tsx": {
+      "tailwind-palette-class": 4
+    },
+    "packages/frontend/src/widgets/calendario/ui/calendar-header.web.tsx": {
+      "tailwind-palette-class": 5
+    },
+    "packages/frontend/src/widgets/calendario/ui/column-events-panel.web.tsx": {
+      "tailwind-palette-class": 25
+    },
+    "packages/frontend/src/widgets/calendario/ui/daily-view.web.tsx": {
+      "tailwind-palette-class": 23,
+      "arbitrary-dimension": 7,
+      "z-index-literal": 4
+    },
+    "packages/frontend/src/widgets/calendario/ui/event-block.web.tsx": {
+      "tailwind-palette-class": 15,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/widgets/calendario/ui/event-details-panel.web.tsx": {
+      "tailwind-palette-class": 29
+    },
+    "packages/frontend/src/widgets/calendario/ui/event-popover.web.tsx": {
+      "tailwind-palette-class": 11,
+      "arbitrary-dimension": 1
+    },
+    "packages/frontend/src/widgets/calendario/ui/index.web.tsx": {
+      "tailwind-palette-class": 3
+    },
+    "packages/frontend/src/widgets/calendario/ui/monthly-view.web.tsx": {
+      "tailwind-palette-class": 16,
+      "arbitrary-dimension": 2,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/widgets/calendario/ui/time-indicator.web.tsx": {
+      "tailwind-palette-class": 3,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/widgets/calendario/ui/timeline-view.web.tsx": {
+      "tailwind-palette-class": 31
+    },
+    "packages/frontend/src/widgets/cartao-admin/ui/Cartao.web.tsx": {
+      "tailwind-palette-class": 12,
+      "z-index-literal": 2
+    },
+    "packages/frontend/src/widgets/contato-empresa/ui/ContactInfoCard.web.tsx": {
+      "tailwind-palette-class": 16,
+      "arbitrary-dimension": 6
+    },
+    "packages/frontend/src/widgets/contato-home/ui/ContatoHome.web.tsx": {
+      "tailwind-palette-class": 40,
+      "arbitrary-dimension": 2
+    },
+    "packages/frontend/src/widgets/filtro-admin/ui/FiltroAdmin.web.tsx": {
+      "tailwind-palette-class": 6,
+      "arbitrary-dimension": 2,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/widgets/graficos-financeiros/ui/AgingChart.web.tsx": {
+      "tailwind-palette-class": 2,
+      "arbitrary-dimension": 8
+    },
+    "packages/frontend/src/widgets/graficos-financeiros/ui/ChartCard.web.tsx": {
+      "tailwind-palette-class": 9,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 6
+    },
+    "packages/frontend/src/widgets/graficos-financeiros/ui/DebtorsTable.web.tsx": {
+      "tailwind-palette-class": 19,
+      "arbitrary-dimension": 6
+    },
+    "packages/frontend/src/widgets/graficos-financeiros/ui/KPICard.web.tsx": {
+      "tailwind-palette-class": 14,
+      "arbitrary-dimension": 4,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/widgets/graficos-financeiros/ui/RevenueByCategoryChart.web.tsx": {
+      "tailwind-palette-class": 1,
+      "arbitrary-dimension": 8
+    },
+    "packages/frontend/src/widgets/graficos-financeiros/ui/RevenueChart.web.tsx": {
+      "tailwind-palette-class": 1,
+      "arbitrary-dimension": 8
+    },
+    "packages/frontend/src/widgets/hero/ui/Equipment3DCarousel.web.tsx": {
+      "tailwind-palette-class": 17,
+      "z-index-literal": 7
+    },
+    "packages/frontend/src/widgets/hero/ui/Hero.web.tsx": {
+      "tailwind-palette-class": 31,
+      "arbitrary-dimension": 2,
+      "z-index-literal": 4
+    },
+    "packages/frontend/src/widgets/hero/ui/HeroBackgroundCarousel.web.tsx": {
+      "tailwind-palette-class": 6,
+      "z-index-literal": 2
+    },
+    "packages/frontend/src/widgets/hero/ui/HeroCarouselDots.web.tsx": {
+      "tailwind-palette-class": 3,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/widgets/hero/ui/HeroWaveAnimation.web.tsx": {
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/widgets/hero/ui/ModelViewer.web.tsx": {
+      "tailwind-palette-class": 10,
+      "z-index-literal": 8
+    },
+    "packages/frontend/src/widgets/home-cliente/ui/Destaques.web.tsx": {
+      "tailwind-palette-class": 27,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 4
+    },
+    "packages/frontend/src/widgets/home-cliente/ui/HomeCliente.web.tsx": {
+      "tailwind-palette-class": 2
+    },
+    "packages/frontend/src/widgets/home-cliente/ui/ScrollInfinito.web.tsx": {
+      "tailwind-palette-class": 10,
+      "arbitrary-dimension": 2,
+      "z-index-literal": 3
+    },
+    "packages/frontend/src/widgets/home-cliente/ui/Vitrine.web.tsx": {
+      "tailwind-palette-class": 6,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/widgets/itens-orcamento/ui/Cartao.web.tsx": {
+      "tailwind-palette-class": 93,
+      "arbitrary-dimension": 18
+    },
+    "packages/frontend/src/widgets/menu-admin/ui/BarraLateral.web.tsx": {
+      "tailwind-palette-class": 34,
+      "arbitrary-dimension": 3,
+      "z-index-literal": 11
+    },
+    "packages/frontend/src/widgets/menu-admin/ui/BarraLateralMobile.web.tsx": {
+      "tailwind-palette-class": 26,
+      "arbitrary-dimension": 2,
+      "z-index-literal": 11
+    },
+    "packages/frontend/src/widgets/navegador-mes/ui/NavegadorMes.web.tsx": {
+      "tailwind-palette-class": 32,
+      "arbitrary-color": 1,
+      "arbitrary-dimension": 5,
+      "z-index-literal": 5
+    },
+    "packages/frontend/src/widgets/personalizar-icone/ui/Bloco.web.tsx": {
+      "tailwind-palette-class": 91,
+      "arbitrary-dimension": 9,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/widgets/por-que-escolher/ui/PorQueEscolher.web.tsx": {
+      "tailwind-palette-class": 37,
+      "arbitrary-color": 1,
+      "arbitrary-dimension": 2,
+      "z-index-literal": 6
+    },
+    "packages/frontend/src/widgets/por-que-escolher/ui/ScrollStack.web.tsx": {
+      "arbitrary-color": 1,
+      "arbitrary-dimension": 6
+    },
+    "packages/frontend/src/widgets/por-que-escolher/ui/ScrollStackBenefitCard.web.tsx": {
+      "tailwind-palette-class": 15,
+      "arbitrary-color": 1,
+      "arbitrary-dimension": 7,
+      "z-index-literal": 3
+    },
+    "packages/frontend/src/widgets/quadro-kanban/ui/Quadro.web.tsx": {
+      "tailwind-palette-class": 25,
+      "arbitrary-dimension": 3
+    },
+    "packages/frontend/src/widgets/rodape/ui/Footer.web.tsx": {
+      "tailwind-palette-class": 56,
+      "z-index-literal": 1
+    },
+    "packages/frontend/src/widgets/seletor-data/ui/DateRangePicker.web.tsx": {
+      "tailwind-palette-class": 12
+    },
+    "packages/frontend/src/widgets/whatsapp-flutuante/ui/WhatsAppFab.web.tsx": {
+      "tailwind-palette-class": 32,
+      "arbitrary-dimension": 2,
+      "z-index-literal": 3
+    },
+    "packages/ui/src/contract/button.ts": {
+      "tailwind-palette-class": 11
+    },
+    "packages/ui/src/native/HoverActionMenu.native.tsx": {
+      "z-index-literal": 1
+    },
+    "packages/ui/src/web/AddressForm.web.tsx": {
+      "tailwind-palette-class": 7
+    },
+    "packages/ui/src/web/Alert.web.tsx": {
+      "arbitrary-dimension": 1
+    },
+    "packages/ui/src/web/AlertDialog.web.tsx": {
+      "tailwind-palette-class": 8
+    },
+    "packages/ui/src/web/Autocomplete.web.tsx": {
+      "tailwind-palette-class": 41,
+      "z-index-literal": 3
+    },
+    "packages/ui/src/web/CTAButton.web.tsx": {
+      "tailwind-palette-class": 19,
+      "z-index-literal": 1
+    },
+    "packages/ui/src/web/Chart.web.tsx": {
+      "arbitrary-dimension": 5
+    },
+    "packages/ui/src/web/Checkbox.web.tsx": {
+      "tailwind-palette-class": 2
+    },
+    "packages/ui/src/web/CloseButton.web.tsx": {
+      "tailwind-palette-class": 16
+    },
+    "packages/ui/src/web/ContextMenu.web.tsx": {
+      "arbitrary-dimension": 2,
+      "z-index-literal": 2
+    },
+    "packages/ui/src/web/CustomSelect.web.tsx": {
+      "tailwind-palette-class": 11,
+      "z-index-literal": 1
+    },
+    "packages/ui/src/web/Dialog.web.tsx": {
+      "tailwind-palette-class": 20,
+      "arbitrary-dimension": 9
+    },
+    "packages/ui/src/web/Drawer.web.tsx": {
+      "tailwind-palette-class": 1,
+      "arbitrary-dimension": 2,
+      "z-index-literal": 2
+    },
+    "packages/ui/src/web/DropdownMenu.web.tsx": {
+      "tailwind-palette-class": 2,
+      "arbitrary-dimension": 4
+    },
+    "packages/ui/src/web/FilterIndicator.web.tsx": {
+      "tailwind-palette-class": 2
+    },
+    "packages/ui/src/web/FilterResetButton.web.tsx": {
+      "tailwind-palette-class": 1
+    },
+    "packages/ui/src/web/FilterSelectGroup.web.tsx": {
+      "arbitrary-dimension": 1
+    },
+    "packages/ui/src/web/GridMotion.web.tsx": {
+      "arbitrary-dimension": 1,
+      "z-index-literal": 3
+    },
+    "packages/ui/src/web/HoverActionMenu.web.tsx": {
+      "tailwind-palette-class": 4,
+      "z-index-literal": 2
+    },
+    "packages/ui/src/web/HoverCard.web.tsx": {
+      "z-index-literal": 1
+    },
+    "packages/ui/src/web/HybridTooltip.web.tsx": {
+      "tailwind-palette-class": 5,
+      "arbitrary-dimension": 2
+    },
+    "packages/ui/src/web/ImageUpload.web.tsx": {
+      "tailwind-palette-class": 45,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 7
+    },
+    "packages/ui/src/web/Input.web.tsx": {
+      "tailwind-palette-class": 4
+    },
+    "packages/ui/src/web/InputOTP.web.tsx": {
+      "z-index-literal": 1
+    },
+    "packages/ui/src/web/Menubar.web.tsx": {
+      "arbitrary-dimension": 2,
+      "z-index-literal": 2
+    },
+    "packages/ui/src/web/NavigationMenu.web.tsx": {
+      "tailwind-palette-class": 4,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 2
+    },
+    "packages/ui/src/web/NotificationBadge.web.tsx": {
+      "tailwind-palette-class": 6,
+      "z-index-literal": 1
+    },
+    "packages/ui/src/web/Popover.web.tsx": {
+      "tailwind-palette-class": 3,
+      "arbitrary-dimension": 1,
+      "z-index-literal": 1
+    },
+    "packages/ui/src/web/Resizable.web.tsx": {
+      "z-index-literal": 1
+    },
+    "packages/ui/src/web/ScrollArea.web.tsx": {
+      "tailwind-palette-class": 4,
+      "arbitrary-dimension": 6
+    },
+    "packages/ui/src/web/SearchBar.web.tsx": {
+      "tailwind-palette-class": 6,
+      "z-index-literal": 1
+    },
+    "packages/ui/src/web/Select.web.tsx": {
+      "tailwind-palette-class": 4,
+      "arbitrary-dimension": 2
+    },
+    "packages/ui/src/web/Separator.web.tsx": {
+      "arbitrary-dimension": 2
+    },
+    "packages/ui/src/web/Sheet.web.tsx": {
+      "tailwind-palette-class": 11,
+      "z-index-literal": 2
+    },
+    "packages/ui/src/web/Sidebar.web.tsx": {
+      "arbitrary-dimension": 5,
+      "z-index-literal": 2
+    },
+    "packages/ui/src/web/SmartPagination.web.tsx": {
+      "tailwind-palette-class": 5,
+      "arbitrary-dimension": 1
+    },
+    "packages/ui/src/web/SocialLoginButtons.web.tsx": {
+      "tailwind-palette-class": 7
+    },
+    "packages/ui/src/web/SonnerToaster.web.tsx": {
+      "tailwind-palette-class": 37,
+      "arbitrary-dimension": 1
+    },
+    "packages/ui/src/web/StatusTooltip.web.tsx": {
+      "tailwind-palette-class": 2
+    },
+    "packages/ui/src/web/Tabs.web.tsx": {
+      "tailwind-palette-class": 4
+    },
+    "packages/ui/src/web/Textarea.web.tsx": {
+      "arbitrary-dimension": 1
+    },
+    "packages/ui/src/web/Toggle.web.tsx": {
+      "tailwind-palette-class": 4
+    },
+    "packages/ui/src/web/Tooltip.web.tsx": {
+      "tailwind-palette-class": 2,
+      "z-index-literal": 1
+    },
+    "packages/ui/src/web/ViewToggle.web.tsx": {
+      "tailwind-palette-class": 5,
+      "z-index-literal": 2
+    },
+    "packages/ui/src/web/WhatsAppButton.web.tsx": {
+      "tailwind-palette-class": 3
+    }
+  }
+}

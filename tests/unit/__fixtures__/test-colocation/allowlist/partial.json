@@ -1,0 +1,5 @@
+{
+  "orphans": {
+    "src/cross-cutting.test.ts": "teste de arquitetura sem arquivo-assunto"
+  }
+}

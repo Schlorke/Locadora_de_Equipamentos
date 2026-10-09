@@ -1,0 +1,9 @@
+{
+  "id": "00000000-0000-4000-a000-000000000002",
+  "name": "rotacao-exemplo",
+  "enabled": true,
+  "expirationDate": "2027-01-15 00:00:00",
+  "projectedExpirationDateByLackOfUse": null,
+  "dateCreated": "2026-01-15 10:00:00",
+  "apiKey": "$aact_hmlg_FAKE_SANITIZED_ACCESS_TOKEN_000000000002"
+}

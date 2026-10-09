@@ -1,0 +1,47 @@
+{
+  "name": "@gb-locacoes/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./addresses": "./src/addresses.ts",
+    "./categories": "./src/categories.ts",
+    "./customer-enrollment": "./src/customer-enrollment.ts",
+    "./customer-profile": "./src/customer-profile.ts",
+    "./drivers": "./src/drivers.ts",
+    "./equipment-units": "./src/equipment-units.ts",
+    "./notifications": "./src/notifications.ts",
+    "./operations": "./src/operations.ts",
+    "./rental-requests": "./src/rental-requests.ts",
+    "./platform": "./src/platform.ts",
+    "./platform.json": "./src/platform.json",
+    "./directory": "./src/directory.ts",
+    "./entitlements": "./src/entitlements.ts",
+    "./subscription": "./src/subscription.ts",
+    "./onboarding": "./src/onboarding.ts",
+    "./payment-account": "./src/payment-account.ts",
+    "./backoffice": "./src/backoffice.ts",
+    "./rentals": "./src/rentals.ts",
+    "./quotations": "./src/quotations.ts",
+    "./financial": "./src/financial.ts",
+    "./payments": "./src/payments.ts",
+    "./rental-contracts": "./src/rental-contracts.ts",
+    "./client-documents": "./src/client-documents.ts",
+    "./settings": "./src/settings.ts",
+    "./storefront-legal": "./src/storefront-legal.ts",
+    "./zoho-mail": "./src/zoho-mail.ts",
+    "./whatsapp": "./src/whatsapp.ts",
+    "./permissions": "./src/permissions.ts",
+    "./credentials": "./src/credentials.ts",
+    "./openapi": "./src/openapi/schemas.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "zod": "^4.6.5",
+    "decimal.js": "^10.6.0"
+  }
+}

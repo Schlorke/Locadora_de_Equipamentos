@@ -1,0 +1,58 @@
+/* Contorno com a semântica da produção (Tailwind 3.4.17): outline-0/1/2… só dão a largura e o estilo vem de um utilitário
+   de estilo do elemento ou, sem ele, das camadas de baixo e do navegador (o anel `auto` do :focus-visible). */
+
+/* outline-<n> grava só a largura. O estilo é o de um utilitário de estilo do elemento que vale no mesmo estado (outline,
+   outline-solid, outline-hidden…: gravam --tw-tw3-outline-style) ou, sem nenhum, o das camadas de baixo e do navegador
+   (revert-layer): em repouso nenhum contorno e, no foco por teclado, o anel `auto` com a largura e a cor das classes
+   (gatilhos: azul 500, 2px, como na produção). No Tailwind 4 a largura trazia o estilo sólido. A variável não herda (o
+   estilo do pai não vale no filho) e não tem valor inicial (sem utilitário de estilo, vale o revert-layer). O `outline`
+   sem valor não dá largura (--default-outline-width: revert-layer, design-tokens/src/scales.css). */
+@property --tw-tw3-outline-style {
+  syntax: '*';
+  inherits: false;
+}
+
+@utility outline-* {
+  --tw-sort: outline-offset;
+  --tw-tw3-outline: --value(integer, [length]);
+
+  outline-style: var(--tw-tw3-outline-style, revert-layer);
+}
+
+@utility outline {
+  --tw-sort: outline-color;
+  --tw-outline-style: solid;
+  --tw-tw3-outline-style: solid;
+
+  outline-style: solid;
+}
+
+@utility outline-solid {
+  --tw-tw3-outline-style: solid;
+}
+
+@utility outline-dashed {
+  --tw-tw3-outline-style: dashed;
+}
+
+@utility outline-dotted {
+  --tw-tw3-outline-style: dotted;
+}
+
+@utility outline-double {
+  --tw-tw3-outline-style: double;
+}
+
+@utility outline-none {
+  --tw-tw3-outline-style: none;
+}
+
+/* outline-hidden (o outline-none da produção): sem contorno e, nas cores forçadas, o sólido transparente que o sistema
+   pinta, como o `outline: 2px solid transparent` do Tailwind 3. */
+@utility outline-hidden {
+  --tw-tw3-outline-style: none;
+
+  @variant forced-colors {
+    --tw-tw3-outline-style: solid;
+  }
+}

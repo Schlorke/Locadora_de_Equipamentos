@@ -1,0 +1,280 @@
+/* react-day-picker (calendário do seletor de datas), estrutura: mês, cabeçalho com navegação e dropdowns, grade de
+   semanas e dias. Na camada components: as classes utilitárias do elemento vencem. Estados em day-picker-states. */
+
+@layer components {
+  .rdp-root {
+    --rdp-accent-color: hsl(var(--primary));
+    --rdp-accent-background-color: hsl(var(--accent));
+
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .rdp-month {
+    width: 100%;
+    position: relative;
+    overflow: auto visible;
+  }
+
+  /* Cabeçalho do mês: botões e dropdowns centralizados, juntos. */
+  .rdp-month_caption {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    min-width: 0;
+    position: relative;
+    overflow: visible;
+    flex-wrap: nowrap;
+  }
+
+  /* Abaixo de 320px e entre 1024px e 1199px: botões na primeira linha, dropdowns na segunda. */
+  @media (width <= 319px), (1024px <= width <= 1199px) {
+    .rdp-month_caption {
+      flex-flow: row wrap;
+    }
+
+    .rdp-button_previous {
+      order: 1;
+    }
+
+    .rdp-button_next {
+      order: 2;
+    }
+
+    .rdp-dropdowns {
+      order: 3;
+      width: 100%;
+      justify-content: center;
+      flex-basis: 100%;
+    }
+  }
+
+  /* Entre 320px e 1023px e a partir de 1200px: tudo na mesma linha. */
+  @media (320px <= width <= 1023px), (width >= 1200px) {
+    .rdp-month_caption {
+      flex-wrap: nowrap;
+    }
+
+    .rdp-button_previous,
+    .rdp-button_next {
+      order: 0;
+    }
+
+    .rdp-dropdowns {
+      order: 0;
+      width: auto;
+      flex-basis: auto;
+    }
+  }
+
+  /* O rótulo padrão some quando há dropdowns. */
+  .rdp-caption_label {
+    display: none;
+  }
+
+  /* Navegação em posição absoluta (como no shadcn), sobre o cabeçalho. */
+  .rdp-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: var(--layer-inset);
+  }
+
+  .rdp-month_grid {
+    width: 100%;
+    min-width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--space-2);
+  }
+
+  /* Botões de navegação. */
+  .rdp-button_previous,
+  .rdp-button_next {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: var(--border-width-1) solid hsl(var(--input));
+    border-radius: var(--rounded-md);
+    background-color: var(--surface-control);
+    cursor: pointer;
+    opacity: 0.7;
+    transition:
+      opacity 0.15s,
+      background-color 0.15s;
+    flex-shrink: 0;
+    position: relative;
+    pointer-events: auto;
+    visibility: visible;
+    z-index: var(--layer-step);
+  }
+
+  @media (width >= 640px) {
+    .rdp-button_previous,
+    .rdp-button_next {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+  }
+
+  .rdp-button_previous:hover,
+  .rdp-button_next:hover {
+    opacity: 1;
+    background-color: hsl(var(--accent));
+  }
+
+  .rdp-button_previous:disabled,
+  .rdp-button_next:disabled,
+  .rdp-button_previous[aria-disabled='true'],
+  .rdp-button_next[aria-disabled='true'] {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  /* Dropdowns de mês e ano, centralizados entre os botões. */
+  .rdp-dropdowns {
+    display: flex;
+    gap: var(--space-1);
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    position: relative;
+    width: auto;
+    justify-self: center;
+    z-index: var(--layer-step);
+  }
+
+  @media (width >= 640px) {
+    .rdp-dropdowns {
+      gap: var(--space-2);
+    }
+  }
+
+  .rdp-dropdown_root {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .rdp-dropdown {
+    appearance: none;
+    background-color: transparent;
+    border: var(--border-width-1) solid hsl(var(--input));
+    border-radius: var(--rounded-md);
+    padding: var(--space-1) var(--space-5) var(--space-1) var(--space-1-5);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color 0.15s,
+      border-color 0.15s;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.25rem center;
+    background-repeat: no-repeat;
+    background-size: 0.875rem 0.875rem;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @media (width >= 640px) {
+    .rdp-dropdown {
+      padding: var(--space-1) var(--space-6) var(--space-1) var(--space-2);
+      font-size: var(--font-size-sm);
+      background-size: 1rem 1rem;
+    }
+  }
+
+  .rdp-dropdown:hover {
+    background-color: hsl(var(--accent));
+  }
+
+  .rdp-dropdown:focus {
+    outline: none;
+  }
+
+  .rdp-weeks {
+    display: table-row-group;
+    width: 100%;
+  }
+
+  /* Cabeçalho dos dias da semana. */
+  .rdp-weekdays {
+    display: flex;
+    width: 100%;
+  }
+
+  .rdp-weekday {
+    flex: 1;
+    text-align: center;
+    font-size: var(--font-size-micro);
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+    padding: var(--space-1-5) 0;
+    min-width: 0;
+  }
+
+  @media (width >= 640px) {
+    .rdp-weekday {
+      font-size: var(--font-size-caption);
+      padding: var(--space-2) 0;
+    }
+  }
+
+  .rdp-week {
+    display: flex;
+    width: 100%;
+    margin-top: var(--space-1);
+  }
+
+  /* Células e botões de dia. */
+  .rdp-day {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2rem;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .rdp-day_button {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--rounded-md);
+    border: none;
+    background: transparent;
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+    transition:
+      background-color 0.15s,
+      color 0.15s;
+  }
+
+  @media (width >= 640px) {
+    .rdp-day {
+      height: 2.25rem;
+    }
+
+    .rdp-day_button {
+      width: 2.25rem;
+      height: 2.25rem;
+      font-size: var(--font-size-sm);
+    }
+  }
+}

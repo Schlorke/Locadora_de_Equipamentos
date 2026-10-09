@@ -1,0 +1,88 @@
+# 📦 Dependências
+node_modules/
+package-lock.json
+yarn.lock
+
+# ⚙️ Next.js build e export
+.next/
+out/
+build/
+
+# 🔐 Variáveis de ambiente
+.env*
+!.env.example
+.vercel
+
+# 🧪 Arquivos de debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 🧬 TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# 🗂️ Cache do Node.js
+.tmp/
+
+# 🚫 Sub-repositório acidental (clone do repositório dentro dele mesmo; commit fd6fd657)
+GB-Locacoes/
+
+# 🧹 IDEs e editores
+.vscode/*
+!.vscode/settings.json
+.idea/
+
+# 🤖 Saídas de ferramentas de teste e automação (o gate pnpm hygiene exige estas entradas)
+.playwright-mcp/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+.tmp/visual/current/
+
+# 💬 Logs e dumps (saídas redirecionadas trazem caminhos da máquina: docs/architecture/security.md)
+*.log
+*.sqlite
+*.dump
+eslint-output.txt
+build-output.txt
+test-output.txt
+.eslintcache
+.stylelintcache
+
+# 🤖 Ferramentas de IA e editores
+.cursor/
+*.mdc
+.copilot/
+
+# 📊 Outputs de ferramentas de análise
+coverage/
+lighthouse-report.html
+reports/performance/*.html
+reports/performance/*.json
+reports/performance/.tmp/
+!reports/performance/.gitkeep
+
+*storybook.log
+storybook-static
+
+# 🔒 Documentos sensíveis da empresa
+docs/internal/company/*.pdf
+cartão*.pdf
+*.cnpj*.pdf
+
+# Host web: cópia real de public/ gerada por tools/sync-web-public.mjs (predev/prebuild); nunca junção nem symlink.
+# O trinco (.lock, e o .stale de um trinco abandonado posto de lado) só existe enquanto uma sincronização roda.
+apps/clients/web/public
+apps/clients/web/.sync-web-public.lock*
+
+# Caches e saídas geradas da modernização
+.openapi-gen/
+.turbo/
+apps/clients/mobile/dist-export/
+apps/clients/mobile/.expo/
+# Projetos nativos gerados pelo expo prebuild / expo run:*
+apps/clients/mobile/android/
+apps/clients/mobile/ios/

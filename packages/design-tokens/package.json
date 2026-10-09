@@ -1,0 +1,17 @@
+{
+  "name": "@gb-locacoes/design-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme.css": "./src/theme.css",
+    "./tokens.css": "./src/tokens.css",
+    "./palette.css": "./src/palette.css",
+    "./scales.css": "./src/scales.css",
+    "./documents": "./src/documents.ts"
+  }
+}

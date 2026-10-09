@@ -1,0 +1,15 @@
+// Settings do VS Code em forma de objetos aninhados, com comentários e vírgulas finais (JSONC).
+{
+  /* O check lê as regras daqui: só <assunto>.test.ts aninha, então <assunto>.<aspecto>.test.ts fica órfão. */
+  "editor.rulers": [100,],
+  "files.exclude": { "**/*.log": true, },
+  "search.exclude": { "http://example.test/,}": true },
+  "explorer": {
+    "fileNesting": {
+      "enabled": true,
+      "patterns": {
+        "*.ts": " ${capture}.test.ts , ,​",
+      },
+    },
+  },
+}

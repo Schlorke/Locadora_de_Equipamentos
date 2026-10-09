@@ -1,0 +1,7 @@
+{
+  // Com o aninhamento desligado o VS Code não aninha nada: o check recusa a configuração.
+  "explorer.fileNesting.enabled": false,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.test.ts"
+  }
+}

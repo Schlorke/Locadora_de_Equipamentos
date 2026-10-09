@@ -1,0 +1,882 @@
+{
+  "$comment": "Renomeações registradas para tools/ratchet-guard.mjs: a contagem da base em `from` (limitada por `counts`) passa para `to` (o total não aumenta). Só vale quando `from` sumiu da árvore, `to` não existia na base e o git reconhece a renomeação (git diff -M). Gere com `node tools/ratchet-guard.mjs --rename <de> <para> --reason <motivo>`. Entradas cuja origem já não existe na base são ignoradas e podem ser removidas.",
+  "transfers": [
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/frontend#./pages/assinatura-admin",
+      "reason": "Modernização SaaS autorizada: entrada exata da tela compartilhada de assinatura. Default monta plano, uso e faturas somente por GETs existentes; react-native conserva a decisão da ADR de estado e link ao navegador, sem compra ou backoffice nativo. Não exclui fontes, não amplia baseline ou tolerância, não afrouxa testes ou guardas. A API continua revalidando dono e vínculo em RLS nos dois hosts; o legado permanece ativo."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./payments",
+      "reason": "Extração incremental autorizada: schema já existente de pedido de PIX/boleto compartilhado pelos dois adapters. Preserva validação de referências, valor positivo/finito, coerção das datas ISO e descarte de extras. Regras de obrigação, ownership, prova de cancelamento, tentativas e outbox continuam no backend; nenhuma baseline ou proteção ampliada."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./financial",
+      "reason": "Extração incremental autorizada: os três schemas existentes de alíquotas, status financeiro e vencimento são movidos para contrato puro consumido pelos adapters legado e compartilhado. Mantém validações, coerção de datas, obrigatoriedade, nulabilidade e descarte de extras. Não amplia baseline, tolerância ou exclusão de testes; regras e transações permanecem em backend/billing."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/design-tokens#./documents",
+      "reason": "Extração autorizada dos PDFs: cores e dimensões existentes de impressão A4 passam ao pacote canônico, com cores derivadas dos primitivos já existentes e medidas em pontos preservadas. Novo entrypoint universal puro, sem regras de negócio ou alterações na UI; layout e bytes do PDF seguem protegidos. Não amplia baseline nem proteção e substitui os literais legados, eliminando 22 ocorrências."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./quotations",
+      "reason": "Extração incremental autorizada: quatro schemas existentes de criação pública, reajuste, simulação de multa e conversão movidos para contrato universal explícito consumido pelos dois adapters. Preserva validações, defaults, transformações e descarte de extras; transações, dinheiro, isolamento, estoque e outbox permanecem no backend. Nenhuma baseline ou proteção ampliada; validação consolidada ao final da onda por decisão humana."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./rentals",
+      "reason": "Extração incremental autorizada: schemas existentes do ciclo de locações movidos para contrato universal explícito e consumido pelos dois adapters. Decimal usa a mesma dependência 10.6.0 já instalada no workspace, preservando transformações, validações e descarte de extras. Regras, lock, documentos, dinheiro e outbox permanecem no backend; nenhuma baseline ou proteção ampliada. Testes consolidados ao final da onda inteira por decisão humana."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./rental-requests",
+      "reason": "Extração incremental autorizada: schema estrito existente de pedido de prorrogação movido para contrato puro compartilhado pelos dois adapters. Não altera prazo, regras, precedência, autorização ou efeitos. O registro, deduplicação, lock e notificação permanecem no backend existente. Nenhuma baseline ou proteção ampliada; testes consolidados ao final da onda por decisão humana."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./operations",
+      "reason": "Extração incremental autorizada: os schemas existentes de veículos e entregas/coletas são movidos para um contrato puro e explícito consumido pelos dois adapters, sem duplicação ou validação nova. A lógica permanece em backend/operations, com transações e escopo de locadora preservados. A decisão humana de 2026-10-02 consolida a validação ao final da onda. Nenhuma baseline, exceção de autorização ou proteção de teste é ampliada."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./equipment-units",
+      "reason": "Extração incremental autorizada: schema Zod existente do POST admin/equipment-units movido para contrato puro e explícito compartilhado pelos dois adapters, preservando validações e descarte de campos extras. Permissão WRITE, ownership, DTO, medidores, unicidade e rollback caracterizados antes. Criação, lock e regras de estoque permanecem em backend/catalog; nenhum wildcard, dependência nova, baseline ou proteção afrouxada."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./categories",
+      "reason": "Extração incremental autorizada: schema estrito já existente de POST admin/categories movido para contrato puro e explícito, consumido pelos dois adapters. Permissão EQUIPMENTS/WRITE, CSRF, parsing do ícone, DTO e erros caracterizados antes; criação, unicidade e lock permanecem em backend/catalog. Sem wildcard, regra de negócio copiada, nova dependência, baseline ou guarda afrouxada."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./drivers",
+      "reason": "Extração incremental autorizada: o schema existente de POST admin/drivers foi movido para um contrato puro e explícito consumido pelos dois adapters, sem duplicação ou novo comportamento. ADMIN da locadora, CSRF central, validações, campos descartados e respostas foram caracterizados antes da alteração. Criação e transação continuam em backend/operations; nenhuma baseline, guarda ou tolerância foi ampliada."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./customer-enrollment",
+      "reason": "Extração incremental autorizada da API compartilhada: schema estrito de consentimento e tenantSlug existente em POST client/enroll movido para contracts, consumido pelos dois adapters. Ponto puro e explícito, sem wildcard, dados, servidor ou nova tolerância. Preserva validações e precedência; o caso de uso continua em backend/customers. A classificação da nova rota mantém host, sessão e CSRF, com caracterização anterior e paridade HTTP real; baselines e escopos de teste não foram ampliados."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./customer-profile",
+      "reason": "Extração incremental autorizada pelo usuário em 2026-09-30: schema estrito existente de PUT user/profile movido do adapter legado para contracts, como contrato puro consumido pelos dois hosts. O novo ponto explícito publica somente esse schema Zod, sem runtime, queries, segredos ou wildcard; preserva as validações e evita duplicá-las no serviço. Caracterização anterior, paridade HTTP com ambos os modos de identidade, tipos, higiene e inventário de autorização verificados. Nenhuma baseline, tolerância ou escopo de testes foi ampliado."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/backend#./communications",
+      "reason": "Extração incremental autorizada da API compartilhada: módulo de comunicações previsto na ADR de backend, iniciado pela leitura de notificações por usuário/locadora. Os dois hosts consomem a mesma consulta; sem novo pacote, negócio duplicado, import de host ou tolerância de segurança."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./notifications",
+      "reason": "Contrato de query existente de GET client/notifications movido para contracts na extração autorizada. Parser puro compartilhado pelos dois adapters, sem implementação de servidor ou dependência nova; mesmas validações e erros, sem ampliar baseline ou allowlist."
+    },
+    {
+      "approve": "arch.legacyRoots",
+      "entry": {
+        "path": "stores",
+        "runtime": "shared"
+      },
+      "reason": "Pasta vazia desde a migração do carrinho para packages/frontend/src/features/carrinho (lote limpeza-codigo removeu a pasta); declarada como legado, uma stores/ recriada passaria como legado em vez de reprovar como raiz não classificada."
+    },
+    {
+      "approve": "arch.legacyRoots",
+      "entry": {
+        "path": "instrumentation.ts",
+        "runtime": "server"
+      },
+      "reason": "O arquivo nunca existiu no histórico (git log -- instrumentation.ts vazio); a entrada só reservava o nome e deixaria um arquivo novo nascer como legado sem passar pela classificação."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/design-tokens#./palette.css",
+      "reason": "Paleta da produção (Tailwind 3.4.17) em hex no @theme (onda 8, lote fech-css, entrada 219 de docs/issues/known-issues.md): só custom properties de token, sem código; o único consumidor é packages/frontend/src/app/styles/globals.web.css, pelo ponto de entrada do pacote, como theme.css e tokens.css."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/design-tokens#./scales.css",
+      "reason": "Escalas da produção (sombras, raios, blur, altura de linha, contorno, ring e breakpoints) em @theme inline (onda 9, lote css-paridade, entrada 223 de docs/issues/known-issues.md): só custom properties de token, sem código; o único consumidor é packages/frontend/src/app/styles/globals.web.css, pelo ponto de entrada do pacote."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/backend#./http",
+      "reason": "Extração incremental autorizada pelo usuário em 2026-09-30: adapters Request/Response de categories e health consumidos por apps/services/api. Código segue no pacote server-only e permanece contado pelos gates; não há import de host, regra de negócio copiada ou nova tolerância de dívida."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/backend#./runtime",
+      "reason": "Extração incremental autorizada pelo usuário em 2026-09-30: ponto de composição de Prisma/pg compartilhado entre lib/prisma.ts e apps/services/api, preservando os slots, configurações e um pool por processo. Novo entrypoint server-only necessário para evitar import de lib/ pelo serviço; baselines e limites de teste intactos."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./rental-contracts",
+      "reason": "Extração incremental autorizada: schemas existentes de geração/assinatura e callback ZapSign movidos para contracts, com as mesmas validações nos dois hosts e sem regras de negócio ou dependências de servidor. Nenhuma tolerância de teste ou baseline foi ampliada."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./client-documents",
+      "reason": "Extração incremental autorizada: enum de tipo de documento do upload operacional existente movido para contrato puro consumido pelo adapter compartilhado. Mantém os quatro valores, parsing e mensagens; nenhuma tolerância de testes ou baseline ampliada."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./settings",
+      "reason": "Extração incremental autorizada: schemas de configurações idênticos no legado e frontend unificados em contrato universal. Dois hosts e frontend consomem a mesma validação; regras, segredo, locks e cache permanecem no backend/composição. Nenhuma proteção ou baseline ampliada."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./storefront-legal",
+      "reason": "Onda 134, lote vitrine-conteúdo (decisões do dono de 2026-10-06, item 3, e U5 da ADR de hosts): contrato universal dos textos legais da vitrine por locadora (tipos, slugs de rota, esquema estrito de escrita, leitura tolerante e regra de renderização do item com destaque), consumido pelos dois hosts de API, pelo backend e pelo frontend. Só zod (os bytes UTF-8 do texto contados por ponto de código, sem TextEncoder, que os tipos do app não têm); nenhuma regra de banco, segredo ou HTML. Entrada exata, sem curinga; nenhuma baseline, tolerância ou exclusão de teste ampliada."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./zoho-mail",
+      "reason": "Extração incremental autorizada: schemas Zoho existentes movidos ao contrato universal e usados nos dois hosts. Mesmas validações, defaults, mensagens e transformações; nenhuma baseline ampliada ou teste enfraquecido. Alias Reply removido, mantendo o mesmo schema para resposta."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./whatsapp",
+      "reason": "Extração incremental autorizada: schemas existentes de texto e evento WhatsApp movidos ao contrato puro compartilhado. Validações e erros preservados nos dois hosts; nenhuma baseline ou tolerância de testes ampliada."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./permissions",
+      "reason": "Extração incremental autorizada: schema existente de substituição de permissões por papel movido para contrato puro consumido pelos dois adapters. Validações, mensagens, strip de extras, limites e refine preservados; ADMIN, transação, lock e isolamento no backend. Nenhuma baseline ou tolerância de teste ampliada."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./credentials",
+      "reason": "Extração incremental autorizada: schemas anteriores de cadastro, recuperação e redefinição e limite de e-mail movidos para contrato universal consumido pelos dois hosts. Validações, mensagens e defaults preservados; tokens, budgets, mail e transações permanecem em backend/identity. Nenhuma baseline ou tolerância de testes ampliada."
+    },
+    {
+      "baseline": "arch",
+      "from": "packages/frontend/src/pages/equipamentos-admin/ui/GerenciadorUnidades.tsx",
+      "to": "packages/frontend/src/pages/equipamentos-admin/ui/GerenciadorUnidades.web.tsx",
+      "reason": "Separar apresentação DOM existente em variante web, mantendo o corpo visual e as tolerâncias anteriores, com modelo comum e variante native.",
+      "counts": {
+        "UNIVERSAL-DOM-JSX": 35,
+        "UNIVERSAL-WEB-LIB": 3
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/equipamentos-admin/ui/GerenciadorUnidades.tsx",
+      "to": "packages/frontend/src/pages/equipamentos-admin/ui/GerenciadorUnidades.web.tsx",
+      "reason": "Separar apresentação DOM existente em variante web, mantendo o corpo visual e as tolerâncias anteriores, com modelo comum e variante native.",
+      "counts": {
+        "tailwind-palette-class": 30,
+        "z-index-literal": 2
+      }
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/frontend#./pages/equipamentos-admin",
+      "reason": "Modernização e paridade Expo autorizadas pelo usuário: entrada exata para a slice existente, default conserva integralmente o index web e react-native monta os dois destinos efetivamente implementados. Impede importar apresentações DOM em runtime nativo; não exclui arquivos dos checks web/universais, não altera baselines ou tolerâncias, não aprova css-important. As duas condições são verificadas por testes de contrato, tipos e exports Android/iOS; criação/edição nativas continuam dívida explícita, sem substitutos fictícios."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/frontend#./pages/categorias",
+      "reason": "Modernização e paridade Expo autorizadas: entrada exata da slice existente conserva o index web no default e seleciona os destinos native efetivamente implementados. Impede carregar DOM no app; nenhum baseline, exclusão de teste ou tolerância ampliada. Contrato, tipos, testes comportamentais e exports Android/iOS verificam ambas as condições."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/frontend#./pages/locacoes",
+      "reason": "Modernização e paridade Expo autorizadas: entrada exata da slice existente conserva default web e seleciona UI nativa real sobre modelo/API compartilhados. Não amplia baselines, tolerâncias ou exclusões. Contratos, tipos, testes e exports verificam o corte; aceite operacional permanece pendente."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/frontend#./pages/orcamentos-admin",
+      "reason": "Modernização e paridade Expo autorizadas: entrypoint exato conserva index web e seleciona UI nativa real, com modelos e contratos administrativos comuns. Sem ampliação de baseline, exclusão de teste ou tolerância; tipos, comportamento e exports verificam a fronteira. Aceite operacional permanece pendente."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/frontend#./pages/financeiro",
+      "reason": "Modernização e paridade Expo autorizadas: entrada exata conserva index web e seleciona apresentação financeira nativa sobre modelos/contratos comuns. Sem ampliar baseline, tolerância ou exclusão de teste. Tipos, comportamento e exports verificam a fronteira; aceite operacional permanece pendente."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/frontend#./pages/logistica",
+      "reason": "Modernização e paridade Expo autorizadas: entrada exata mantém index web e seleciona apresentação nativa real sobre modelos/API comuns. Sem aumento de baseline ou exclusão de teste; tipos, comportamento e exports verificam a fronteira, com aceite operacional pendente."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/frontend#./pages/manutencao",
+      "reason": "Modernização e paridade Expo autorizadas: entrada exata mantém index web e seleciona apresentação nativa real sobre modelos/API comuns. Sem aumento de baseline ou exclusão de teste; tipos, comportamento e exports verificam a fronteira, com aceite operacional pendente."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/frontend#./pages/configuracoes",
+      "reason": "Modernização Expo autorizada: entrada exata conserva os exports web e seleciona a apresentação nativa de configurações sobre modelo/contratos comuns. Fronteiras de DOM, mensagens e seleção de arquivos são adapters; tipos, testes e exports verificam a integração sem ampliar baselines, tolerâncias ou exclusões. Aceite visual/operacional permanece pendente."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/frontend#./pages/email-admin",
+      "reason": "Modernização Expo autorizada: entrada exata conserva index web e seleciona apresentação nativa sobre modelos e contratos comuns, com capacidades locais no host. Sem ampliar baseline, tolerância ou exclusão de testes. Tipos, comportamento e exports verificam a fronteira; aparelho, provedor e aceite operacional permanecem pendentes."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/frontend#./pages/whatsapp-admin",
+      "reason": "Modernização Expo autorizada: entrada exata conserva index web e seleciona apresentação nativa sobre modelos e contratos comuns, com capacidades locais no host. Sem ampliar baseline, tolerância ou exclusão de testes. Tipos, comportamento e exports verificam a fronteira; aparelho, provedor e aceite operacional permanecem pendentes."
+    },
+    {
+      "approve": "hygiene.knip",
+      "entry": ". entry \"tools/gb-site-settings.mjs\"",
+      "reason": "Onda 132, achado 143: CLI de corte rodada à mão pelo operador com aprovação do dono da GB (docs/operations/gb-site-settings.md), como as CLIs de runbook já listadas. Simulação por padrão e --apply explícito; o teste a importa, mas ela não existe por causa dele. Entrada de um arquivo só, sem glob, sem ampliar baseline nem afrouxar outra regra."
+    },
+    {
+      "approve": "arch.legacyRoots",
+      "entry": {
+        "path": "types",
+        "runtime": "types"
+      },
+      "reason": "Onda 135, A1 (E9; aprovação prevista no plano de aposentadoria da raiz): types/ deixa de ser raiz legada inteira. Os dois .d.ts que só a raiz legada usa (global.d.ts e google-maps-ecl.d.ts) seguem legados, cada um pelo caminho, até o bloco F; types/next-auth.d.ts, o shim de uma linha que só reexporta o entrypoint @gb-locacoes/backend/identity para os tsconfig do web e do frontend, vira raiz declarada só de tipos (nonRuntimeRoots). Nenhum arquivo de runtime muda de classificação (o arch não lê .d.ts) e um .ts novo em types/ passa a reprovar como UNCLASSIFIED-ROOT em vez de nascer legado."
+    },
+    {
+      "approve": "arch.nonRuntimeRoots",
+      "entry": {
+        "path": "types/next-auth.d.ts",
+        "reason": "Raiz declarada só de tipos (onda 135, E9): augmentation do NextAuth sem corpo de runtime, incluída pelos tsconfig de apps/clients/web e packages/frontend; só importa o entrypoint @gb-locacoes/backend/identity. Fica depois da exclusão da raiz legada."
+      },
+      "reason": "Onda 135, A1 (E9; aprovação prevista no plano de aposentadoria da raiz): types/ deixa de ser raiz legada inteira. Os dois .d.ts que só a raiz legada usa (global.d.ts e google-maps-ecl.d.ts) seguem legados, cada um pelo caminho, até o bloco F; types/next-auth.d.ts, o shim de uma linha que só reexporta o entrypoint @gb-locacoes/backend/identity para os tsconfig do web e do frontend, vira raiz declarada só de tipos (nonRuntimeRoots). Nenhum arquivo de runtime muda de classificação (o arch não lê .d.ts) e um .ts novo em types/ passa a reprovar como UNCLASSIFIED-ROOT em vez de nascer legado."
+    },
+    {
+      "approve": "tokens.legacyScope",
+      "entry": "types",
+      "reason": "Onda 135, A1 (E9; aprovação prevista no plano de aposentadoria da raiz): types/ deixa de ser raiz legada inteira. Os dois .d.ts que só a raiz legada usa (global.d.ts e google-maps-ecl.d.ts) seguem legados, cada um pelo caminho, até o bloco F; types/next-auth.d.ts, o shim de uma linha que só reexporta o entrypoint @gb-locacoes/backend/identity para os tsconfig do web e do frontend, vira raiz declarada só de tipos (nonRuntimeRoots). Nenhum arquivo de runtime muda de classificação (o arch não lê .d.ts) e um .ts novo em types/ passa a reprovar como UNCLASSIFIED-ROOT em vez de nascer legado. O escopo legado do token-check acompanha as raízes legadas com código do arch.config.json (tests/unit/token-check.test.ts) e lista os dois .d.ts pelo caminho."
+    },
+    {
+      "approve": "hygiene.baseline",
+      "entry": {
+        "type": "dependencies",
+        "path": "package.json",
+        "name": "@react-three/drei"
+      },
+      "reason": "Onda 135, A0 (E24): o achado novo workspace-unlisted exige que packages/frontend declare three e @react-three/*, e com isso o knip deixa de ver uso na raiz. Eles ficam na raiz só pelo DC-26 (entrada 226): a sondagem --lockfile-only mostrou que tirá-los da raiz troca a variante do react-native do packages/ui. Item \"decidir\" com saída marcada: colapso do grafo 0.86/0.87 ou bloco F com prova no clone limpo."
+    },
+    {
+      "approve": "hygiene.baseline",
+      "entry": {
+        "type": "dependencies",
+        "path": "package.json",
+        "name": "@react-three/fiber"
+      },
+      "reason": "Onda 135, A0 (E24): o achado novo workspace-unlisted exige que packages/frontend declare three e @react-three/*, e com isso o knip deixa de ver uso na raiz. Eles ficam na raiz só pelo DC-26 (entrada 226): a sondagem --lockfile-only mostrou que tirá-los da raiz troca a variante do react-native do packages/ui. Item \"decidir\" com saída marcada: colapso do grafo 0.86/0.87 ou bloco F com prova no clone limpo."
+    },
+    {
+      "approve": "hygiene.baseline",
+      "entry": {
+        "type": "dependencies",
+        "path": "package.json",
+        "name": "three"
+      },
+      "reason": "Onda 135, A0 (E24): o achado novo workspace-unlisted exige que packages/frontend declare three e @react-three/*, e com isso o knip deixa de ver uso na raiz. Eles ficam na raiz só pelo DC-26 (entrada 226): a sondagem --lockfile-only mostrou que tirá-los da raiz troca a variante do react-native do packages/ui. Item \"decidir\" com saída marcada: colapso do grafo 0.86/0.87 ou bloco F com prova no clone limpo."
+    },
+    {
+      "approve": "hygiene.baseline",
+      "entry": {
+        "type": "files",
+        "path": "lib/quote-code.ts"
+      },
+      "reason": "Onda 135, C6 (E16; plano da aposentadoria da raiz, 4.1 e 6.2): o script com entrada db:backfill:quote-codes deixou de importar lib/quote-code.ts (agora @gb-locacoes/backend/quotations, a mesma assignQuoteCode). A fachada legada fica sem consumidor, mas a raiz não é apagada antes da prova sem ela; o item troca o de exports do mesmo arquivo, que ficou velho, e sai com lib/ no bloco F."
+    },
+    {
+      "approve": "hygiene.baseline",
+      "entry": {
+        "type": "test-only-file",
+        "path": "scripts/ops/google-merchant/client.ts"
+      },
+      "reason": "Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
+    },
+    {
+      "approve": "hygiene.baseline",
+      "entry": {
+        "type": "test-only-file",
+        "path": "scripts/ops/google-merchant/index.ts"
+      },
+      "reason": "Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
+    },
+    {
+      "approve": "hygiene.baseline",
+      "entry": {
+        "type": "test-only-file",
+        "path": "scripts/ops/google-merchant/mapper.ts"
+      },
+      "reason": "Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
+    },
+    {
+      "approve": "hygiene.baseline",
+      "entry": {
+        "type": "test-only-file",
+        "path": "scripts/ops/google-merchant/sync-service.ts"
+      },
+      "reason": "Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
+    },
+    {
+      "approve": "hygiene.baseline",
+      "entry": {
+        "type": "test-only-file",
+        "path": "scripts/ops/google-merchant/types.ts"
+      },
+      "reason": "Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
+    },
+    {
+      "approve": "hygiene.baseline",
+      "entry": {
+        "type": "exports",
+        "path": "scripts/ops/google-merchant/mapper.ts",
+        "name": "equipmentsToGoogleProducts"
+      },
+      "reason": "Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
+    },
+    {
+      "approve": "hygiene.baseline",
+      "entry": {
+        "type": "test-only-file",
+        "path": "scripts/ops/storage-utils.ts"
+      },
+      "reason": "Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-03 de lib/storage-utils.ts (files na base) para o porte em scripts/ops/storage-utils.ts, com o cliente administrativo do backend criado no primeiro uso (tests/unit/storage-utils-ops.test.ts). O item da origem sai com lib/ no bloco F. Sem ampliar outra regra."
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/contracts#./openapi",
+      "reason": "Onda 135, C5 (E15; aprovação prevista no plano de aposentadoria da raiz): os esquemas públicos da especificação OpenAPI saem de lib/openapi/schemas.ts da raiz legada para o contrato universal, por entrada exata, sem curinga. Só zod (os mesmos oito esquemas, com o JSON Schema gerado byte a byte igual); consumidos por scripts/generate-openapi-zod.ts (gerador lendo apps/services/api) e por tests/api/contract.test.ts. Nenhuma regra de negócio, servidor ou segredo; nenhuma baseline, tolerância ou exclusão de teste ampliada."
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/features/abas-categoria/ui/Abas.tsx",
+      "to": "packages/frontend/src/features/abas-categoria/ui/Abas.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 13,
+        "arbitrary-color": 3,
+        "arbitrary-dimension": 4,
+        "z-index-literal": 3
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/features/bloco-preco/ui/Bloco.tsx",
+      "to": "packages/frontend/src/features/bloco-preco/ui/Bloco.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 8
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/email-admin/ui/email-composer-dialog.tsx",
+      "to": "packages/frontend/src/pages/email-admin/ui/email-composer-dialog.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 16,
+        "arbitrary-dimension": 6,
+        "z-index-literal": 1
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/email-admin/ui/email-full-view-dialog.tsx",
+      "to": "packages/frontend/src/pages/email-admin/ui/email-full-view-dialog.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 11,
+        "arbitrary-dimension": 1,
+        "z-index-literal": 1
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/email-admin/ui/email-layout-container.tsx",
+      "to": "packages/frontend/src/pages/email-admin/ui/email-layout-container.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 10,
+        "arbitrary-dimension": 4
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/email-admin/ui/email-message-list.tsx",
+      "to": "packages/frontend/src/pages/email-admin/ui/email-message-list.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 38,
+        "arbitrary-dimension": 2
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/email-admin/ui/email-viewer.tsx",
+      "to": "packages/frontend/src/pages/email-admin/ui/email-viewer.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 46,
+        "arbitrary-dimension": 1
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/equipamento-detalhe/ui/EquipamentoDetalhePage.tsx",
+      "to": "packages/frontend/src/pages/equipamento-detalhe/ui/EquipamentoDetalhePage.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 93,
+        "arbitrary-dimension": 3,
+        "z-index-literal": 8
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/equipamento-detalhe/ui/EquipamentoPeriodo.tsx",
+      "to": "packages/frontend/src/pages/equipamento-detalhe/ui/EquipamentoPeriodo.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 18
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/equipamento-detalhe/ui/EquipamentoPreco.tsx",
+      "to": "packages/frontend/src/pages/equipamento-detalhe/ui/EquipamentoPreco.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 22
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/equipamentos-admin/ui/CartaoPeriodo.tsx",
+      "to": "packages/frontend/src/pages/equipamentos-admin/ui/CartaoPeriodo.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 11
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/equipamentos-admin/ui/SecaoEspecificacoes.tsx",
+      "to": "packages/frontend/src/pages/equipamentos-admin/ui/SecaoEspecificacoes.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 20
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/equipamentos-admin/ui/SeletorPreco.tsx",
+      "to": "packages/frontend/src/pages/equipamentos-admin/ui/SeletorPreco.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 18
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/Boleto.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/Boleto.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 42,
+        "arbitrary-dimension": 14
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/CarregandoDetalhe.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/CarregandoDetalhe.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 3
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/CarregandoLista.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/CarregandoLista.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 2
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/Cliente.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/Cliente.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 32,
+        "arbitrary-dimension": 7
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/EditarCliente.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/EditarCliente.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 9,
+        "arbitrary-dimension": 3
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/EditarEntrega.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/EditarEntrega.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 11,
+        "arbitrary-dimension": 3
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/Entrega.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/Entrega.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 20,
+        "arbitrary-dimension": 3
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/Excluir.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/Excluir.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 2,
+        "arbitrary-dimension": 3
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/Multa.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/Multa.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 10,
+        "arbitrary-dimension": 3
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/Painel.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/Painel.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 15,
+        "arbitrary-dimension": 5,
+        "z-index-literal": 1
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/Reajuste.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/Reajuste.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 25,
+        "arbitrary-dimension": 4
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/Rejeitar.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/Rejeitar.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 5,
+        "arbitrary-dimension": 4
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/RemoverAprovacao.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/RemoverAprovacao.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 2,
+        "arbitrary-dimension": 3
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/RemoverItem.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/RemoverItem.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 2,
+        "arbitrary-dimension": 3
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/RemoverReajuste.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/RemoverReajuste.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 2,
+        "arbitrary-dimension": 3
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/orcamentos-admin/ui/Tabela.tsx",
+      "to": "packages/frontend/src/pages/orcamentos-admin/ui/Tabela.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 45,
+        "arbitrary-color": 1,
+        "z-index-literal": 1
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/sobre/ui/SobrePage.tsx",
+      "to": "packages/frontend/src/pages/sobre/ui/SobrePage.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 65,
+        "arbitrary-dimension": 2,
+        "z-index-literal": 7
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/calendario/ui/aggregated-events-popover.tsx",
+      "to": "packages/frontend/src/widgets/calendario/ui/aggregated-events-popover.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 3
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/calendario/ui/all-day-section.tsx",
+      "to": "packages/frontend/src/widgets/calendario/ui/all-day-section.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 3,
+        "arbitrary-dimension": 1
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/calendario/ui/calendar-filters.tsx",
+      "to": "packages/frontend/src/widgets/calendario/ui/calendar-filters.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 4
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/calendario/ui/calendar-header.tsx",
+      "to": "packages/frontend/src/widgets/calendario/ui/calendar-header.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 5
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/calendario/ui/column-events-panel.tsx",
+      "to": "packages/frontend/src/widgets/calendario/ui/column-events-panel.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 25
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/calendario/ui/daily-view.tsx",
+      "to": "packages/frontend/src/widgets/calendario/ui/daily-view.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 23,
+        "arbitrary-dimension": 7,
+        "z-index-literal": 4
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/calendario/ui/event-block.tsx",
+      "to": "packages/frontend/src/widgets/calendario/ui/event-block.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 15,
+        "arbitrary-dimension": 1,
+        "z-index-literal": 1
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/calendario/ui/event-details-panel.tsx",
+      "to": "packages/frontend/src/widgets/calendario/ui/event-details-panel.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 29
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/calendario/ui/event-popover.tsx",
+      "to": "packages/frontend/src/widgets/calendario/ui/event-popover.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 11,
+        "arbitrary-dimension": 1
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/calendario/ui/index.tsx",
+      "to": "packages/frontend/src/widgets/calendario/ui/index.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 3
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/calendario/ui/monthly-view.tsx",
+      "to": "packages/frontend/src/widgets/calendario/ui/monthly-view.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 16,
+        "arbitrary-dimension": 2,
+        "z-index-literal": 1
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/calendario/ui/time-indicator.tsx",
+      "to": "packages/frontend/src/widgets/calendario/ui/time-indicator.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 3,
+        "z-index-literal": 1
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/calendario/ui/timeline-view.tsx",
+      "to": "packages/frontend/src/widgets/calendario/ui/timeline-view.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 31
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/graficos-financeiros/ui/AgingChart.tsx",
+      "to": "packages/frontend/src/widgets/graficos-financeiros/ui/AgingChart.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 2,
+        "arbitrary-dimension": 8
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/graficos-financeiros/ui/ChartCard.tsx",
+      "to": "packages/frontend/src/widgets/graficos-financeiros/ui/ChartCard.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 9,
+        "arbitrary-dimension": 1,
+        "z-index-literal": 6
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/graficos-financeiros/ui/DebtorsTable.tsx",
+      "to": "packages/frontend/src/widgets/graficos-financeiros/ui/DebtorsTable.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 19,
+        "arbitrary-dimension": 6
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/graficos-financeiros/ui/KPICard.tsx",
+      "to": "packages/frontend/src/widgets/graficos-financeiros/ui/KPICard.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 14,
+        "arbitrary-dimension": 4,
+        "z-index-literal": 1
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/graficos-financeiros/ui/RevenueByCategoryChart.tsx",
+      "to": "packages/frontend/src/widgets/graficos-financeiros/ui/RevenueByCategoryChart.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 1,
+        "arbitrary-dimension": 8
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/graficos-financeiros/ui/RevenueChart.tsx",
+      "to": "packages/frontend/src/widgets/graficos-financeiros/ui/RevenueChart.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 1,
+        "arbitrary-dimension": 8
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/navegador-mes/ui/NavegadorMes.tsx",
+      "to": "packages/frontend/src/widgets/navegador-mes/ui/NavegadorMes.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 32,
+        "arbitrary-color": 1,
+        "arbitrary-dimension": 5,
+        "z-index-literal": 5
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/widgets/quadro-kanban/ui/Quadro.tsx",
+      "to": "packages/frontend/src/widgets/quadro-kanban/ui/Quadro.web.tsx",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 25,
+        "arbitrary-dimension": 3
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/dashboard/model/tipos.ts",
+      "to": "packages/frontend/src/pages/dashboard/model/tipos.web.ts",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 50
+      }
+    },
+    {
+      "baseline": "tokens",
+      "from": "packages/frontend/src/pages/locacoes/model/tipos.ts",
+      "to": "packages/frontend/src/pages/locacoes/model/tipos.web.ts",
+      "reason": "Separação de plataforma autorizada: mesma apresentação existente em variante web explícita; transfere a cota anterior sem aumento, preservando valores, estilos e contratos.",
+      "counts": {
+        "tailwind-palette-class": 30
+      }
+    },
+    {
+      "approve": "package.exports",
+      "entry": "@gb-locacoes/frontend#./pages/equipamento-detalhe",
+      "reason": "A separação de plataforma autorizada declara a condição react-native da entrada já coberta pelo wildcard pages, como as demais telas. Web e native continuam na mesma slice e nos mesmos contratos; não exclui fonte ou testes, não permite biblioteca web em código universal e não cria outra tela."
+    }
+  ]
+}

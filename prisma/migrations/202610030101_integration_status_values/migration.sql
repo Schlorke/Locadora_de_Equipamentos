@@ -1,0 +1,2 @@
+ALTER TYPE "IntegrationStatus" ADD VALUE 'PROVISIONING';
+ALTER TYPE "IntegrationStatus" ADD VALUE 'INBOUND_ONLY';

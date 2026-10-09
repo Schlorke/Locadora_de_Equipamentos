@@ -1,0 +1,1 @@
+export { EntrarPage } from "./EntrarPage.web";

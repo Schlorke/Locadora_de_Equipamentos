@@ -1,0 +1,425 @@
+---
+name: testing-strategies
+description: 'Define and implement testing for Next.js/Expo/React/TypeScript: pyramid, TDD, Vitest, Testing Library, Playwright, API tests, architecture-gate tests, web/mobile proof levels, characterization tests and CI gates. Use when setting up, writing or reviewing tests.'
+metadata:
+  author: Engineering Standards Team
+  version: '1.1'
+  last_validated: '2026-04-12'
+  sources: '["references/test-examples.md",{"Kent Beck, \"Test-Driven Development":"By Example\""},"Martin Fowler, \"Testing Strategies\"","Testing Library Documentation","Playwright Documentation","Vitest Documentation"]'
+  cw-id: testing-strategies
+  cw-library-version: 2.1.0
+  cw-source-hash: 19bff0c3e2e58e7be710589ea7ddf49a5e0f3d32d8406b389d95af6efe1f13e8
+---
+
+# When to Use This Skill
+
+Trigger this skill when:
+
+- You set up a testing framework for a new project.
+- You write unit tests for functions, hooks, or utilities.
+- You implement test-driven development (TDD) workflow.
+- You test React components with Testing Library.
+- You create end-to-end test suites with Playwright.
+- You test API routes in Next.js.
+- You need to define a testing strategy for your team.
+- You review code and assess test coverage.
+
+Before proposing folders or commands, inspect the repo first: `package.json` scripts, lockfile/package manager, `vitest.config.*`, `playwright.config.*`, Storybook config, existing test locations, and CI. Use the scripts the repository already defines instead of inventing commands.
+
+## Operational Contract
+
+| Field | Contract |
+| --- | --- |
+| Objective | Decide what to test and at which level, and wire the checks that keep behavior, architecture and both clients (web and mobile) from regressing. |
+| Use when | Setting up or reviewing tests, TDD, component/hook/API tests, E2E, CI gates, migration characterization, architecture gate tests. |
+| Do not use when | The task is only about production code structure with tests already defined. |
+| Inputs | Risk areas, public contracts, existing test setup and CI, target platforms. |
+| Preconditions | Test runner and package manager identified from the repository. |
+| Tools | Vitest, Testing Library, Playwright, MSW, the architecture gate, `expo export`/native builds, the repository's CI. |
+| Procedure | Pyramid and levels below; the Architecture and Multiplatform section for product repositories. |
+| Output | Tests at the right level, CI gates, documented proof level per platform. |
+| Validation | Tests fail when the behavior or rule they protect is broken (checked with a deliberate violation), pass otherwise, and run in CI. |
+| Known failures | Tests that never fail, browser previews reported as native proof, flaky tests left in CI, coverage over imported files only. |
+
+## Testing Pyramid
+
+The testing pyramid illustrates optimal test distribution:
+
+```text
+        /\
+       /  \  E2E Tests (few, slow, expensive)
+      /    \
+     /------\
+    /        \  Integration Tests (medium)
+   /          \
+  /------------\
+ /              \ Unit Tests (many, fast, cheap)
+/________________\
+```
+
+**Principle**: Write many fast unit tests, fewer integration tests, and few E2E tests. An inverted pyramid (many E2E tests) signals fragile, slow test suite.
+
+**Metrics**:
+
+- Unit tests: 60–70% of test count
+- Integration tests: 20–30%
+- E2E tests: 5–10%
+
+## TDD Cycle (Kent Beck)
+
+Test-driven development enforces clear API design and catches regressions instantly.
+
+**Red → Green → Refactor**:
+
+1. **RED**: Write a failing test for desired behavior.
+
+   ```text
+   it("should return user by ID", () => {
+     const user = getUserById(123);
+     expect(user.id).toBe(123);
+     expect(user.name).toBe("Alice");
+   });
+   ```
+
+2. **GREEN**: Write minimal code to pass the test.
+
+   ```text
+   function getUserById(id) {
+     return { id: 123, name: "Alice" };
+   }
+   ```
+
+3. **REFACTOR**: Improve code while tests pass. No behavior changes.
+
+   ```text
+   function getUserById(id) {
+     const user = database.find(u => u.id === id);
+     return user || null;
+   }
+   ```
+
+**Benefits**:
+
+- Forces clear, simple APIs (what would be easy to test?).
+- Instant regression detection (test fails → bug found).
+- Living documentation (tests show how to use code).
+- Confidence to refactor (tests verify behavior).
+
+## Unit Testing with Vitest
+
+Unit tests verify individual functions, hooks, or utilities in isolation.
+
+**Characteristics**:
+
+- Mock external dependencies (APIs, databases, file systems).
+- Fast (<5ms per test).
+- Deterministic (same input → same output).
+- Isolated (no shared state between tests).
+
+**Setup** (`vitest.config.ts`):
+
+```text
+import { defineConfig } from "vitest/config";
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: "jsdom",
+    coverage: { provider: "v8", reporter: ["text", "html"] },
+  },
+});
+```
+
+**Naming convention**:
+
+```text
+describe("functionName", () => {
+  it("should [behavior] when [condition]", () => {
+    // Arrange: Set up test data
+    const input = 5;
+
+    // Act: Execute function
+    const result = add(input, 3);
+
+    // Assert: Verify result
+    expect(result).toBe(8);
+  });
+});
+```
+
+**Example unit tests**:
+
+```text
+describe("calculateDiscount", () => {
+  it("should apply 10% discount when quantity > 100", () => {
+    const discount = calculateDiscount(150);
+    expect(discount).toBe(0.1);
+  });
+
+  it("should apply 0% discount when quantity <= 100", () => {
+    const discount = calculateDiscount(50);
+    expect(discount).toBe(0);
+  });
+
+  it("should throw error for negative quantity", () => {
+    expect(() => calculateDiscount(-5)).toThrow();
+  });
+});
+```
+
+## React Component Testing (Testing Library)
+
+Test component BEHAVIOR, not implementation. Query by accessible role/text. Simulate user interaction.
+
+**Philosophy**:
+
+- Don't test state directly. Test what the user SEES.
+- Don't query by CSS class. Query by accessible attributes.
+- Use `screen` API (encourages accessible queries).
+
+**Setup** (`vitest.config.ts`):
+
+```text
+import { expect, afterEach } from "vitest";
+import { cleanup } from "@testing-library/react";
+import "@testing-library/jest-dom";
+
+afterEach(() => cleanup());
+```
+
+**Common queries** (in priority order):
+
+1. `screen.getByRole("button", { name: /submit/i })` — Most accessible.
+2. `screen.getByLabelText("Email")` — Form inputs.
+3. `screen.getByPlaceholderText("Enter email")` — If label unavailable.
+4. `screen.getByText("Welcome")` — Text content.
+5. Avoid: `getByTestId`, `container.querySelector` (implementation details).
+
+**Example component test**:
+
+```text
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { LoginForm } from "./LoginForm";
+
+describe("LoginForm", () => {
+  it("should submit form with valid credentials", async () => {
+    const handleSubmit = vi.fn();
+    render(<LoginForm onSubmit={handleSubmit} />);
+
+    const emailInput = screen.getByLabelText("Email");
+    const passwordInput = screen.getByLabelText("Password");
+    const submitButton = screen.getByRole("button", { name: /submit/i });
+
+    await userEvent.type(emailInput, "user@example.com");
+    await userEvent.type(passwordInput, "password123");
+    await userEvent.click(submitButton);
+
+    expect(handleSubmit).toHaveBeenCalledWith({
+      email: "user@example.com",
+      password: "password123",
+    });
+  });
+
+  it("should show error when email is invalid", async () => {
+    render(<LoginForm />);
+
+    const emailInput = screen.getByLabelText("Email");
+    await userEvent.type(emailInput, "invalid-email");
+    await userEvent.tab();
+
+    expect(screen.getByText(/invalid email/i)).toBeInTheDocument();
+  });
+});
+```
+
+## Hook Testing
+
+Test custom hooks using `renderHook` and `act`:
+
+```text
+import { renderHook, act } from "@testing-library/react";
+import { useCounter } from "./useCounter";
+
+describe("useCounter", () => {
+  it("should increment counter on click", () => {
+    const { result } = renderHook(() => useCounter());
+
+    act(() => {
+      result.current.increment();
+    });
+
+    expect(result.current.count).toBe(1);
+  });
+});
+```
+
+## Integration Testing
+
+Test multiple units working together (e.g., component + API call + state management).
+
+**Characteristics**:
+
+- Use real database or in-memory test database.
+- Mock external APIs if they're not part of the test.
+- Slower than unit tests (seconds, not milliseconds).
+- Reset database state between tests.
+
+See `references/test-examples.md` (Integration Test Example) for a component + API example.
+
+## E2E Testing with Playwright
+
+Test full user journeys in a real browser.
+
+**Setup** (`playwright.config.ts`):
+
+```text
+import { defineConfig } from "@playwright/test";
+
+export default defineConfig({
+  webServer: { command: "pnpm dev", port: 3000 },
+  use: { baseURL: "http://localhost:3000" },
+  testDir: "./tests/e2e",
+  retries: 1,
+});
+```
+
+Use the Page Object pattern for maintainability; see `references/test-examples.md` (E2E Page Object Example).
+
+**E2E best practices**:
+
+- Test critical user paths only (10–30 total).
+- Use Page Object pattern to reduce maintenance.
+- Run E2E on main branch or nightly (too slow for every PR).
+- Use `waitFor` instead of `sleep`.
+- Screenshot on failure for debugging.
+
+## API Route Testing
+
+Test Next.js API routes with `NextRequest` or supertest. Keep one happy-path case and one authorization/error case per handler. See `references/test-examples.md` for a concrete GET route example.
+
+## Mocking Patterns
+
+Mock external APIs with Mock Service Worker (MSW) and use `vi.fn()` for callbacks; see `references/test-examples.md` (Mocking Examples).
+
+## Architecture and Multiplatform Tests (MANDATORY for product repositories)
+
+- **Architecture gate:** `pnpm arch` runs in CI. Its own tests inject deliberate violations
+  (cross-slice import, deep import, upward import, web-only code in shared code, server-only import in
+  a client) and require each one to fail; a gate that never fails proves nothing.
+- **Shared behavior:** business logic lives in pure model functions of FSD slices (reducers,
+  formatters) tested once; web components are tested with Testing Library; the same page components
+  are rendered by both clients.
+- **Platform proof levels** — report the level reached, never a higher one:
+  L1 typecheck of the web and native projects; L2 web build and `expo export` bundles for Android
+  and iOS; L3 native build (`expo prebuild` + Gradle/Xcode); L4 run on emulator/device with an
+  interaction. Missing SDKs make L3/L4 "not verified", not "not applicable".
+- **Tokens:** `pnpm check:tokens` proves a token change reaches both outputs.
+- **Migrations:** characterization cases stored as data run against the legacy and the migrated code
+  through two thin adapters; the migration is done only when the same cases pass on both.
+
+## What to Test (Priority)
+
+1. **Business logic** (calculations, validations): High impact, easy to test.
+2. **User flows** (critical paths): Login, checkout, payment. High impact, slower.
+3. **Edge cases** (boundaries, empty states, errors): Prevent surprises in production.
+4. **Regressions** (bugs that were fixed): Prevent re-introducing bugs.
+
+**What NOT to test**:
+
+- Implementation details (internal state, function internals).
+- Third-party library internals (trust that lodash.sort works).
+- Pure visual styling (CSS changes frequently; low test ROI).
+- Getters and setters (trivial, high maintenance).
+
+## Test Organization
+
+**Co-location** (preferred):
+
+```text
+src/
+  Button.tsx
+  Button.test.tsx
+  hooks/
+    useAuth.ts
+    useAuth.test.ts
+```
+
+**Alternative** (`__tests__/` folder, only when the repo already uses this convention):
+
+```text
+src/
+  Button.tsx
+  hooks/
+    useAuth.ts
+__tests__/
+  Button.test.tsx
+  hooks/
+    useAuth.test.ts
+```
+
+Choose one pattern; be consistent across project.
+
+In FSD packages, tests live next to the code of the slice (`features/<f>/model/*.test.ts`) and are never imported by production code. When `vitest.config.*` defines named projects, run the project-specific scripts instead of inventing a new command.
+
+## Coverage and Validation Gates
+
+Measure the intended production surface with an explicit coverage `include`,
+not only files imported by tests. Baseline established code before enforcing
+non-regression; use risk-appropriate targets for new code. During edits, run
+focused checks and reserve one comprehensive gate for closeout. Keep paid or
+external-service E2E separate and respect explicit command/output limits. See
+`references/test-examples.md` for the full policy and CI example.
+
+## CI Integration
+
+1. **Run unit + integration tests** on every PR. Fail PR if coverage drops.
+2. **Run E2E tests** on main branch merges or nightly (optional for PRs if too slow).
+3. **Generate coverage reports** and track trends.
+4. **Set coverage thresholds**: use a measured non-regression baseline for
+   legacy code; use a risk-appropriate target such as 80% for new codebases.
+
+Use `references/test-examples.md` for a baseline GitHub Actions workflow. Keep the canonical skill focused on deciding what to test and when to gate merges.
+
+## Advanced Cases
+
+**Snapshot testing**: Use sparingly for stable output (formatted dates, calculations). Prevent visual regression but require frequent updates.
+
+**Concurrency**: Use `test.concurrent()` in Vitest to parallelize and speed up CI. Ensure tests don't share state.
+
+**Performance and accessibility**: Profile render times with `performance.mark()`. Use `jest-axe` for WCAG compliance.
+
+## Fallback Clause
+
+If the following information is missing, output `[INFORMATION NEEDED: X]` instead of inventing:
+
+- `[INFORMATION NEEDED: test database setup]` if integration tests lack DB configuration.
+- `[INFORMATION NEEDED: E2E critical paths list]` if test suite scope is unclear.
+- `[INFORMATION NEEDED: API authentication strategy]` before testing protected routes.
+- `[INFORMATION NEEDED: mock API contracts]` if external API responses are undefined.
+- `[INFORMATION NEEDED: coverage threshold targets]` before setting up CI gates.
+
+## Anti-Patterns
+
+- **Testing implementation details**: Query by CSS class instead of accessible role. Brittle tests break on refactor.
+- **Snapshot abuse**: Snapshot every component. Leads to "snapshot roulette" (developers approving all changes without review).
+- **No test isolation**: Tests depend on each other; run order matters. Each test must be independent.
+- **Slow test suite**: No one runs it locally. Tests must complete in <5 minutes. Parallelize, mock external calls.
+- **100% coverage goal**: Diminishing returns after 80%. Focus on behavior, not line count.
+- **Ignoring flaky tests**: Tests that pass 90% of the time are worse than useless. Fix root cause (async issues, timing).
+- **E2E for everything**: E2E tests are expensive and slow. Use unit/integration tests for edge cases.
+- **Imported-files-only coverage**: a high percentage over only the modules
+  touched by tests can hide most production code. Define the production include
+  surface explicitly.
+- **Repeated full-suite execution during edits**: expensive suites should close
+  a stable change, not run after every mechanical import or formatting fix.
+
+## Enforcement
+
+Known failure: skipping tests or ignoring test failures produces regressions that the suite can no longer see.
+
+## Source References
+
+- **Reference file:** `references/test-examples.md`
+- Beck, K. _Test-Driven Development: By Example_. Addison-Wesley, 2002.
+- Fowler, M. "TestPyramid." _Martinfowler.com_, 2021.
+- Testing Library, Playwright, Vitest official documentation.

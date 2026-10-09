@@ -1,0 +1,8 @@
+stateDiagram-v2
+    [*] --> PENDING: quote created
+    PENDING --> PENDING: admin approval (records approvedAt)
+    PENDING --> REJECTED: admin rejects
+    PENDING --> APPROVED: payment confirmed (Asaas)
+    APPROVED --> COMPLETED: convert to rental
+    REJECTED --> [*]
+    COMPLETED --> [*]

@@ -1,0 +1,8 @@
+{
+  "$comment": "Níveis de propagação de token que tools/token-propagation-check.mjs (pnpm check:tokens) ainda não prova, cada um com o motivo. O check sai 0 quando o estado medido bate com esta lista; falha se um nível fora da lista não for provado (regressão) e também se um nível da lista passar a ser provado sem ser removido daqui. Verificações de integridade (tokens.ts e a árvore intactos, alias aplicado, nenhuma outra falha) nunca podem entrar nesta lista. A lista só encolhe.",
+  "notProven": {
+    "style resolution (web)": "O Button.web tira as cores de classes Tailwind literais de packages/ui/src/contract/button.ts (bg-slate-700, text-orange-500, border-gray-200...), não de @gb-locacoes/design-tokens; trocar o token não muda o Button web.",
+    "web render": "Não executado: next build só veria a cópia temporária do token com um alias de bundler, que apps/clients/web/next.config.mjs não tem; e a resolução de estilo web acima já mostra que o Button.web não consome o token.",
+    "mobile export": "Não executado: expo export só veria a cópia temporária do token com um alias do Metro, que apps/clients/mobile/metro.config.js não tem; reescrever tokens.ts no lugar foi removido de propósito (checkout compartilhado)."
+  }
+}

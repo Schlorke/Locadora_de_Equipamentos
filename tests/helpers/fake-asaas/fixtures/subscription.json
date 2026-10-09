@@ -1,0 +1,21 @@
+{
+  "object": "subscription",
+  "id": "sub_000000000001",
+  "dateCreated": "2026-01-15",
+  "customer": "cus_000000000001",
+  "paymentLink": null,
+  "billingType": "UNDEFINED",
+  "cycle": "MONTHLY",
+  "value": 149.9,
+  "nextDueDate": "2026-02-15",
+  "endDate": null,
+  "description": "Plataforma Exemplo - Plano Exemplo - exemplo",
+  "status": "ACTIVE",
+  "discount": { "value": 0, "limitDate": null, "dueDateLimitDays": 0, "type": "FIXED" },
+  "fine": { "value": 0, "type": "FIXED" },
+  "interest": { "value": 0, "type": "PERCENTAGE" },
+  "deleted": false,
+  "maxPayments": null,
+  "externalReference": "sub:sub-local-000000000001",
+  "checkoutSession": null
+}

@@ -1,0 +1,19 @@
+---
+alwaysApply: true
+---
+
+# GB Locações: regras do agente
+
+As regras deste repositório moram em um lugar só, lido por todos os agentes
+(Claude Code, Codex e Cursor): **`AGENTS.md`**, na raiz. Leia-o antes de
+qualquer mudança e siga o fluxo obrigatório dele.
+
+- Ordem de leitura e mapa de contexto: `docs/ai/boot.md` e
+  `docs/ai/context-map.md`.
+- Problemas já resolvidos: `docs/issues/known-issues.index.md` e
+  `docs/issues/known-issues.md`.
+- Estrutura, stack e comandos: `CLAUDE.md` e `docs/architecture/overview.md`.
+
+Este arquivo é só um ponteiro: não copie regras para cá (a cópia antiga, com a
+estrutura `components/`/`hooks/`, Stripe e versões velhas, ficou desatualizada e
+saiu em 2026-09-30, achado 129 da revisão).

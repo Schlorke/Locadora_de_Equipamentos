@@ -1,0 +1,154 @@
+# 310-proximo-passo
+
+Oito rotas finas novas no host web (`apps/clients/web`), espelhando exports já
+existentes em `@gb-locacoes/frontend/pages/*`. Cinco telas universais também no
+mobile; três só-web (export `.web`) ficaram sem espelho mobile nesta fatia.
+Nenhuma UI copiada. Carrossel 3D e `components/` intocados. `app/` da raiz
+intocado. Estado **intermediate**. Migração **não** conforme nem concluída.
+
+```yaml
+fatia:
+  id: 310-proximo-passo
+  estado: intermediate
+  conceito: >-
+    rotas finas faltantes no host web + espelho mobile quando o slice é
+    universal; limite 8 URLs
+  origem:
+    - app/api-docs/page.tsx (shell fino legado, referência)
+    - app/admin/teste-toast/page.tsx
+    - app/grid-motion/page.tsx
+    - app/playground/icon-customization/page.tsx
+    - app/admin/permissions/page.tsx
+    - app/playground/page.tsx
+    - app/orcamento/page.tsx
+    - app/admin/dashboard/page.tsx
+  destino:
+    - apps/clients/web/src/app/api-docs/page.tsx
+    - apps/clients/web/src/app/admin/teste-toast/page.tsx
+    - apps/clients/web/src/app/grid-motion/page.tsx
+    - apps/clients/web/src/app/playground/icon-customization/page.tsx
+    - apps/clients/web/src/app/admin/permissions/page.tsx
+    - apps/clients/web/src/app/playground/page.tsx
+    - apps/clients/web/src/app/orcamento/page.tsx
+    - apps/clients/web/src/app/admin/dashboard/page.tsx
+    - apps/clients/mobile/src/app/api-docs.tsx
+    - apps/clients/mobile/src/app/admin-teste-toast.tsx
+    - apps/clients/mobile/src/app/grid-motion.tsx
+    - apps/clients/mobile/src/app/playground-icon-customization.tsx
+    - apps/clients/mobile/src/app/admin-permissions.tsx
+  movido: []
+  criado:
+    urls_web:
+      - /api-docs → pages/api-docs (ApiDocsPage)
+      - /admin/teste-toast → pages/teste-toast (TesteToastPage)
+      - /grid-motion → pages/grid-motion (GridMotionPage)
+      - /playground/icon-customization → pages/playground
+        (IconCustomizationPage)
+      - /admin/permissions → pages/permissoes (AdminPermissionsPage)
+      - /playground → pages/playground (PlaygroundPage .web)
+      - /orcamento → pages/orcamento (QuotePageWrapper .web)
+      - /admin/dashboard → pages/dashboard (AdminDashboard .web)
+    espelho_mobile_universal:
+      - api-docs.tsx
+      - admin-teste-toast.tsx
+      - grid-motion.tsx
+      - playground-icon-customization.tsx
+      - admin-permissions.tsx
+  invariantes:
+    - id: sem-mover-3d
+      prova: >-
+        equipment-3d-carousel, model-viewer, lazy-3d-carousel,
+        scroll-reveal-init e service-worker-register não tocados
+    - id: sem-apagar-app
+      prova: app/ da raiz não tocado
+    - id: sem-prisma
+      prova: schema Prisma, lib/prisma e rotas de API não tocados
+    - id: rotas-finas
+      prova: >-
+        hosts novos só importam @gb-locacoes/frontend/pages/<slice> e retornam o
+        export já existente; sem UI duplicada
+    - id: sem-catch-all
+      prova: nenhum [[...rota]] criado
+    - id: mobile-sem-web-only
+      prova: >-
+        playground, orcamento e admin/dashboard não espelhados no mobile porque
+        o index exporta implementação .web
+  comandos:
+    - cmd: node tools/arch-check.mjs
+      exit: 0
+      verificado_em: "2026-09-25 16:58"
+      nota: architecture gate passed (5 packages)
+    - cmd: node tools/token-check.mjs
+      exit: 0
+      verificado_em: "2026-09-25 16:58"
+      nota: token gate passed; fatia não introduziu literais de cor
+    - cmd: pnpm exec vitest run --config vitest.platform.config.ts
+      exit: nao_executado
+      nota: >-
+        só page.tsx/screen.tsx finos novos; sem arquivo de teste novo
+  gate:
+    arch: pass
+    tokens: pass
+    vitest_platform: skipped_sem_teste_novo
+    violacoes_conhecidas:
+      - "app/page.tsx continua dono da home e do Prisma"
+      - "o carrossel 3D continua em components/equipment-3d-carousel.tsx"
+      - "service-worker-register continua em components/"
+  aposentado: []
+  callers_atualizados: []
+  nao_fez:
+    - mover carrossel 3D / model-viewer / scroll-reveal / SW
+    - espelho mobile de /playground, /orcamento, /admin/dashboard (.web-only)
+    - rotas ainda só na raiz (abaixo)
+    - item 2 (lib/hooks): não necessário — item 1 teve movimento
+    - backend / typecheck / build completo / closeout
+  bloqueio_restante:
+    rotas_web_ainda_faltando_com_export:
+      - /admin/categorias
+      - /admin/email
+      - /admin/equipamentos
+      - /admin/equipamentos/novo
+      - /admin/equipamentos/[id]
+      - /admin/equipamentos/[id]/editar
+      - /admin/financeiro
+      - /admin/logistics
+      - /admin/maintenance
+      - /admin/orcamentos
+      - /admin/orcamentos/[id]
+      - /admin/rentals
+      - /admin/settings
+      - /admin/whatsapp
+      - /area-cliente
+      - /area-cliente/enderecos
+      - /area-cliente/historico
+      - /area-cliente/historico/[id]
+      - /area-cliente/notificacoes
+      - /area-cliente/perfil
+      - /equipamentos-scroll
+    rotas_bloqueadas_host_fino:
+      - /equipamentos/[id] — Prisma + generateMetadata no shell da raiz
+      - / (home) — Prisma + carrossel 3D no host legado
+      - /sobre na raiz — injeta Equipment3DCarousel (web host já tem stub)
+    legado_proposital:
+      - components/equipment-3d-carousel.tsx
+      - components/scroll-reveal-init.tsx
+      - components/ui/lazy-3d-carousel.tsx
+      - components/ui/model-viewer.tsx
+      - components/service-worker-register.tsx
+    closeout_nao_rodado:
+      - typecheck
+      - pnpm test com TEST_DATABASE_URL
+      - pnpm build
+      - pnpm build:web
+      - pnpm bundle:mobile
+      - browser
+      - device
+  nao_verificado:
+    - "[NOT_VERIFIED: typecheck]"
+    - "[NOT_VERIFIED: pnpm test com TEST_DATABASE_URL]"
+    - "[NOT_VERIFIED: pnpm build no host raiz]"
+    - "[NOT_VERIFIED: pnpm build:web]"
+    - "[NOT_VERIFIED: pnpm bundle:mobile]"
+    - "[NOT_VERIFIED: browser nas 8 URLs novas]"
+    - "[NOT_VERIFIED: device_or_emulator]"
+```

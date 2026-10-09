@@ -1,0 +1,525 @@
+{
+  "metadata": {
+    "title": "Política de Privacidade",
+    "subtitle": "Conheça como protegemos e utilizamos seus dados pessoais",
+    "updatedAt": "23 de Junho de 2025"
+  },
+  "sections": [
+    {
+      "id": "informacoes-coletadas",
+      "title": "Informações que Coletamos"
+    },
+    {
+      "id": "como-usamos",
+      "title": "Como Usamos Suas Informações"
+    },
+    {
+      "id": "cookies",
+      "title": "Cookies e Tecnologias"
+    },
+    {
+      "id": "links-terceiros",
+      "title": "Links para Terceiros"
+    },
+    {
+      "id": "consentimento",
+      "title": "Consentimento"
+    },
+    {
+      "id": "alteracoes",
+      "title": "Alterações na Política"
+    },
+    {
+      "id": "contato",
+      "title": "Contato"
+    }
+  ],
+  "documentBlocks": [
+    {
+      "tag": "Card",
+      "props": {
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "div",
+              "props": {
+                "className": "p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-blue-100/50"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] leading-relaxed text-gray-700 m-0"
+                  },
+                  "children": [
+                    "A sua privacidade é importante para nós. É política da GB Locações respeitar a sua privacidade em relação a qualquer informação sua que possamos coletar no site GB Locações, e outros sites que possuímos e operamos."
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Card",
+      "props": {
+        "id": "informacoes-coletadas",
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0 scroll-mt-32"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "h2",
+              "props": {
+                "className": "text-[20px] font-bold text-gray-900 mb-4 flex items-center gap-3"
+              },
+              "children": [
+                {
+                  "tag": "span",
+                  "props": {
+                    "className": "text-orange-600"
+                  },
+                  "children": [
+                    "1."
+                  ]
+                },
+                "Informações que Coletamos"
+              ]
+            },
+            {
+              "tag": "div",
+              "props": {
+                "className": "space-y-4 leading-relaxed"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "Solicitamos informações pessoais apenas quando realmente precisamos delas para lhe fornecer um serviço. Fazemo-lo por meios justos e legais, com o seu conhecimento e consentimento. Também informamos por que estamos coletando e como será usado."
+                  ]
+                },
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "Apenas retemos as informações coletadas pelo tempo necessário para fornecer o serviço solicitado. Quando armazenamos dados, protegemos dentro de meios comercialmente aceitáveis para evitar perdas e roubos, bem como acesso, divulgação, cópia, uso ou modificação não autorizados."
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Card",
+      "props": {
+        "id": "como-usamos",
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0 scroll-mt-32"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "h2",
+              "props": {
+                "className": "text-[20px] font-bold text-gray-900 mb-4 flex items-center gap-3"
+              },
+              "children": [
+                {
+                  "tag": "span",
+                  "props": {
+                    "className": "text-orange-600"
+                  },
+                  "children": [
+                    "2."
+                  ]
+                },
+                "Como Usamos Suas Informações"
+              ]
+            },
+            {
+              "tag": "div",
+              "props": {
+                "className": "space-y-4 leading-relaxed"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "Usamos as informações que coletamos de várias maneiras, incluindo para:"
+                  ]
+                },
+                {
+                  "tag": "ul",
+                  "props": {
+                    "className": "list-disc list-inside space-y-2 ml-4"
+                  },
+                  "children": [
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Fornecer, operar e manter nosso site"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Melhorar, personalizar e expandir nosso site"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Entender e analisar como você usa nosso site"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Desenvolver novos produtos, serviços, recursos e funcionalidades"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Comunicar com você, diretamente ou através de um de nossos parceiros"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Enviar e-mails"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Encontrar e prevenir fraudes"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Card",
+      "props": {
+        "id": "cookies",
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0 scroll-mt-32"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "h2",
+              "props": {
+                "className": "text-[20px] font-bold text-gray-900 mb-4 flex items-center gap-3"
+              },
+              "children": [
+                {
+                  "tag": "span",
+                  "props": {
+                    "className": "text-orange-600"
+                  },
+                  "children": [
+                    "3."
+                  ]
+                },
+                "Cookies e Tecnologias"
+              ]
+            },
+            {
+              "tag": "div",
+              "props": {
+                "className": "space-y-4 leading-relaxed"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "Usamos cookies e tecnologias semelhantes para rastrear a atividade em nosso site e armazenar certas informações. As tecnologias de rastreamento usadas incluem beacons, tags e scripts para coletar e rastrear informações e para melhorar e analisar nosso serviço."
+                  ]
+                },
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "Você pode instruir seu navegador a recusar todos os cookies ou a indicar quando um cookie está sendo enviado. No entanto, se você não aceitar cookies, talvez não consiga usar algumas partes do nosso serviço."
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Card",
+      "props": {
+        "id": "links-terceiros",
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0 scroll-mt-32"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "h2",
+              "props": {
+                "className": "text-[20px] font-bold text-gray-900 mb-4 flex items-center gap-3"
+              },
+              "children": [
+                {
+                  "tag": "span",
+                  "props": {
+                    "className": "text-orange-600"
+                  },
+                  "children": [
+                    "4."
+                  ]
+                },
+                "Links para Terceiros"
+              ]
+            },
+            {
+              "tag": "div",
+              "props": {
+                "className": "space-y-4 leading-relaxed"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "Nosso serviço pode conter links para sites de terceiros que não são operados por nós. Se você clicar em um link de terceiros, será direcionado para o site desse terceiro."
+                  ]
+                },
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "Recomendamos fortemente que você revise a Política de Privacidade de cada site que visitar. Não temos controle sobre e não assumimos responsabilidade pelo conteúdo, políticas de privacidade ou práticas de sites ou serviços de terceiros."
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Card",
+      "props": {
+        "id": "consentimento",
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0 scroll-mt-32"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "h2",
+              "props": {
+                "className": "text-[20px] font-bold text-gray-900 mb-4 flex items-center gap-3"
+              },
+              "children": [
+                {
+                  "tag": "span",
+                  "props": {
+                    "className": "text-orange-600"
+                  },
+                  "children": [
+                    "5."
+                  ]
+                },
+                "Consentimento"
+              ]
+            },
+            {
+              "tag": "div",
+              "props": {
+                "className": "space-y-4 leading-relaxed"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "Ao usar nosso site, você consente com nossa política de privacidade e concorda com seus termos. Você tem o direito de retirar seu consentimento a qualquer momento."
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Card",
+      "props": {
+        "id": "alteracoes",
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0 scroll-mt-32"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "h2",
+              "props": {
+                "className": "text-[20px] font-bold text-gray-900 mb-4 flex items-center gap-3"
+              },
+              "children": [
+                {
+                  "tag": "span",
+                  "props": {
+                    "className": "text-orange-600"
+                  },
+                  "children": [
+                    "6."
+                  ]
+                },
+                "Alterações na Política"
+              ]
+            },
+            {
+              "tag": "div",
+              "props": {
+                "className": "space-y-4 leading-relaxed"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "Podemos atualizar nossa Política de Privacidade de tempos em tempos. Notificaremos você sobre quaisquer alterações, publicando a nova Política de Privacidade nesta página."
+                  ]
+                },
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "Recomendamos que você revise esta Política de Privacidade periodicamente para quaisquer alterações. As alterações a esta Política de Privacidade são efetivas quando publicadas nesta página."
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Card",
+      "props": {
+        "id": "contato",
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0 scroll-mt-32"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "h2",
+              "props": {
+                "className": "text-[20px] font-bold text-gray-900 mb-4 flex items-center gap-3"
+              },
+              "children": [
+                {
+                  "tag": "span",
+                  "props": {
+                    "className": "text-orange-600"
+                  },
+                  "children": [
+                    "7."
+                  ]
+                },
+                "Contato"
+              ]
+            },
+            {
+              "tag": "div",
+              "props": {
+                "className": "space-y-4"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700 leading-relaxed"
+                  },
+                  "children": [
+                    "Se você tiver alguma dúvida sobre esta Política de Privacidade, entre em contato conosco:"
+                  ]
+                },
+                {
+                  "tag": "ContactInfoCard"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

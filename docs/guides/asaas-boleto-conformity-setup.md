@@ -1,0 +1,296 @@
+# 🔧 Guia de Configuração - Conformidade de Boletos Asaas
+
+> **Guia prático para configurar e validar a conformidade legal dos boletos
+> bancários emitidos através do Asaas**
+
+---
+
+## 📋 Visão Geral
+
+Este guia fornece instruções passo a passo para:
+
+1. Configurar corretamente o beneficiário no Asaas
+2. Validar dados nos boletos gerados
+3. Verificar conformidade com requisitos legais
+4. Troubleshooting de problemas comuns
+
+---
+
+## 🎯 Objetivo
+
+Garantir que todos os boletos emitidos pela GB Locações estejam em conformidade
+com:
+
+- ✅ Normas da FEBRABAN
+- ✅ Regulamentações do Banco Central
+- ✅ Legislação tributária brasileira
+- ✅ Requisitos fiscais para locação de equipamentos
+
+---
+
+## 1. Configuração do Beneficiário no Asaas
+
+### 1.1. Dados Obrigatórios da Empresa
+
+Antes de configurar, tenha em mãos os seguintes dados da GB Locações:
+
+| Campo                 | Valor                                                                |
+| :-------------------- | :------------------------------------------------------------------- |
+| **CNPJ**              | `34.780.330/0001-69`                                                 |
+| **Razão Social**      | `GUSTAVO BARBOSA BRENNER`                                            |
+| **Nome Fantasia**     | `GB LOCACOES E MANUTENCAO`                                           |
+| **Endereço Completo** | `R IRMAO FRANCISCO, 44 - HUMAITA - PORTO ALEGRE/RS - CEP 90.240-120` |
+| **Email**             | `gustavobbrenner@gmail.com` (ou email da empresa)                    |
+| **Telefone**          | `(51) 9982-0516`                                                     |
+
+> **Fonte**: Consulte
+> [`docs/internal/company/README.md`](../internal/company/README.md) para dados
+> completos
+
+### 1.2. Acessar Configurações da Conta
+
+1. Acesse o painel administrativo do Asaas:
+   - **Sandbox**: https://sandbox.asaas.com
+   - **Produção**: https://www.asaas.com
+
+2. Faça login com as credenciais da conta da GB Locações
+
+3. Navegue até: **Minha Conta** → **Dados da Empresa** (ou similar)
+
+### 1.3. Verificar/Configurar Dados do Beneficiário
+
+⚠️ **CRÍTICO**: O beneficiário dos boletos **DEVE** ser a pessoa jurídica
+(CNPJ), não pessoa física (CPF).
+
+#### Checklist de Verificação
+
+- [ ] **Tipo de Conta**: Deve estar configurada como **"Pessoa Jurídica"** ou
+      **"CNPJ"**
+- [ ] **CNPJ**: Deve ser `34.780.330/0001-69` (sem formatação: `34780330000169`)
+- [ ] **Razão Social**: Deve ser `GUSTAVO BARBOSA BRENNER`
+- [ ] **Nome Fantasia**: Deve ser `GB LOCACOES E MANUTENCAO` (ou similar)
+- [ ] **Endereço**: Deve estar completo e correto
+- [ ] **Email**: Email válido da empresa
+- [ ] **Telefone**: Telefone de contato válido
+
+#### Se os Dados Estiverem Incorretos
+
+1. Edite os dados da empresa no painel do Asaas
+2. Salve as alterações
+3. Aguarde confirmação (pode haver processo de validação)
+4. **Importante**: Algumas alterações podem exigir revalidação da conta
+
+---
+
+## 2. Validar Boletos Gerados
+
+### 2.1. Como Validar um Boleto
+
+Após gerar um boleto de teste, verifique os seguintes campos:
+
+#### Dados do Beneficiário (Verificar no PDF do Boleto)
+
+| Campo no Boleto                 | Valor Esperado                                          | Onde Verificar       |
+| :------------------------------ | :------------------------------------------------------ | :------------------- |
+| **CPF/CNPJ do Beneficiário**    | `34.780.330/0001-69`                                    | Seção "Beneficiário" |
+| **Nome do Beneficiário**        | `GUSTAVO BARBOSA BRENNER` ou `GB LOCACOES E MANUTENCAO` | Seção "Beneficiário" |
+| **Endereço do Beneficiário**    | Endereço completo da empresa                            | Seção "Beneficiário" |
+| **Agência/Código Beneficiário** | Dados da conta Asaas                                    | Seção "Beneficiário" |
+
+#### Dados do Pagador
+
+| Campo no Boleto         | Verificação                          | Onde Verificar  |
+| :---------------------- | :----------------------------------- | :-------------- |
+| **CPF/CNPJ do Pagador** | Deve corresponder ao cliente         | Seção "Pagador" |
+| **Nome do Pagador**     | Deve corresponder ao nome do cliente | Seção "Pagador" |
+| **Endereço do Pagador** | Deve estar presente                  | Seção "Pagador" |
+
+#### Dados do Documento
+
+| Campo no Boleto        | Valor Esperado                           | Onde Verificar                |
+| :--------------------- | :--------------------------------------- | :---------------------------- |
+| **Espécie Doc.**       | `CT` (Contrato) ou adequada para locação | Tabela principal do boleto    |
+| **Valor do Documento** | Valor correto do orçamento               | Tabela principal do boleto    |
+| **Data de Vencimento** | Data válida                              | Cabeçalho do boleto           |
+| **Descrição**          | Deve referenciar o orçamento             | Campo "Instruções" ou similar |
+
+### 2.2. Teste Prático
+
+1. **Gerar Boleto de Teste**:
+
+   ```bash
+   # Via API (exemplo)
+   POST /api/payments/boleto/generate
+   {
+     "quoteId": "ID_DO_ORCAMENTO_TESTE",
+     "amount": 100.00,
+     "dueDate": "2026-02-15T00:00:00.000Z",
+     "description": "Teste de conformidade",
+     "customerName": "Cliente Teste",
+     "customerDocument": "12345678900",
+     "customerEmail": "teste@example.com"
+   }
+   ```
+
+2. **Baixar PDF do Boleto**: Use o `pdfUrl` retornado pela API
+
+3. **Validar Manualmente**: Compare os dados do PDF com os valores esperados
+   acima
+
+4. **Documentar Resultados**: Anote quaisquer inconsistências encontradas
+
+---
+
+## 3. Problemas Comuns e Soluções
+
+### 3.1. Boleto com CPF em vez de CNPJ
+
+**Sintoma**: O campo "CPF/CNPJ do Beneficiário" mostra um CPF pessoal em vez do
+CNPJ da empresa.
+
+**Causa**: A conta do Asaas está configurada como "Pessoa Física" ou os dados do
+beneficiário estão incorretos.
+
+**Solução**:
+
+1. Verificar tipo de conta no Asaas
+2. Se necessário, alterar para "Pessoa Jurídica"
+3. Atualizar CNPJ para `34.780.330/0001-69`
+4. Revalidar conta (se solicitado pelo Asaas)
+5. Gerar novo boleto de teste
+
+### 3.2. Espécie do Documento Incorreta
+
+**Sintoma**: O campo "Espécie Doc." mostra "DM" (Duplicata Mercantil) em vez de
+"CT" (Contrato).
+
+**Causa**: A API do Asaas pode não permitir definir a espécie do documento, ou
+está usando um padrão inadequado.
+
+**Solução**:
+
+1. Verificar se a API do Asaas suporta o parâmetro `documentType` ou similar
+2. Se suportar, implementar no código (`lib/payment-gateways/asaas.ts`)
+3. Se não suportar, documentar limitação e considerar contatar suporte do Asaas
+4. Consulte
+   [`docs/features/boleto-conformity.md`](../features/boleto-conformity.md) para
+   mais detalhes
+
+### 3.3. Dados do Beneficiário Incompletos
+
+**Sintoma**: Endereço ou outros dados do beneficiário estão incompletos no
+boleto.
+
+**Causa**: Dados incompletos na configuração da conta do Asaas.
+
+**Solução**:
+
+1. Acessar configurações da conta no Asaas
+2. Completar todos os campos obrigatórios
+3. Verificar especialmente endereço completo (rua, número, complemento, bairro,
+   cidade, estado, CEP)
+4. Salvar alterações
+5. Gerar novo boleto de teste
+
+### 3.4. Boletos Não Aparecem no Painel
+
+**Sintoma**: Boletos são gerados via API, mas não aparecem no painel do Asaas.
+
+**Causa**: Pode ser problema de sincronização ou configuração da conta.
+
+**Solução**:
+
+1. Verificar logs da API para erros
+2. Verificar se está usando a API key correta (sandbox vs produção)
+3. Aguardar alguns minutos (pode haver delay)
+4. Verificar filtros no painel do Asaas
+5. Contatar suporte do Asaas se persistir
+
+---
+
+## 4. Checklist de Validação Periódica
+
+Realize esta validação periodicamente (recomendado: mensalmente ou após mudanças
+na conta):
+
+### Configuração da Conta
+
+- [ ] Tipo de conta é "Pessoa Jurídica"
+- [ ] CNPJ está correto: `34.780.330/0001-69`
+- [ ] Razão social está correta
+- [ ] Endereço está completo e atualizado
+- [ ] Email e telefone estão atualizados
+
+### Validação de Boletos
+
+- [ ] Gerar boleto de teste
+- [ ] Verificar CNPJ do beneficiário
+- [ ] Verificar nome/razão social do beneficiário
+- [ ] Verificar endereço do beneficiário
+- [ ] Verificar espécie do documento (idealmente "CT")
+- [ ] Verificar dados do pagador
+- [ ] Verificar valor e vencimento
+- [ ] Verificar vinculação com orçamento (descrição)
+
+### Documentação
+
+- [ ] Documentar qualquer limitação encontrada
+- [ ] Atualizar este guia se necessário
+- [ ] Reportar problemas ao time de desenvolvimento
+
+---
+
+## 5. Integração com Sistema
+
+### 5.1. Validação Automática (Futuro)
+
+Embora a validação manual seja necessária, pode-se implementar validações
+automáticas:
+
+- Validar que o CNPJ do beneficiário está correto (quando disponível via API)
+- Validar que dados do pagador estão presentes
+- Validar vinculação com orçamento
+
+### 5.2. Logs e Auditoria
+
+O sistema deve registrar:
+
+- Data/hora de geração de cada boleto
+- ID do orçamento vinculado
+- Valor e vencimento
+- Status de validação (quando implementado)
+
+---
+
+## 6. Referências
+
+- [`docs/features/boleto-conformity.md`](../features/boleto-conformity.md) -
+  Documentação completa de conformidade
+- [`docs/internal/company/README.md`](../internal/company/README.md) - Dados
+  oficiais da empresa
+- [`docs/guides/asaas-dados-empresa.md`](./asaas-dados-empresa.md) - Dados para
+  cadastro inicial
+- [`docs/guides/asaas-boleto-testing.md`](./asaas-boleto-testing.md) - Guia de
+  testes de boletos
+
+---
+
+## 7. Suporte
+
+### Contato Asaas
+
+- **Suporte Técnico**: Via painel administrativo do Asaas
+- **Documentação API**: https://docs.asaas.com
+- **Status da Plataforma**: Verificar status em caso de problemas
+
+### Contato Interno
+
+Para questões sobre conformidade legal ou requisitos fiscais, consulte:
+
+- Documentação de conformidade:
+  [`docs/features/boleto-conformity.md`](../features/boleto-conformity.md)
+- Time de desenvolvimento para questões técnicas
+
+---
+
+_Última atualização: 12 de janeiro de 2026_

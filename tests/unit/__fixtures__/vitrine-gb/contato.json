@@ -1,0 +1,118 @@
+{
+  "origem": "55763c1e:packages/frontend/src/pages/contato/{ui/ContatoPage.web.tsx,model/use-contact-page.ts}",
+  "identidade": {
+    "nome": "GB Locações",
+    "cidade": "Porto Alegre",
+    "uf": "RS",
+    "logoUrl": null
+  },
+  "modelo": {
+    "contactInfo": [
+      {
+        "title": "Telefone",
+        "main": "(51) 2313-6262 | (51) 99820-5163",
+        "subtitle": "Atendimento de segunda a sexta | WhatsApp disponível"
+      },
+      {
+        "title": "E-mail",
+        "main": "contato@locacoesgb.com.br",
+        "subtitle": "Resposta em até 24 horas"
+      },
+      {
+        "title": "Endereço",
+        "main": "Travessa Doutor Heinzelmann, 365 - Humaitá, Porto Alegre/RS - CEP 90240-100",
+        "subtitle": "Atendimento em Porto Alegre e região metropolitana"
+      },
+      {
+        "title": "Horário de Funcionamento",
+        "main": "Segunda a Sexta: 8h às 18h",
+        "subtitle": "Sábado: 8h às 12h • Domingo: Fechado"
+      }
+    ],
+    "services": [
+      {
+        "title": "Atendimento Especializado",
+        "description": "Consultoria técnica para escolha dos equipamentos ideais"
+      },
+      {
+        "title": "Agendamento Flexível",
+        "description": "Entrega e coleta nos horários que funcionam para você"
+      },
+      {
+        "title": "Qualidade Garantida",
+        "description": "Equipamentos revisados e com certificação de segurança"
+      }
+    ],
+    "stats": [
+      {
+        "number": "10+",
+        "label": "Anos de Experiência"
+      },
+      {
+        "number": "500+",
+        "label": "Projetos Realizados"
+      },
+      {
+        "number": "50+",
+        "label": "Equipamentos Disponíveis"
+      },
+      {
+        "number": "24h",
+        "label": "Suporte Técnico"
+      }
+    ]
+  },
+  "textos": [
+    "Entre em Contato",
+    "Estamos prontos para atender você e tornar seu projeto realidade. Fale conosco e descubra as melhores soluções em locação de equipamentos.",
+    "10+",
+    "Anos de Experiência",
+    "500+",
+    "Projetos Realizados",
+    "50+",
+    "Equipamentos Disponíveis",
+    "24h",
+    "Suporte Técnico",
+    "Solicite um Orçamento",
+    "Preencha o formulário e receba nossa melhor proposta",
+    "Nome Completo *",
+    "Telefone *",
+    "E-mail *",
+    "Empresa/Construtora",
+    "Equipamento de Interesse",
+    "CPF",
+    "CNPJ",
+    "* Informe pelo menos o CPF ou CNPJ",
+    "Mensagem *",
+    "Enviar Solicitação",
+    "Informações de Contato",
+    "Múltiplos canais para facilitar seu atendimento",
+    "Telefone",
+    "(51) 2313-6262 | (51) 99820-5163",
+    "Atendimento de segunda a sexta | WhatsApp disponível",
+    "E-mail",
+    "contato@locacoesgb.com.br",
+    "Resposta em até 24 horas",
+    "Endereço",
+    "Travessa Doutor Heinzelmann, 365 - Humaitá, Porto Alegre/RS - CEP 90240-100",
+    "Atendimento em Porto Alegre e região metropolitana",
+    "Horário de Funcionamento",
+    "Segunda a Sexta: 8h às 18h",
+    "Sábado: 8h às 12h • Domingo: Fechado",
+    "Nossos Diferenciais",
+    "O que nos torna únicos no mercado de locação",
+    "Atendimento Especializado",
+    "Consultoria técnica para escolha dos equipamentos ideais",
+    "Agendamento Flexível",
+    "Entrega e coleta nos horários que funcionam para você",
+    "Qualidade Garantida",
+    "Equipamentos revisados e com certificação de segurança",
+    "Onde estamos",
+    "Endereço, horários e como chegar",
+    "Atendimento Especializado em Toda Região",
+    "Nossa equipe técnica está pronta para orientar sobre o melhor equipamento para seu projeto, com entrega em toda região metropolitana de Porto Alegre.",
+    "Consultoria Gratuita",
+    "Entrega Rápida",
+    "Suporte 24h"
+  ]
+}

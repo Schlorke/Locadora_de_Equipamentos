@@ -1,0 +1,18 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "pnpm --filter @gb-locacoes/api build",
+  "crons": [
+    {
+      "path": "/api/cron/late-fees",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/expire-quotes",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/outbox",
+      "schedule": "* * * * *"
+    }
+  ]
+}

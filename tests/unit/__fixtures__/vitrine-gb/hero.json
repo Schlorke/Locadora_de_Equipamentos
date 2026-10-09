@@ -1,0 +1,37 @@
+{
+  "origem": "55763c1e:packages/frontend/src/widgets/hero/ui/Hero.web.tsx",
+  "identidade": {
+    "nome": "GB Locações",
+    "cidade": "Porto Alegre",
+    "uf": "RS",
+    "logoUrl": null
+  },
+  "subtitulo": [
+    "Há 10 anos oferecendo soluções em locação de equipamentos para obras e serviços em altura. Segurança, qualidade e manutenção constante."
+  ],
+  "seloEsquerdo": [
+    "+200",
+    "Equipamentos Disponíveis"
+  ],
+  "seloDireito": [
+    "10+",
+    "Anos de Experiência"
+  ],
+  "textos": [
+    "Locação de Equipamentos para",
+    "Construção Civil",
+    "Há 10 anos oferecendo soluções em locação de equipamentos para obras e serviços em altura. Segurança, qualidade e manutenção constante.",
+    "Ver Catálogo de Equipamentos",
+    "Solicitar Orçamento",
+    "(51) 99820-5163",
+    "(51) 2313-6262",
+    "|",
+    "(51) 99820-5163",
+    "Entregamos em toda região",
+    "Carregando modelos 3D...",
+    "+200",
+    "Equipamentos Disponíveis",
+    "10+",
+    "Anos de Experiência"
+  ]
+}

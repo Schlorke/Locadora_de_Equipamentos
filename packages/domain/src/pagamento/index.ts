@@ -1,0 +1,1 @@
+export { getBoletoDueDate } from './vencimento'

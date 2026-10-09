@@ -1,0 +1,4 @@
+# Usada com settings/nested.jsonc e settings/disabled.jsonc.
+src/a.ts
+src/a.test.ts
+src/a.aspect.test.ts  # órfão com nested.jsonc (a regra ${capture}.*.test.ts não existe lá)

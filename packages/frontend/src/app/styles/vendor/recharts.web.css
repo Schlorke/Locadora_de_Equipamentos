@@ -1,0 +1,22 @@
+/* Recharts (gráficos), na camada components: sem contorno, sombra ou borda nos elementos do gráfico; o foco por teclado
+   da superfície mostra o anel de foco na cor do token --focus-ring (laranja da marca). */
+
+@layer components {
+  .recharts-surface,
+  .recharts-curve,
+  .recharts-line-curve,
+  .recharts-dot,
+  .recharts-wrapper svg,
+  .recharts-wrapper path,
+  .recharts-wrapper circle {
+    outline: none;
+    box-shadow: none;
+    border: none;
+  }
+
+  .recharts-surface:focus-visible,
+  .recharts-wrapper svg:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+}

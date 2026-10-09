@@ -1,0 +1,12 @@
+{
+  "id": "00000000-0000-4000-b000-000000000001",
+  "name": "Plataforma Exemplo",
+  "url": "https://app.plataforma.example.test/api/webhooks/asaas/integration-exemplo",
+  "email": "ops@example.test",
+  "enabled": true,
+  "interrupted": false,
+  "apiVersion": 3,
+  "hasAuthToken": true,
+  "sendType": "SEQUENTIALLY",
+  "events": ["PAYMENT_RECEIVED"]
+}

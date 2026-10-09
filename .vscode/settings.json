@@ -1,0 +1,32 @@
+{
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "README.md": "*.md, LICENSE",
+    "AGENTS.md": "CLAUDE.md",
+    "package.json": "*.config.js, *.config.cjs, *.config.mjs, *.config.ts, *.config.mts, *.config.json, tsconfig*.json, tsconfig.tsbuildinfo, next-env.d.ts, components.json, vercel*.json, next.openapi.json, app.json, eas.json, pnpm-lock.yaml, pnpm-workspace.yaml, docker-compose.yml, Dockerfile, proxy.ts, knip.jsonc, _config.yml, .env*, .gitignore, .gitattributes, .npmrc, .nvmrc, .node-version, .prettierrc*, .prettierignore, .editorconfig, .browserslistrc, .dockerignore, .hintrc, .markdownlint*, .stylelintrc*",
+    "schema.prisma": "seed.ts",
+
+    "*.tsx": "${capture}.web.tsx, ${capture}.native.tsx, ${capture}.test.tsx, ${capture}.spec.tsx, ${capture}.web.test.tsx, ${capture}.native.test.tsx, ${capture}.*.test.tsx, ${capture}.test.ts, ${capture}.*.test.ts, ${capture}.stories.tsx, ${capture}.module.css, ${capture}.module.scss, ${capture}.css",
+    "*.web.tsx": "${capture}.native.tsx, ${capture}.test.tsx, ${capture}.native.test.tsx, ${capture}.*.test.tsx",
+    "*.ts": "${capture}.web.ts, ${capture}.native.ts, ${capture}.web.tsx, ${capture}.native.tsx, ${capture}.test.ts, ${capture}.spec.ts, ${capture}.web.test.ts, ${capture}.native.test.ts, ${capture}.*.test.ts, ${capture}.test.tsx, ${capture}.*.test.tsx, ${capture}.d.ts, ${capture}.generated.ts",
+    "*.web.ts": "${capture}.native.ts, ${capture}.test.ts, ${capture}.native.test.ts, ${capture}.*.test.ts, ${capture}.test.tsx, ${capture}.*.test.tsx",
+    "*.generated.ts": "${capture}.test.ts, ${capture}.*.test.ts",
+    "index.ts": "index.web.ts, index.native.ts, index.test.ts, index.*.test.ts",
+    "*.mjs": "${capture}.test.mjs, ${capture}.test.ts",
+    "*.js": "${capture}.test.js, ${capture}.js.map, ${capture}.min.js, ${capture}.d.ts",
+
+    "page.tsx": "loading.tsx, error.tsx, not-found.tsx, template.tsx, default.tsx, page.test.tsx",
+    "page.ts": "loading.ts, error.ts, not-found.ts, template.ts, default.ts",
+    "route.ts": "route.test.ts, route.*.test.ts",
+    "layout.tsx": "template.tsx, layout.test.tsx",
+    "_layout.tsx": "+not-found.tsx, +html.tsx"
+  },
+  "tailwindCSS.files.exclude": [
+    "**/.git/**",
+    "**/node_modules/**",
+    "**/.hg/**",
+    "**/.svn/**",
+    "**/.tmp/**"
+  ]
+}

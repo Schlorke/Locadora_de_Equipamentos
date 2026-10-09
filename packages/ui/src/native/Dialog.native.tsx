@@ -1,0 +1,2 @@
+import {OverlayRoot,OverlayTrigger,OverlayPortal,OverlayBackdrop,OverlayPopup,OverlayClose,OverlayTitle,OverlayDescription,OverlaySection,OverlayBody} from "./overlay.native";
+export const Dialog={Root:OverlayRoot,Trigger:OverlayTrigger,Portal:OverlayPortal,Backdrop:OverlayBackdrop,Popup:OverlayPopup,Close:OverlayClose,CloseButton:OverlayClose,Title:OverlayTitle,Description:OverlayDescription,Content:OverlaySection,Header:OverlaySection,HeaderIcon:OverlaySection,Body:OverlaySection,BodyViewport:OverlayBody,BodyContent:OverlaySection,Footer:OverlaySection};

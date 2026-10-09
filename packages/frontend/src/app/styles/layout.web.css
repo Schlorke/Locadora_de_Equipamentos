@@ -1,0 +1,80 @@
+/* Layout estrutural sem componente dono, na camada components (as classes utilitárias do elemento vencem): largura dos
+   elementos posicionados, painel admin, área do cliente, trava de rolagem, página Sobre e empilhamento. */
+
+@layer components {
+  /* Elemento posicionado nunca passa da largura da janela (brilhos e fundos decorativos das seções). */
+  .absolute {
+    max-width: 100vw;
+  }
+
+  /* iOS 26 Safari: a cor de fundo do body pinta a barra de status no painel admin. */
+  body.admin-body-layout {
+    padding-top: 0;
+    background-color: var(--surface-admin);
+  }
+
+  /* Área do cliente: a rolagem até o painel desconta o cabeçalho fixo no celular e no desktop. */
+  #area-cliente-dashboard,
+  #dashboard-banner {
+    scroll-margin-top: 0;
+  }
+
+  @media (width <= 768px) {
+    #area-cliente-dashboard,
+    #dashboard-banner {
+      scroll-margin-top: 84px;
+      padding-top: 0;
+    }
+
+    section.bg-gradient-to-br {
+      scroll-margin-top: 84px;
+    }
+  }
+
+  @media (width >= 769px) {
+    #area-cliente-dashboard,
+    #dashboard-banner {
+      scroll-margin-top: 84px;
+    }
+
+    section.bg-gradient-to-br {
+      scroll-margin-top: 84px;
+    }
+  }
+
+  /* Trava de rolagem do documento (classe overflow-hidden no html/body): sem encadear a rolagem. */
+  html.overflow-hidden,
+  body.overflow-hidden {
+    overscroll-behavior: contain;
+  }
+
+  /* Com um Select, menu ou diálogo do Radix aberto, a trava de rolagem do Radix é liberada (useReleaseScrollLockRef
+     em packages/ui) e o corpo mantém o recorte horizontal que sempre teve nesse estado. */
+  body[data-scroll-released] {
+    overflow: hidden visible;
+  }
+
+  /* Página Sobre: o documento recorta na horizontal e rola na vertical, inclusive com a trava do Radix liberada (vence
+     a regra acima pela ordem, com a mesma especificidade). */
+  html:has(.sobre-page),
+  body:has(.sobre-page) {
+    overflow: hidden auto;
+  }
+
+  /* Empilhamento de elementos sem componente de estilo próprio. O painel admin (cabeçalhos e barra lateral marcados
+     com data-stack="legacy") mantém o empilhamento antigo acima de tudo. */
+  [data-stack='legacy'] {
+    z-index: var(--layer-legacy-stack);
+  }
+
+  /* Área de digitação do chat do WhatsApp (o resto do estilo vive em widgets/whatsapp-flutuante). */
+  .whatsapp-input-area {
+    z-index: var(--layer-inset);
+  }
+
+  /* Cartão da barra de filtros do painel sobre o conteúdo vizinho (o resto do estilo é FILTER_CARD, em
+     packages/ui/src/web/field.ts). */
+  .admin-filter-card {
+    z-index: var(--layer-step);
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "utilitarios": {
+    "shadow-control": "Próprio do projeto (utilities.web.css): reproduz a sombra da regra global de campos e button[aria-controls] da produção (app/globals.css da main).",
+    "shadow-control-hover": "Próprio do projeto (utilities.web.css): reproduz a sombra de hover da regra global de campos da produção.",
+    "shadow-control-focus": "Próprio do projeto (utilities.web.css): reproduz a sombra com halo azul da regra global de campos em foco da produção.",
+    "shadow-control-invalid-focus": "Estado de erro dos campos (aria-invalid), exceção aprovada: a produção não tinha estado de erro.",
+    "shadow-textarea": "Próprio do projeto (utilities.web.css): reproduz a sombra da regra global de textarea da produção.",
+    "shadow-raised": "Próprio do projeto (utilities.web.css): reproduz a sombra da regra global .header-action-button (hover, aberto, ativo) da produção.",
+    "shadow-raised-lg": "Próprio do projeto (utilities.web.css): reproduz a sombra de hover/foco das regras globais de reset de filtro da produção.",
+    "shadow-raised-xl": "Próprio do projeto (utilities.web.css): reproduz a sombra da regra global do cartão de filtros do painel da produção.",
+    "shadow-checkbox-focus": "Próprio do projeto (utilities.web.css): reproduz o halo laranja da regra global da caixa de seleção em foco da produção.",
+    "border-field": "Próprio do projeto (ponte @theme inline de globals.web.css): reproduz a borda cinza da regra global de campos da produção.",
+    "border-field-focus": "Próprio do projeto (ponte @theme inline): reproduz a borda azul da regra global de campos em foco da produção.",
+    "border-field-invalid": "Estado de erro dos campos (aria-invalid), exceção aprovada.",
+    "border-field-legacy": "Próprio do projeto (ponte @theme inline): reproduz a borda das regras globais de filtro e textarea da produção.",
+    "border-field-legacy-focus": "Próprio do projeto (ponte @theme inline): reproduz a borda azul das regras globais de filtro em foco da produção.",
+    "border-checkbox": "Próprio do projeto (ponte @theme inline): reproduz a borda da regra global da caixa de seleção da produção.",
+    "border-checkbox-checked": "Próprio do projeto (ponte @theme inline): reproduz a borda laranja da caixa marcada da regra global da produção.",
+    "border-checkbox-checked-hover": "Próprio do projeto (ponte @theme inline): reproduz a borda da caixa marcada no hover da regra global da produção.",
+    "bg-checkbox-checked": "Próprio do projeto (ponte @theme inline): reproduz o fundo laranja da caixa marcada da regra global da produção.",
+    "bg-checkbox-checked-hover": "Próprio do projeto (ponte @theme inline): reproduz o fundo da caixa marcada no hover da regra global da produção.",
+    "border-filter-selected-border": "Próprio do projeto (ponte @theme inline): reproduz a borda do filtro selecionado da regra global da produção.",
+    "bg-filter-selected-surface": "Próprio do projeto (ponte @theme inline): reproduz o fundo do filtro selecionado da regra global da produção.",
+    "text-filter-selected": "Próprio do projeto (ponte @theme inline): reproduz o texto laranja do filtro selecionado da regra global da produção.",
+    "border-brand": "Próprio do projeto (ponte @theme inline): borda no laranja da marca (#ea580c), o das regras globais da produção.",
+    "outline-field-focus": "Próprio do projeto (ponte @theme inline): azul 500 do contorno, o do focus:outline-blue-500 da regra global de gatilhos da produção.",
+    "outline-focus-ring": "Anel de foco por teclado no laranja da marca: exceção aprovada (decisão do usuário, onda 5).",
+    "sr-only": "Recorte por clip-path: inset(50%) (Tailwind 4) no lugar de clip: rect(0, 0, 0, 0) (Tailwind 3): clip é obsoleta e o lint de CSS a reprova; o efeito é o mesmo (1px recortado, invisível).",
+    "bottom-22.5": "Tradução da regra global .whatsapp-chat-window da produção (bottom: 90px): a janela do WhatsApp fica 90px acima da base, como na produção; a escala do Tailwind 3 não tinha 22.5.",
+    "min-h-100": "Tradução da regra global .whatsapp-chat-window da produção (min-height: 400px); a escala do Tailwind 3 não tinha 100."
+  },
+  "cadeias": {
+    "controls": "Variante própria (utilities.web.css): o seletor button[aria-controls] da regra global de gatilhos da produção.",
+    "controls:focus": "Variante própria (utilities.web.css): button[aria-controls]:focus da regra global da produção.",
+    "controls:hover-always:not-focus": "Variante própria (utilities.web.css): gatilho no hover sem foco da regra global da produção.",
+    "hover-always": "Variante própria (utilities.web.css): o mesmo :hover do hover: restaurado; nome mantido nos componentes que já a usavam.",
+    "hover-always:not-focus": "Variante própria (utilities.web.css): :hover:not(:focus) das regras globais de campo da produção.",
+    "data-[state=checked]:hover-always": "Variante própria (utilities.web.css): caixa marcada no hover da regra global da produção.",
+    "data-[state=open]:hover-always:not-focus": "Variante própria (utilities.web.css): gatilho aberto no hover sem foco da regra global da produção.",
+    "aria-invalid": "Estado de erro dos campos por aria-invalid: exceção aprovada (a produção não tinha).",
+    "aria-invalid:focus": "Estado de erro dos campos em foco: exceção aprovada.",
+    "in-data-[input-modality=keyboard]:focus-visible": "Anel de foco por teclado só na modalidade de teclado: exceção aprovada (decisão do usuário, onda 5).",
+    "data-active": "Sintaxe do Tailwind 4 em packages/ui/src/contract/button.ts (header-action): o botão ativo, que na produção era .header-action-button.text-orange-600 da regra global."
+  },
+  "notas": {
+    "especificidade": "group-*/peer-* do Tailwind 4 marcam o grupo com :where() e ficam com especificidade menor que .group:hover & do Tailwind 3; a condição é a mesma. Conferido: nenhuma string do produto combina uma classe group-/peer- com outra de variante de seletor que mude a mesma propriedade para outro valor (o botão de fechar das atividades da área do cliente passou a [.group:hover_&]:opacity-100)."
+  },
+  "elementos": {},
+  "foco": [
+    {
+      "passadas": ["teclado"],
+      "atual": "solid 2px rgba(234,88,12,1) offset 2px",
+      "producao": "nenhum",
+      "motivo": "Anel de foco por teclado no laranja da marca (#ea580c, token --focus-ring), só no teclado e nunca no clique: decisão do usuário (onda 5). A produção apagava o contorno desses componentes com outline: none !important."
+    },
+    {
+      "passadas": ["cores-forçadas teclado"],
+      "atual": "solid 2px offset 2px",
+      "producao": "nenhum",
+      "motivo": "Acessibilidade (achado 128, WCAG 2.4.7): nas cores forçadas (alto contraste do Windows) o sistema apaga sombras e halos, e o contorno de 2px na cor do sistema é a única indicação do foco por teclado. A produção o apagava com outline: none !important, que o projeto proíbe."
+    },
+    {
+      "passadas": [
+        "cores-forçadas clique",
+        "cores-forçadas clique foco-por-código"
+      ],
+      "atual": "nenhum",
+      "producao": "solid 2px offset 2px",
+      "motivo": "Foco nunca aparece no clique (decisão do usuário, achado 128): o X do Dialog sem aria-label mostrava na produção o contorno transparente do focus:outline-none do Tailwind 3, que o sistema pinta nas cores forçadas também no clique; os X com aria-label (Fechar, Close) não mostravam nada."
+    }
+  ]
+}

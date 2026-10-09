@@ -1,0 +1,7 @@
+flowchart LR
+    Client[Client] --> App[Web App]
+    App --> Api[API Routes]
+    Api --> DataLayer[(Primary DB)]
+    Api --> External[External Services]
+    App --> Auth[Auth Provider]
+    Auth --> DataLayer

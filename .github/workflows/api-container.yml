@@ -1,0 +1,54 @@
+name: API container validation
+
+# Verificação manual da imagem; não publica nem implanta o produto.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  api-container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the API image from this commit
+        run: >-
+          docker build --file apps/services/api/Dockerfile --label
+          org.opencontainers.image.revision="$GITHUB_SHA" --tag
+          locadora-api:validation .
+      - name: Verify HTTP health and the runtime user
+        env:
+          # Banco descartável deste job; nenhum segredo de produção é usado.
+          DATABASE_URL: postgresql://test:test@127.0.0.1:5432/test_db
+        run: |
+          docker run --detach --name api --network host --env DATABASE_URL locadora-api:validation
+          for attempt in $(seq 1 60); do
+            status=$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:3002/api/health || true)
+            if [ "$status" = "200" ]; then
+              uid=$(docker exec api id -u)
+              test "$uid" != "0"
+              echo "GET /api/health -> 200; runtime uid=$uid; commit=$GITHUB_SHA"
+              docker inspect --format '{{.Image}}' api
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs api
+          exit 1
+      - name: Remove the job container
+        if: always()
+        run: docker rm --force api || true

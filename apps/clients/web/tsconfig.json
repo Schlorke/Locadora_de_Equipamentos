@@ -1,0 +1,29 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowJs": false,
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "types": [
+      "node"
+    ],
+    "paths": {
+      "@gb-locacoes/ui": [
+        "../../../packages/ui/src/index.web.ts"
+      ]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "src",
+    ".next/types/**/*.ts",
+    "../../../types/next-auth.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

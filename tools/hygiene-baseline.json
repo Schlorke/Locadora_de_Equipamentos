@@ -1,0 +1,2011 @@
+{
+  "$comment": [
+    "Linha de base do gate de higiene (pnpm hygiene = tools/hygiene-check.mjs). Cada item aceita, com o motivo, um achado que espera decisão do dono ou uma correção de código fora do lote de configuração (ids do inventário de higiene: COD-*, DC-*).",
+    "Só encolhe: item que não acontece mais reprova (tire-o daqui), e o ratchet-guard barra item novo (e nome novo num item) em relação à base. Resolver = apagar ou ligar o código e tirar o item.",
+    "Campos: type (tipo do achado), path (arquivo exato; glob só em item de arquivo), names (símbolos ou dependências do arquivo; em item de arquivo com glob, cada arquivo aceito, relativo à parte literal do glob, para que um arquivo morto novo na pasta não entre calado; não existe em item de arquivo com caminho exato), reason (o que falta decidir ou corrigir).",
+    "Tipos do próprio gate: test-only-file e test-only-export (só um teste alcança: passe do knip sem os testes), native-orphan, css-orphan, export-tag, tool-output-not-ignored e tool-output-tracked."
+  ],
+  "entries": [
+    {
+      "type": "duplicates",
+      "path": "lib/resend.ts",
+      "names": ["getResend|default"],
+      "reason": "COD-27 (corrigir, pendente): o mesmo valor exportado com nome e como default; unificar os importadores é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "duplicates",
+      "path": "lib/supabase-admin.ts",
+      "names": ["supabaseAdmin|default"],
+      "reason": "COD-27 (corrigir, pendente): o mesmo valor exportado com nome e como default; unificar os importadores é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "duplicates",
+      "path": "packages/ui/src/native/DropdownMenu.native.tsx",
+      "names": ["DropdownMenuContent|DropdownMenuSubContent"],
+      "reason": "COD-27 (corrigir, pendente): o mesmo valor exportado com nome e como default; unificar os importadores é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "duplicates",
+      "path": "tools/eslint-runtime-rewrite.mjs",
+      "names": ["plugin|default"],
+      "reason": "Plugin local do ESLint (tools/eslint-runtime-rewrite.mjs, de outro lote): exporta o objeto com nome e como default; unificar é mudança do dono do plugin."
+    },
+    {
+      "type": "exports",
+      "path": "lib/audit-log.ts",
+      "names": ["logAuditAction"],
+      "reason": "COD-05 (decidir): dois auxiliares de auditoria e nenhum usado nas 8 gravações escritas à mão; escolher um (de preferência em packages/backend) ou apagar os dois."
+    },
+    {
+      "type": "exports",
+      "path": "lib/audit-logger.ts",
+      "names": ["withAuditLog"],
+      "reason": "COD-05 (decidir): dois auxiliares de auditoria e nenhum usado nas 8 gravações escritas à mão; escolher um (de preferência em packages/backend) ou apagar os dois."
+    },
+    {
+      "type": "exports",
+      "path": "lib/category-design.tsx",
+      "names": [
+        "DEFAULT_DESIGN",
+        "CATEGORY_PREVIEW_TABS",
+        "cloneDesign",
+        "sanitizeSvg",
+        "svgToDataUrl",
+        "isValidSvgFile",
+        "isValidSvgUrl"
+      ],
+      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
+    },
+    {
+      "type": "exports",
+      "path": "lib/constants/all-icons.tsx",
+      "names": ["ALL_AVAILABLE_ICONS", "CUSTOM_ICONS_CATEGORY"],
+      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
+    },
+    {
+      "type": "exports",
+      "path": "lib/constants/lucide-icons.ts",
+      "names": ["TOTAL_CATEGORY_ICONS", "ICONS_BY_CATEGORY"],
+      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
+    },
+    {
+      "type": "exports",
+      "path": "lib/icon-utils.ts",
+      "names": ["buildIconSearchIndex"],
+      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
+    },
+    {
+      "type": "exports",
+      "path": "lib/quote-validity.ts",
+      "names": ["isQuoteValid"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "lib/rental-lifecycle.ts",
+      "names": ["rentalResponseInclude", "rentalStatusFilter"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "lib/rental-transaction.ts",
+      "names": ["assertTenantCustomer"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "lib/supabase-admin.ts",
+      "names": ["default"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "lib/utils.ts",
+      "names": [
+        "formatCurrency",
+        "formatDate",
+        "formatAdjustmentReason",
+        "parseAdjustmentBlocks",
+        "ADJUSTMENT_CATEGORY_LABELS",
+        "debounce",
+        "throttle"
+      ],
+      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
+    },
+    {
+      "type": "exports",
+      "path": "lib/utils/category-helpers.tsx",
+      "names": [
+        "renderCategoryIcon",
+        "DEFAULT_CATEGORY_SETTINGS",
+        "POPULAR_CATEGORY_COLORS",
+        "isValidLucideIcon",
+        "filterIconsBySearch"
+      ],
+      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
+    },
+    {
+      "type": "exports",
+      "path": "lib/zoho-mail/index.ts",
+      "names": [
+        "refreshAccessToken",
+        "ZOHO_MAIL_SCOPES",
+        "ZOHO_ACCOUNTS_BASE",
+        "getZohoAuthUrl",
+        "getZohoTokenUrl"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "middlewares/require-admin.ts",
+      "names": ["requirePermission", "requireFinancialAccess"],
+      "reason": "Mantido pelo gate de segurança: requirePermission e requireFinancialAccess estão em GUARDS de tests/security/route-auth-inventory.test.ts (autoverificação por mutação); sair exige mudar esse gate."
+    },
+    {
+      "type": "exports",
+      "path": "packages/backend/src/modules/billing/asaas-events.ts",
+      "names": ["isAsaasPaymentStatus"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/backend/src/modules/billing/index.ts",
+      "names": [
+        "ASAAS_API_ORIGINS",
+        "ASAAS_DEFAULT_TIMEOUT_MS",
+        "ASAAS_EGRESS_PROXY_ENV",
+        "ASAAS_MAX_TIMEOUT_MS",
+        "ASAAS_OUTBOUND_DISABLED_ENV",
+        "assertChargeRequest",
+        "chargeAmount",
+        "cancelledChargeVerdict",
+        "ASAAS_ACCESS_TOKEN_EVENTS",
+        "ASAAS_ACCOUNT_STATUS_EVENTS",
+        "ASAAS_APPROVAL_STATUSES",
+        "ASAAS_PAYMENT_EVENTS",
+        "ASAAS_PAYMENT_STATUSES",
+        "ASAAS_SUBSCRIPTION_EVENTS",
+        "asaasEventCategory",
+        "isAsaasPaymentStatus"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/backend/src/modules/directory/index.ts",
+      "names": [
+        "PLATFORM_RATE_LIMIT_PURGE_GRACE_MS",
+        "PLATFORM_RATE_LIMIT_SECRET_MIN_LENGTH"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/backend/src/modules/identity/index.ts",
+      "names": ["inspectIdentityMigration", "migrateLegacyIdentities"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/backend/src/modules/identity/migration.ts",
+      "names": ["migrateLegacyIdentities"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/backend/src/modules/rentals/index.ts",
+      "names": ["rentalResponseInclude", "rentalStatusFilter"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/contracts/src/backoffice.ts",
+      "names": [
+        "GrantComplimentaryInputSchema",
+        "RefundInvoiceInputSchema",
+        "SUPPORT_ACCESS_MAX_HOURS"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/contracts/src/entitlements.ts",
+      "names": ["AccessCodeSchema"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/contracts/src/index.ts",
+      "names": ["TENANT_HEADER_NAME"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/contracts/src/tenancy.ts",
+      "names": ["TENANT_HEADER_NAME"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/domain/src/assinatura/index.ts",
+      "names": [
+        "ESTADOS_DA_ASSINATURA",
+        "ESTADOS_INICIAIS",
+        "TRANSICOES_DA_ASSINATURA",
+        "projetarAcesso",
+        "POLITICA_COMERCIAL_PADRAO",
+        "validarPolitica",
+        "FUSO_DA_PLATAFORMA",
+        "compararDias",
+        "diferencaEmDias",
+        "maiorDia",
+        "menorDia",
+        "paraDecimal",
+        "planejarTrocaDePlano"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/domain/src/documento/index.ts",
+      "names": [
+        "FORMATO_CPF",
+        "calcularDigitosCpf",
+        "normalizarCpf",
+        "FORMATO_CNPJ",
+        "calcularDigitosCnpj",
+        "valorDoCaractereCnpj",
+        "identificarDocumento"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/domain/src/financeiro/index.ts",
+      "names": [
+        "mapPaymentStatusToBillingStatus",
+        "calculateNetAmountWithBreakdown"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/domain/src/financeiro/tributo.ts",
+      "names": ["calculateNetAmountWithBreakdown"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/domain/src/orcamento/index.ts",
+      "names": ["formatCPF", "formatCNPJ", "isQuoteValid"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/app/index.ts",
+      "names": [
+        "SEOSchemas",
+        "defaultFAQItems",
+        "createHttpClient",
+        "TenantProvider",
+        "useTenantContext"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/entities/equipamento/index.ts",
+      "names": [
+        "buildEquipmentCanonicalUrl",
+        "buildEquipmentImageUrl",
+        "buildEquipmentSeoDescription"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/entities/orcamento/index.ts",
+      "names": [
+        "calculateFreightWithAPI",
+        "DEFAULT_LATE_FEE_CONFIG",
+        "isDocumentValueNew",
+        "formatPhoneForWhatsApp",
+        "formatWhatsAppMessage",
+        "generateWhatsAppURL",
+        "formatCNPJ",
+        "formatCPF"
+      ],
+      "reason": "COD-28 (decidir): cálculo de frete da Melhor Envio que nenhuma tela chama; ligar na tela de orçamento ou aposentar junto com a rota /api/integrations/melhor-envio/calculate. | COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/entities/orcamento/model/documento.ts",
+      "names": ["formatCPF", "formatCNPJ"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/entities/orcamento/model/frete.ts",
+      "names": ["calculateFreightWithAPI"],
+      "reason": "COD-28 (decidir): cálculo de frete da Melhor Envio que nenhuma tela chama; ligar na tela de orçamento ou aposentar junto com a rota /api/integrations/melhor-envio/calculate."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/features/carrinho/index.ts",
+      "names": ["cartNotificationHelpers", "mapServerCartItem"],
+      "reason": "COD-27 (corrigir, pendente): os auxiliares de notificação e o mapper público ainda não têm consumidor externo à feature. Na onda 61, useCartSync passou a ser consumido pelo RuntimeBootstrap compartilhado; a exceção desse hook foi removida, sem ampliar a linha de base."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/features/correio/index.ts",
+      "names": [
+        "getFolderLabelPt",
+        "isEmailFolderLike",
+        "parseMessageTimestamp",
+        "FOLDER_LABELS_PT",
+        "FOLDER_ORDER",
+        "FOLDERS_TO_HIDE"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/features/entrar-admin/index.ts",
+      "names": ["resolveAdminLoginRedirect"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/features/selecionar-locadora/model/suggested-tenant.ts",
+      "names": ["SUGGESTED_TENANT_PARAM"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/features/selos-admin/index.ts",
+      "names": [
+        "ADMIN_AGING_URL",
+        "ADMIN_BADGES_INVALIDATE_EVENT",
+        "ADMIN_BADGES_POLLING_MS",
+        "ADMIN_BADGE_URL",
+        "DEFAULT_ADMIN_BADGES",
+        "mergeAdminBadgePayloads",
+        "sumAdminBadges"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/shared/lib/category-helpers.tsx",
+      "names": [
+        "BADGE_SIZES",
+        "DEFAULT_CATEGORY_SETTINGS",
+        "POPULAR_CATEGORY_COLORS",
+        "filterIconsBySearch",
+        "isValidLucideIcon",
+        "renderCategoryIcon",
+        "renderLucideIcon"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/shared/lib/category-helpers.web.tsx",
+      "names": [
+        "renderCategoryIcon",
+        "DEFAULT_CATEGORY_SETTINGS",
+        "POPULAR_CATEGORY_COLORS",
+        "isValidLucideIcon",
+        "filterIconsBySearch"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/shared/lib/constants/all-icons.tsx",
+      "names": ["ALL_AVAILABLE_ICONS", "CUSTOM_ICONS_CATEGORY"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/shared/lib/constants/all-icons.web.tsx",
+      "names": ["ALL_AVAILABLE_ICONS", "CUSTOM_ICONS_CATEGORY"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/shared/lib/constants/lucide-icons.ts",
+      "names": ["TOTAL_CATEGORY_ICONS", "ICONS_BY_CATEGORY"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/shared/lib/index.ts",
+      "names": [
+        "formatCurrency",
+        "MOBILE_BREAKPOINT",
+        "mobileMediaQuery",
+        "debounce",
+        "useSonner",
+        "cn",
+        "getInitials",
+        "formatDateForInput",
+        "dueDateInputToISOString",
+        "fetchAddressByCEP"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/shared/lib/mobile.web.ts",
+      "names": ["MOBILE_BREAKPOINT", "mobileMediaQuery"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/shared/lib/toast.ts",
+      "names": ["useSonner"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/shared/ui/index.ts",
+      "names": ["Separator", "ThemeProvider", "catalog"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/widgets/cabecalho-admin-barra/index.ts",
+      "names": ["AdminHeader", "AdminHeaderActions"],
+      "reason": "COD-16/COD-17 (decidir): vive só pelas páginas da raiz legada (menu lateral e cabeçalho do painel); sai quando a raiz for aposentada e o host web ganhar a moldura do painel."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/widgets/cabecalho/index.ts",
+      "names": [
+        "HEADER_CLIENT_ANCHOR",
+        "HEADER_CLIENT_AREA_HREF",
+        "HEADER_EQUIPMENTS_HREF",
+        "HEADER_INTERNAL_NAV_KEY",
+        "HEADER_NAVIGATION",
+        "HEADER_SCROLL_KEY",
+        "HEADER_STAFF_ROLES",
+        "buildHeaderUserMenu",
+        "getHeaderFirstName",
+        "getHeaderUserInitials",
+        "isHeaderActivePage",
+        "isHeaderStaff",
+        "shouldAdjustClientAreaScroll",
+        "shouldAdjustMobileClientMenu"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/widgets/calendario/ui/event-overlap-manager.ts",
+      "names": ["getAggregatedEvents"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/frontend/src/widgets/hero/index.ts",
+      "names": ["ModelViewer"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/ui/src/icons/custom.tsx",
+      "names": [
+        "CustomIcon2",
+        "AndaimeTubular",
+        "Transporte",
+        "Terraplenagem",
+        "Rompedor",
+        "Compressor",
+        "CadeiraEletrica",
+        "Betoneira",
+        "TrabalhoEmAltura",
+        "Lavagem"
+      ],
+      "reason": "COD-11 (opcional): casca universal dos ícones que só o teste icons/custom.test.tsx importa; o índice web usa icons/custom.web."
+    },
+    {
+      "type": "exports",
+      "path": "packages/ui/src/index.web.ts",
+      "names": [
+        "C.AlertDialogOverlay",
+        "C.AlertDialogPortal",
+        "C.badgeVariants",
+        "C.buttonVariants",
+        "C.ChartStyle",
+        "C.DrawerOverlay",
+        "C.DrawerPortal",
+        "C.MenubarPortal",
+        "C.ContextMenuPortal",
+        "C.navigationMenuTriggerStyle",
+        "C.dialogStyles",
+        "C.DropdownMenuPortal",
+        "C.useFormField",
+        "C.useHasHover",
+        "C.toggleVariants",
+        "C.useSidebar",
+        "C.SheetOverlay",
+        "C.SheetPortal",
+        "C.catalogInfrastructure",
+        "C.CustomIcon1",
+        "C.CustomIcon2",
+        "C.useSonner"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "packages/ui/src/web/GridMotion.web.tsx",
+      "names": ["default"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "exports",
+      "path": "packages/ui/src/web/Menubar.web.tsx",
+      "names": ["C.MenubarPortal"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "exports",
+      "path": "tests/helpers/fake-asaas/index.ts",
+      "names": ["FAKE_ASAAS_ORIGINS", "isAlphanumericCnpj"],
+      "reason": "Dublê do Asaas: a API do fake espelha a do provedor para as suítes de contrato (tests/contract); enxugar é decisão do dono dessas suítes."
+    },
+    {
+      "type": "files",
+      "path": "cspell.config.js",
+      "reason": "DC-68 (decidir): configuração da extensão de ortografia do editor, sem dependência nem script cspell; em pacote \"type\": \"module\" o module.exports não carrega. Renomear para .cjs se a extensão é usada, senão apagar."
+    },
+    {
+      "type": "files",
+      "path": "lib/google-merchant/index.ts",
+      "reason": "COD-04/DC-103 (decidir): integração Google Merchant global em quarentena (rotas 503, cron da Vercel); reescrever por locadora ou aposentar lib, rotas, cron, scripts e a dependência googleapis é decisão de produto."
+    },
+    {
+      "type": "files",
+      "path": "lib/google-merchant/mapper.ts",
+      "reason": "COD-04/DC-103 (decidir): integração Google Merchant global em quarentena (rotas 503, cron da Vercel); reescrever por locadora ou aposentar lib, rotas, cron, scripts e a dependência googleapis é decisão de produto."
+    },
+    {
+      "type": "files",
+      "path": "lib/google-merchant/sync-service.ts",
+      "reason": "COD-04/DC-103 (decidir): integração Google Merchant global em quarentena (rotas 503, cron da Vercel); reescrever por locadora ou aposentar lib, rotas, cron, scripts e a dependência googleapis é decisão de produto."
+    },
+    {
+      "type": "files",
+      "path": "lib/storage-utils.ts",
+      "reason": "COD-03 (decidir): só existe para os scripts avulsos de imagens do Supabase (cleanup-orphaned-images e optimize-existing-images); sai com eles ou os scripts entram no package.json."
+    },
+    {
+      "type": "files",
+      "path": "scripts/check-all-product-statuses.ts",
+      "reason": "COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
+    },
+    {
+      "type": "files",
+      "path": "scripts/check-andaime-pricing.cjs",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/check-duplicate-categories.cjs",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/check-policies.js",
+      "reason": "DC-42 (decidir): ferramenta de RLS do Supabase Auth anterior à multiempresa (SQL cru fora das migrations); o dono confirma que não há banco Supabase legado antes de aposentar."
+    },
+    {
+      "type": "files",
+      "path": "scripts/check-rejections.ts",
+      "reason": "COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
+    },
+    {
+      "type": "files",
+      "path": "scripts/check-rental-dates.ts",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/cleanup-orphaned-images.ts",
+      "reason": "COD-03 (decidir): script de manutenção de imagens do Supabase documentado em docs/features/storage-image-cleanup.md e docs/guides/optimize-existing-images.md, sem entrada no package.json."
+    },
+    {
+      "type": "files",
+      "path": "scripts/create-missing-categories.mjs",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/create-missing-index.js",
+      "reason": "DC-42 (decidir): ferramenta de RLS do Supabase Auth anterior à multiempresa (SQL cru fora das migrations); o dono confirma que não há banco Supabase legado antes de aposentar."
+    },
+    {
+      "type": "files",
+      "path": "scripts/create-test-quote-at-end.ts",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/debug-persistent-warnings.js",
+      "reason": "DC-42 (decidir): ferramenta de RLS do Supabase Auth anterior à multiempresa (SQL cru fora das migrations); o dono confirma que não há banco Supabase legado antes de aposentar."
+    },
+    {
+      "type": "files",
+      "path": "scripts/fix-hero-carousel-urls.ts",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/fix-insert-policies.js",
+      "reason": "DC-42 (decidir): ferramenta de RLS do Supabase Auth anterior à multiempresa (SQL cru fora das migrations); o dono confirma que não há banco Supabase legado antes de aposentar."
+    },
+    {
+      "type": "files",
+      "path": "scripts/fix-new-policies.js",
+      "reason": "DC-42 (decidir): ferramenta de RLS do Supabase Auth anterior à multiempresa (SQL cru fora das migrations); o dono confirma que não há banco Supabase legado antes de aposentar."
+    },
+    {
+      "type": "files",
+      "path": "scripts/fix-persistent-policies.js",
+      "reason": "DC-42 (decidir): ferramenta de RLS do Supabase Auth anterior à multiempresa (SQL cru fora das migrations); o dono confirma que não há banco Supabase legado antes de aposentar."
+    },
+    {
+      "type": "files",
+      "path": "scripts/fix-prisma-imports.js",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/generate-stories.cjs",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/import-financial-january-2026.ts",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/migrate-passwords.ts",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/migrate-storage.js",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/optimize-cta-background.js",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/optimize-existing-images.ts",
+      "reason": "COD-03 (decidir): script de manutenção de imagens do Supabase documentado em docs/features/storage-image-cleanup.md e docs/guides/optimize-existing-images.md, sem entrada no package.json."
+    },
+    {
+      "type": "files",
+      "path": "scripts/prisma-client.cjs",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/resync-products.ts",
+      "reason": "COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
+    },
+    {
+      "type": "files",
+      "path": "scripts/run-sync.ts",
+      "reason": "COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
+    },
+    {
+      "type": "files",
+      "path": "scripts/safe-postinstall.js",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/security/identity-backfill.ts",
+      "reason": "COD-25 (decidir): backfill de identidade documentado em docs/issues/modernization-identity-tenancy.md; entra em scripts/ops com runbook ou sai depois de confirmado que rodou em produção."
+    },
+    {
+      "type": "files",
+      "path": "scripts/seed-about-us-text.ts",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/seed-company-default-data.ts",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/setup-merchant-policies.ts",
+      "reason": "COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
+    },
+    {
+      "type": "files",
+      "path": "scripts/test-boleto-automatico.js",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/test-commit.js",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/test-merchant-api.ts",
+      "reason": "COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
+    },
+    {
+      "type": "files",
+      "path": "scripts/test-quote-system.ts",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/update-email-templates.cjs",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "files",
+      "path": "scripts/verify-quote-conversion.ts",
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+    },
+    {
+      "type": "test-only-export",
+      "path": "lib/client-documents.ts",
+      "names": ["REQUIRED_CLIENT_DOCUMENT_TYPES"],
+      "reason": "Só teste consome (raiz legada): export que só um teste importa; apagar com o teste ou ligar ao produto quando a raiz for aposentada."
+    },
+    {
+      "type": "test-only-export",
+      "path": "lib/resend.ts",
+      "names": ["getResend"],
+      "reason": "Só teste consome (raiz legada): export que só um teste importa; apagar com o teste ou ligar ao produto quando a raiz for aposentada."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/backend/src/modules/billing/asaas-http.ts",
+      "names": ["redactAsaasSecrets", "registerAsaasEgressTransport"],
+      "reason": "Só teste consome (lotes da ADR SaaS e da de hosts): regra de domínio, contrato ou adaptador entregue e testado antes do consumidor; o lote que o liga tira o item, ou o dono o apaga com o teste (docs/architecture/adr-saas-subscription.md)."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/backend/src/modules/billing/index.ts",
+      "names": [
+        "ASAAS_SECRET_FIELDS",
+        "REDACTED",
+        "asaasPath",
+        "createAsaasHttpClient",
+        "readAsaasTransportPolicy",
+        "redactAsaasSecrets",
+        "registerAsaasEgressTransport",
+        "fromAsaasAmount",
+        "toAsaasAmount",
+        "toMoney",
+        "normalizeAsaasDocument",
+        "parseAsaasAccountCreation",
+        "isRejectedRequest",
+        "parseAsaasAccountStatus",
+        "parseAsaasDate",
+        "AsaasFetch",
+        "AsaasHttpLogEntry",
+        "ChargeRequest",
+        "ProviderCharge",
+        "CancellationState"
+      ],
+      "reason": "Só teste consome (lotes da ADR SaaS e da de hosts): regra de domínio, contrato ou adaptador entregue e testado antes do consumidor; o lote que o liga tira o item, ou o dono o apaga com o teste (docs/architecture/adr-saas-subscription.md)."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/backend/src/modules/customers/index.ts",
+      "names": ["REQUIRED_CLIENT_DOCUMENT_TYPES"],
+      "reason": "Só teste consome (lotes da ADR SaaS e da de hosts): regra de domínio, contrato ou adaptador entregue e testado antes do consumidor; o lote que o liga tira o item, ou o dono o apaga com o teste (docs/architecture/adr-saas-subscription.md)."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/backend/src/modules/directory/index.ts",
+      "names": [
+        "escapeLikePattern",
+        "DIRECTORY_SEARCH_RATE_LIMIT",
+        "DirectorySearchDatabase",
+        "PlatformRateLimitDatabase"
+      ],
+      "reason": "Só teste consome (lotes da ADR SaaS e da de hosts): regra de domínio, contrato ou adaptador entregue e testado antes do consumidor; o lote que o liga tira o item, ou o dono o apaga com o teste (docs/architecture/adr-saas-subscription.md)."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/backend/src/modules/identity/configuration.ts",
+      "names": ["originFor"],
+      "reason": "Só teste consome (lotes da ADR SaaS e da de hosts): regra de domínio, contrato ou adaptador entregue e testado antes do consumidor; o lote que o liga tira o item, ou o dono o apaga com o teste (docs/architecture/adr-saas-subscription.md)."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/contracts/src/backoffice.ts",
+      "names": [
+        "staffCan",
+        "ExtendTrialInputSchema",
+        "AdminHoldInputSchema",
+        "BreakGlassRequestInputSchema",
+        "SUPPORT_ACCESS_DURATIONS_HOURS",
+        "BACKOFFICE_ERROR_STATUS"
+      ],
+      "reason": "Só teste consome (lotes da ADR SaaS e da de hosts): regra de domínio, contrato ou adaptador entregue e testado antes do consumidor; o lote que o liga tira o item, ou o dono o apaga com o teste (docs/architecture/adr-saas-subscription.md)."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/contracts/src/entitlements.ts",
+      "names": ["EntitlementsV1"],
+      "reason": "Só teste consome (lotes da ADR SaaS e da de hosts): regra de domínio, contrato ou adaptador entregue e testado antes do consumidor; o lote que o liga tira o item, ou o dono o apaga com o teste (docs/architecture/adr-saas-subscription.md)."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/contracts/src/onboarding.ts",
+      "names": ["CompanyDataInput"],
+      "reason": "Só teste consome (lotes da ADR SaaS e da de hosts): regra de domínio, contrato ou adaptador entregue e testado antes do consumidor; o lote que o liga tira o item, ou o dono o apaga com o teste (docs/architecture/adr-saas-subscription.md)."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/contracts/src/payment-account.ts",
+      "names": ["paymentAccountKind"],
+      "reason": "Só teste consome (lotes da ADR SaaS e da de hosts): regra de domínio, contrato ou adaptador entregue e testado antes do consumidor; o lote que o liga tira o item, ou o dono o apaga com o teste (docs/architecture/adr-saas-subscription.md)."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/contracts/src/platform.ts",
+      "names": ["HostKind"],
+      "reason": "Só teste consome (lotes da ADR SaaS e da de hosts): regra de domínio, contrato ou adaptador entregue e testado antes do consumidor; o lote que o liga tira o item, ou o dono o apaga com o teste (docs/architecture/adr-saas-subscription.md)."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/contracts/src/subscription.ts",
+      "names": [
+        "accessForSubscriptionStatus",
+        "RESTRICTED_MUTATION_SCOPE",
+        "isRestrictedMutationAllowed"
+      ],
+      "reason": "Só teste consome (lotes da ADR SaaS e da de hosts): regra de domínio, contrato ou adaptador entregue e testado antes do consumidor; o lote que o liga tira o item, ou o dono o apaga com o teste (docs/architecture/adr-saas-subscription.md)."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/design-tokens/src/components.ts",
+      "names": ["ComponentSpecs"],
+      "reason": "Só teste consome (decidir, dono do design-tokens): API tipada dos tokens (primitives, semanticThemes, componentSpecs) que só os testes do pacote leem; a web lê o CSS. Publicar para um consumidor real ou enxugar."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/design-tokens/src/index.ts",
+      "names": [
+        "componentSpecs",
+        "ColorPrimitive",
+        "Primitives",
+        "SpaceStep",
+        "SemanticMode",
+        "SemanticTheme",
+        "ComponentSpecs"
+      ],
+      "reason": "Só teste consome (decidir, dono do design-tokens): API tipada dos tokens (primitives, semanticThemes, componentSpecs) que só os testes do pacote leem; a web lê o CSS. Publicar para um consumidor real ou enxugar."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/design-tokens/src/primitives.ts",
+      "names": ["hslTripleToHex", "Primitives", "ColorPrimitive", "SpaceStep"],
+      "reason": "Só teste consome (decidir, dono do design-tokens): API tipada dos tokens (primitives, semanticThemes, componentSpecs) que só os testes do pacote leem; a web lê o CSS. Publicar para um consumidor real ou enxugar."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/domain/src/assinatura/estado.ts",
+      "names": ["ESTADOS_DA_ASSINATURA"],
+      "reason": "Só teste consome (lotes da ADR SaaS e da de hosts): regra de domínio, contrato ou adaptador entregue e testado antes do consumidor; o lote que o liga tira o item, ou o dono o apaga com o teste (docs/architecture/adr-saas-subscription.md)."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/domain/src/assinatura/troca-de-plano.ts",
+      "names": ["planejarTrocaDePlano"],
+      "reason": "Só teste consome (lotes da ADR SaaS e da de hosts): regra de domínio, contrato ou adaptador entregue e testado antes do consumidor; o lote que o liga tira o item, ou o dono o apaga com o teste (docs/architecture/adr-saas-subscription.md)."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/domain/src/documento/tipo.ts",
+      "names": ["identificarDocumento"],
+      "reason": "Só teste consome: função exportada do domínio que o produto não chama (o teste colocado a cobre); ligar no fluxo ou apagar com o teste é decisão do dono do domínio."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/domain/src/financeiro/aliquota.ts",
+      "names": ["mapPaymentStatusToBillingStatus"],
+      "reason": "Só teste consome: função exportada do domínio que o produto não chama (o teste colocado a cobre); ligar no fluxo ou apagar com o teste é decisão do dono do domínio."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/domain/src/orcamento/documento.ts",
+      "names": ["formatCPF", "formatCNPJ"],
+      "reason": "Só teste consome: função exportada do domínio que o produto não chama (o teste colocado a cobre); ligar no fluxo ou apagar com o teste é decisão do dono do domínio."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/domain/src/orcamento/validade.ts",
+      "names": ["isQuoteValid"],
+      "reason": "Só teste consome: função exportada do domínio que o produto não chama (o teste colocado a cobre); ligar no fluxo ou apagar com o teste é decisão do dono do domínio."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/frontend/src/entities/categoria/index.ts",
+      "names": ["CategoryDialogDesignInput", "CategoryRecordInput"],
+      "reason": "Só teste consome: export que só o teste colocado da fatia usa; apagar com o teste ou ligar ao produto é mudança do dono da fatia (FSD) ou do design system."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/frontend/src/entities/orcamento/model/whatsapp.ts",
+      "names": [
+        "formatPhoneForWhatsApp",
+        "formatWhatsAppMessage",
+        "generateWhatsAppURL"
+      ],
+      "reason": "Só teste consome: export que só o teste colocado da fatia usa; apagar com o teste ou ligar ao produto é mudança do dono da fatia (FSD) ou do design system."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/frontend/src/features/carrinho/model/notificacoes.ts",
+      "names": ["cartNotificationHelpers"],
+      "reason": "Só teste consome: export que só o teste colocado da fatia usa; apagar com o teste ou ligar ao produto é mudança do dono da fatia (FSD) ou do design system."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/frontend/src/features/selo-area-cliente/index.ts",
+      "names": ["useClientAreaBadge"],
+      "reason": "Só teste consome: export que só o teste colocado da fatia usa; apagar com o teste ou ligar ao produto é mudança do dono da fatia (FSD) ou do design system."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/frontend/src/shared/lib/mobile.ts",
+      "names": ["MOBILE_BREAKPOINT", "mobileMediaQuery"],
+      "reason": "Só teste consome: export que só o teste colocado da fatia usa; apagar com o teste ou ligar ao produto é mudança do dono da fatia (FSD) ou do design system."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/frontend/src/shared/lib/sanitize-contract.ts",
+      "names": ["isSafeJsonLd"],
+      "reason": "Só teste consome (decidir, dono de shared/lib): sanitizeHtmlStrict e isSafeJsonLd do contrato de sanitização não têm uso no produto; as cópias da raiz saíram como mortas no limpeza-codigo. Encolher o contrato (web, native e testes) ou ligar isSafeJsonLd ao JSON-LD das páginas."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/frontend/src/shared/lib/sanitize.ts",
+      "names": ["isSafeJsonLd", "sanitizeHtmlStrict", "SanitizeConfig"],
+      "reason": "Só teste consome (decidir, dono de shared/lib): sanitizeHtmlStrict e isSafeJsonLd do contrato de sanitização não têm uso no produto; as cópias da raiz saíram como mortas no limpeza-codigo. Encolher o contrato (web, native e testes) ou ligar isSafeJsonLd ao JSON-LD das páginas."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/frontend/src/shared/lib/sanitize.web.ts",
+      "names": ["isSafeJsonLd", "sanitizeHtmlStrict", "SanitizeConfig"],
+      "reason": "Só teste consome (decidir, dono de shared/lib): sanitizeHtmlStrict e isSafeJsonLd do contrato de sanitização não têm uso no produto; as cópias da raiz saíram como mortas no limpeza-codigo. Encolher o contrato (web, native e testes) ou ligar isSafeJsonLd ao JSON-LD das páginas."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/frontend/src/shared/lib/toast.web.ts",
+      "names": ["useSonner"],
+      "reason": "Só teste consome: export que só o teste colocado da fatia usa; apagar com o teste ou ligar ao produto é mudança do dono da fatia (FSD) ou do design system."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/frontend/src/widgets/cabecalho-admin-barra/ui/Barra.web.tsx",
+      "names": ["default"],
+      "reason": "Só teste consome: export que só o teste colocado da fatia usa; apagar com o teste ou ligar ao produto é mudança do dono da fatia (FSD) ou do design system."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/frontend/src/widgets/cartao-admin/index.ts",
+      "names": ["AdminCardProps"],
+      "reason": "Só teste consome: export que só o teste colocado da fatia usa; apagar com o teste ou ligar ao produto é mudança do dono da fatia (FSD) ou do design system."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/frontend/src/widgets/por-que-escolher/ui/ScrollStackBenefitCard.web.tsx",
+      "names": ["default"],
+      "reason": "Só teste consome: export que só o teste colocado da fatia usa; apagar com o teste ou ligar ao produto é mudança do dono da fatia (FSD) ou do design system."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/ui/src/web/Chart.web.tsx",
+      "names": ["ChartConfig"],
+      "reason": "Só teste consome: export que só o teste colocado da fatia usa; apagar com o teste ou ligar ao produto é mudança do dono da fatia (FSD) ou do design system."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/ui/src/web/ContextMenu.web.tsx",
+      "names": ["C.ContextMenuPortal"],
+      "reason": "Só teste consome: export que só o teste colocado da fatia usa; apagar com o teste ou ligar ao produto é mudança do dono da fatia (FSD) ou do design system."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/ui/src/web/Dialog.web.tsx",
+      "names": ["C.dialogStyles"],
+      "reason": "Só teste consome: export que só o teste colocado da fatia usa; apagar com o teste ou ligar ao produto é mudança do dono da fatia (FSD) ou do design system."
+    },
+    {
+      "type": "test-only-export",
+      "path": "packages/ui/src/web/DropdownMenu.web.tsx",
+      "names": ["C.DropdownMenuPortal"],
+      "reason": "Só teste consome: export que só o teste colocado da fatia usa; apagar com o teste ou ligar ao produto é mudança do dono da fatia (FSD) ou do design system."
+    },
+    {
+      "type": "test-only-export",
+      "path": "tools/eslint-runtime-rewrite.mjs",
+      "names": ["plugin"],
+      "reason": "Só teste consome: a ferramenta usa o valor por dentro e o teste do gate o importa pelo nome; tirar o export exige reescrever o teste pela interface pública da ferramenta."
+    },
+    {
+      "type": "test-only-export",
+      "path": "tools/visual-baseline/format.mjs",
+      "names": ["writeCaptureFile"],
+      "reason": "Só teste consome: a ferramenta usa o valor por dentro e o teste do gate o importa pelo nome; tirar o export exige reescrever o teste pela interface pública da ferramenta."
+    },
+    {
+      "type": "test-only-file",
+      "path": "lib/audit-logger.ts",
+      "reason": "COD-05 (decidir): auxiliar de auditoria que só tests/unit/audit-logger.test.ts importa; escolher um dos dois auxiliares (de preferência em packages/backend) ou apagar este com o teste."
+    },
+    {
+      "type": "test-only-file",
+      "path": "lib/google-merchant/client.ts",
+      "reason": "COD-04/DC-103 (decidir): integração Google Merchant em quarentena; só testes e scripts avulsos a alcançam. Reescrever por locadora ou aposentar lib, rotas, cron, scripts e googleapis."
+    },
+    {
+      "type": "test-only-file",
+      "path": "lib/google-merchant/types.ts",
+      "reason": "COD-04/DC-103 (decidir): integração Google Merchant em quarentena; só testes e scripts avulsos a alcançam. Reescrever por locadora ou aposentar lib, rotas, cron, scripts e googleapis."
+    },
+    {
+      "type": "test-only-file",
+      "path": "packages/frontend/src/app/index.ts",
+      "reason": "Decidir (dono do packages/frontend): entrada universal de app/ que o \"exports\" do pacote não publica (./app aponta para index.web.ts e index.native.ts); só os testes a importam. Publicar como condição default ou apagar e apontar os testes para as variantes."
+    },
+    {
+      "type": "test-only-file",
+      "path": "packages/ui/src/icons/custom.tsx",
+      "reason": "Decidir (dono do packages/ui): entrada universal dos ícones que só custom.test.tsx importa; os index web e native importam custom.web e custom.native direto. Apagar e apontar o teste para custom.web, ou publicar a entrada universal."
+    },
+    {
+      "type": "types",
+      "path": "apps/clients/web/src/host/routing/route-table.ts",
+      "names": ["BetterAuthBasePath"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "lib/catalog.ts",
+      "names": [
+        "CategoryInput",
+        "EquipmentBody",
+        "UnitCreateInput",
+        "UnitPatch"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "lib/category-design.tsx",
+      "names": ["CategoryDialogMode", "CategoryDetails"],
+      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
+    },
+    {
+      "type": "types",
+      "path": "lib/client-documents.ts",
+      "names": ["RequiredClientDocumentType"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "lib/constants/lucide-icons.ts",
+      "names": ["CategoryIcon"],
+      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
+    },
+    {
+      "type": "types",
+      "path": "lib/equipment-availability.ts",
+      "names": [
+        "AvailabilityOptions",
+        "AvailabilityResult",
+        "RentalAvailabilityItem"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "lib/google-merchant/types.ts",
+      "names": ["SyncResult"],
+      "reason": "COD-04/DC-103 (decidir): integração Google Merchant global em quarentena (rotas 503, cron da Vercel); reescrever por locadora ou aposentar lib, rotas, cron, scripts e a dependência googleapis é decisão de produto."
+    },
+    {
+      "type": "types",
+      "path": "lib/quote-boleto.ts",
+      "names": ["QuoteBoletoInfo"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "lib/quote-request.ts",
+      "names": [
+        "AdminQuoteFilters",
+        "QuoteAdjustmentInput",
+        "QuoteRequestInput",
+        "QuoteUpdateBody"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "lib/rental-converter.ts",
+      "names": ["ConvertQuoteToRentalResult"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "lib/rental-lifecycle.ts",
+      "names": [
+        "AdminRentalFilters",
+        "ManualRentalInput",
+        "RentalExtensionInput",
+        "RentalLateFeeOutcome",
+        "RentalUpdateInput"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "lib/validations/index.ts",
+      "names": [
+        "EquipmentPublic",
+        "CategoryPublic",
+        "ContactRequest",
+        "QuoteRequest",
+        "ApiError",
+        "ApiSuccess",
+        "Pagination",
+        "PaginatedEquipments",
+        "PaginatedCategories"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "lib/zoho-mail/index.ts",
+      "names": [
+        "ZohoMailAccount",
+        "ZohoMailFolder",
+        "ZohoMailMessage",
+        "ZohoMailMessageSummary",
+        "ZohoMailAttachment",
+        "ZohoMailUploadedAttachment",
+        "ZohoMailAddress",
+        "ZohoMailApiError"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "lib/zoho-mail/types.ts",
+      "names": [
+        "ZohoMailAccount",
+        "ZohoMailFolder",
+        "ZohoMailMessage",
+        "ZohoMailUploadedAttachment",
+        "ZohoMailApiError"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/billing/index.ts",
+      "names": [
+        "AsaasCredential",
+        "AsaasEgressFactory",
+        "AsaasEgressPolicy",
+        "AsaasEnvSource",
+        "AsaasFailureReason",
+        "AsaasHttpClient",
+        "AsaasHttpClientConfig",
+        "AsaasHttpLogger",
+        "AsaasMethod",
+        "AsaasQuery",
+        "AsaasRequest",
+        "AsaasSecret",
+        "AsaasTransportPolicy",
+        "BillingProviderErrorCode",
+        "BillingProviderErrorDetails",
+        "Money",
+        "MoneyInput",
+        "AsaasCreatedAccount",
+        "AsaasGatewayConfig",
+        "AsaasIssuedApiKey",
+        "BillingGateway",
+        "BillingMethod",
+        "ChargeDetails",
+        "CancellationRepository",
+        "CancellationGateway",
+        "CancelledChargeErrorFactory",
+        "ObligationChargeRow",
+        "UnverifiedCancelledCharge",
+        "AsaasAccessTokenEvent",
+        "AsaasAccessTokenEventType",
+        "AsaasAccessTokenResource",
+        "AsaasAccountStatus",
+        "AsaasAccountStatusChange",
+        "AsaasAccountStatusEvent",
+        "AsaasAccountStatusEventType",
+        "AsaasAccountStatusField",
+        "AsaasApprovalStatus",
+        "AsaasApprovalValue",
+        "AsaasEventCategory",
+        "AsaasEventParseResult",
+        "AsaasEventRejection",
+        "AsaasOtherEvent",
+        "AsaasPaymentEvent",
+        "AsaasPaymentEventType",
+        "AsaasPaymentResource",
+        "AsaasPaymentStatus",
+        "AsaasSubscriptionEvent",
+        "AsaasSubscriptionEventType",
+        "AsaasSubscriptionResource",
+        "AsaasWebhookEvent",
+        "TenantPaymentStatus"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/catalog/index.ts",
+      "names": [
+        "CatalogDependencies",
+        "CatalogTransaction",
+        "DeferredInput",
+        "CategoryInput",
+        "EquipmentBody",
+        "EquipmentListQuery",
+        "UnitCreateInput",
+        "UnitFilters",
+        "UnitPatch"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/customers/client-documents.ts",
+      "names": ["ClientDocumentService"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/customers/enroll.ts",
+      "names": ["CustomerEnrollmentService"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/customers/index.ts",
+      "names": [
+        "CartItemInput",
+        "CustomerProfileInput",
+        "ClientDocumentService",
+        "ClientDocumentStorage",
+        "RequiredClientDocumentType",
+        "CustomerEnrollmentService",
+        "Enrollment",
+        "EnrollmentFailureCode",
+        "EnrollmentInput"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/directory/index.ts",
+      "names": ["TenantCardSubject", "RateLimitDecision", "RateLimitWindow"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/documents/index.ts",
+      "names": ["QuoteDocument", "DocumentIssuer"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/identity/index.ts",
+      "names": [
+        "IdentityMail",
+        "IdentityMode",
+        "IdentityPreflight",
+        "LegacyIdentity",
+        "TenantAccess",
+        "TenantCandidateSource",
+        "MembershipRecord",
+        "LegacyAccountDatabase",
+        "LegacyCredentialVerification",
+        "LegacyHeaderSource",
+        "LegacySignInAttempt",
+        "LegacySignInDecision"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/operations/index.ts",
+      "names": ["DriverInput"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/outbox/index.ts",
+      "names": ["EnqueueOutboxInput", "OutboxRepository"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/quotations/boleto.ts",
+      "names": ["QuoteBoletoProviderRead", "QuoteBoletos"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/quotations/expiration.ts",
+      "names": ["QuoteExpiration"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/quotations/index.ts",
+      "names": [
+        "QuoteCodeDbClient",
+        "QuoteRequestInput",
+        "QuoteExpiration",
+        "QuoteLateFees",
+        "TaxSettingsReader",
+        "ObligationErrorFactory",
+        "QuoteBoletoChargeReader",
+        "QuoteBoletoInfo",
+        "QuoteBoletoProviderRead",
+        "QuoteBoletos",
+        "QuoteLateFeeInput",
+        "QuoteAdjustmentInput",
+        "AdminQuoteFilters",
+        "QuoteUpdateBody"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/quotations/late-fees.ts",
+      "names": ["QuoteLateFees"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/rentals/administration.ts",
+      "names": ["RentalLateFeeOutcome"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/backend/src/modules/rentals/index.ts",
+      "names": [
+        "AvailabilityOptions",
+        "AvailabilityReader",
+        "AvailabilityResult",
+        "RentalAvailabilityItem",
+        "ManualRentalInput",
+        "MissingClientDocuments",
+        "RentalExtensionInput",
+        "RentalUpdateInput",
+        "ConvertQuoteToRentalResult",
+        "PaidQuoteConversionResult",
+        "ClientRentalRequestKind",
+        "AdminRentalFilters",
+        "RentalLateFeeOutcome",
+        "DecimalValue"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/contracts/src/backoffice.ts",
+      "names": [
+        "PublishPlanVersionInput",
+        "GrantEntitlementOverrideInput",
+        "GrantSupportAccessInput",
+        "SupportAccessGrantView",
+        "BackofficeTenant",
+        "TenantUsageSnapshot",
+        "PlatformMetrics",
+        "PlatformAuditEntry",
+        "PlatformWebhookInboxEntry",
+        "BackofficeError"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/contracts/src/entitlements.ts",
+      "names": [
+        "Money",
+        "EntitlementLimit",
+        "EntitlementOverrideKey",
+        "EntitlementOverride",
+        "PlanLimitReachedError",
+        "ModuleNotInPlanError"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/contracts/src/index.ts",
+      "names": ["MembershipStatus"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/contracts/src/payment-account.ts",
+      "names": [
+        "PaymentAccountMode",
+        "SubaccountModel",
+        "PaymentProviderEnvironment",
+        "PayoutStatus",
+        "PaymentAccountCommercialInfoInput",
+        "ConnectAsaasAccountInput",
+        "DocumentsLinkResponse",
+        "PayoutRequestInput"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/contracts/src/platform.ts",
+      "names": ["contract.HostKind"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/contracts/src/subscription.ts",
+      "names": [
+        "BillingInterval",
+        "SubscriptionBillingMode",
+        "ProviderSyncState",
+        "SubscriptionEventSource",
+        "CancelReason",
+        "PlatformInvoiceKind",
+        "InvoiceCancelReason",
+        "InvoiceBillingType",
+        "PublicSiteMode",
+        "SubscriptionEnforcement",
+        "SubscriptionPlan",
+        "TenantSubscriptionBrief",
+        "QuotaUsage",
+        "SubscriptionEventView",
+        "ChangePlanInput"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/contracts/src/tenancy.ts",
+      "names": ["MembershipStatus"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/domain/src/assinatura/index.ts",
+      "names": [
+        "AcessoDaOrganizacao",
+        "DividaDaAssinatura",
+        "EstadoDaAssinatura",
+        "EstadoDerivado",
+        "FaturaDaAssinatura",
+        "ModoDeCobranca",
+        "MotivoDoEncerramento",
+        "RegraDoEstado",
+        "StatusDaFatura",
+        "TipoDeFatura",
+        "PoliticaDeCobranca",
+        "DiaCivil",
+        "Dinheiro",
+        "MotivoDeTrocaRecusada",
+        "PedidoDeTrocaDePlano",
+        "SentidoDaTroca",
+        "TrocaDePlano",
+        "AssinaturaEncerrada",
+        "Reativacao",
+        "AjusteDeDireito",
+        "AvaliacaoDeCota",
+        "DireitosDoPlano",
+        "DireitosEfetivos",
+        "ExcecaoDeEscrita",
+        "MotivoDeAjusteIgnorado"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/domain/src/documento/index.ts",
+      "names": ["DocumentoIdentificado", "TipoDeDocumento"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/domain/src/equipamento/index.ts",
+      "names": ["PricingFields", "EnabledPeriods", "PricingConfig"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/domain/src/financeiro/index.ts",
+      "names": [
+        "PaymentBillingStatus",
+        "PaymentStatus",
+        "TaxRegime",
+        "OperationType",
+        "TaxDocumentType",
+        "TaxCalculationInput",
+        "TaxBreakdownLine",
+        "TaxBreakdown"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/domain/src/locacao/index.ts",
+      "names": [
+        "RentalLateFeeInput",
+        "RentalLateFeeResult",
+        "ObligationPayment",
+        "RentalReservationState"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/domain/src/orcamento/index.ts",
+      "names": [
+        "LateFeeResult",
+        "QuoteBaseCharge",
+        "QuoteObligationAdjustment",
+        "QuoteObligationState",
+        "EquipmentPricingInput"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/app/index.ts",
+      "names": [
+        "PublicTenantRouting",
+        "PublicTenantRoutingOptions",
+        "TenantSummary",
+        "MembershipRole",
+        "DeviceActions",
+        "PickedTextFile"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/entities/equipamento/index.ts",
+      "names": ["EquipmentListItem"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/entities/equipamento/model/preco.ts",
+      "names": ["PricingFields", "EnabledPeriods", "PricingConfig"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/entities/locacao/index.ts",
+      "names": ["RentalLateFeeInput", "RentalLateFeeResult"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/entities/locacao/model/multa.ts",
+      "names": ["RentalLateFeeInput", "RentalLateFeeResult"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/entities/orcamento/index.ts",
+      "names": [
+        "EquipmentPricingInput",
+        "FreightCalculationRequest",
+        "FreightCalculationResult",
+        "LateFeeConfig",
+        "LateFeeResult",
+        "WhatsAppQuoteData",
+        "QuoteRequestAddress",
+        "QuoteSubmitIssue",
+        "SavedQuoteAddress",
+        "QuotePaymentMetadata"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração. | COD-28 (decidir): cálculo de frete da Melhor Envio que nenhuma tela chama; ligar na tela de orçamento ou aposentar junto com a rota /api/integrations/melhor-envio/calculate."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/entities/orcamento/model/frete.ts",
+      "names": ["FreightCalculationRequest", "FreightCalculationResult"],
+      "reason": "COD-28 (decidir): cálculo de frete da Melhor Envio que nenhuma tela chama; ligar na tela de orçamento ou aposentar junto com a rota /api/integrations/melhor-envio/calculate."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/entities/orcamento/model/preco.ts",
+      "names": ["EquipmentPricingInput"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/entities/orcamento/model/whatsapp.ts",
+      "names": ["WhatsAppQuoteData"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/entities/pagamento/index.ts",
+      "names": ["BoletoIssuanceResponse"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/features/abas-categoria/index.ts",
+      "names": ["CategoryShowcaseProps"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/features/bloco-preco/index.ts",
+      "names": ["EquipmentQuotePriceBlockProps"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/features/correio/index.ts",
+      "names": ["EmailFolderRecord", "EmailMessageRecord"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/features/entrar-admin/index.ts",
+      "names": ["AdminSessionStatus"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/features/entrar/index.ts",
+      "names": ["CredentialsSignInModel", "SignInResult"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/features/notificacoes/index.ts",
+      "names": ["NotificationStats"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/features/selecionar-locadora/index.ts",
+      "names": [
+        "HostMembershipStatus",
+        "HostTenantMembership",
+        "TenantSuggestion"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/features/selecionar-locadora/ui/TenantSelector.tsx",
+      "names": ["TenantSelectorProps"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/shared/lib/category-design.tsx",
+      "names": ["RenderIconOptions"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/shared/lib/category-design.web.tsx",
+      "names": [
+        "CategoryDialogMode",
+        "CategoryPlacement",
+        "CustomIconSource",
+        "CustomIconConfig",
+        "CategoryDetails"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/shared/lib/category-helpers.tsx",
+      "names": ["BadgeSize"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/shared/lib/constants/lucide-icons.ts",
+      "names": ["CategoryIcon"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/shared/lib/index.ts",
+      "names": ["ClassValue"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/shared/types/filters.ts",
+      "names": ["Filter"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/shared/ui/index.ts",
+      "names": ["ButtonProps", "InputProps", "StackProps", "TextProps"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/widgets/cabecalho-admin-barra/index.ts",
+      "names": [
+        "AdminHeaderProps",
+        "AdminDesktopHeaderProps",
+        "AdminMobileHeaderProps",
+        "AdminHeaderActionsProps"
+      ],
+      "reason": "COD-16/COD-17 (decidir): vive só pelas páginas da raiz legada (menu lateral e cabeçalho do painel); sai quando a raiz for aposentada e o host web ganhar a moldura do painel."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/widgets/cabecalho-admin/index.ts",
+      "names": ["AdminPageHeaderProps"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/widgets/cabecalho-admin/ui/Cabecalho.tsx",
+      "names": ["AdminPageHeaderProps"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/widgets/cartao-admin/ui/Cartao.tsx",
+      "names": ["AdminCardProps"],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/widgets/contato-empresa/ui/ContactInfoCard.tsx",
+      "names": ["ContactInfoCardProps"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/widgets/documento-legal/index.ts",
+      "names": ["LegalDocumentProps"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/widgets/hero/index.ts",
+      "names": ["ModelViewerProps", "Equipment3DModel"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/widgets/menu-admin/index.ts",
+      "names": ["AdminSidebarProps"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/frontend/src/widgets/seletor-data/index.ts",
+      "names": ["CalendarProps", "DateRangePickerProps"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/ui/src/contract/button.ts",
+      "names": ["ButtonVariantProps"],
+      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
+    },
+    {
+      "type": "types",
+      "path": "packages/ui/src/index.web.ts",
+      "names": [
+        "C.CarouselApi",
+        "C.ChartConfig",
+        "C.DialogPopupProps",
+        "C.DialogPopupVariant",
+        "C.AccordionContentProps",
+        "C.AccordionItemProps",
+        "C.AccordionProps",
+        "C.AccordionTriggerProps",
+        "C.AccordionType",
+        "C.AspectRatioProps",
+        "C.ButtonProps",
+        "C.CollapsibleContentProps",
+        "C.CollapsibleProps",
+        "C.CollapsibleTriggerProps",
+        "C.CTAButtonProps",
+        "C.CTASize",
+        "C.CTAVariant",
+        "C.LabelProps",
+        "C.SeparatorProps",
+        "C.TextareaProps",
+        "C.InputProps",
+        "C.ProgressProps",
+        "C.HoverCardContentProps",
+        "C.HoverCardProps",
+        "C.HoverCardTriggerProps",
+        "C.DrawerCloseProps",
+        "C.DrawerContentProps",
+        "C.DrawerDescriptionProps",
+        "C.DrawerFooterProps",
+        "C.DrawerHeaderProps",
+        "C.DrawerProps",
+        "C.DrawerTitleProps",
+        "C.DrawerTriggerProps",
+        "C.InputOTPGroupProps",
+        "C.InputOTPProps",
+        "C.InputOTPSeparatorProps",
+        "C.InputOTPSlotProps",
+        "C.MenubarCheckboxItemProps",
+        "C.MenubarContentProps",
+        "C.MenubarGroupProps",
+        "C.MenubarItemProps",
+        "C.MenubarLabelProps",
+        "C.MenubarMenuProps",
+        "C.MenubarPortalProps",
+        "C.MenubarProps",
+        "C.MenubarRadioGroupProps",
+        "C.MenubarRadioItemProps",
+        "C.MenubarSeparatorProps",
+        "C.MenubarShortcutProps",
+        "C.MenubarSubContentProps",
+        "C.MenubarSubProps",
+        "C.MenubarSubTriggerProps",
+        "C.MenubarTriggerProps",
+        "C.ContextMenuCheckboxItemProps",
+        "C.ContextMenuContentProps",
+        "C.ContextMenuGroupProps",
+        "C.ContextMenuItemProps",
+        "C.ContextMenuLabelProps",
+        "C.ContextMenuPortalProps",
+        "C.ContextMenuProps",
+        "C.ContextMenuRadioGroupProps",
+        "C.ContextMenuRadioItemProps",
+        "C.ContextMenuSeparatorProps",
+        "C.ContextMenuShortcutProps",
+        "C.ContextMenuSubContentProps",
+        "C.ContextMenuSubProps",
+        "C.ContextMenuSubTriggerProps",
+        "C.ContextMenuTriggerProps",
+        "C.NavigationMenuContentProps",
+        "C.NavigationMenuIndicatorProps",
+        "C.NavigationMenuItemProps",
+        "C.NavigationMenuLinkProps",
+        "C.NavigationMenuListProps",
+        "C.NavigationMenuProps",
+        "C.NavigationMenuTriggerProps",
+        "C.NavigationMenuViewportProps",
+        "C.FilterIndicatorProps",
+        "C.FilterIndicatorSize",
+        "C.GridMotionProps",
+        "C.HoverActionMenuPosition",
+        "C.HoverActionMenuProps",
+        "C.RadioGroupItemProps",
+        "C.RadioGroupProps",
+        "C.ResizableHandleProps",
+        "C.ResizablePanelGroupProps",
+        "C.ResizablePanelProps",
+        "C.SliderProps",
+        "C.StackProps",
+        "C.ToggleGroupItemProps",
+        "C.ToggleGroupProps",
+        "C.ToggleProps",
+        "C.ToggleSize",
+        "C.ToggleVariant",
+        "C.TabsContentProps",
+        "C.TabsListProps",
+        "C.TabsProps",
+        "C.TabsTriggerProps",
+        "C.TextProps",
+        "C.TextTone",
+        "C.AddressFormProps",
+        "C.AddressLookupResult",
+        "C.DocumentContentProps",
+        "C.DocumentComponents",
+        "C.AutocompleteProps",
+        "C.AutocompleteOption"
+      ],
+      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
+    },
+    {
+      "type": "types",
+      "path": "tests/helpers/fake-asaas/index.ts",
+      "names": [
+        "FakeAccountStatus",
+        "FakeAsaasEnvironment",
+        "FakeAsaasOptions",
+        "FakeAsaasRequestRecord",
+        "FakeFaultRule",
+        "FakeForbiddenRequest",
+        "FakeWebhookDelivery",
+        "FixtureName",
+        "AsaasContractTarget"
+      ],
+      "reason": "Dublê do Asaas: a API do fake espelha a do provedor para as suítes de contrato (tests/contract); enxugar é decisão do dono dessas suítes."
+    },
+    {
+      "type": "unlisted",
+      "path": "apps/clients/mobile/metro.config.js",
+      "names": ["@react-native/js-polyfills"],
+      "reason": "DC-26/DC-27 (decidir): o metro.config.js exige @react-native/js-polyfills por causa da divisão react-native 0.86/0.87 no lockfile; some quando o grafo duplicado colapsar (pnpm dedupe do dono)."
+    },
+    {
+      "type": "dependencies",
+      "path": "package.json",
+      "names": ["@react-three/drei", "@react-three/fiber", "three"],
+      "reason": "DC-26 (decidir; entrada 226; onda 135, A0): three e @react-three/* são declarados por packages/frontend, dono do carrossel 3D, e ficam também na raiz só para o pnpm manter a variante do react-native 0.86.3 do packages/ui (sondagem --lockfile-only de 2026-10-08: sem eles na raiz, a variante perde o peer @react-native/metro-config, a divisão da entrada 226). Saem da raiz quando o grafo 0.86/0.87 colapsar (pnpm dedupe do dono) ou no bloco F, com a prova do clone limpo (P2)."
+    },
+    {
+      "type": "files",
+      "path": "lib/quote-code.ts",
+      "reason": "Onda 135, C6 (E16): fachada da raiz legada sem consumidor desde que scripts/backfill-quote-codes.ts (db:backfill:quote-codes) passou a importar @gb-locacoes/backend/quotations; nada da raiz é apagado antes da prova sem a raiz (plano, seção 4.1), e o arquivo sai com lib/ no bloco F."
+    },
+    {
+      "type": "test-only-file",
+      "path": "scripts/ops/google-merchant/client.ts",
+      "reason": "COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
+    },
+    {
+      "type": "test-only-file",
+      "path": "scripts/ops/google-merchant/index.ts",
+      "reason": "COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
+    },
+    {
+      "type": "test-only-file",
+      "path": "scripts/ops/google-merchant/mapper.ts",
+      "reason": "COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
+    },
+    {
+      "type": "test-only-file",
+      "path": "scripts/ops/google-merchant/sync-service.ts",
+      "reason": "COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
+    },
+    {
+      "type": "test-only-file",
+      "path": "scripts/ops/google-merchant/types.ts",
+      "reason": "COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
+    },
+    {
+      "type": "exports",
+      "path": "scripts/ops/google-merchant/mapper.ts",
+      "names": ["equipmentsToGoogleProducts"],
+      "reason": "COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
+    },
+    {
+      "type": "test-only-file",
+      "path": "scripts/ops/storage-utils.ts",
+      "reason": "COD-03 (decidir; onda 135, D9 = portar): utilitários do bucket de imagens portados de lib/storage-utils.ts para scripts/ops para sobreviver à exclusão da raiz legada; só scripts/cleanup-orphaned-images.ts (avulso em quarentena, docs/features/storage-image-cleanup.md) e o teste do porte os alcançam. Sai com o script ou entra no package.json com ele."
+    }
+  ]
+}

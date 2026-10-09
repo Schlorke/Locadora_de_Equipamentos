@@ -1,0 +1,62 @@
+# Contexto do Dockerfile (imagem do host web da raiz). Fica fora tudo que o build reconstrói, tudo que é local
+# da máquina e todo arquivo de ambiente: nenhum segredo entra na imagem.
+
+# Dependências e saídas de build (reinstaladas e reconstruídas dentro da imagem)
+**/node_modules
+.pnpm-store
+**/.next
+**/dist
+**/dist-export
+**/build
+**/out
+**/.expo
+**/.turbo
+apps/clients/mobile/android
+apps/clients/mobile/ios
+storybook-static
+coverage
+**/*.tsbuildinfo
+
+# Trabalho local e ferramentas de agentes
+.git
+.tmp
+.cache
+.temp
+.openapi-gen
+.claude
+.agents
+.context-window
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# CI e a própria definição da imagem
+.github
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Arquivos de ambiente: nunca na imagem (as variáveis vão no `docker run`)
+.env
+.env.*
+!.env.example
+
+# Testes, relatórios e documentação (não fazem parte do runtime)
+tests
+test-results
+playwright-report
+reports
+.nyc_output
+*.md
+!README.md
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*

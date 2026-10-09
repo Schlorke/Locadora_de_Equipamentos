@@ -1,0 +1,5 @@
+**/node_modules/**
+.agents/**
+.claude/skills/**
+.tmp/**
+apps/clients/mobile/dist-export/**

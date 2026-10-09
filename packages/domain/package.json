@@ -1,0 +1,25 @@
+{
+  "name": "@gb-locacoes/domain",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./financeiro": "./src/financeiro/index.ts",
+    "./orcamento": "./src/orcamento/index.ts",
+    "./equipamento": "./src/equipamento/index.ts",
+    "./pagamento": "./src/pagamento/index.ts",
+    "./locacao": "./src/locacao/index.ts",
+    "./formatting": "./src/formatting/index.ts",
+    "./tenancy": "./src/tenancy/index.ts",
+    "./assinatura": "./src/assinatura/index.ts",
+    "./documento": "./src/documento/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "date-fns": "^4.4.0",
+    "decimal.js": "^10.6.0"
+  }
+}

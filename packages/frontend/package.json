@@ -1,0 +1,120 @@
+{
+  "name": "@gb-locacoes/frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    "./app": {
+      "react-native": "./src/app/index.native.ts",
+      "default": "./src/app/index.web.ts"
+    },
+    "./pages/playground": {
+      "react-native": "./src/pages/playground/index.native.ts",
+      "default": "./src/pages/playground/index.ts"
+    },
+    "./pages/equipamento-detalhe": {
+      "react-native": "./src/pages/equipamento-detalhe/index.native.ts",
+      "default": "./src/pages/equipamento-detalhe/index.ts"
+    },
+    "./pages/*": "./src/pages/*/index.ts",
+    "./app/styles.css": "./src/app/styles/globals.web.css",
+    "./pages/equipamentos-admin": {
+      "react-native": "./src/pages/equipamentos-admin/index.native.ts",
+      "default": "./src/pages/equipamentos-admin/index.ts"
+    },
+    "./pages/categorias": {
+      "react-native": "./src/pages/categorias/index.native.ts",
+      "default": "./src/pages/categorias/index.ts"
+    },
+    "./pages/locacoes": {
+      "react-native": "./src/pages/locacoes/index.native.ts",
+      "default": "./src/pages/locacoes/index.ts"
+    },
+    "./pages/orcamentos-admin": {
+      "react-native": "./src/pages/orcamentos-admin/index.native.ts",
+      "default": "./src/pages/orcamentos-admin/index.ts"
+    },
+    "./pages/financeiro": {
+      "react-native": "./src/pages/financeiro/index.native.ts",
+      "default": "./src/pages/financeiro/index.ts"
+    },
+    "./pages/assinatura-admin": {
+      "react-native": "./src/pages/assinatura-admin/index.native.ts",
+      "default": "./src/pages/assinatura-admin/index.ts"
+    },
+    "./pages/logistica": {
+      "react-native": "./src/pages/logistica/index.native.ts",
+      "default": "./src/pages/logistica/index.ts"
+    },
+    "./pages/manutencao": {
+      "react-native": "./src/pages/manutencao/index.native.ts",
+      "default": "./src/pages/manutencao/index.ts"
+    },
+    "./pages/configuracoes": {
+      "react-native": "./src/pages/configuracoes/index.native.ts",
+      "default": "./src/pages/configuracoes/index.ts"
+    },
+    "./pages/email-admin": {
+      "react-native": "./src/pages/email-admin/index.native.ts",
+      "default": "./src/pages/email-admin/index.ts"
+    },
+    "./pages/whatsapp-admin": {
+      "react-native": "./src/pages/whatsapp-admin/index.native.ts",
+      "default": "./src/pages/whatsapp-admin/index.ts"
+    }
+  },
+  "dependencies": {
+    "@gb-locacoes/contracts": "workspace:*",
+    "@gb-locacoes/design-tokens": "workspace:*",
+    "@gb-locacoes/domain": "workspace:*",
+    "@gb-locacoes/ui": "workspace:*",
+    "@hookform/resolvers": "^5.9.1",
+    "@radix-ui/react-select": "^2.3.7",
+    "@radix-ui/react-tooltip": "^1.2.16",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.4.0",
+    "decimal.js": "^10.6.0",
+    "framer-motion": "^13.4.4",
+    "isomorphic-dompurify": "4.4.0",
+    "lenis": "1.3.26",
+    "lucide-react": "^1.48.0",
+    "lucide-react-native": "1.48.0",
+    "react-day-picker": "^10.0.1",
+    "react-hook-form": "^7.88.0",
+    "react-native-svg": "15.15.4",
+    "react-resizable-panels": "^4.13.3",
+    "recharts": "^3.10.1",
+    "sonner": "^2.0.8",
+    "tailwind-merge": "^3.7.0",
+    "three": "^0.186.1",
+    "zod": "^4.6.5",
+    "zustand": "^5.0.15"
+  },
+  "peerDependencies": {
+    "next": "*",
+    "next-auth": "*",
+    "react": "*",
+    "react-dom": "*",
+    "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    },
+    "next-auth": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
+  }
+}

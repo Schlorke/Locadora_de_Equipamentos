@@ -1,0 +1,12 @@
+// Fixture de tools/token-check.mjs: em .scss só css-important é examinada. Este !important é comentário.
+$brand: #ea580c;
+
+.x {
+  color: $brand !important; // conta uma vez
+  // background: none !important;
+  background: url(https://cdn.example/a.png) !important;
+
+  a {
+    text-decoration: none !important;
+  }
+}

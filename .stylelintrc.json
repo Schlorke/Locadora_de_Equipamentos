@@ -1,0 +1,39 @@
+{
+  "extends": ["stylelint-config-standard", "stylelint-config-tailwindcss"],
+  "plugins": ["./tools/stylelint-css-structure.mjs"],
+  "reportNeedlessDisables": true,
+  "reportInvalidScopeDisables": true,
+  "reportDescriptionlessDisables": true,
+  "rules": {
+    "declaration-no-important": true,
+    "property-no-unknown": true,
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": ["theme", "source", "config", "apply", "utility", "variant", "custom-variant", "layer", "reference"]
+      }
+    ],
+    "at-rule-prelude-no-invalid": [true, { "ignoreAtRules": ["apply"] }],
+    "nesting-selector-no-missing-scoping-root": [true, { "ignoreAtRules": ["utility", "custom-variant", "variant"] }],
+    "selector-class-pattern": [
+      "^(?:[a-z][a-z0-9]*(?:-[a-z0-9]+)*|rdp-[a-z]+(?:_[a-z]+)*)$",
+      {
+        "message": "Classe \"%s\" fora do padrão: kebab-case (as do react-day-picker, rdp-*, usam _)"
+      }
+    ],
+    "css-structure/max-lines": 300,
+    "css-structure/no-layer-names": ["overrides"]
+  },
+  "ignoreFiles": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/.expo/**",
+    "**/dist/**",
+    "**/dist-export/**",
+    "**/build/**",
+    "**/coverage/**",
+    "storybook-static/**",
+    "stories/**/*.css",
+    "tests/**/__fixtures__/**"
+  ]
+}

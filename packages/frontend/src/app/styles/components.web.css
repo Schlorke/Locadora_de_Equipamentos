@@ -1,0 +1,70 @@
+/* Cartões das seções públicas (animados pela revelação por rolagem), página Sobre e imagem do hero, na camada
+   components (as classes utilitárias do elemento vencem). */
+
+@layer components {
+  /* Cartões animados pela revelação por rolagem e container do hero. O ScrollRevealInit mexe só em opacity, transform
+     e animation destes elementos (CSS_OWNED_TRANSITION) e nunca grava transition inline: a transição é esta. */
+  .material-card,
+  .benefit-card,
+  .cta-section {
+    position: relative;
+  }
+
+  .contact-form,
+  .contact-card,
+  .benefit-card,
+  .cta-section {
+    overflow: hidden;
+  }
+
+  .contact-form,
+  .contact-card,
+  .benefit-card,
+  .material-card {
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease,
+      scale 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .contact-form:hover,
+  .contact-card:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .hero-image,
+  .hero-image-inner {
+    transition: transform 500ms ease;
+  }
+
+  .hero-image-inner {
+    will-change: transform;
+  }
+
+  /* Página Sobre: sem recorte no container e sem FOUC (cartões invisíveis até a página ficar pronta). */
+  .sobre-page {
+    overflow: visible;
+    position: relative;
+    height: auto;
+  }
+
+  .sobre-header-block {
+    animation: fade-in-header 1s ease-out forwards;
+  }
+
+  .sobre-page .material-card,
+  .sobre-page .benefit-card,
+  .sobre-page .cta-section,
+  .sobre-page .sobre-header-block {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
+
+  .sobre-page:not(.opacity-100) .material-card,
+  .sobre-page:not(.opacity-100) .benefit-card,
+  .sobre-page:not(.opacity-100) .cta-section,
+  .sobre-page:not(.opacity-100) .sobre-header-block {
+    visibility: hidden;
+  }
+}

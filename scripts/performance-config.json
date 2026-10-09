@@ -1,0 +1,155 @@
+{
+  "testConfig": {
+    "projectName": "GB-Locacoes",
+    "baseUrl": "http://gb.localhost:3001",
+    "outputDir": "./reports/performance",
+    "devices": {
+      "lowEndMobile": {
+        "name": "Moto G4 (Low-end)",
+        "userAgent": "Mozilla/5.0 (Linux; Android 7.0; Moto G (4)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Mobile Safari/537.36",
+        "viewport": {
+          "width": 360,
+          "height": 640
+        },
+        "deviceScaleFactor": 2,
+        "isMobile": true,
+        "cpuThrottling": 1,
+        "networkThrottling": "Regular 4G"
+      },
+      "midRangeMobile": {
+        "name": "iPhone SE (Mid-range)",
+        "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Mobile/15E148 Safari/604.1",
+        "viewport": {
+          "width": 375,
+          "height": 667
+        },
+        "deviceScaleFactor": 2,
+        "isMobile": true,
+        "cpuThrottling": 1,
+        "networkThrottling": "Regular 4G"
+      },
+      "oldDesktop": {
+        "name": "Old Desktop (2015)",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "viewport": {
+          "width": 1366,
+          "height": 768
+        },
+        "deviceScaleFactor": 1,
+        "isMobile": false,
+        "cpuThrottling": 1,
+        "networkThrottling": "Regular 4G"
+      }
+    },
+    "networkProfiles": {
+      "Slow 3G": {
+        "downloadThroughput": 204800,
+        "uploadThroughput": 102400,
+        "latency": 200
+      },
+      "Fast 3G": {
+        "downloadThroughput": 614400,
+        "uploadThroughput": 307200,
+        "latency": 80
+      },
+      "Regular 4G": {
+        "downloadThroughput": 2048000,
+        "uploadThroughput": 1024000,
+        "latency": 30
+      }
+    },
+    "pagesToTest": [
+      {
+        "name": "Homepage",
+        "path": "/",
+        "priority": "critical",
+        "expectedLCP": 2500,
+        "expectedTTI": 3800,
+        "criticalComponents": ["hero", "header", "categories"]
+      }
+    ],
+    "thresholds": {
+      "performance": 50,
+      "accessibility": 80,
+      "bestPractices": 80,
+      "seo": 80,
+      "metrics": {
+        "LCP": {
+          "good": 2500,
+          "needsImprovement": 4000
+        },
+        "FID": {
+          "good": 100,
+          "needsImprovement": 300
+        },
+        "CLS": {
+          "good": 0.1,
+          "needsImprovement": 0.25
+        },
+        "TTI": {
+          "good": 3800,
+          "needsImprovement": 7300
+        },
+        "TBT": {
+          "good": 200,
+          "needsImprovement": 600
+        },
+        "FCP": {
+          "good": 1800,
+          "needsImprovement": 3000
+        }
+      }
+    },
+    "validation": {
+      "maxRealisticLCP": 20000,
+      "minRealisticLCP": 100,
+      "maxRealisticFCP": 12000,
+      "minRealisticFCP": 50,
+      "maxDiscrepancyRatio": 4
+    },
+    "heavyComponents": [
+      {
+        "file": "components/hero.tsx",
+        "size": "22KB",
+        "concern": "Animações CSS/JS pesadas",
+        "checkFor": ["requestAnimationFrame", "CSS animations", "large images"]
+      },
+      {
+        "file": "app/scroll-reveal-init.tsx",
+        "size": "32KB",
+        "concern": "Scroll listeners e IntersectionObserver",
+        "checkFor": ["scroll events", "reflows", "layout thrashing"]
+      },
+      {
+        "file": "components/equipment-3d-carousel.tsx",
+        "size": "11KB",
+        "concern": "Renderização 3D/WebGL",
+        "checkFor": ["canvas", "WebGL", "transform3d"]
+      },
+      {
+        "file": "components/smart-equipment-pricing.tsx",
+        "size": "27KB",
+        "concern": "Cálculos em tempo real",
+        "checkFor": ["useEffect chains", "heavy computations", "re-renders"]
+      },
+      {
+        "file": "components/equipment-infinite-scroll.tsx",
+        "size": "12KB",
+        "concern": "Virtualização e lazy loading",
+        "checkFor": ["DOM nodes count", "memory leaks", "scroll performance"]
+      }
+    ],
+    "optimizationChecklist": [
+      "Verificar lazy loading de imagens (next/image)",
+      "Analisar bundle size com @next/bundle-analyzer",
+      "Verificar code splitting de rotas",
+      "Testar Suspense boundaries",
+      "Validar preload de fontes críticas",
+      "Checar service worker caching",
+      "Analisar CSS não utilizado",
+      "Verificar tree-shaking de dependências",
+      "Testar skeleton loaders",
+      "Validar debounce em inputs"
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+flowchart TD
+    Start[Quote submitted] --> Api[POST /api/quotes]
+    Api --> Store[(Quote saved)]
+    Store --> HasDocs{CPF/CNPJ and total > 0?}
+    HasDocs -->|yes| AutoGen[Auto-generate boleto]
+    HasDocs -->|no| Skip[Skip auto generation]
+    AutoGen --> Asaas[Asaas boleto created]
+    Asaas --> PendingBoleto[Boleto pending]
+    PendingBoleto --> Admin[Admin reviews quote]
+    Admin --> Approve[Approve (records approvedAt)]
+    Approve --> SendBoleto[Admin sends boleto email]
+    SendBoleto --> Webhook[Asaas webhook paid]
+    Webhook --> Approved[Status APPROVED]
+    Approved --> Completed[Status COMPLETED (rental)]
+    PendingBoleto --> Adjust[Final total adjusted]
+    Adjust --> Regen[Regenerate pending boleto]

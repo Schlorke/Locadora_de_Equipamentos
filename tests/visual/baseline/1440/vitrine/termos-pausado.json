@@ -1,0 +1,2050 @@
+{
+  "version": 1,
+  "scenario": "vitrine/termos-pausado",
+  "viewport": "1440",
+  "url": "http://loc-p.localhost:3320/termos",
+  "unmappedApis": [],
+  "unstableWaits": 0,
+  "styles": [
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "color": "rgb(2, 8, 23)",
+      "display": "block",
+      "scrollbar-width": "thin"
+    },
+    { "display": "block", "scrollbar-width": "thin" },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "display": "flex",
+      "scrollbar-width": "thin"
+    },
+    {
+      "border-bottom-color": "rgb(226, 232, 240)",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "display": "block",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "12px",
+      "display": "flex",
+      "margin-left": "auto",
+      "margin-right": "auto",
+      "padding-bottom": "16px",
+      "padding-left": "24px",
+      "padding-right": "24px",
+      "padding-top": "16px",
+      "row-gap": "12px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "bottom": "auto",
+      "display": "flex",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "background-color": "rgb(241, 245, 249)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "600",
+      "line-height": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "font-size": "18px",
+      "font-weight": "600",
+      "line-height": "28px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(249, 250, 251)",
+      "display": "block",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "margin-left": "auto",
+      "margin-right": "auto",
+      "padding-bottom": "32px",
+      "padding-left": "32px",
+      "padding-right": "32px",
+      "padding-top": "32px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "32px",
+      "display": "grid",
+      "row-gap": "32px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "position": "sticky",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "96px"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-color": "rgb(226, 232, 240)",
+      "border-bottom-left-radius": "16px",
+      "border-bottom-right-radius": "16px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(226, 232, 240)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(226, 232, 240)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(226, 232, 240)",
+      "border-top-left-radius": "16px",
+      "border-top-right-radius": "16px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "display": "block",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(255, 247, 237) 0%, rgba(0, 0, 0, 0) 100%)",
+      "bottom": "0px",
+      "display": "block",
+      "left": "0px",
+      "opacity": "0.3",
+      "position": "absolute",
+      "right": "0px",
+      "scrollbar-width": "thin",
+      "top": "0px"
+    },
+    {
+      "border-bottom-color": "rgb(243, 244, 246)",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "padding-bottom": "24px",
+      "padding-left": "24px",
+      "padding-right": "24px",
+      "padding-top": "24px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "column-gap": "12px",
+      "display": "flex",
+      "row-gap": "12px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(249, 115, 22) 0%, rgb(234, 88, 12) 100%)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "color": "rgb(255, 255, 255)",
+      "display": "block",
+      "padding-bottom": "8px",
+      "padding-left": "8px",
+      "padding-right": "8px",
+      "padding-top": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(255, 255, 255)"
+    },
+    {
+      "color": "rgb(55, 65, 81)",
+      "display": "block",
+      "font-family": "Jost, Georgia, serif, sans-serif",
+      "font-size": "14px",
+      "font-weight": "500",
+      "letter-spacing": "0.21px",
+      "line-height": "20px",
+      "scrollbar-width": "thin",
+      "text-transform": "uppercase"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "display": "block",
+      "padding-bottom": "16px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right, rgb(249, 115, 22) 0%, rgb(234, 88, 12) 100%)",
+      "border-bottom-left-radius": "12px",
+      "border-bottom-right-radius": "12px",
+      "border-top-left-radius": "12px",
+      "border-top-right-radius": "12px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "color": "rgb(255, 255, 255)",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "padding-bottom": "12px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "12px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "display": "block",
+      "font-size": "12px",
+      "line-height": "16px",
+      "scrollbar-width": "thin"
+    },
+    { "display": "block", "scrollbar-width": "thin", "text-align": "left" },
+    { "display": "block", "margin-top": "4px", "scrollbar-width": "thin" },
+    {
+      "border-bottom-left-radius": "12px",
+      "border-bottom-right-radius": "12px",
+      "border-top-left-radius": "12px",
+      "border-top-right-radius": "12px",
+      "color": "rgb(55, 65, 81)",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "padding-bottom": "12px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "12px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "color": "rgb(156, 163, 175)",
+      "display": "block",
+      "font-size": "12px",
+      "line-height": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(156, 163, 175)",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(156, 163, 175)"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(234, 88, 12) 0%, rgb(194, 65, 12) 50%, rgb(154, 52, 18) 100%)",
+      "bottom": "auto",
+      "color": "rgb(255, 255, 255)",
+      "display": "block",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "margin-left": "auto",
+      "margin-right": "auto",
+      "padding-bottom": "56px",
+      "padding-left": "32px",
+      "padding-right": "32px",
+      "padding-top": "56px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "10"
+    },
+    { "display": "block", "scrollbar-width": "thin", "text-align": "center" },
+    {
+      "backdrop-filter": "blur(4px)",
+      "background-color": "oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
+      "border-bottom-left-radius": "16px",
+      "border-bottom-right-radius": "16px",
+      "border-top-left-radius": "16px",
+      "border-top-right-radius": "16px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.1) 0px 8px 10px -6px",
+      "display": "inline-flex",
+      "margin-bottom": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "font-family": "Jost, Georgia, serif, sans-serif",
+      "font-size": "30px",
+      "font-weight": "700",
+      "letter-spacing": "-0.75px",
+      "line-height": "37.5px",
+      "margin-top": "12px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "font-size": "18px",
+      "line-height": "29.25px",
+      "margin-left": "auto",
+      "margin-right": "auto",
+      "margin-top": "12px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "oklab(0.999994 0.0000455677 0.0000200868 / 0.8)",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "margin-top": "12px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "margin-top": "-96px",
+      "overflow-x": "hidden",
+      "overflow-y": "auto",
+      "padding-bottom": "40px",
+      "padding-top": "40px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "display": "block",
+      "margin-left": "auto",
+      "margin-right": "auto",
+      "padding-left": "32px",
+      "padding-right": "32px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-left-radius": "16px",
+      "border-bottom-right-radius": "16px",
+      "border-top-left-radius": "16px",
+      "border-top-right-radius": "16px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.1) 0px 8px 10px -6px",
+      "display": "block",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "padding-bottom": "32px",
+      "padding-left": "32px",
+      "padding-right": "32px",
+      "padding-top": "32px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(239, 246, 255) 0%, rgb(238, 242, 255) 100%)",
+      "border-bottom-color": "oklab(0.93191 -0.00782195 -0.0305777 / 0.5)",
+      "border-bottom-left-radius": "12px",
+      "border-bottom-right-radius": "12px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "oklab(0.93191 -0.00782195 -0.0305777 / 0.5)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "oklab(0.93191 -0.00782195 -0.0305777 / 0.5)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "oklab(0.93191 -0.00782195 -0.0305777 / 0.5)",
+      "border-top-left-radius": "12px",
+      "border-top-right-radius": "12px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "display": "block",
+      "padding-bottom": "24px",
+      "padding-left": "24px",
+      "padding-right": "24px",
+      "padding-top": "24px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(55, 65, 81)",
+      "display": "block",
+      "line-height": "26px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-left-radius": "16px",
+      "border-bottom-right-radius": "16px",
+      "border-top-left-radius": "16px",
+      "border-top-right-radius": "16px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.1) 0px 8px 10px -6px",
+      "display": "block",
+      "left": "auto",
+      "margin-top": "24px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "color": "rgb(17, 24, 39)",
+      "column-gap": "12px",
+      "display": "flex",
+      "font-family": "Jost, Georgia, serif, sans-serif",
+      "font-size": "20px",
+      "font-weight": "700",
+      "letter-spacing": "-0.5px",
+      "line-height": "26px",
+      "margin-bottom": "16px",
+      "row-gap": "12px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(234, 88, 12)",
+      "display": "block",
+      "scrollbar-width": "thin"
+    },
+    { "display": "block", "line-height": "26px", "scrollbar-width": "thin" },
+    {
+      "color": "rgb(55, 65, 81)",
+      "display": "block",
+      "line-height": "25.6px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(55, 65, 81)",
+      "display": "block",
+      "line-height": "25.6px",
+      "margin-top": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(55, 65, 81)",
+      "display": "block",
+      "margin-left": "16px",
+      "margin-top": "16px",
+      "scrollbar-width": "thin"
+    },
+    { "display": "list-item", "scrollbar-width": "thin" },
+    { "display": "list-item", "margin-top": "8px", "scrollbar-width": "thin" },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(255, 247, 237) 0%, rgb(255, 237, 213) 100%)",
+      "border-bottom-left-radius": "12px",
+      "border-bottom-right-radius": "12px",
+      "border-top-left-radius": "12px",
+      "border-top-right-radius": "12px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "display": "block",
+      "margin-top": "16px",
+      "padding-bottom": "28px",
+      "padding-left": "28px",
+      "padding-right": "28px",
+      "padding-top": "28px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(249, 115, 22) 0%, rgb(234, 88, 12) 100%)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "color": "rgb(255, 255, 255)",
+      "display": "flex",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(17, 24, 39)",
+      "display": "block",
+      "font-family": "Jost, Georgia, serif, sans-serif",
+      "font-size": "20px",
+      "font-weight": "700",
+      "line-height": "28px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(75, 85, 99)",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "margin-top": "6px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(55, 65, 81)",
+      "display": "block",
+      "margin-top": "14px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "8px",
+      "display": "flex",
+      "row-gap": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(249, 115, 22)",
+      "display": "block",
+      "fill": "none",
+      "margin-top": "2px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(249, 115, 22)"
+    },
+    { "display": "inline", "font-weight": "500", "scrollbar-width": "thin" },
+    {
+      "color": "rgb(31, 41, 55)",
+      "cursor": "pointer",
+      "display": "inline",
+      "font-weight": "500",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(75, 85, 99)",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "8px",
+      "display": "flex",
+      "margin-top": "12px",
+      "row-gap": "8px",
+      "scrollbar-width": "thin"
+    },
+    { "display": "block", "line-height": "25.6px", "scrollbar-width": "thin" },
+    {
+      "display": "block",
+      "line-height": "25.6px",
+      "margin-top": "4px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(31, 41, 55)",
+      "cursor": "pointer",
+      "display": "inline",
+      "scrollbar-width": "thin"
+    },
+    {
+      "border-top-color": "rgb(226, 232, 240)",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "display": "block",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "4px",
+      "display": "flex",
+      "margin-left": "auto",
+      "margin-right": "auto",
+      "padding-bottom": "24px",
+      "padding-left": "24px",
+      "padding-right": "24px",
+      "padding-top": "24px",
+      "row-gap": "4px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(100, 116, 139)",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "24px",
+      "display": "flex",
+      "row-gap": "4px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(100, 116, 139)",
+      "cursor": "pointer",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "overflow-x": "hidden",
+      "overflow-y": "auto",
+      "scrollbar-width": "thin"
+    }
+  ],
+  "captures": {
+    "base": {
+      "kind": "full",
+      "elements": [
+        ["body:1", "", 0],
+        ["body:1>div:2", "", 1],
+        ["body:1>div:2>div:1", "", 1],
+        ["body:1>div:2>div:1>div:1", "", 2],
+        ["body:1>div:2>div:1>div:1>header:1", "", 3],
+        ["body:1>div:2>div:1>div:1>header:1>div:1", "", 4],
+        ["body:1>div:2>div:1>div:1>header:1>div:1>span:1", "", 5],
+        ["body:1>div:2>div:1>div:1>header:1>div:1>span:1>span:1", "LP", 6],
+        [
+          "body:1>div:2>div:1>div:1>header:1>div:1>span:2",
+          "Locadora Pausada",
+          7
+        ],
+        ["body:1>div:2>div:1>div:1>div:1", "", 8],
+        ["body:1>div:2>div:1>div:1>div:1>div:1", "", 9],
+        ["body:1>div:2>div:1>div:1>div:1>div:1>div:1", "", 10],
+        ["body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1", "", 1],
+        ["body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1", "", 11],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1",
+          "",
+          12
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1",
+          "",
+          13
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:2",
+          "",
+          14
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:2>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1",
+          "",
+          16
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>svg:1",
+          "",
+          17
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:2>div:1>h3:1",
+          "Índice",
+          18
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3",
+          "",
+          19
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1",
+          "",
+          20
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:1>button:1",
+          "",
+          21
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:1>button:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:1>button:1>div:1>span:1",
+          "1.",
+          22
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:1>button:1>div:1>span:2",
+          "Introdução",
+          23
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:1>button:1>svg:1",
+          "",
+          17
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:2",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:2>button:1",
+          "",
+          25
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:2>button:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:2>button:1>div:1>span:1",
+          "2.",
+          26
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:2>button:1>div:1>span:2",
+          "Objeto e Aceitação",
+          23
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:2>button:1>svg:1",
+          "",
+          27
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:3",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:3>button:1",
+          "",
+          25
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:3>button:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:3>button:1>div:1>span:1",
+          "3.",
+          26
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:3>button:1>div:1>span:2",
+          "Cadastro e Conta de Usuário",
+          23
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:3>button:1>svg:1",
+          "",
+          27
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:4",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:4>button:1",
+          "",
+          25
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:4>button:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:4>button:1>div:1>span:1",
+          "4.",
+          26
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:4>button:1>div:1>span:2",
+          "Orçamentos, Reajustes e Pagamentos",
+          23
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:4>button:1>svg:1",
+          "",
+          27
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:5",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:5>button:1",
+          "",
+          25
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:5>button:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:5>button:1>div:1>span:1",
+          "5.",
+          26
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:5>button:1>div:1>span:2",
+          "Custos Adicionais e Serviços Complementa",
+          23
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:5>button:1>svg:1",
+          "",
+          27
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:6",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:6>button:1",
+          "",
+          25
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:6>button:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:6>button:1>div:1>span:1",
+          "6.",
+          26
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:6>button:1>div:1>span:2",
+          "Uso do Equipamento e Prazo da Locação",
+          23
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:6>button:1>svg:1",
+          "",
+          27
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:7",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:7>button:1",
+          "",
+          25
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:7>button:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:7>button:1>div:1>span:1",
+          "7.",
+          26
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:7>button:1>div:1>span:2",
+          "Atraso, Multas e Prorrogações",
+          23
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:7>button:1>svg:1",
+          "",
+          27
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:8",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:8>button:1",
+          "",
+          25
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:8>button:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:8>button:1>div:1>span:1",
+          "8.",
+          26
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:8>button:1>div:1>span:2",
+          "Danos, Avarias e Perdas de Peças",
+          23
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:8>button:1>svg:1",
+          "",
+          27
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:9",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:9>button:1",
+          "",
+          25
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:9>button:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:9>button:1>div:1>span:1",
+          "9.",
+          26
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:9>button:1>div:1>span:2",
+          "Inspeção e Aceite na Entrega/Devolução",
+          23
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:9>button:1>svg:1",
+          "",
+          27
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:10",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:10>button:1",
+          "",
+          25
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:10>button:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:10>button:1>div:1>span:1",
+          "10.",
+          26
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:10>button:1>div:1>span:2",
+          "Cancelamentos e Desistências",
+          23
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:10>button:1>svg:1",
+          "",
+          27
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:11",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:11>button:1",
+          "",
+          25
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:11>button:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:11>button:1>div:1>span:1",
+          "11.",
+          26
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:11>button:1>div:1>span:2",
+          "Proteção de Dados Pessoais (LGPD)",
+          23
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:11>button:1>svg:1",
+          "",
+          27
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:12",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:12>button:1",
+          "",
+          25
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:12>button:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:12>button:1>div:1>span:1",
+          "12.",
+          26
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:12>button:1>div:1>span:2",
+          "Propriedade Intelectual",
+          23
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:12>button:1>svg:1",
+          "",
+          27
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:13",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:13>button:1",
+          "",
+          25
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:13>button:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:13>button:1>div:1>span:1",
+          "13.",
+          26
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:13>button:1>div:1>span:2",
+          "Limitações de Responsabilidade",
+          23
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:13>button:1>svg:1",
+          "",
+          27
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:14",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:14>button:1",
+          "",
+          25
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:14>button:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:14>button:1>div:1>span:1",
+          "14.",
+          26
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:14>button:1>div:1>span:2",
+          "Alterações nos Termos",
+          23
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:14>button:1>svg:1",
+          "",
+          27
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:15",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:15>button:1",
+          "",
+          25
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:15>button:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:15>button:1>div:1>span:1",
+          "15.",
+          26
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:15>button:1>div:1>span:2",
+          "Contato",
+          23
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:15>button:1>svg:1",
+          "",
+          27
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2", "", 1],
+        ["body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1", "", 1],
+        ["body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1", "", 8],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1",
+          "",
+          28
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:1",
+          "",
+          29
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:1>div:1",
+          "",
+          30
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:1>div:1>div:1",
+          "",
+          31
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:1>div:1>div:1>svg:1",
+          "",
+          17
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:1>div:1>h1:1",
+          "Termos e Condições de Uso",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:1>div:1>p:1",
+          "Conheça as regras e condições para utili",
+          33
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:1>div:1>p:2",
+          "Última atualização: 19 de janeiro de 202",
+          34
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:2",
+          "",
+          35
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:2>svg:1",
+          "",
+          35
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2",
+          "",
+          36
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1",
+          "",
+          37
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:1",
+          "",
+          38
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:1>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:1>div:1>div:1",
+          "",
+          40
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:1>div:1>div:1>p:1",
+          "Bem-vindo aos Termos e Condições de Uso ",
+          41
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:2",
+          "",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:2>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:2>div:1>h2:1",
+          "Introdução",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:2>div:1>h2:1>span:1",
+          "1.",
+          44
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:2>div:1>div:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:2>div:1>div:1>p:1",
+          "Bem-vindo aos Termos e Condições de Uso ",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:2>div:1>div:1>p:2",
+          "Se você não concordar com qualquer parte",
+          47
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3",
+          "",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:1>h2:1",
+          "Objeto e Aceitação",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:1>h2:1>span:1",
+          "2.",
+          44
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:1>div:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:1>div:1>p:1",
+          "Estes Termos regulam o acesso e o uso da",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:1>div:1>p:2",
+          "Ao acessar, cadastrar-se ou utilizar a p",
+          47
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:1>div:1>p:3",
+          "Estes Termos complementam o Contrato de ",
+          47
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4",
+          "",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>h2:1",
+          "Cadastro e Conta de Usuário",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>h2:1>span:1",
+          "3.",
+          44
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>div:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>div:1>p:1",
+          "O usuário é responsável por fornecer inf",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>div:1>ul:1",
+          "",
+          48
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>div:1>ul:1>li:1",
+          "Responsabilizar-se por todas as atividad",
+          49
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>div:1>ul:1>li:2",
+          "Comunicar imediatamente qualquer uso não",
+          50
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>div:1>ul:1>li:3",
+          "Manter seus dados de contato atualizados",
+          50
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>div:1>p:2",
+          "A GB Locações pode suspender ou cancelar",
+          47
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5",
+          "",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>h2:1",
+          "Orçamentos, Reajustes e Pagamentos",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>h2:1>span:1",
+          "4.",
+          44
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>div:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>div:1>p:1",
+          "O orçamento gerado na plataforma tem car",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>div:1>ul:1",
+          "",
+          48
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>div:1>ul:1>li:1",
+          "A solicitação de orçamento não garante d",
+          49
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>div:1>ul:1>li:2",
+          "A locação somente é efetivada após confi",
+          50
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>div:1>ul:1>li:3",
+          "O administrador pode reajustar o orçamen",
+          50
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>div:1>p:2",
+          "Reajustes podem incluir custos de logíst",
+          47
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>div:1>p:3",
+          "O pagamento do boleto representa a aceit",
+          47
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6",
+          "",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>h2:1",
+          "Custos Adicionais e Serviços Complementa",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>h2:1>span:1",
+          "5.",
+          44
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>div:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>div:1>p:1",
+          "Serviços e custos adicionais poderão ser",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>div:1>ul:1",
+          "",
+          48
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>div:1>ul:1>li:1",
+          "Frete, deslocamento e distância.",
+          49
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>div:1>ul:1>li:2",
+          "Carga, descarga, montagem e desmontagem.",
+          50
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>div:1>ul:1>li:3",
+          "Serviços de logística, motorista ou espe",
+          50
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7",
+          "",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>h2:1",
+          "Uso do Equipamento e Prazo da Locação",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>h2:1>span:1",
+          "6.",
+          44
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>div:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>div:1>p:1",
+          "O equipamento deve ser utilizado de form",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>div:1>ul:1",
+          "",
+          48
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>div:1>ul:1>li:1",
+          "Respeitar o período de locação definido ",
+          49
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>div:1>ul:1>li:2",
+          "Não utilizar o equipamento fora das data",
+          50
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>div:1>ul:1>li:3",
+          "Garantir que apenas pessoas qualificadas",
+          50
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>div:1>ul:1>li:4",
+          "Zelar pela guarda e conservação do equip",
+          50
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8",
+          "",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>h2:1",
+          "Atraso, Multas e Prorrogações",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>h2:1>span:1",
+          "7.",
+          44
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>p:1",
+          "A devolução após o prazo contratado pode",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>p:2",
+          "Critérios e valores serão informados no ",
+          47
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>p:3",
+          "Pedidos de prorrogação estão sujeitos à ",
+          47
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:9",
+          "",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:9>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:9>div:1>h2:1",
+          "Danos, Avarias e Perdas de Peças",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:9>div:1>h2:1>span:1",
+          "8.",
+          44
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:9>div:1>div:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:9>div:1>div:1>p:1",
+          "O cliente é responsável por danos, avari",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:9>div:1>div:1>p:2",
+          "Quando aplicável, os custos poderão ser ",
+          47
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:10",
+          "",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:10>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:10>div:1>h2:1",
+          "Inspeção e Aceite na Entrega/Devolução",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:10>div:1>h2:1>span:1",
+          "9.",
+          44
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:10>div:1>div:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:10>div:1>div:1>p:1",
+          "Na entrega e na devolução, poderá ser re",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:10>div:1>div:1>p:2",
+          "Eventuais divergências devem ser registr",
+          47
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:11",
+          "",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:11>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:11>div:1>h2:1",
+          "Cancelamentos e Desistências",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:11>div:1>h2:1>span:1",
+          "10.",
+          44
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:11>div:1>div:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:11>div:1>div:1>p:1",
+          "Condições de cancelamento, remarcação ou",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:12",
+          "",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:12>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:12>div:1>h2:1",
+          "Proteção de Dados Pessoais (LGPD)",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:12>div:1>h2:1>span:1",
+          "11.",
+          44
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:12>div:1>div:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:12>div:1>div:1>p:1",
+          "A GB Locações trata dados pessoais confo",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:12>div:1>div:1>p:2",
+          "Para mais detalhes sobre o tratamento de",
+          47
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:13",
+          "",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:13>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:13>div:1>h2:1",
+          "Propriedade Intelectual",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:13>div:1>h2:1>span:1",
+          "12.",
+          44
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:13>div:1>div:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:13>div:1>div:1>p:1",
+          "Todo o conteúdo da plataforma, incluindo",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:13>div:1>div:1>p:2",
+          "É vedada a reprodução ou uso não autoriz",
+          47
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:14",
+          "",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:14>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:14>div:1>h2:1",
+          "Limitações de Responsabilidade",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:14>div:1>h2:1>span:1",
+          "13.",
+          44
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:14>div:1>div:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:14>div:1>div:1>p:1",
+          "A GB Locações não se responsabiliza por:",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:14>div:1>div:1>ul:1",
+          "",
+          48
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:14>div:1>div:1>ul:1>li:1",
+          "Danos decorrentes de uso inadequado ou n",
+          49
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:14>div:1>div:1>ul:1>li:2",
+          "Acidentes ou prejuízos causados por oper",
+          50
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:14>div:1>div:1>ul:1>li:3",
+          "Lucros cessantes ou danos indiretos.",
+          50
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:15",
+          "",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:15>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:15>div:1>h2:1",
+          "Alterações nos Termos",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:15>div:1>h2:1>span:1",
+          "14.",
+          44
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:15>div:1>div:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:15>div:1>div:1>p:1",
+          "A GB Locações pode atualizar estes Termo",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:15>div:1>div:1>p:2",
+          "O uso continuado após a publicação das a",
+          47
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16",
+          "",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1",
+          "",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>h2:1",
+          "Contato",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>h2:1>span:1",
+          "15.",
+          44
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>p:1",
+          "Em caso de dúvidas, entre em contato pel",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1",
+          "",
+          51
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:1>div:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:1>div:1>div:1",
+          "",
+          52
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:1>div:1>div:1>svg:1",
+          "",
+          17
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:1>div:1>h3:1",
+          "Entre em Contato",
+          53
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:1>p:1",
+          "Respondemos com agilidade e transparênci",
+          54
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>p:1",
+          "Estamos à disposição para esclarecer qua",
+          55
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2",
+          "",
+          55
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:1",
+          "",
+          56
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:1>svg:1",
+          "",
+          57
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:1>div:1>span:1",
+          "E-mail:",
+          58
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:1>div:1>a:1",
+          "contato@locadora-alfa.example",
+          59
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:1>div:1>p:1",
+          "marketing@locadora-alfa.example · automa",
+          60
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:2",
+          "",
+          61
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:2>svg:1",
+          "",
+          57
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:2>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:2>div:1>p:1",
+          "",
+          62
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:2>div:1>p:1>span:1",
+          "Telefone:",
+          58
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:2>div:1>p:1>a:1",
+          "(51) 3000-0000",
+          59
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:2>div:1>p:2",
+          "",
+          63
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:2>div:1>p:2>span:1",
+          "WhatsApp:",
+          58
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:2>div:1>p:2>a:1",
+          "(51) 99999-0000",
+          64
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:3",
+          "",
+          61
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:3>svg:1",
+          "",
+          57
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:3>p:1",
+          "Rua Exemplo, 100 - Centro, Porto Alegre ",
+          62
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:16>div:1>div:1>div:1>div:1>div:2>div:3>p:1>span:1",
+          "Endereço:",
+          58
+        ],
+        ["body:1>div:2>div:1>div:1>footer:1", "", 65],
+        ["body:1>div:2>div:1>div:1>footer:1>div:1", "", 66],
+        [
+          "body:1>div:2>div:1>div:1>footer:1>div:1>p:1",
+          "Locadora Pausada · Curitiba/PR",
+          67
+        ],
+        [
+          "body:1>div:2>div:1>div:1>footer:1>div:1>p:2",
+          "© Locadora Pausada. Todos os direitos re",
+          67
+        ],
+        [
+          "body:1>div:2>div:1>div:1>footer:1>div:1>nav:1",
+          "\"Documentos legais\"",
+          68
+        ],
+        [
+          "body:1>div:2>div:1>div:1>footer:1>div:1>nav:1>a:1",
+          "Privacidade",
+          69
+        ],
+        ["body:1>div:2>div:1>div:1>footer:1>div:1>nav:1>a:2", "Termos", 69],
+        ["body:1>div:2>div:1>div:1>footer:1>div:1>nav:1>a:3", "Cookies", 69],
+        ["body:1>div:2>div:1>div:1>footer:1>div:1>nav:1>a:4", "Devolução", 69],
+        ["body:1>div:2>section:1", "\"Notifications alt+T\"", 70]
+      ]
+    }
+  }
+}

@@ -1,0 +1,268 @@
+{
+  "schema": "context-window/manifest@2",
+  "library": "context-window/saas-skills",
+  "libraryVersion": "2.1.0",
+  "source": {
+    "commit": "c4f9e462049cd0ec7a405270aeb849c9571f9a2b",
+    "distribution": "checkout"
+  },
+  "scope": "project",
+  "sink": "claude",
+  "profile": "dev",
+  "installedAt": "2026-09-25T12:29:43.501Z",
+  "entries": [
+    {
+      "id": "ai-context-diagrams",
+      "packageHash": "820a466752a33edcb123b894d93c362342ca2f245551b434aec670b0d077e055",
+      "files": {
+        "SKILL.md": "38b02f4b8302311e3407a2476166dca4874fb70221180a29e94846d2e11cc109",
+        "references/c4-model-patterns.md": "9aaae119efacf480d524512d114fdff7da2aa287320875d4fe103456b0c57fef",
+        "references/mermaid-examples.md": "0a6b03dff87c6b66664746223a5fc8d1a0fa156b6d5e1ab10e6e22d234de5cfd"
+      }
+    },
+    {
+      "id": "ai-interface-design",
+      "packageHash": "ad7ee6fc9c91dd10d73f3960707c8eedb5e32c29e5a91bc73327617251de9b96",
+      "files": {
+        "SKILL.md": "f4746e018d9bcc63fcc70c6dc3acd25bae8a6e20f27af6ec39e94d3c92c83e54",
+        "references/compliance-checklist.md": "35dda37fe726baaa230651e71adcfdce84284a015d12fc3f4fb11f7cd87ae97a",
+        "references/implementation-roadmap.md": "5edef20305fb5b5440db4efc4e9de630bbb3f93b4e0b3d38db21ac7b5433ca42"
+      }
+    },
+    {
+      "id": "api-design-patterns",
+      "packageHash": "f148b06bcf4515193aace3571099072af1d8e0869ef24161932d456ca9a6f98d",
+      "files": {
+        "SKILL.md": "2c52a295ee9cdee0dfc218e18d45826759fb759b03f4ab82695f3e46e9644afe"
+      }
+    },
+    {
+      "id": "clean-architecture-ddd",
+      "packageHash": "754222279441a7b07349f08bd565b53e2a779f014d17ef1fa287b135f887b895",
+      "files": {
+        "SKILL.md": "229e1d65ef24d23197e28b855294c894fa9e7fe6445ab2f825565fa171102fab",
+        "references/ddd-tactical-patterns.md": "bec63f6fe1d53380a7e0caadaef437dc81530f5d4b0d706d1106932d1481e6b3"
+      }
+    },
+    {
+      "id": "component-reuse-portability",
+      "packageHash": "1c167f0cf24fbee286b4272895bbdbe90aa337258dcb6e2c90dd90e58fd556b4",
+      "files": {
+        "SKILL.md": "f453b7830600dafd02706e68be292966eebd5447d7bb8ff7208d8cba422cf739",
+        "references/registry-and-advanced-cases.md": "73b212f707521aa263c867919c5c522a576e435a19fc245d7ba14ece24d89b88"
+      }
+    },
+    {
+      "id": "context-window-optimization",
+      "packageHash": "d1137acb0ec5c4dd4b500010efa002bd7991617a8ab5a46a155cca6f6b648414",
+      "files": {
+        "SKILL.md": "2128acebd16ddfb8795d643d3599b9e6627c1746b0f26540239d3bff0f454bf3",
+        "references/compression-strategies.md": "ed4cd7d4597b7ef095df3b5d6a8906b61d00a08130fc49ecef2542ec103ab562",
+        "references/rag-decision-guide.md": "8bf5e4916ea3214d82dbf2de8d68fc3d470a3e7cfa9971c979c6e58572a1cbd3"
+      }
+    },
+    {
+      "id": "design-system-implementation",
+      "packageHash": "b25179d9d20b1f96d94919944c7175ef1f5a06c0bed585795e4ad2c7d51baf31",
+      "files": {
+        "SKILL.md": "2a46af96b844a950f92f290589e330c1c7102cca8b3df7808307de2139a9c355"
+      }
+    },
+    {
+      "id": "intelligent-project-docs",
+      "packageHash": "7e09f1d16ec7e3253472273afbc77fe5906a7359f9b211b8ac6ef378d40487ce",
+      "files": {
+        "SKILL.md": "e10a9aa7955fc53ddba84c137b7b4b7c04878adffecbead0b735d93b61031921",
+        "assets/agents-md-template.md": "d2326a912dbc6218df897122d3f70f73754e863e776763822b0f04b274e856fc"
+      }
+    },
+    {
+      "id": "legacy-code-refactoring",
+      "packageHash": "42d071ee4f4cc8470a5382f2144c8ff01db0a0777c5c15d9f7c764d120c6243d",
+      "files": {
+        "SKILL.md": "cc8c6165b10b363b5398bc61a343a6561e3675cfd2fac0aba1dc7bb5a8d89465",
+        "scripts/legacy-inventory.mjs": "aae1431ac406a40f0787e7336d146ce40835251935294c8fd2dba2388547773d"
+      }
+    },
+    {
+      "id": "multi-agent-skill-creator",
+      "packageHash": "4892663803d306194d51f39d3ee065f7287abea096ba577835356a0b05affabb",
+      "files": {
+        "SKILL.md": "b0c891ee79bacf80abd2d6442e6271b7e68a53be8617b2b154a581855769f55c",
+        "agents/openai.yaml": "a7fa9c511e191a5487c2eb6a94ffcad20b52829af6bfef681985d24b52748aab",
+        "references/runtime-contracts.md": "4c84e1e71b47babf0315c839be1ba349bd9ef75f22f7c986b8a241aaa67f909c",
+        "scripts/scaffold_portable_skill.py": "a14b88e0695aa4633f37170956b4653abce799c0ade7ac98f34e27e2990d17cc"
+      }
+    },
+    {
+      "id": "multi-agent-skill-installer",
+      "packageHash": "159f19b979d68e42f5bebe837065de0fa4b5b530a2dc5576958955e6c4fcf83d",
+      "files": {
+        "SKILL.md": "fa92dc62f8f8b45d999fe5c8820af7fa5539be455dc85e9025413cc6603c0f6f",
+        "agents/openai.yaml": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94"
+      }
+    },
+    {
+      "id": "multi-perspective-council",
+      "packageHash": "d42388ce4888aaa9bb7e993d19d21c2c475d5f3f547b0c27ab66a453f9e64202",
+      "files": {
+        "SKILL.md": "dc4acc0e29ee5dc4566e8d2baccc5addc04e2f1721d9f09b2076d8764d03ee4c",
+        "agents/openai.yaml": "64296822da3a8d78d2c2489ceb66641e084d800b1ba642c7868dda8797c83bbe",
+        "references/advisor-prompts.md": "fec92963b6a7a7189cefaaf1c427d3001a52e4defdff5645b09fce922c3e1e54",
+        "references/output-templates.md": "c0cb52bd2d15b0d4afb2657e6d6c6e0740b486178c0278fcfbe657661969eb81",
+        "references/runtime-degradation.md": "b5161bbb75c6c293ef7289446dc8f32d8e793858549abcfbbd8c0a414d950ae7"
+      }
+    },
+    {
+      "id": "multiplatform-platform-architecture",
+      "packageHash": "a51369f985c225d9fe8e45a34ae6faeb2efa123808b52b5bc27e839e4f262d07",
+      "files": {
+        "SKILL.md": "6debffae1fedee825a2fa14449404964b221a435790efef4b436b491e53f52bb",
+        "assets/template/.gitignore": "0f08caea4c9b7d98cf7912b3afd19013956ac0b23902994fe35715882ae07487",
+        "assets/template/README.md": "ac8c9baa2950b760ce11e9525840e679988aab953b365bd19346d6762f567e75",
+        "assets/template/apps/clients/mobile/app.json": "d09feb0b804877bada271af1ace57eb97d51b9c36bd27921eb0e484cefa1aa30",
+        "assets/template/apps/clients/mobile/metro.config.js": "86aee24a6691c6f4d96dac28a7d38ae783a351b0dd7a23923e993e1d84d6d9c0",
+        "assets/template/apps/clients/mobile/package.json": "803cb0aec78d8f078349a7feb23979dd4e760a51e2da3d0452cbb810fcb64884",
+        "assets/template/apps/clients/mobile/src/app/_layout.tsx": "9229b85b8db97c0f9ca82a93153c6f906ce78a64112a89444c9d1cfe031712c2",
+        "assets/template/apps/clients/mobile/src/app/catalog.tsx": "df11a16fc0e2d0d95c756c246e4d29b87d873da052c380d606a28deb42ca1c9f",
+        "assets/template/apps/clients/mobile/src/app/index.tsx": "3297e996356f38e020a3a8b0e98b74a4cd4697e906b0abb2708708a741aee289",
+        "assets/template/apps/clients/mobile/tsconfig.json": "e57f22404b53cc9d48c00cde9768dc74ed8cfdaf9bb89cdf2030d6e322136e97",
+        "assets/template/apps/clients/web/next-env.d.ts": "879741880b6ab48da99dcc06dcc674d381c9826137b0496bf7bb368f302de9fc",
+        "assets/template/apps/clients/web/next.config.mjs": "c507a0922f57a0a253dd6f05a1a373432581d21ab2fb251c690569f6e01bcfff",
+        "assets/template/apps/clients/web/package.json": "311efdeebd7475388e6c8882d852c3139bffb4d0fea2441d3d45c42ea42d53c3",
+        "assets/template/apps/clients/web/src/app/catalog/page.tsx": "f0472ac52252e82d4b86217867710af8fe0c523e1572f2ad64615d37af3fa922",
+        "assets/template/apps/clients/web/src/app/layout.tsx": "0a81c28698b9189f89785fa1677a61698a36e819d0273cb53159e2315334501a",
+        "assets/template/apps/clients/web/src/app/page.tsx": "805fa790e0940051d6750a6ac6b0235fe3317ac52d4c98e982cb224a1c28d159",
+        "assets/template/apps/clients/web/tsconfig.json": "b146063f21c1565ebbd39ec4f1cdd0507023af2bfe7837be10accb4be012436b",
+        "assets/template/arch.config.json": "3f9efaa527e2ed771bbb4d951e0cd16f8c38972f8a47abfd8f5e4a0c40aacead",
+        "assets/template/package.json": "4ee48c56fbeb5c8eae872ef260f34ed35d7c1f823f8602374585ff34bba18203",
+        "assets/template/packages/design-tokens/package.json": "70b20e658d44ffbde6f7f0b690087021758a2152024a76946f728bc155308ed0",
+        "assets/template/packages/design-tokens/src/index.ts": "fa531b03706322ab64d2d4f9ae2f3aa918f230cef86d3ad3803b3b28e5ff1559",
+        "assets/template/packages/design-tokens/src/tokens.ts": "215e2359e84363214ab7c97bc4e2535653172c2f7b4fc7ec4aad4122d5c090d0",
+        "assets/template/packages/design-tokens/tsconfig.json": "34893bef7f98e46e0fb4675dd22cda30d20fa63a4a451e34100210dcb9dd0e20",
+        "assets/template/packages/frontend/package.json": "87e37f33eaa50c7aeeed507a12083fd7568a5d02a6aaa11fb99aa6f4009d2419",
+        "assets/template/packages/frontend/src/app/index.ts": "80b184f9f0ce99be4bcc54cb08cbc3ed44a9de7a17307028b6fd891600c62585",
+        "assets/template/packages/frontend/src/app/providers/AppProviders.tsx": "d772ce4bfa2d2cbef4f5100a337dd62e84d54a719272e8d067e9d079e3af82d4",
+        "assets/template/packages/frontend/src/entities/product/index.ts": "050b0ceea0e6dc39273dfe2f18b278ce7552a55907337a0b4c5818d6fdde664d",
+        "assets/template/packages/frontend/src/entities/product/model/product.test.ts": "1e92054217fc2eeb0eab6d66ddb366456239ffefd362ccd29913129691311340",
+        "assets/template/packages/frontend/src/entities/product/model/product.ts": "5856a9195280d11c82b2b1b0ba76f2fb0fcbb7074445f10e449ff53bfaf504d2",
+        "assets/template/packages/frontend/src/entities/product/ui/ProductCard.tsx": "b821d70f67e48deeb722e79f679cca35b9389bdf6791fda143d7955bc260a4a2",
+        "assets/template/packages/frontend/src/features/toggle-favorite/index.ts": "7a1c834400737bbcaeccda60c67e881523184dffdcffa28f236a4b23215319c4",
+        "assets/template/packages/frontend/src/features/toggle-favorite/model/favorite.test.ts": "fc74d8c5c27c9bfaa7dabb32fb10928b41e324012f38ebe47af190c44db81891",
+        "assets/template/packages/frontend/src/features/toggle-favorite/model/favorite.ts": "dd9e5aa34a493d8a4e57dbab0541c46c68ca9609aa9afea09a111612f47e971b",
+        "assets/template/packages/frontend/src/features/toggle-favorite/ui/ToggleFavoriteButton.tsx": "ce3bd9bbfb1737a3245503f5cef2f7dfd2f30c35edb685aac912d18715183f4f",
+        "assets/template/packages/frontend/src/pages/catalog/index.ts": "ffc8273efde5930b4f17e6cc5e8b01c5f75cb3a14010d1ac519741179f6fe332",
+        "assets/template/packages/frontend/src/pages/catalog/ui/CatalogPage.tsx": "578ababfafb51b3c411433bebf1948e1d613a27bde538dd5c308e09bc98283e7",
+        "assets/template/packages/frontend/src/pages/home/api/sample-product.ts": "5ec2147e3e3c71836c760b83e3cd9898d5125edfe330de3a10ecc6b229626e53",
+        "assets/template/packages/frontend/src/pages/home/index.ts": "e42e5c4c252a87be7f9a22aad1ba09d2d23daa34628045e065d382805e557034",
+        "assets/template/packages/frontend/src/pages/home/ui/HomePage.tsx": "31e357ec4e47b2d6dbb3fbcb1c92404218fc0ff07024283e0ade58de89a39e8f",
+        "assets/template/packages/frontend/src/pages/home/ui/HomePage.web.test.tsx": "e5d95513ebcefa2fe11fee530ec12dc26838033b536c81ca3705cdc3fd783d45",
+        "assets/template/packages/frontend/src/shared/ui/index.ts": "05ed3985058f158305ea3ae0953ffe4823d9baa469fba7111f5cb4b43e2ad8d3",
+        "assets/template/packages/frontend/src/widgets/product-highlight/index.ts": "52d83eb9a29e571f4dbd63d9d05d9d1dd340a7e9eb7a37b41562965f5d7b8fd4",
+        "assets/template/packages/frontend/src/widgets/product-highlight/ui/ProductHighlight.tsx": "808b8362d9573b470d81a46ce1d5585cf266a18f3f203e1e0e5ad46eebedf407",
+        "assets/template/packages/frontend/tsconfig.json": "3d01484de0020b9a7a9d8d6223c5fd1ea468e998a9a883b95c8e2a0dcd897b75",
+        "assets/template/packages/ui/package.json": "62aee0cd511195283a0987d0ac5e7e94de58f22f3b3dfd1bbbd30ff5bad30eee",
+        "assets/template/packages/ui/src/catalog.test.ts": "d349fd58319e70c7cdc469f5a20f5ad881b39817ed54100b73bcc3b780c1c0b1",
+        "assets/template/packages/ui/src/catalog.ts": "7436e8c1833a7f4fe5aec9b1a27c9bfdf788469d11ae6c966ea0d38c394db60f",
+        "assets/template/packages/ui/src/contract/button.test.ts": "975913162c07f0ed86d8481bd3f79817fa5a1b5ec6998876d0c041f387062fef",
+        "assets/template/packages/ui/src/contract/button.ts": "7396e375d1fe81feacecb075f5b6f8680656c26b56300d4d464ca3d6cbbc5bea",
+        "assets/template/packages/ui/src/contract/stack.ts": "148ea2cc3a68d294e0afb680ce944fc689aeaa820bd6fe6ad631ebe059a457d8",
+        "assets/template/packages/ui/src/contract/text.ts": "bd988b3c8982090fb1193046fcc47e6d9c2898fcd26451bd26c2393df5881213",
+        "assets/template/packages/ui/src/index.native.ts": "4bd28f4eb3339f534d9e7d0ef108455961dea3092bcd9217bfd3c7a5a350d94a",
+        "assets/template/packages/ui/src/index.web.ts": "e8bda221af0485c22851e6a63235115a4c68ee45dc5626013a8cd0826ecf04d9",
+        "assets/template/packages/ui/src/native/Button.native.test.tsx": "ab8b0aa950ea2085ce79fd5e430931c06e25d4f8e486291012886f2ab06a9728",
+        "assets/template/packages/ui/src/native/Button.native.tsx": "2caff9adc37a59f86881797db5e1e1cd7703a030d96e5d3c782e50afa9e3c2af",
+        "assets/template/packages/ui/src/native/Stack.native.tsx": "8e86d535af69ac1606d62cb14541278be820c6c10c010aa8864bd9d9b7dc7be8",
+        "assets/template/packages/ui/src/native/Text.native.tsx": "2d3a62b837ab023f3b42f26cc7e7dcbe2531626b5ebbc2ffabc9cc0ffe6a01c8",
+        "assets/template/packages/ui/src/theme/ThemeProvider.tsx": "43969fc86022fd3681b8fc1ff14998f4a83a949d5c61f3e95dc7acd46de6bc5b",
+        "assets/template/packages/ui/src/web/Button.web.test.tsx": "53aecea5a05bf44b98605a07b346c5b47cf17d1cab586c59705bd332195e36dd",
+        "assets/template/packages/ui/src/web/Button.web.tsx": "9a16ef133b3aca7965591bfb8194943f68b8484cab0ed32f53ac0867ad360f27",
+        "assets/template/packages/ui/src/web/Stack.web.tsx": "492448f2297ee2900ecb9afa1d315e06574c1444b9ac69280d439c6a12707bfb",
+        "assets/template/packages/ui/src/web/Text.web.tsx": "3e838a580645cbcf7790ce1e5656962cc719a07f84e787779bc5e6e498c62d40",
+        "assets/template/packages/ui/tsconfig.json": "6bd1b06324e8b9868b8c7c5e9891c453758c27f7f35461698619a877309a01d3",
+        "assets/template/packages/ui/tsconfig.native.json": "0c2de616a078b7313d6058f64e2c54be758a7134810529d34c8f3085ab0a35a3",
+        "assets/template/pnpm-lock.yaml": "7805353785e3a2f99f381d4b6ef67c0232dae044c951f2a61c7c748ebf543103",
+        "assets/template/pnpm-workspace.yaml": "d83ed2554c7a9962f67f1b8a27475f24d1fc3d4afa06027ae99369a347bfa33c",
+        "assets/template/tools/token-propagation-check.mjs": "c1aac1e96ebddb797c653c4df9a2f54324687b2a368873054168a7c6da38b013",
+        "assets/template/tsconfig.base.json": "ad27b484fd0dc477066947d34a772073e6eb68bede06dca821dd679f07fe69f7",
+        "assets/template/vitest.config.ts": "fffb8783b6ca25c4f512b0c7362c21f5899a956a7cb91d595c881be9ba54dce9",
+        "references/client-fsd-mirror.md": "d45a3edfe8b84331c3e8c2f39a5d1cdd252912845e877ba65242c7537c368c8f",
+        "references/fsd-frontend-taxonomy.md": "a11b276c102748212625d4e5ec8b33edafeb2755eb0f977f8f46707776311ea7",
+        "references/modular-api-anatomy.md": "e08e1c9a9f60b2db666c0f7133371c3e0b64b512d30891092c90ac2a27a1bc18",
+        "references/platform-monorepo-tree.md": "b16b3b54e6516e551c01af29abfbcc60e078a7d0eee29f1a0bf71d6a5b17cde1",
+        "scripts/arch-check.mjs": "941ddf73559999e48df52d458923543b4b82a076255ab35e1b459fbd5d7efcb3",
+        "scripts/scaffold.mjs": "514d95834f297756625cb90ae257d4700a000d052afacc61d0bd32d68e1d14fb",
+        "scripts/token-check.mjs": "95e051a513cb96d7ff3bbcfbe8c4b6202519c193d2f3705b34ea3c33e71851b9"
+      }
+    },
+    {
+      "id": "prisma-database-design",
+      "packageHash": "509a7473aae19e90105a7497cae8ea13f6c0ed53df09bcb40990e5a69be3d2ed",
+      "files": {
+        "SKILL.md": "0639f3e9c0d7f1110f7bbe84ccf646bc9d0d3d2b8f77bff33efaa89ea5a4bc3f"
+      }
+    },
+    {
+      "id": "prompt-engineering-hybrid",
+      "packageHash": "c4767e72f0babad8954072c10bf2f5e15e2cec14865d1f3138871cd6fe2b4e8d",
+      "files": {
+        "SKILL.md": "2c55bdec2aa2cb90f430f890c763ef5bc46da283f7b31302797331bc8d63b7a9",
+        "references/format-selection-guide.md": "6aa8b2a82828e11e00a0bc4bff6a8eef78fedda52fb48be6c185f6b95c042815"
+      }
+    },
+    {
+      "id": "react-saas-architecture",
+      "packageHash": "b47f3eeeaaa41e7a15887a4b5e936acb4eb2c9ffef9d5a1fd31fdfd48e563d03",
+      "files": {
+        "SKILL.md": "a290f893556e6da3046c670f90469024fe5ea441847b2d241a1f86d5dfc6c9d5",
+        "references/advanced-component-patterns.md": "14d601bebaaac75fda15a832f23df31827f2789d075a609ea0086583d2ab1662",
+        "references/fsd-structure-examples.md": "3375ee7de1bcb3d4181fc74294f7cc6cf876eb00cace0430201e79622a5fc2b9"
+      }
+    },
+    {
+      "id": "saas-ai-agent-engineer",
+      "packageHash": "397745e73a3381ed107f2caab5e95f641933f5ca20e023de1b323fb6637fb94e",
+      "files": {
+        "SKILL.md": "5815647cbb25780328b7d534da905402cd243f44f2b4b4395ac6438695590f22",
+        "references/architecture.md": "b7ebc6e9cfe12164cd27f7aa3ff9c7055990a7ab3bc0519f58cf415f51920e17",
+        "references/evals-observability.md": "d16e1be59e2f8cde45a20a53a537c5c4bcb023fd4d0281c8222fdd7be10f8fa0",
+        "references/implementation-patterns.md": "b9f44dec418fc2702088f58e04995d1234811441c9ffefb4c64693adfb3f7344",
+        "references/rag-memory.md": "aa28a22c60a902e8f0ced9a3fb4829be9c687d93493393ce8b463b78a8d80807",
+        "references/review-checklists.md": "3835ff0bad45e241ffce64afbdc45f360e482a7cd68c35514796a4343b16039b",
+        "references/security-governance.md": "a88b8b402ddfd8220f01fc84d0e59ac78405a05c945d74f4d5fbe43bf590f5b5"
+      }
+    },
+    {
+      "id": "saas-ui-specifications",
+      "packageHash": "d83c525611aec7bf82b33d93801fc237e684ff27f3c15e2e34ab83b28997d7c0",
+      "files": {
+        "SKILL.md": "b08fdbb2895eb88dd33c5ac1c14dcaf2626a0b0916e85c360cdff2c796e41726",
+        "references/color-system.md": "c572ea4622ebc77ffc2b4e31079a78574b6babca53ce33cbe13f1e49c6ef1cf0",
+        "references/spacing-grid.md": "4053dc0c61a413de05c4ac2e6bb098f69bbd1b246daefbcc67bb0d71bd3ac4ec",
+        "references/typography-scale.md": "25109a4cd057039f03f186202e9b37a131911f5153ef869869e85681d4fc2624"
+      }
+    },
+    {
+      "id": "systems-analysis-saas",
+      "packageHash": "0a95d52d2a5bde1f3858afb23520144c54c34abd15f62f7c09d333fed990a084",
+      "files": {
+        "SKILL.md": "824a31bb26c49e9bd514349b6e79814169b4bb5eef6169228895bb7393283ee0"
+      }
+    },
+    {
+      "id": "technical-research-writing",
+      "packageHash": "471645b6c3fc23c56dfa37e2eaca6b2fa63f8a9ab50be11bb1d04d93b9eaff4f",
+      "files": {
+        "SKILL.md": "bd1ef4e905acc836273d3fbae653e0f84bb62aaaab385cbc8877ce9087c53102"
+      }
+    },
+    {
+      "id": "testing-strategies",
+      "packageHash": "1be3075f9c390a2e1ced835b2a1d6ddb1dfe5580de30d7f8f351b2e946907076",
+      "files": {
+        "SKILL.md": "ee849defb0157bbc74310e33da975e55a6523e45be1d62df9f245d0d952de004",
+        "references/test-examples.md": "674ba57dbf2f37dc8da923b24c1425540d0a8eae7b6e6a2a6dd3c643998ff100"
+      }
+    }
+  ]
+}

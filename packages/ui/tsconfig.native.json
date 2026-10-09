@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": [
+      "ES2022"
+    ],
+    "customConditions": [
+      "react-native"
+    ],
+    "paths": {
+      "react-native": [
+        "../../apps/clients/mobile/node_modules/react-native/types_generated/index.d.ts"
+      ]
+    }
+  },
+  "include": [
+    "src/index.native.ts",
+    "src/native",
+    "src/contract",
+    "src/theme",
+    "src/catalog.ts"
+  ],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx"
+  ]
+}

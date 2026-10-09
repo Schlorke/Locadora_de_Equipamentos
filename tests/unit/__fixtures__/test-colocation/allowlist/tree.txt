@@ -1,0 +1,5 @@
+# Dois órfãos (cross-cutting e legacy) e um teste aninhado (a.test.ts).
+src/a.ts
+src/a.test.ts
+src/cross-cutting.test.ts  # órfão
+src/legacy.test.ts  # órfão

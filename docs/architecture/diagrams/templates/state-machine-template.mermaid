@@ -1,0 +1,8 @@
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> Pending: Submit
+    Pending --> Approved: Approve
+    Pending --> Rejected: Reject
+    Approved --> Completed: Finalize
+    Rejected --> [*]
+    Completed --> [*]

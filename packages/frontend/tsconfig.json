@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": [
+      "node"
+    ],
+    "paths": {
+      "react-native": [
+        "../../apps/clients/mobile/node_modules/react-native/types_generated/index.d.ts"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "../../types/next-auth.d.ts"
+  ],
+  "exclude": [
+    "**/*.native.tsx",
+    "**/*.native.ts"
+  ]
+}

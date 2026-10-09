@@ -1,0 +1,1819 @@
+{
+  "version": 1,
+  "kind": "portable-stage1-local-validation",
+  "preparedAtUtc": "2026-10-09T20:47:08.19Z",
+  "date": "2026-10-09",
+  "timeZone": "America/Sao_Paulo",
+  "integratorFinalizationRequired": false,
+  "documentTarget": "docs/guides/wave135-base-validation.md",
+  "ledgerTarget": "docs/guides/wave135-base-validation.ledger.json",
+  "evidenceRootAlias": "FINISH",
+  "evidencePathConvention": "All artifact paths are relative to the retained FINISH evidence directory; no environment values or local profile paths are published.",
+  "status": "local-stage1-completed-docker-p2-f-pending",
+  "noValidationExecutedByReportAuthor": true,
+  "aggregateTests": null,
+  "aggregateReason": "Suites/profiles overlap; B11 pairs, states, frames, builds and gates are not unique functional test counts.",
+  "source": {
+    "recoveredContextCheckpoint": "873d8fbc74e423d4bf2152cb8c8e64b1be297810",
+    "finalStage1CommitSha": null,
+    "immutablePreExclusionTagSha": null,
+    "currentBuilds": {
+      "rootLegacy": "2CzG4P9eHamBfh1xt61uW",
+      "api": "90k7TmauECA5RzoPobLhH",
+      "webLegacy": "ets-lpI32e_hYU8NUDtfg",
+      "webBetterAuth": "T-Qbiffln46vwsFDvOYAW"
+    },
+    "buildEvidence": [
+      "build-ids-stage-legacy.json",
+      "build-ids-stage-better-auth.json",
+      "build.log",
+      "build-api.log",
+      "build-web-legacy.log",
+      "build-web-better-auth.log"
+    ],
+    "limits": [
+      "A BUILD_ID binds compiled output, not an invented immutable source SHA before Stage1 publication."
+    ]
+  },
+  "humanDecision": {
+    "date": "2026-10-09",
+    "interfaceAccepted": true,
+    "authority": "Explicit user acceptance recorded in visual-human-acceptance.json.",
+    "authoritySha256": "af118cdcc43a24ba8061fb4415ce3b5714a361ad016fb231e64d9a7567f0cf39",
+    "firstStageCommitPushAuthorized": true,
+    "destination": "Schlorke/Locadora_de_Equipamentos",
+    "publicationObserved": null,
+    "publicHistoryPolicy": "Clean zero-parent publication; old history retained locally, not pushed or merged.",
+    "credentialsPolicy": "Do not revoke/change credentials potentially shared with GB.",
+    "infrastructure": "Local disposable PostgreSQL validates this stage; infrastructure/providers are later work.",
+    "productionCertified": false
+  },
+  "core": [
+    {
+      "id": "unit-full-recovered",
+      "evidence": "test-unit.full-recovered.json",
+      "status": "summary-passed-recovered",
+      "filesPassed": 180,
+      "filesSkipped": 0,
+      "passed": 6256,
+      "skipped": 13,
+      "collected": 6269,
+      "durationSeconds": 380.64,
+      "directVitestExitCode": null,
+      "terminalProcessExitCode": 0,
+      "exitScope": "Completed terminal process containing serial suite outputs, not a separate direct Vitest exit.",
+      "skipReasons": [
+        {
+          "count": 6,
+          "reason": "Missing-user negatives exist only on the legacy root mail-read arm; service principal always has userId.",
+          "sources": [
+            "tests/unit/zoho-mail-read-api.test.ts:188",
+            "tests/unit/zoho-mail-read-api.test.ts:293"
+          ]
+        },
+        {
+          "count": 6,
+          "reason": "Missing-user negatives exist only on the legacy root mail-mutation arm.",
+          "sources": [
+            "tests/unit/zoho-mail-mutations-api.test.ts:285",
+            "tests/unit/zoho-mail-mutations-api.test.ts:490"
+          ]
+        },
+        {
+          "count": 1,
+          "reason": "Legacy-only missing-user disconnect negative; unavailable service principal state.",
+          "sources": ["tests/unit/zoho-oauth-api.test.ts:498"]
+        }
+      ],
+      "recoveredEvidence": {
+        "sessionId": "01a11d65-60c4-78a1-9d5c-758234bb759d",
+        "jsonlLine": 10453,
+        "recordTimestampUtc": "2026-10-09T19:15:47.459Z",
+        "recordSha256": "76c9db8dad7a8761253d775f1f8968de274c74b9377f2a3dacf9b5fdd7aedf5f",
+        "recoveredAtUtc": "2026-10-09T19:50:24.803Z",
+        "notRerun": true
+      }
+    },
+    {
+      "id": "security-full",
+      "evidence": "test-security.full.log",
+      "status": "summary-passed",
+      "filesPassed": 33,
+      "passed": 1681,
+      "skipped": 36,
+      "collected": 1717,
+      "durationSeconds": 97.84,
+      "directVitestExitCode": null,
+      "skipReasons": [
+        {
+          "count": 36,
+          "reason": "No-DB conflicts-before-access branch is intentionally disabled when TEST_DATABASE_URL is set; complementary focused run exists.",
+          "sources": [
+            "tests/security/tenant-request.test.ts:301",
+            "tests/security/tenant-request.test.ts:856"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "security-no-db-complement",
+      "evidence": "test-security.tenant-conflicts-no-db.log",
+      "status": "focused-summary-passed",
+      "filesPassed": 1,
+      "passed": 36,
+      "skipped": 44,
+      "collected": 80,
+      "durationSeconds": 9.46,
+      "directVitestExitCode": null,
+      "selection": "tests/security/tenant-request.test.ts -t 'tenant host conflicts are rejected before any database access'",
+      "skipReasons": [
+        {
+          "count": 44,
+          "reason": "Cases outside this focused block/filter (including DB-only counterpart); not a renewed full no-DB security suite."
+        }
+      ]
+    },
+    {
+      "id": "identity-full",
+      "evidence": "test-identity.full.log",
+      "status": "summary-passed",
+      "filesPassed": 27,
+      "passed": 855,
+      "skipped": 0,
+      "collected": 855,
+      "durationSeconds": 177.41,
+      "directVitestExitCode": null,
+      "skipReasons": [],
+      "limits": [
+        "Database profile; pg concurrent-query deprecation warnings retained, not physical-provider validation."
+      ]
+    },
+    {
+      "id": "contract-full",
+      "evidence": "test-contract.log",
+      "status": "summary-passed",
+      "filesPassed": 1,
+      "passed": 106,
+      "skipped": 0,
+      "collected": 106,
+      "durationSeconds": 17.79,
+      "directVitestExitCode": null,
+      "skipReasons": []
+    },
+    {
+      "id": "platform-full",
+      "evidence": "test-platform.full.log",
+      "status": "summary-passed",
+      "filesPassed": 648,
+      "passed": 3771,
+      "skipped": 2,
+      "collected": 3773,
+      "durationSeconds": 334.09,
+      "directVitestExitCode": null,
+      "skipReasons": [
+        {
+          "count": 2,
+          "reason": "Button.web token propagation suite requires EXPECT_PRIMARY sentinel; ordinary platform profile does not prove it.",
+          "sources": [
+            "packages/ui/src/web/Button.web.test.tsx:11",
+            "packages/ui/src/web/Button.web.test.tsx:14"
+          ]
+        }
+      ],
+      "limits": [
+        "Platform collects backend/domain/UI/frontend colocated tests, not only user journeys."
+      ]
+    },
+    {
+      "id": "mobile-full",
+      "evidence": "test-mobile.full.log",
+      "status": "summary-passed",
+      "filesPassed": 17,
+      "passed": 99,
+      "skipped": 0,
+      "collected": 99,
+      "durationSeconds": 11.63,
+      "directVitestExitCode": null,
+      "skipReasons": [],
+      "limits": [
+        "Host/native test environment; no physical iOS/Android runtime validation."
+      ]
+    },
+    {
+      "id": "web-full",
+      "evidence": "test-web.full.log",
+      "status": "summary-passed",
+      "filesPassed": 42,
+      "filesSkipped": 2,
+      "passed": 440,
+      "skipped": 16,
+      "collected": 456,
+      "durationSeconds": 37.28,
+      "directVitestExitCode": null,
+      "skipReasons": [
+        {
+          "count": 7,
+          "reason": "tenant-hosts browser/HTTP suite is opt-in via TENANT_HOSTS_E2E; separate T5/T6 runs cover both engines.",
+          "sources": [
+            "vitest.web.config.ts:24",
+            "tests/e2e/tenant-hosts.spec.ts"
+          ]
+        },
+        {
+          "count": 9,
+          "reason": "Browser journeys are opt-in via JOURNEYS_E2E; separate engine-specific evidence below.",
+          "sources": [
+            "vitest.web.config.ts:25",
+            "tests/e2e/journeys.spec.ts:1434"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "integration-full",
+      "evidence": "test-integration.log",
+      "status": "summary-passed",
+      "filesPassed": 13,
+      "passed": 65,
+      "skipped": 0,
+      "collected": 65,
+      "durationSeconds": 88.96,
+      "directVitestExitCode": null,
+      "skipReasons": [],
+      "limits": [
+        "Local disposable PostgreSQL/migration + HTTP profile; not production database or real-provider proof."
+      ]
+    },
+    {
+      "id": "visual-tools-full",
+      "evidence": "test-visual-tools.log",
+      "status": "summary-passed",
+      "filesPassed": 6,
+      "passed": 101,
+      "skipped": 0,
+      "collected": 101,
+      "durationSeconds": 5.85,
+      "directVitestExitCode": null,
+      "skipReasons": [],
+      "limits": [
+        "Comparator/harness unit tests; not the integral visual capture or perceptual acceptance."
+      ]
+    }
+  ],
+  "focused": [
+    {
+      "id": "charts-current",
+      "evidence": "test-platform.log",
+      "filesPassed": 2,
+      "passed": 10,
+      "skipped": 0,
+      "durationSeconds": 29.43,
+      "reason": "Current KPI six + Revenue four behavioral/props tests after fixture type fixes.",
+      "directVitestExitCode": null
+    },
+    {
+      "id": "scroll-css-current",
+      "evidence": "test-scroll-css-focused.log",
+      "filesPassed": 4,
+      "passed": 27,
+      "skipped": 0,
+      "durationSeconds": 17.32,
+      "reason": "Dead category selector removal and shared CSS contract; counts not added to platform total.",
+      "directVitestExitCode": null
+    },
+    {
+      "id": "no-network-current",
+      "evidence": "test-no-network-focused.log",
+      "filesPassed": 1,
+      "passed": 5,
+      "skipped": 0,
+      "durationSeconds": 0.379,
+      "reason": "No-network setup profile characterization after correction; not added to recovered unit total.",
+      "directVitestExitCode": null
+    }
+  ],
+  "apiProfiles": [
+    {
+      "id": "production-legacy",
+      "evidenceDirectory": "records-v2-production-legacy",
+      "auth": "legacy",
+      "hostMode": "production",
+      "legacyRoot": "production",
+      "startedAtUtc": "2026-10-09T19:54:48.491Z",
+      "completedAtUtc": "2026-10-09T20:00:04.754Z",
+      "completionOk": true,
+      "unhandledErrors": 0,
+      "files": 64,
+      "passed": 3018,
+      "skipped": 2,
+      "failed": 0,
+      "todo": 0,
+      "unknown": 0,
+      "directVitestExitCode": null,
+      "surfaceSha256": "b714d2e790402bfe86ce09c057589cb58da12105dc91f16d03df3674dcdae169",
+      "coverage": {
+        "routesCovered": 158,
+        "routesTotal": 173,
+        "methodsCovered": 201,
+        "methodsTotal": 221,
+        "justifiedExceptionMethods": 20,
+        "missing": 0,
+        "problems": 0,
+        "unmatchedAuxiliaryRequests": 150,
+        "ok": true,
+        "exceptions": [
+          {
+            "endpoint": "DELETE /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; DELETE has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "DELETE /api/admin/financial/entries/[id]",
+            "statuses": [401, 403, 404, 409],
+            "reason": "Existing financial history is append-only: the authorized branch returns FINANCIAL_HISTORY_PRESERVED 409 and keeps the entry; financial-mutations.http.test.ts proves it."
+          },
+          {
+            "endpoint": "DELETE /api/admin/google-merchant/products/[id]",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "DELETE /api/admin/quotes/[id]/adjustments/[adjustmentId]",
+            "statuses": [401, 403, 404, 409],
+            "reason": "Existing adjustment history is append-only: the authorized branch returns ADJUSTMENT_HISTORY_PRESERVED 409 and keeps the adjustment; quote-mutations.http.test.ts proves it."
+          },
+          {
+            "endpoint": "GET /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; GET has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "GET /api/admin/google-merchant/status",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "GET /api/admin/zoho-mail/oauth/authorize",
+            "statuses": [307, 401, 403],
+            "reason": "OAuth authorization succeeds by a 307 redirect to the provider with tenant-bound state/cookie; no 2xx branch exists. zoho-oauth.http.test.ts checks Location, state and cookie."
+          },
+          {
+            "endpoint": "GET /api/admin/zoho-mail/oauth/callback",
+            "statuses": [307],
+            "reason": "OAuth completion succeeds by a 307 redirect to /admin/email?success=true after storing tenant credentials; no 2xx branch exists. zoho-oauth.http.test.ts checks effects and replay refusal."
+          },
+          {
+            "endpoint": "GET /api/auth/owner-account",
+            "statuses": [401, 403],
+            "reason": "Owner self-service reads call runtime/owner-account.ts checkSignup and assertSelfServiceOnboardingConfiguration: signup off returns 403 and signup on requires AUTH_MODE=better-auth (503 in legacy). onboarding.http.test.ts exercises the refusal; Better Auth 200 remains required."
+          },
+          {
+            "endpoint": "GET /api/auth/verify-email",
+            "statuses": [307],
+            "reason": "The legacy verification contract always redirects with 307, including /login?verified=true after a consumed token. credential-accounts.http.test.ts checks persisted verification and single use; Better Auth JSON success remains required."
+          },
+          {
+            "endpoint": "GET /api/onboarding/slug-availability",
+            "statuses": [401, 403],
+            "reason": "Self-service slug lookup calls platform-jobs.ts checkSignup before the platform read: signup off returns 403 and signup on requires AUTH_MODE=better-auth (503 in legacy). Better Auth availability 200 remains required by onboarding.http.test.ts."
+          },
+          {
+            "endpoint": "GET /api/payments/boleto/[id]/pdf",
+            "statuses": [302, 401, 403, 404, 409],
+            "reason": "An authorized issued boleto succeeds by a private 302 redirect to its validated provider document URL and never downloads provider bytes; payment-requests.http.test.ts checks Location and URL refusals."
+          },
+          {
+            "endpoint": "PATCH /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; PATCH has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "POST /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; POST has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "POST /api/admin/google-merchant/products/[id]",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "POST /api/admin/google-merchant/sync",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "POST /api/auth/owner-register",
+            "statuses": [403, 503],
+            "reason": "Owner self-service registration calls assertSelfServiceOnboardingConfiguration: signup off returns 403 and signup on requires AUTH_MODE=better-auth (503 in legacy). onboarding.http.test.ts proves configuration refusal without an account or provider call; Better Auth 202 remains required."
+          },
+          {
+            "endpoint": "POST /api/auth/owner-verification",
+            "statuses": [401, 403],
+            "reason": "Owner self-service verification calls runtime/owner-account.ts checkSignup and assertSelfServiceOnboardingConfiguration: signup off returns 403 and signup on requires AUTH_MODE=better-auth (503 in legacy). Better Auth neutral 202 remains required by onboarding.http.test.ts."
+          },
+          {
+            "endpoint": "POST /api/onboarding/organizations",
+            "statuses": [401, 403],
+            "reason": "Self-service provisioning calls platform-jobs.ts checkSignup before parsing/provisioning: signup off returns 403 and signup on requires AUTH_MODE=better-auth (503 in legacy). Better Auth durable provisioning 201 remains required by onboarding.http.test.ts."
+          },
+          {
+            "endpoint": "PUT /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; PUT has no success branch (api/[...rest]/route.ts)."
+          }
+        ],
+        "meaning": "Expected successful outcomes plus strictly justified non-2xx/engine exceptions; not all routes/methods return 2xx. Auxiliary wrong-verb/HEAD/OPTIONS requests do not inflate exported inventory."
+      },
+      "skippedReason": "Better Auth-only verify-email JSON/no-callback success is skipped once per host; legacy verifies redirect effects in its own contract.",
+      "cleanupProof": "Final completion emitted by global teardown after owned cleanup and coverage; completion.ok=true, no unhandled errors."
+    },
+    {
+      "id": "absent-legacy",
+      "evidenceDirectory": "records-v2-absent-legacy",
+      "auth": "legacy",
+      "hostMode": "production",
+      "legacyRoot": "absent",
+      "startedAtUtc": "2026-10-09T20:00:34.479Z",
+      "completedAtUtc": "2026-10-09T20:02:56.458Z",
+      "completionOk": true,
+      "unhandledErrors": 0,
+      "files": 64,
+      "passed": 2400,
+      "skipped": 1,
+      "failed": 0,
+      "todo": 0,
+      "unknown": 0,
+      "directVitestExitCode": null,
+      "surfaceSha256": "b714d2e790402bfe86ce09c057589cb58da12105dc91f16d03df3674dcdae169",
+      "coverage": {
+        "routesCovered": 158,
+        "routesTotal": 173,
+        "methodsCovered": 201,
+        "methodsTotal": 221,
+        "justifiedExceptionMethods": 20,
+        "missing": 0,
+        "problems": 0,
+        "unmatchedAuxiliaryRequests": 150,
+        "ok": true,
+        "exceptions": [
+          {
+            "endpoint": "DELETE /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; DELETE has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "DELETE /api/admin/financial/entries/[id]",
+            "statuses": [401, 403, 404, 409],
+            "reason": "Existing financial history is append-only: the authorized branch returns FINANCIAL_HISTORY_PRESERVED 409 and keeps the entry; financial-mutations.http.test.ts proves it."
+          },
+          {
+            "endpoint": "DELETE /api/admin/google-merchant/products/[id]",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "DELETE /api/admin/quotes/[id]/adjustments/[adjustmentId]",
+            "statuses": [401, 403, 404, 409],
+            "reason": "Existing adjustment history is append-only: the authorized branch returns ADJUSTMENT_HISTORY_PRESERVED 409 and keeps the adjustment; quote-mutations.http.test.ts proves it."
+          },
+          {
+            "endpoint": "GET /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; GET has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "GET /api/admin/google-merchant/status",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "GET /api/admin/zoho-mail/oauth/authorize",
+            "statuses": [307, 401, 403],
+            "reason": "OAuth authorization succeeds by a 307 redirect to the provider with tenant-bound state/cookie; no 2xx branch exists. zoho-oauth.http.test.ts checks Location, state and cookie."
+          },
+          {
+            "endpoint": "GET /api/admin/zoho-mail/oauth/callback",
+            "statuses": [307],
+            "reason": "OAuth completion succeeds by a 307 redirect to /admin/email?success=true after storing tenant credentials; no 2xx branch exists. zoho-oauth.http.test.ts checks effects and replay refusal."
+          },
+          {
+            "endpoint": "GET /api/auth/owner-account",
+            "statuses": [401, 403],
+            "reason": "Owner self-service reads call runtime/owner-account.ts checkSignup and assertSelfServiceOnboardingConfiguration: signup off returns 403 and signup on requires AUTH_MODE=better-auth (503 in legacy). onboarding.http.test.ts exercises the refusal; Better Auth 200 remains required."
+          },
+          {
+            "endpoint": "GET /api/auth/verify-email",
+            "statuses": [307],
+            "reason": "The legacy verification contract always redirects with 307, including /login?verified=true after a consumed token. credential-accounts.http.test.ts checks persisted verification and single use; Better Auth JSON success remains required."
+          },
+          {
+            "endpoint": "GET /api/onboarding/slug-availability",
+            "statuses": [401, 403],
+            "reason": "Self-service slug lookup calls platform-jobs.ts checkSignup before the platform read: signup off returns 403 and signup on requires AUTH_MODE=better-auth (503 in legacy). Better Auth availability 200 remains required by onboarding.http.test.ts."
+          },
+          {
+            "endpoint": "GET /api/payments/boleto/[id]/pdf",
+            "statuses": [302, 401, 403, 404, 409],
+            "reason": "An authorized issued boleto succeeds by a private 302 redirect to its validated provider document URL and never downloads provider bytes; payment-requests.http.test.ts checks Location and URL refusals."
+          },
+          {
+            "endpoint": "PATCH /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; PATCH has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "POST /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; POST has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "POST /api/admin/google-merchant/products/[id]",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "POST /api/admin/google-merchant/sync",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "POST /api/auth/owner-register",
+            "statuses": [403, 503],
+            "reason": "Owner self-service registration calls assertSelfServiceOnboardingConfiguration: signup off returns 403 and signup on requires AUTH_MODE=better-auth (503 in legacy). onboarding.http.test.ts proves configuration refusal without an account or provider call; Better Auth 202 remains required."
+          },
+          {
+            "endpoint": "POST /api/auth/owner-verification",
+            "statuses": [401, 403],
+            "reason": "Owner self-service verification calls runtime/owner-account.ts checkSignup and assertSelfServiceOnboardingConfiguration: signup off returns 403 and signup on requires AUTH_MODE=better-auth (503 in legacy). Better Auth neutral 202 remains required by onboarding.http.test.ts."
+          },
+          {
+            "endpoint": "POST /api/onboarding/organizations",
+            "statuses": [401, 403],
+            "reason": "Self-service provisioning calls platform-jobs.ts checkSignup before parsing/provisioning: signup off returns 403 and signup on requires AUTH_MODE=better-auth (503 in legacy). Better Auth durable provisioning 201 remains required by onboarding.http.test.ts."
+          },
+          {
+            "endpoint": "PUT /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; PUT has no success branch (api/[...rest]/route.ts)."
+          }
+        ],
+        "meaning": "Expected successful outcomes plus strictly justified non-2xx/engine exceptions; not all routes/methods return 2xx. Auxiliary wrong-verb/HEAD/OPTIONS requests do not inflate exported inventory."
+      },
+      "skippedReason": "Better Auth-only verify-email JSON/no-callback success is skipped once per host; legacy verifies redirect effects in its own contract.",
+      "cleanupProof": "Final completion emitted by global teardown after owned cleanup and coverage; completion.ok=true, no unhandled errors."
+    },
+    {
+      "id": "production-better-auth",
+      "evidenceDirectory": "records-v2-production-better-auth",
+      "auth": "better-auth",
+      "hostMode": "production",
+      "legacyRoot": "production",
+      "startedAtUtc": "2026-10-09T20:14:52.205Z",
+      "completedAtUtc": "2026-10-09T20:19:10.725Z",
+      "completionOk": true,
+      "unhandledErrors": 0,
+      "files": 64,
+      "passed": 3014,
+      "skipped": 0,
+      "failed": 0,
+      "todo": 0,
+      "unknown": 0,
+      "directVitestExitCode": null,
+      "surfaceSha256": "b714d2e790402bfe86ce09c057589cb58da12105dc91f16d03df3674dcdae169",
+      "coverage": {
+        "routesCovered": 164,
+        "routesTotal": 173,
+        "methodsCovered": 207,
+        "methodsTotal": 221,
+        "justifiedExceptionMethods": 14,
+        "missing": 0,
+        "problems": 0,
+        "unmatchedAuxiliaryRequests": 150,
+        "ok": true,
+        "exceptions": [
+          {
+            "endpoint": "DELETE /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; DELETE has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "DELETE /api/admin/financial/entries/[id]",
+            "statuses": [401, 403, 404, 409],
+            "reason": "Existing financial history is append-only: the authorized branch returns FINANCIAL_HISTORY_PRESERVED 409 and keeps the entry; financial-mutations.http.test.ts proves it."
+          },
+          {
+            "endpoint": "DELETE /api/admin/google-merchant/products/[id]",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "DELETE /api/admin/quotes/[id]/adjustments/[adjustmentId]",
+            "statuses": [401, 403, 404, 409],
+            "reason": "Existing adjustment history is append-only: the authorized branch returns ADJUSTMENT_HISTORY_PRESERVED 409 and keeps the adjustment; quote-mutations.http.test.ts proves it."
+          },
+          {
+            "endpoint": "GET /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; GET has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "GET /api/admin/google-merchant/status",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "GET /api/admin/zoho-mail/oauth/authorize",
+            "statuses": [307, 401, 403],
+            "reason": "OAuth authorization succeeds by a 307 redirect to the provider with tenant-bound state/cookie; no 2xx branch exists. zoho-oauth.http.test.ts checks Location, state and cookie."
+          },
+          {
+            "endpoint": "GET /api/admin/zoho-mail/oauth/callback",
+            "statuses": [307],
+            "reason": "OAuth completion succeeds by a 307 redirect to /admin/email?success=true after storing tenant credentials; no 2xx branch exists. zoho-oauth.http.test.ts checks effects and replay refusal."
+          },
+          {
+            "endpoint": "GET /api/payments/boleto/[id]/pdf",
+            "statuses": [302, 401, 403, 404, 409],
+            "reason": "An authorized issued boleto succeeds by a private 302 redirect to its validated provider document URL and never downloads provider bytes; payment-requests.http.test.ts checks Location and URL refusals."
+          },
+          {
+            "endpoint": "PATCH /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; PATCH has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "POST /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; POST has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "POST /api/admin/google-merchant/products/[id]",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "POST /api/admin/google-merchant/sync",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "PUT /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; PUT has no success branch (api/[...rest]/route.ts)."
+          }
+        ],
+        "meaning": "Expected successful outcomes plus strictly justified non-2xx/engine exceptions; not all routes/methods return 2xx. Auxiliary wrong-verb/HEAD/OPTIONS requests do not inflate exported inventory."
+      },
+      "skippedReason": null,
+      "cleanupProof": "Final completion emitted by global teardown after owned cleanup and coverage; completion.ok=true, no unhandled errors."
+    },
+    {
+      "id": "absent-better-auth",
+      "evidenceDirectory": "records-v2-absent-better-auth",
+      "auth": "better-auth",
+      "hostMode": "production",
+      "legacyRoot": "absent",
+      "startedAtUtc": "2026-10-09T20:19:16.586Z",
+      "completedAtUtc": "2026-10-09T20:21:35.03Z",
+      "completionOk": true,
+      "unhandledErrors": 0,
+      "files": 64,
+      "passed": 2398,
+      "skipped": 0,
+      "failed": 0,
+      "todo": 0,
+      "unknown": 0,
+      "directVitestExitCode": null,
+      "surfaceSha256": "b714d2e790402bfe86ce09c057589cb58da12105dc91f16d03df3674dcdae169",
+      "coverage": {
+        "routesCovered": 164,
+        "routesTotal": 173,
+        "methodsCovered": 207,
+        "methodsTotal": 221,
+        "justifiedExceptionMethods": 14,
+        "missing": 0,
+        "problems": 0,
+        "unmatchedAuxiliaryRequests": 150,
+        "ok": true,
+        "exceptions": [
+          {
+            "endpoint": "DELETE /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; DELETE has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "DELETE /api/admin/financial/entries/[id]",
+            "statuses": [401, 403, 404, 409],
+            "reason": "Existing financial history is append-only: the authorized branch returns FINANCIAL_HISTORY_PRESERVED 409 and keeps the entry; financial-mutations.http.test.ts proves it."
+          },
+          {
+            "endpoint": "DELETE /api/admin/google-merchant/products/[id]",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "DELETE /api/admin/quotes/[id]/adjustments/[adjustmentId]",
+            "statuses": [401, 403, 404, 409],
+            "reason": "Existing adjustment history is append-only: the authorized branch returns ADJUSTMENT_HISTORY_PRESERVED 409 and keeps the adjustment; quote-mutations.http.test.ts proves it."
+          },
+          {
+            "endpoint": "GET /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; GET has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "GET /api/admin/google-merchant/status",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "GET /api/admin/zoho-mail/oauth/authorize",
+            "statuses": [307, 401, 403],
+            "reason": "OAuth authorization succeeds by a 307 redirect to the provider with tenant-bound state/cookie; no 2xx branch exists. zoho-oauth.http.test.ts checks Location, state and cookie."
+          },
+          {
+            "endpoint": "GET /api/admin/zoho-mail/oauth/callback",
+            "statuses": [307],
+            "reason": "OAuth completion succeeds by a 307 redirect to /admin/email?success=true after storing tenant credentials; no 2xx branch exists. zoho-oauth.http.test.ts checks effects and replay refusal."
+          },
+          {
+            "endpoint": "GET /api/payments/boleto/[id]/pdf",
+            "statuses": [302, 401, 403, 404, 409],
+            "reason": "An authorized issued boleto succeeds by a private 302 redirect to its validated provider document URL and never downloads provider bytes; payment-requests.http.test.ts checks Location and URL refusals."
+          },
+          {
+            "endpoint": "PATCH /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; PATCH has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "POST /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; POST has no success branch (api/[...rest]/route.ts)."
+          },
+          {
+            "endpoint": "POST /api/admin/google-merchant/products/[id]",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "POST /api/admin/google-merchant/sync",
+            "statuses": [401, 403, 503],
+            "reason": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine."
+          },
+          {
+            "endpoint": "PUT /api/[...rest]",
+            "statuses": [404],
+            "reason": "Unknown endpoints deliberately return neutral NOT_FOUND 404; PUT has no success branch (api/[...rest]/route.ts)."
+          }
+        ],
+        "meaning": "Expected successful outcomes plus strictly justified non-2xx/engine exceptions; not all routes/methods return 2xx. Auxiliary wrong-verb/HEAD/OPTIONS requests do not inflate exported inventory."
+      },
+      "skippedReason": null,
+      "cleanupProof": "Final completion emitted by global teardown after owned cleanup and coverage; completion.ok=true, no unhandled errors."
+    }
+  ],
+  "b11": [
+    {
+      "auth": "better-auth",
+      "evidence": "b11-better-auth.log",
+      "comparedCases": 2398,
+      "withRootPassedCases": 3014,
+      "withoutRootPassedCases": 2398,
+      "onlyWithRootLegacyArms": 616,
+      "onlyWithoutRoot": 0,
+      "openViolations": 0,
+      "justifiedViolations": 0,
+      "directExitCode": null
+    },
+    {
+      "auth": "legacy",
+      "evidence": "b11-legacy.log",
+      "comparedCases": 2400,
+      "withRootPassedCases": 3018,
+      "withoutRootPassedCases": 2400,
+      "onlyWithRootLegacyArms": 618,
+      "onlyWithoutRoot": 0,
+      "openViolations": 0,
+      "justifiedViolations": 0,
+      "directExitCode": null
+    }
+  ],
+  "journeys": [
+    {
+      "auth": "better-auth",
+      "evidence": "journeys-better-auth.log",
+      "status": "current-helper-summary-passed",
+      "filesPassed": 1,
+      "passed": 8,
+      "skipped": 1,
+      "collected": 9,
+      "durationSeconds": 102.38,
+      "directVitestExitCode": null,
+      "skipReasons": [
+        {
+          "count": 1,
+          "reason": "J7 signup-off is inactive in the Better Auth signup-on profile."
+        }
+      ],
+      "source": "tests/e2e/journeys.spec.ts",
+      "sourceCurrentHash": "9fcbdc46f49163898f21312e0058730e6c27d9793a976693e47ae1a710020fcc",
+      "helperCorrection": "J7 waits for the actual previous 60s auth rolling window to expire; verifies persisted counters unchanged, does not reset/clear/disable the rate limiter.",
+      "limits": [
+        "Current source rerun is Better Auth only; legacy result predates this helper correction."
+      ]
+    },
+    {
+      "auth": "legacy",
+      "evidence": "journeys-legacy.log",
+      "status": "passed-before-current-j7-helper-change",
+      "filesPassed": 1,
+      "passed": 7,
+      "skipped": 2,
+      "collected": 9,
+      "durationSeconds": 39.21,
+      "directVitestExitCode": null,
+      "skipReasons": [
+        {
+          "count": 1,
+          "reason": "J4 tenant-client multi-host identity is Better Auth-only."
+        },
+        {
+          "count": 1,
+          "reason": "J7 signup-on owner onboarding is Better Auth-only; legacy executes signup-off."
+        }
+      ],
+      "currentSourceRerun": null,
+      "limits": [
+        "Do not present this log as a new post-correction legacy execution."
+      ]
+    }
+  ],
+  "tenantHosts": [
+    {
+      "auth": "legacy",
+      "evidenceDirectory": "tenant-hosts-legacy-464b39ca09",
+      "status": "passed-original-spec",
+      "passedCases": 7,
+      "skipped": 0,
+      "runnerExitCode": 0,
+      "runnerSignal": null,
+      "source": "original tests/e2e/tenant-hosts.spec.ts",
+      "specSha256": "a0709536d45877da9953d06ec45aca17d704e8182376a801bdc2792ebf4a305f",
+      "apiBuildId": "90k7TmauECA5RzoPobLhH",
+      "webBuildId": "ets-lpI32e_hYU8NUDtfg",
+      "platformEnvironment": "development",
+      "nodeEnvironment": "production",
+      "startedAtUtc": "2026-10-09T20:08:54.113Z",
+      "completedAtUtc": "2026-10-09T20:09:05.155Z",
+      "cleanupSucceeded": true,
+      "databasePreserved": false,
+      "rolesPreserved": 0,
+      "errors": 0,
+      "childExits": [
+        {
+          "label": "migrations",
+          "exitCode": 0,
+          "signal": null,
+          "closedAtUtc": "2026-10-09T20:08:55.654Z"
+        },
+        {
+          "label": "api",
+          "exitCode": 1,
+          "signal": null,
+          "closedAtUtc": "2026-10-09T20:09:05.07Z"
+        },
+        {
+          "label": "web",
+          "exitCode": 1,
+          "signal": null,
+          "closedAtUtc": "2026-10-09T20:09:04.522Z"
+        },
+        {
+          "label": "tenant-hosts",
+          "exitCode": 0,
+          "signal": null,
+          "closedAtUtc": "2026-10-09T20:09:03.983Z"
+        }
+      ],
+      "limits": [
+        "Seven original T5/T6 cases, local disposable migrated DB, compiled API/web, no response/authentication mocks.",
+        "Server child exit=1 is observed owned Windows termination during cleanup; spec exit=0 is the result, not all children exit=0.",
+        "Public browser/tenant isolation evidence is complementary to J1/auth journeys, not device/3D/performance proof."
+      ]
+    },
+    {
+      "auth": "better-auth",
+      "evidenceDirectory": "tenant-hosts-better-auth-6cfb1dab11",
+      "status": "passed-original-spec",
+      "passedCases": 7,
+      "skipped": 0,
+      "runnerExitCode": 0,
+      "runnerSignal": null,
+      "source": "original tests/e2e/tenant-hosts.spec.ts",
+      "specSha256": "a0709536d45877da9953d06ec45aca17d704e8182376a801bdc2792ebf4a305f",
+      "apiBuildId": "90k7TmauECA5RzoPobLhH",
+      "webBuildId": "T-Qbiffln46vwsFDvOYAW",
+      "platformEnvironment": "development",
+      "nodeEnvironment": "production",
+      "startedAtUtc": "2026-10-09T20:23:28.89Z",
+      "completedAtUtc": "2026-10-09T20:23:42.164Z",
+      "cleanupSucceeded": true,
+      "databasePreserved": false,
+      "rolesPreserved": 0,
+      "errors": 0,
+      "childExits": [
+        {
+          "label": "migrations",
+          "exitCode": 0,
+          "signal": null,
+          "closedAtUtc": "2026-10-09T20:23:31.152Z"
+        },
+        {
+          "label": "api",
+          "exitCode": 1,
+          "signal": null,
+          "closedAtUtc": "2026-10-09T20:23:42.018Z"
+        },
+        {
+          "label": "web",
+          "exitCode": 1,
+          "signal": null,
+          "closedAtUtc": "2026-10-09T20:23:41.467Z"
+        },
+        {
+          "label": "tenant-hosts",
+          "exitCode": 0,
+          "signal": null,
+          "closedAtUtc": "2026-10-09T20:23:40.92Z"
+        }
+      ],
+      "limits": [
+        "Seven original T5/T6 cases, local disposable migrated DB, compiled API/web, no response/authentication mocks.",
+        "Server child exit=1 is observed owned Windows termination during cleanup; spec exit=0 is the result, not all children exit=0.",
+        "Public browser/tenant isolation evidence is complementary to J1/auth journeys, not device/3D/performance proof."
+      ]
+    }
+  ],
+  "packaging": {
+    "status": "passed",
+    "auth": "better-auth",
+    "evidenceDirectory": "p1-packaging-20261009T202430Z-221c69a45e3e41d8b60a290fb75c4673",
+    "startedAtUtc": "2026-10-09T20:24:30.7272138Z",
+    "completedAtUtc": "2026-10-09T20:26:05.6065583Z",
+    "node": "v24.21.0",
+    "isolation": "OS allowlist + explicit synthetic values + .env read isolation; telemetry off",
+    "commands": [
+      {
+        "name": "node-version",
+        "exitCode": 0,
+        "log": "p1-packaging-20261009T202430Z-221c69a45e3e41d8b60a290fb75c4673/node-version.log"
+      },
+      {
+        "name": "bundle-mobile",
+        "exitCode": 0,
+        "log": "p1-packaging-20261009T202430Z-221c69a45e3e41d8b60a290fb75c4673/bundle-mobile.log"
+      },
+      {
+        "name": "build-storybook",
+        "exitCode": 0,
+        "log": "p1-packaging-20261009T202430Z-221c69a45e3e41d8b60a290fb75c4673/build-storybook.log"
+      }
+    ],
+    "nativePlatforms": ["android", "ios"],
+    "nativeBundles": 2,
+    "storybookEntries": 172,
+    "functionalTests": null,
+    "skippedTests": null,
+    "artifacts": [
+      {
+        "path": "p1-packaging-20261009T202430Z-221c69a45e3e41d8b60a290fb75c4673/mobile/metadata.json",
+        "bytes": 3442,
+        "sha256": "fe7fdcbad4a777802738781a07493a9153aa7733f6b023918c0b8565269c4d7f"
+      },
+      {
+        "path": "p1-packaging-20261009T202430Z-221c69a45e3e41d8b60a290fb75c4673/mobile/_expo/static/js/android/entry-bfa69f1b57483f09fc47687a9e2f6c40.hbc",
+        "bytes": 9345878,
+        "sha256": "158915f9632e9fab3eaa12dba08fa8887c6f86ff46688d2fa06e7bc7679c3c1a"
+      },
+      {
+        "path": "p1-packaging-20261009T202430Z-221c69a45e3e41d8b60a290fb75c4673/mobile/_expo/static/js/ios/entry-718840474fd3f0da89d4cbc315478de2.hbc",
+        "bytes": 8971412,
+        "sha256": "7ec1a30ed32f1e944c48befbdb36eec44d5477b146d2ace77834e6e25ac5fc25"
+      },
+      {
+        "path": "p1-packaging-20261009T202430Z-221c69a45e3e41d8b60a290fb75c4673/storybook/index.html",
+        "bytes": 3322,
+        "sha256": "b0c915d096c8dcac52b68a1a5de242e5db8c4f47a6faf1debc132913d0e8a993"
+      },
+      {
+        "path": "p1-packaging-20261009T202430Z-221c69a45e3e41d8b60a290fb75c4673/storybook/iframe.html",
+        "bytes": 19287,
+        "sha256": "ed5d53ec33b5b57368f96990f1c767815321d506851ceca4cccd151b7b106895"
+      },
+      {
+        "path": "p1-packaging-20261009T202430Z-221c69a45e3e41d8b60a290fb75c4673/storybook/index.json",
+        "bytes": 59294,
+        "sha256": "c9ee7921254fad3c5f68b9e808386fc1219cf4cd410bb03b3d108cd102101643"
+      }
+    ],
+    "limits": [
+      "Two actual Hermes bundles and static Storybook build are packaging evidence, not device runs, installability, rendered story screenshots, or additional passing tests.",
+      "Storybook logged warnings; the explicit command exit is 0. No production-provider/infrastructure claim."
+    ],
+    "legacyNativeExport": {
+      "status": "passed",
+      "auth": "legacy",
+      "evidenceDirectory": "p1-packaging-20261009T211132Z-6704b2f9743242bd9d2183dd7d237aec",
+      "startedAtUtc": "2026-10-09T21:11:32.4512313Z",
+      "completedAtUtc": "2026-10-09T21:13:04.0810352Z",
+      "nativePlatforms": ["android", "ios"],
+      "nativeBundles": 2,
+      "commands": [
+        {
+          "name": "node-version",
+          "exitCode": 0
+        },
+        {
+          "name": "bundle-mobile",
+          "exitCode": 0
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "p1-packaging-20261009T211132Z-6704b2f9743242bd9d2183dd7d237aec/mobile/metadata.json",
+          "bytes": 3442,
+          "sha256": "a7616bf92f00902bd47596c113e65739e52c670b862508c2b1066a6be1d199ef"
+        },
+        {
+          "path": "p1-packaging-20261009T211132Z-6704b2f9743242bd9d2183dd7d237aec/mobile/_expo/static/js/android/entry-2be39d27e2b726c8c3728ccdb087f889.hbc",
+          "bytes": 9345873,
+          "sha256": "a343d9fa86000635b42752ea79b4484da27c30b42be02484629ec124e4ccfe2c"
+        },
+        {
+          "path": "p1-packaging-20261009T211132Z-6704b2f9743242bd9d2183dd7d237aec/mobile/_expo/static/js/ios/entry-0a9a7c6b3b82c5b364ace49ee51526d2.hbc",
+          "bytes": 8971408,
+          "sha256": "949817fe04b30b6b24ee635b097f36c36be9c68f6c41a2cc449131a218e96092"
+        }
+      ],
+      "limits": [
+        "Compilation/export, not a physical-device run or installability proof."
+      ]
+    },
+    "storyAuthReplicationRequired": false,
+    "storyAuthReplicationReason": "Static common UI catalog; no per-auth UI duplication required."
+  },
+  "a10": {
+    "evidenceDirectory": "a10-temporal/captures/2026-10-09T20-29-40-600Z",
+    "manualReview": "manual-review.json",
+    "reviewedAtUtc": "2026-10-09T20:34:24.9729481Z",
+    "buildId": "T-Qbiffln46vwsFDvOYAW",
+    "network": "normal",
+    "decision": "passed-local-first-and-subsequent-model-contract",
+    "reviewDescription": "Viewed four full-size milestone images and a contact sheet sampled at 4 fps from the actual recorded video",
+    "hardwareCriterion": true,
+    "compressorGradualFitDetected": false,
+    "betoneiraGradualFitDetected": true,
+    "measuredVisibleFrames": 2464,
+    "missingMeasuredFrames": 0,
+    "missingMilestones": 0,
+    "contextLossRawEvents": 1,
+    "contextLossExpectedDisposal": 1,
+    "contextLossUnexpected": 0,
+    "sourcesUnchanged": true,
+    "ownedCleanupConfirmed": true,
+    "cleanupObservations": [
+      {
+        "resource": "browser connection",
+        "observed": "closed",
+        "atUtc": "2026-10-09T20:29:56.537Z"
+      },
+      {
+        "resource": "owned browser process",
+        "observed": "closed",
+        "atUtc": "2026-10-09T20:29:57.496Z"
+      },
+      {
+        "resource": "owned child web",
+        "observed": "closed",
+        "atUtc": "2026-10-09T20:29:58.39Z"
+      },
+      {
+        "resource": "owned child backend",
+        "observed": "closed",
+        "atUtc": "2026-10-09T20:29:59.28Z"
+      },
+      {
+        "resource": "local deny proxy",
+        "observed": "closed",
+        "atUtc": "2026-10-09T20:29:59.281Z"
+      },
+      {
+        "resource": "port reservation 0",
+        "observed": "closed",
+        "atUtc": "2026-10-09T20:29:59.281Z"
+      },
+      {
+        "resource": "port reservation 1",
+        "observed": "closed",
+        "atUtc": "2026-10-09T20:29:59.281Z"
+      },
+      {
+        "resource": "port reservation 2",
+        "observed": "closed",
+        "atUtc": "2026-10-09T20:29:59.281Z"
+      },
+      {
+        "resource": "log handle 3",
+        "observed": "closed",
+        "atUtc": "2026-10-09T20:29:59.281Z"
+      },
+      {
+        "resource": "log handle 4",
+        "observed": "closed",
+        "atUtc": "2026-10-09T20:29:59.281Z"
+      }
+    ],
+    "videoSha256": "70054fca03d5204dde702326afba6790737cdd5b66007e9ba79fef7187b3ef15",
+    "sampledFramesSha256": "773537d2b18f9fa5ee656726ccb2b953b11f67ee9cc36d0c630c13479e773ebf",
+    "functionalTests": null,
+    "limits": [
+      "Neutral HDR and installed Draco fixtures do not prove production CDN lighting or timing",
+      "Slow 3G remains the previously recorded inconclusive profile",
+      "Physical mobile/Safari and all-three-model performance are outside this local contract"
+    ],
+    "substitutions": [
+      "Neutral synthetic 16x8 RGBE HDR",
+      "Installed unmodified Draco bytes instead of remote CDN"
+    ]
+  },
+  "visual": {
+    "auth": "better-auth",
+    "runnerSessionId": 50112,
+    "evidenceDirectory": "visual-full-ba-20261009T203607Z-2ff7be773bc64db4a86c04dde480899a",
+    "status": "full-style-comparison-passed",
+    "expectedFiles": 80,
+    "expectedStates": 536,
+    "referenceBinding": {
+      "status": "passed",
+      "files": 80,
+      "states": 536,
+      "problems": 0,
+      "diagnostics": 0,
+      "exitCode": 0,
+      "evidence": "visual-full-ba-20261009T203607Z-2ff7be773bc64db4a86c04dde480899a/reference-scope.json",
+      "contract": "Original accepted capture raw hashes + strict readCaptureFile semantic equality to materialized baseline; no new baseline/approval."
+    },
+    "heavyChunksPreflightExitCode": 0,
+    "captureExitCode": 0,
+    "captureCompletedAtUtc": "2026-10-09T21:10:05.5749880Z",
+    "actualFiles": 80,
+    "actualStates": 536,
+    "currentDiagnostics": [],
+    "comparisonExitCode": 0,
+    "comparisonPending": [],
+    "comparisonProblems": [],
+    "comparisonUnusedApprovals": [],
+    "portsReleasedAfterCompletion": true,
+    "ownedCleanupAfterCompletion": {
+      "checkedAtUtc": "2026-10-09T21:11:32.3470297Z",
+      "observedDescendants": 11,
+      "stillAliveMatchingCreation": 0,
+      "terminatedProcesses": 0,
+      "scope": "Recorded live descendant set only; no claim about never-recorded historical descendants"
+    },
+    "acceptedReference": {
+      "evidence": "visual-human-acceptance.json",
+      "acceptedCaptureBuildId": "R7kHAAzDS69RA5Yc0oQ1F",
+      "humanReviewedBuild": null,
+      "files": 80,
+      "states": 536,
+      "composition": "78 pages + two complete catalogs from earlier BA captures"
+    },
+    "limits": [
+      "Seven tenant account/login scenarios have contractual legacy 404; integral reference applies to BA only.",
+      "Computed-style/state capture is not pixel/perceptual/device/GPU/performance proof; heavy Hero chunks are blocked.",
+      "Dialog/open 390 historical perception limitation remains separately documented.",
+      "Only the recorded eleven live descendants were individually checked; no claim about never-recorded historical descendants."
+    ],
+    "actualElements": 31065,
+    "comparisonCompletedAtUtc": "2026-10-09T21:11:15.7702877Z"
+  },
+  "gates": {
+    "architecture": {
+      "evidence": "arch.log",
+      "reportedStatus": "passed-ratchet",
+      "legacyViolations": 43,
+      "legacyFiles": 16,
+      "legacyDeepImports": 6,
+      "legacyDomJsx": 31,
+      "legacyWebLibraries": 6,
+      "universalDomJsx": 0,
+      "universalWebLibraries": 0,
+      "workspaceEscape": 0,
+      "aboveBaseline": 0,
+      "directExitCode": null
+    },
+    "tokens": {
+      "evidence": "tokens.log",
+      "reportedStatus": "passed-ratchet",
+      "cssImportant": 0,
+      "directExitCode": null,
+      "propagation": {
+        "evidence": "check-tokens.log",
+        "status": "matches-declared-expectations-with-three-not-proven",
+        "notProven": [
+          "style resolution (web): Button.web uses literal Tailwind palette classes rather than the changed token",
+          "web render: temporary-token bundler alias/build proof not executed",
+          "mobile export: temporary-token Metro alias/export proof not executed"
+        ],
+        "nativeRuntimeCertified": false
+      }
+    },
+    "hygiene": {
+      "evidence": "hygiene.log",
+      "reportedStatus": "passed-with-accepted-debt",
+      "acceptedFindings": 811,
+      "acceptedBaselineItems": 237,
+      "directExitCode": null
+    },
+    "colocation": {
+      "evidence": "check-test-names.log",
+      "reportedStatus": "passed",
+      "colocatedFiles": 708,
+      "allowedOrphans": 3,
+      "unlistedOrphans": 0,
+      "staleAllowlistEntries": 0,
+      "directExitCode": null
+    },
+    "ratchet": {
+      "evidence": "ratchet-guard.log",
+      "reportedStatus": "passed",
+      "directExitCode": null
+    },
+    "types": {
+      "evidence": ["typecheck.log", "type-check.log"],
+      "workspaceTsconfigs": 14,
+      "legacyRootTsc": true,
+      "status": "no-error-output",
+      "directExitCode": null
+    },
+    "lint": {
+      "evidence": ["lint.log", "lint-css.log"],
+      "status": "no-error-output",
+      "directExitCode": null
+    },
+    "documentation": {
+      "evidence": "docs-validate.log",
+      "status": "index-link-validation-passed",
+      "directExitCode": null
+    },
+    "pureGateCharacterization": {
+      "owner": "unit-full-recovered",
+      "source": "package.json scripts.test:gates + vitest.unit.config.ts include tests/unit",
+      "separateRun": false,
+      "separatePassedCases": null,
+      "reason": "The same pure gate tests are part of unit selection; no repeat or additional aggregate test count."
+    }
+  },
+  "pending": [
+    {
+      "id": "docker-linux",
+      "status": "pending",
+      "result": null,
+      "reason": "Build/run health literal 200/nonroot with disposable DB via Linux workflow after clean first commit/push on main; configuration review is not execution."
+    },
+    {
+      "id": "p2-formal",
+      "status": "pending",
+      "result": null,
+      "reason": "Five real guarded mutation probes in four classes, restored exact bytes and positive reruns, in independent clone pinned to actual pre-exclusion tag."
+    },
+    {
+      "id": "f-retirement",
+      "status": "prepared-only-pending",
+      "result": null,
+      "reason": "Legacy-root removal and all remaining ports/gates only in future independent clone; prepared frontend payload is 23 tests, not proof of retirement."
+    },
+    {
+      "id": "slow3g",
+      "status": "inconclusive-previous-profile",
+      "result": null,
+      "reason": "A10 current normal profile with neutral HDR/local Draco does not renew Slow 3G CDN timing."
+    },
+    {
+      "id": "physical-device-production",
+      "status": "not-certified",
+      "result": null,
+      "reason": "No physical iOS/Android/Safari, live providers, production database, DNS/infrastructure or deployment certification."
+    }
+  ],
+  "integratorFieldsToComplete": [
+    "finalStage1CommitSha",
+    "immutablePreExclusionTagSha",
+    "publicationObserved",
+    "direct runner exits from retained actual execution events where absent in stdout logs",
+    "Docker/P2/F only from future actual events"
+  ],
+  "evidenceArtifacts": [
+    {
+      "path": "a10-temporal/captures/2026-10-09T20-29-40-600Z/manual-review.json",
+      "bytes": 1072,
+      "sha256AtRead": "b36ddaefb7dfa803e3739a2f37dee98b5ad31248fb1eb1b5556c065308c3c1bb",
+      "lastWriteTimeUtc": "2026-10-09T20:34:24.998980+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "a10-temporal/captures/2026-10-09T20-29-40-600Z/normal-summary.json",
+      "bytes": 86172,
+      "sha256AtRead": "d4551a513c90fa162ca35805570bd37ec24f7921594941a05fc80d522d233c10",
+      "lastWriteTimeUtc": "2026-10-09T20:29:56.535576+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "a10-temporal/captures/2026-10-09T20-29-40-600Z/report.json",
+      "bytes": 106722,
+      "sha256AtRead": "fc3a2003166305b1392208231327a59058dde5311f0444c227c396513f98671f",
+      "lastWriteTimeUtc": "2026-10-09T20:29:59.284444+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "api-v2-absent-better-auth.log",
+      "bytes": 693,
+      "sha256AtRead": "f36e65ac048e5c7407e794453ffe204da9233f070420ff5e7bb3e27953ef9788",
+      "lastWriteTimeUtc": "2026-10-09T20:21:35.029749+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "api-v2-absent-legacy.log",
+      "bytes": 696,
+      "sha256AtRead": "6e645031d857a1a92770ab5550c17802fe16605a94ca460190f8b01e5705e915",
+      "lastWriteTimeUtc": "2026-10-09T20:02:56.457013+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "api-v2-production-better-auth.log",
+      "bytes": 691,
+      "sha256AtRead": "bdc368af0799f5252477e897b492d3f9a5151f9088aa3d6d0bbaa85328b818b2",
+      "lastWriteTimeUtc": "2026-10-09T20:19:10.724376+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "api-v2-production-legacy.log",
+      "bytes": 693,
+      "sha256AtRead": "07d0eca08f08d4e4d972223a01c1952bf0724c00921b8ca3c8c0723976b28127",
+      "lastWriteTimeUtc": "2026-10-09T20:00:04.753019+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "arch.log",
+      "bytes": 530,
+      "sha256AtRead": "8c8d5f5a9bd25955ea4fde0bb1e516525f225d403578c6cf17858a20cb1dc2aa",
+      "lastWriteTimeUtc": "2026-10-09T19:41:01.013249+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "b11-better-auth.log",
+      "bytes": 172,
+      "sha256AtRead": "20f95822b8b9d744d6f576388156cc119f76b27bf29c2061ae947b6782922aaa",
+      "lastWriteTimeUtc": "2026-10-09T20:21:42.655920+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "b11-legacy.log",
+      "bytes": 172,
+      "sha256AtRead": "92927d1f332f9ed76f5586181b2fe8c209c59abbb05139e059c285b32cb9a7e3",
+      "lastWriteTimeUtc": "2026-10-09T20:08:43.066608+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "build-api.log",
+      "bytes": 7441,
+      "sha256AtRead": "40feef29c825ec79eb227ee278db2fb8935bb1d3274da3a653234bd4996c6797",
+      "lastWriteTimeUtc": "2026-10-09T19:53:34.555165+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "build-ids-stage-better-auth.json",
+      "bytes": 150,
+      "sha256AtRead": "f10a10d1f00235351eb8d4ade43b7d6235caa3202f13a617e7a1b9d07b3127fb",
+      "lastWriteTimeUtc": "2026-10-09T20:14:51.238675+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "build-ids-stage-legacy.json",
+      "bytes": 111,
+      "sha256AtRead": "21e97a756c89d8b879eab2000367c3aa690661ebad82c72c2a609bf07d1b2003",
+      "lastWriteTimeUtc": "2026-10-09T19:54:30.198996+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "build-web-better-auth.log",
+      "bytes": 2884,
+      "sha256AtRead": "ac659dbb56dd33b7b72d806211d97f7e6ef0808a516bd977e2f568a7bd45d018",
+      "lastWriteTimeUtc": "2026-10-09T20:14:37.856779+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "build-web-legacy.log",
+      "bytes": 2884,
+      "sha256AtRead": "ae8c98fe34ded9ae79291080820696c7dd3fe2fc114b1fa0ee2571c10855b13c",
+      "lastWriteTimeUtc": "2026-10-09T19:53:53.855661+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "build.log",
+      "bytes": 9248,
+      "sha256AtRead": "4a3037e58c93a76950cf2c281e8ffba307fdd0dde049f804dec02f666f780648",
+      "lastWriteTimeUtc": "2026-10-09T19:53:07.446872+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "check-test-names.log",
+      "bytes": 1134,
+      "sha256AtRead": "db8b113f2443c33d5e77f9cf902d8c80db77caac4e717fcb1ce972e6ea1e49f0",
+      "lastWriteTimeUtc": "2026-10-09T19:41:03.437814+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "check-tokens.log",
+      "bytes": 10690,
+      "sha256AtRead": "ce02dfebd929a881cdf7e1e9a560ada52b409a8964caf0446839ba06f5a9f5dd",
+      "lastWriteTimeUtc": "2026-10-09T19:49:59.143512+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "docs-validate.log",
+      "bytes": 150,
+      "sha256AtRead": "4780ff8a2a1e161691d26d1116f3ee81b991c34d61c66b0195faae3cf4ea4590",
+      "lastWriteTimeUtc": "2026-10-09T20:34:25.459389+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "hygiene.log",
+      "bytes": 206,
+      "sha256AtRead": "f7fa0079bd6b4d0e39f82a6cd888da7d442c9c45929cb6eda9a317c5c06de091",
+      "lastWriteTimeUtc": "2026-10-09T19:45:04.672580+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "journeys-better-auth.log",
+      "bytes": 180,
+      "sha256AtRead": "d5a3a2e372458dc4e290a1abd1a2efcef29bcaddfdb6823a8009b39fd5fb24bf",
+      "lastWriteTimeUtc": "2026-10-09T20:29:20.121019+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "journeys-legacy.log",
+      "bytes": 178,
+      "sha256AtRead": "69254080e8937fcaaa4a25e776b0a120cb20cf7915412f8158cfba80a55ed369",
+      "lastWriteTimeUtc": "2026-10-09T20:08:02.186977+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "lint-css.log",
+      "bytes": 134,
+      "sha256AtRead": "fd8c4eab0ba283c249622a0d70bdd6e589ccd12e06ac6278a8c51c40e01b1d46",
+      "lastWriteTimeUtc": "2026-10-09T19:43:21.301236+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "lint.log",
+      "bytes": 95,
+      "sha256AtRead": "90a2fe4b37f2849261455f97ce79218b61fd688d56576acac86e7e0998274352",
+      "lastWriteTimeUtc": "2026-10-09T19:49:28.371339+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "p1-packaging-20261009T202430Z-221c69a45e3e41d8b60a290fb75c4673/build-storybook.log",
+      "bytes": 276254,
+      "sha256AtRead": "ebde2e64eef79e674fdd2068cd0e0a7680244cceee068be3dfc39d60a874c039",
+      "lastWriteTimeUtc": "2026-10-09T20:26:05.599997+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "p1-packaging-20261009T202430Z-221c69a45e3e41d8b60a290fb75c4673/bundle-mobile.log",
+      "bytes": 3035,
+      "sha256AtRead": "673e7cb4070748428cba93af2a743910046130b074d7ef715b0d226238b41b8d",
+      "lastWriteTimeUtc": "2026-10-09T20:25:43.729061+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "p1-packaging-20261009T202430Z-221c69a45e3e41d8b60a290fb75c4673/summary.json",
+      "bytes": 4594,
+      "sha256AtRead": "fc12e1d5cf57403b65b8f9f0734c79edda662f884f8eb9f2156ba535e59c3670",
+      "lastWriteTimeUtc": "2026-10-09T20:26:05.607504+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "p1-packaging-20261009T211132Z-6704b2f9743242bd9d2183dd7d237aec/bundle-mobile.log",
+      "bytes": 3035,
+      "sha256AtRead": "e3fa9174458c86ddac477b27818791a2c27cd26dbac1642b074ce17aa9697ac8",
+      "lastWriteTimeUtc": "2026-10-09T21:13:04.021431+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "p1-packaging-20261009T211132Z-6704b2f9743242bd9d2183dd7d237aec/summary.json",
+      "bytes": 2917,
+      "sha256AtRead": "341df2a9a834bfce9c7c3336c83d98a0e5f4968f818975c1172e3e12fd348f53",
+      "lastWriteTimeUtc": "2026-10-09T21:13:04.083003+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "ratchet-guard.log",
+      "bytes": 17598,
+      "sha256AtRead": "f464f420bfbd947a2b00d4f5449cc2c38a0beb773403576e1781c5bc25bfbf38",
+      "lastWriteTimeUtc": "2026-10-09T19:50:30.999149+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "records-v2-absent-better-auth/completion.json",
+      "bytes": 14571,
+      "sha256AtRead": "0f7b7c07a049bfcd15db52a6afe8d9773e0de0bd2fae9dc4210613bb0489e7fe",
+      "lastWriteTimeUtc": "2026-10-09T20:21:35.030750+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "records-v2-absent-better-auth/coverage.json",
+      "bytes": 51702,
+      "sha256AtRead": "1c7c6084b77ddca1238f2a76a0f6b0dbe1e1df747a9177609bd476213668915b",
+      "lastWriteTimeUtc": "2026-10-09T20:21:35.029749+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "records-v2-absent-better-auth/meta.json",
+      "bytes": 2761,
+      "sha256AtRead": "337e7cb888ac98f9cb5e27d7b64d09db89437b306e440a914f757d26c8bcbc7a",
+      "lastWriteTimeUtc": "2026-10-09T20:19:16.604738+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "records-v2-absent-legacy/completion.json",
+      "bytes": 14573,
+      "sha256AtRead": "5bbf4c300617f9d3bc783b98e8bc0a963f1beb87e821b512cb06bc682255e248",
+      "lastWriteTimeUtc": "2026-10-09T20:02:56.458015+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "records-v2-absent-legacy/coverage.json",
+      "bytes": 52791,
+      "sha256AtRead": "9ce12dcf6ca961c679b40043c08b7041f590d13b38a9bee5b7feae6df7a2f346",
+      "lastWriteTimeUtc": "2026-10-09T20:02:56.457013+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "records-v2-absent-legacy/meta.json",
+      "bytes": 2751,
+      "sha256AtRead": "a0f73c05ca457c84ccad112d685035f7e6fbf8c7b0e6111d70ae3a9377755098",
+      "lastWriteTimeUtc": "2026-10-09T20:00:34.498503+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "records-v2-production-better-auth/completion.json",
+      "bytes": 14585,
+      "sha256AtRead": "42ddc58b0dbce1caa023c4ba5e6c5ac117ea2db6187760bfa575f3658ea6b856",
+      "lastWriteTimeUtc": "2026-10-09T20:19:10.726377+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "records-v2-production-better-auth/coverage.json",
+      "bytes": 51696,
+      "sha256AtRead": "91a2f8a1aa0eb48f09851443913556981ee98ed15fc37b714a8b73cef506125a",
+      "lastWriteTimeUtc": "2026-10-09T20:19:10.723376+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "records-v2-production-better-auth/meta.json",
+      "bytes": 2769,
+      "sha256AtRead": "7b40ca10340b69a5f2dbc7421188b546380f157fdbfd92bdef7953c219e3b25c",
+      "lastWriteTimeUtc": "2026-10-09T20:14:52.247797+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "records-v2-production-legacy/completion.json",
+      "bytes": 14585,
+      "sha256AtRead": "06e756803970860092e11c02be1d552cdd2256cba70c10b14afbcee739755acb",
+      "lastWriteTimeUtc": "2026-10-09T20:00:04.755020+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "records-v2-production-legacy/coverage.json",
+      "bytes": 52787,
+      "sha256AtRead": "262ed4cc5bdc49bc2c0901f5c246c40af224f6d739fd0d0b167d8174eaabf040",
+      "lastWriteTimeUtc": "2026-10-09T20:00:04.753019+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "records-v2-production-legacy/meta.json",
+      "bytes": 2759,
+      "sha256AtRead": "05b53cee5d459ad25fdeee66e9e2bc73f94f0bbc4ec75794edf52702dc808356",
+      "lastWriteTimeUtc": "2026-10-09T19:54:49.430585+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "tenant-hosts-better-auth-6cfb1dab11/completion.json",
+      "bytes": 2424,
+      "sha256AtRead": "931804a10ca1a80459316b36fb37da4bb161a61d2bc8cfa989f3af48f8067e27",
+      "lastWriteTimeUtc": "2026-10-09T20:23:42.165313+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "tenant-hosts-better-auth.log",
+      "bytes": 133,
+      "sha256AtRead": "4d03b4c3e43a728748f20f348bc701c2cb3a8613749230a7fe92709d78b70548",
+      "lastWriteTimeUtc": "2026-10-09T20:23:42.168312+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "tenant-hosts-legacy-464b39ca09/completion.json",
+      "bytes": 2418,
+      "sha256AtRead": "b9d46f9454d1a6a81e48e2eb8e17512fe8469da783685dfc4e87ee92da8cf313",
+      "lastWriteTimeUtc": "2026-10-09T20:09:05.155782+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "tenant-hosts-legacy.log",
+      "bytes": 128,
+      "sha256AtRead": "deb19b3019835fd9b4074202e476787837d7dab05562888386b6be736384c340",
+      "lastWriteTimeUtc": "2026-10-09T20:09:05.158786+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "test-contract.log",
+      "bytes": 335,
+      "sha256AtRead": "890a13a85efde391ef750425ac6d95914607f106dacad380e61e99c2e40eca12",
+      "lastWriteTimeUtc": "2026-10-09T18:20:48.855948+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "test-identity.full.log",
+      "bytes": 1516,
+      "sha256AtRead": "a9ca19c82cd89a070775bb2ef99a1e5b7068cdf7aff03c57238233aa5790cf42",
+      "lastWriteTimeUtc": "2026-10-09T19:15:47.358409+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "test-integration.log",
+      "bytes": 2091,
+      "sha256AtRead": "ec703302fb09207c292c0e2ddb1d81cd68b9675478bef268934aac708d720fa7",
+      "lastWriteTimeUtc": "2026-10-09T18:26:43.605551+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "test-mobile.full.log",
+      "bytes": 584,
+      "sha256AtRead": "cf6a1a03de7bcd39e5a934f519171cde159514dce764f0759dca88e6d60bc9ff",
+      "lastWriteTimeUtc": "2026-10-09T19:27:49.360052+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "test-no-network-focused.log",
+      "bytes": 377,
+      "sha256AtRead": "a749eff09ad8d339961d34a3f539fce14ea5cf09edd84aa420b1df6156cb0b2a",
+      "lastWriteTimeUtc": "2026-10-09T19:33:07.443431+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "test-platform.full.log",
+      "bytes": 1122,
+      "sha256AtRead": "f81a34962947511f6bc9fa6f545b85ca8bbb5f5c7d18a18ccaefec481f7eabfe",
+      "lastWriteTimeUtc": "2026-10-09T19:40:45.684485+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "test-platform.log",
+      "bytes": 665,
+      "sha256AtRead": "290bea31bad428ecb6a8fd04ece9078a66690509f325d7301ae01b955217e72b",
+      "lastWriteTimeUtc": "2026-10-09T19:48:16.060707+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "test-scroll-css-focused.log",
+      "bytes": 1003,
+      "sha256AtRead": "84d3734c7f7ca125f1da5d271fb358be4f23b5678361a3c048a386e5f77da5d4",
+      "lastWriteTimeUtc": "2026-10-09T19:34:58.224983+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "test-security.full.log",
+      "bytes": 655,
+      "sha256AtRead": "ed93b6cf0bf44a806a17a17734fde1b5ab87f7191b32ef4122ad54dd35679726",
+      "lastWriteTimeUtc": "2026-10-09T19:12:47.618528+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "test-security.tenant-conflicts-no-db.log",
+      "bytes": 454,
+      "sha256AtRead": "f7b1ab9b812fa6bfa0dcea01c9a99c4e14aa5f8b10048114d66ac3ed5bf1cb95",
+      "lastWriteTimeUtc": "2026-10-09T19:17:34.926959+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "test-unit.full-recovered.json",
+      "bytes": 1896,
+      "sha256AtRead": "2b434693c0df7098c67b76a4ef15ff5373a578fede79110dba6422996bfec600",
+      "lastWriteTimeUtc": "2026-10-09T19:50:24.826034+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "test-unit.full-recovered.md",
+      "bytes": 1256,
+      "sha256AtRead": "a69ae7ac54cc71155c99224a0c42c083e3520861b4c0d6a5bb2b3d1e0a807892",
+      "lastWriteTimeUtc": "2026-10-09T19:50:24.826034+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "test-visual-tools.log",
+      "bytes": 341,
+      "sha256AtRead": "c2b49c74c79add03d1a65fa2a217af396b531f756a99c4e6ee50ce1978e2ef99",
+      "lastWriteTimeUtc": "2026-10-09T18:24:46.082324+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "test-web.full.log",
+      "bytes": 940,
+      "sha256AtRead": "70ab2744e935fac6a9ba30c01cf5acaa7640ee66d2b245a82d8d16fc35cc23b8",
+      "lastWriteTimeUtc": "2026-10-09T19:28:27.376498+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "tokens.log",
+      "bytes": 60640,
+      "sha256AtRead": "f7e403e9cb1def58bd9a3ef3ef665a5fb04bfefc295912680a4aaab4453519f4",
+      "lastWriteTimeUtc": "2026-10-09T19:41:02.947217+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "type-check.log",
+      "bytes": 135,
+      "sha256AtRead": "711ade2ac5e42136695cdd3643b87c88b5e1dfbe4752f61831e14e3f1a5a0cc1",
+      "lastWriteTimeUtc": "2026-10-09T19:42:52.945658+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "typecheck.log",
+      "bytes": 688,
+      "sha256AtRead": "b6372521e4fae91cde41198fdecad0e3af3947b5a1df519bda9e192b15214f32",
+      "lastWriteTimeUtc": "2026-10-09T19:41:03.730254+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "visual-full-ba-20261009T203607Z-2ff7be773bc64db4a86c04dde480899a/capture-scope.json",
+      "bytes": 40146,
+      "sha256AtRead": "d0106f5827b065a852157fc63fb839e1e8b206e4920e6641f1fd1bbe3761156e",
+      "lastWriteTimeUtc": "2026-10-09T21:10:04.750886+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "visual-full-ba-20261009T203607Z-2ff7be773bc64db4a86c04dde480899a/comparison-exit.json",
+      "bytes": 105,
+      "sha256AtRead": "b1e66c87abec95a5bc7b3dc9c62f791376a95bacf3cbea0bd7131ae94bdec74e",
+      "lastWriteTimeUtc": "2026-10-09T21:11:15.787950+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "visual-full-ba-20261009T203607Z-2ff7be773bc64db4a86c04dde480899a/comparison.json",
+      "bytes": 127,
+      "sha256AtRead": "579c9d9ea4feef7920fc7accd37e448a3cddf83d262932291022d42c3cf38982",
+      "lastWriteTimeUtc": "2026-10-09T21:11:15.765437+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "visual-full-ba-20261009T203607Z-2ff7be773bc64db4a86c04dde480899a/dialog390-perception-limit.json",
+      "bytes": 604,
+      "sha256AtRead": "6072049bd7642b4cef0eecf11e6292f1514e14660543ae4fc197679d5c7e6142",
+      "lastWriteTimeUtc": "2026-10-09T21:02:55.040552+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "visual-full-ba-20261009T203607Z-2ff7be773bc64db4a86c04dde480899a/owned-descendants-closure.json",
+      "bytes": 254,
+      "sha256AtRead": "789a84c6446d51ce4dd91d059c261e9f312586fb7862ffdd0da769810f91cb79",
+      "lastWriteTimeUtc": "2026-10-09T21:11:32.362091+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "visual-full-ba-20261009T203607Z-2ff7be773bc64db4a86c04dde480899a/reference-scope.json",
+      "bytes": 57870,
+      "sha256AtRead": "7e935a76fc93014ad255fead794103fb12dbb4250420b3b40f0fa906a9a8f38e",
+      "lastWriteTimeUtc": "2026-10-09T20:36:08.270605+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "visual-full-ba-20261009T203607Z-2ff7be773bc64db4a86c04dde480899a/summary.json",
+      "bytes": 4429,
+      "sha256AtRead": "dae3ae6071fe1d93d5fc178f8f87c39be742bc7ac7631d69eb77d2d5628c15c4",
+      "lastWriteTimeUtc": "2026-10-09T21:10:05.575773+00:00",
+      "mutableWhileRunning": false
+    },
+    {
+      "path": "visual-human-acceptance.json",
+      "bytes": 20014,
+      "sha256AtRead": "3a3d4402e72248a467575a67acc6502fd061f3060faaa979766b6a8295e164f3",
+      "lastWriteTimeUtc": "2026-10-09T18:30:29.086193+00:00",
+      "mutableWhileRunning": false
+    }
+  ],
+  "finalizedAtUtc": "2026-10-09T21:17:30.128654+00:00"
+}

@@ -1,0 +1,11 @@
+flowchart TD
+    EquipPage[/equipamentos/[id]/] --> Cart[Add to cart]
+    Cart --> Orcamento[/orcamento/]
+    Orcamento --> Api[POST /api/quotes]
+    Api --> Validate[Validate + pricing]
+    Validate --> Db[(PostgreSQL)]
+    Api --> Email[Send confirmation email]
+    Api --> Boleto{CPF/CNPJ and total > 0?}
+    Boleto -->|yes| Asaas[Asaas boleto]
+    Boleto -->|no| Skip[Skip boleto generation]
+    Db --> Admin[/admin/orcamentos/]

@@ -1,0 +1,56 @@
+{
+  "name": "@gb-locacoes/backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "contextWindow": {
+    "runtime": "server"
+  },
+  "exports": {
+    "./http": "./src/http/index.ts",
+    "./runtime": "./src/runtime/index.ts",
+    "./identity": "./src/modules/identity/index.ts",
+    "./outbox": "./src/modules/outbox/index.ts",
+    "./billing": "./src/modules/billing/index.ts",
+    "./documents": "./src/modules/documents/index.ts",
+    "./customers": "./src/modules/customers/index.ts",
+    "./communications": "./src/modules/communications/index.ts",
+    "./catalog": "./src/modules/catalog/index.ts",
+    "./operations": "./src/modules/operations/index.ts",
+    "./directory": "./src/modules/directory/index.ts",
+    "./quotations": "./src/modules/quotations/index.ts",
+    "./rentals": "./src/modules/rentals/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@aws-sdk/client-kms": "3.1146.0",
+    "@aws-sdk/credential-provider-web-identity": "3.972.78",
+    "@better-auth/expo": "1.7.6",
+    "@gb-locacoes/contracts": "workspace:*",
+    "@gb-locacoes/design-tokens": "workspace:*",
+    "@gb-locacoes/domain": "workspace:*",
+    "@prisma/adapter-pg": "7.10.0",
+    "@prisma/client": "7.10.0",
+    "@supabase/supabase-js": "^2.117.2",
+    "bcryptjs": "3.0.3",
+    "better-auth": "1.7.6",
+    "date-fns": "^4.4.0",
+    "decimal.js": "^10.6.0",
+    "exceljs": "^4.4.0",
+    "isomorphic-dompurify": "4.4.0",
+    "next-auth": "4.24.15",
+    "pdfkit": "^0.20.2",
+    "pg": "^8.23.0",
+    "pino": "10.3.1",
+    "resend": "^6.30.0",
+    "sharp": "^0.35.4",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/pdfkit": "^0.17.6",
+    "@types/pg": "^8.23.1",
+    "typescript": "5.9.3"
+  }
+}

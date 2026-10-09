@@ -1,0 +1,262 @@
+/* Barras de rolagem, na camada components (as classes utilitárias do elemento vencem): a padrão, laranja no painel
+   admin e nas notificações, setas do ScrollArea de packages/ui, cinza nos dropdowns de filtro e a da aba de emojis. */
+
+@layer components {
+  /* Padrão: fina e laranja em todo elemento, com especificidade zero (qualquer classe vence, como na produção). Fica
+     em components porque o plugin tailwind-scrollbar zera scrollbar-* de todo elemento na camada base, no fim dela. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+  }
+
+  /* Painel admin (barra lateral e áreas com rolagem nativa), só a partir do tablet; admin-scrollbar-hover-only mostra
+     a barra apenas com o ponteiro sobre a área. */
+  @media (width >= 768px) {
+    .admin-scrollbar-hover-only {
+      scrollbar-width: none;
+    }
+
+    .admin-scrollbar-hover-only::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      background: transparent;
+    }
+
+    .admin-sidebar-nav,
+    .admin-scrollbar,
+    .admin-scrollbar-hover-only:hover {
+      scrollbar-width: thin;
+      scrollbar-color: var(--brand) transparent;
+    }
+
+    .admin-sidebar-nav::-webkit-scrollbar,
+    .admin-scrollbar::-webkit-scrollbar,
+    .admin-scrollbar-hover-only:hover::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    .admin-sidebar-nav::-webkit-scrollbar-track,
+    .admin-scrollbar::-webkit-scrollbar-track,
+    .admin-scrollbar-hover-only:hover::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .admin-sidebar-nav::-webkit-scrollbar-thumb,
+    .admin-scrollbar::-webkit-scrollbar-thumb,
+    .admin-scrollbar-hover-only:hover::-webkit-scrollbar-thumb {
+      background: var(--brand);
+      border-radius: var(--rounded-sm);
+    }
+
+    .admin-sidebar-nav::-webkit-scrollbar-thumb:hover,
+    .admin-scrollbar::-webkit-scrollbar-thumb:hover,
+    .admin-scrollbar-hover-only:hover::-webkit-scrollbar-thumb:hover {
+      background: var(--brand-hover);
+    }
+
+    .admin-sidebar-nav::-webkit-scrollbar-button,
+    .admin-scrollbar::-webkit-scrollbar-button,
+    .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button {
+      display: block;
+      height: 0;
+      width: 0;
+    }
+
+    .admin-sidebar-nav::-webkit-scrollbar-button:single-button:vertical:decrement,
+    .admin-scrollbar::-webkit-scrollbar-button:single-button:vertical:decrement,
+    .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:vertical:decrement {
+      border-style: solid;
+      border-width: 0 var(--border-width-4) var(--border-width-6) var(--border-width-4);
+      border-color: transparent transparent var(--brand) transparent;
+    }
+
+    .admin-sidebar-nav::-webkit-scrollbar-button:single-button:vertical:increment,
+    .admin-scrollbar::-webkit-scrollbar-button:single-button:vertical:increment,
+    .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:vertical:increment {
+      border-style: solid;
+      border-width: var(--border-width-6) var(--border-width-4) 0 var(--border-width-4);
+      border-color: var(--brand) transparent transparent transparent;
+    }
+
+    .admin-scrollbar::-webkit-scrollbar-button:single-button:horizontal:decrement,
+    .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:horizontal:decrement {
+      border-style: solid;
+      border-width: var(--border-width-4) var(--border-width-6) var(--border-width-4) 0;
+      border-color: transparent var(--brand) transparent transparent;
+    }
+
+    .admin-scrollbar::-webkit-scrollbar-button:single-button:horizontal:increment,
+    .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:horizontal:increment {
+      border-style: solid;
+      border-width: var(--border-width-4) 0 var(--border-width-4) var(--border-width-6);
+      border-color: transparent transparent transparent var(--brand);
+    }
+
+    .admin-sidebar-nav::-webkit-scrollbar-button:single-button:vertical:decrement:hover,
+    .admin-scrollbar::-webkit-scrollbar-button:single-button:vertical:decrement:hover,
+    .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+      border-color: transparent transparent var(--brand-hover) transparent;
+    }
+
+    .admin-sidebar-nav::-webkit-scrollbar-button:single-button:vertical:increment:hover,
+    .admin-scrollbar::-webkit-scrollbar-button:single-button:vertical:increment:hover,
+    .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+      border-color: var(--brand-hover) transparent transparent transparent;
+    }
+
+    .admin-scrollbar::-webkit-scrollbar-button:single-button:horizontal:decrement:hover,
+    .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {
+      border-color: transparent var(--brand-hover) transparent transparent;
+    }
+
+    .admin-scrollbar::-webkit-scrollbar-button:single-button:horizontal:increment:hover,
+    .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:horizontal:increment:hover {
+      border-color: transparent transparent transparent var(--brand-hover);
+    }
+  }
+
+  /* Setas da barra de rolagem do ScrollArea de packages/ui (mesmo visual da barra lateral). */
+  .scroll-area-arrow {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .scroll-area-arrow-vertical-up {
+    border-width: 0 var(--border-width-4) var(--border-width-6) var(--border-width-4);
+    border-color: transparent transparent var(--brand) transparent;
+  }
+
+  .scroll-area-arrow-vertical-up:hover {
+    border-color: transparent transparent var(--brand-hover) transparent;
+  }
+
+  .scroll-area-arrow-vertical-down {
+    border-width: var(--border-width-6) var(--border-width-4) 0 var(--border-width-4);
+    border-color: var(--brand) transparent transparent transparent;
+  }
+
+  .scroll-area-arrow-vertical-down:hover {
+    border-color: var(--brand-hover) transparent transparent transparent;
+  }
+
+  .scroll-area-arrow-horizontal-left {
+    border-width: var(--border-width-4) var(--border-width-6) var(--border-width-4) 0;
+    border-color: transparent var(--brand) transparent transparent;
+  }
+
+  .scroll-area-arrow-horizontal-left:hover {
+    border-color: transparent var(--brand-hover) transparent transparent;
+  }
+
+  .scroll-area-arrow-horizontal-right {
+    border-width: var(--border-width-4) 0 var(--border-width-4) var(--border-width-6);
+    border-color: transparent transparent transparent var(--brand);
+  }
+
+  .scroll-area-arrow-horizontal-right:hover {
+    border-color: transparent transparent transparent var(--brand-hover);
+  }
+
+  /* Dropdowns de filtro (Select, CustomSelect e DropdownMenu de packages/ui). */
+  .filter-dropdown-scroll {
+    overflow-y: auto;
+    max-height: 280px;
+  }
+
+  .filter-dropdown-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .filter-dropdown-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .filter-dropdown-scroll::-webkit-scrollbar-thumb {
+    background: var(--scroll-thumb-muted);
+    border-radius: var(--rounded-scroll-thumb);
+  }
+
+  .filter-dropdown-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--scroll-thumb-muted-hover);
+  }
+
+  /* Personalização de ícones (aba de emojis). */
+  .icon-customization-scroll {
+    scrollbar-color: var(--brand) var(--surface-control);
+  }
+
+  .icon-customization-scroll::-webkit-scrollbar-track {
+    background: var(--surface-control);
+  }
+
+  .icon-customization-scroll::-webkit-scrollbar-thumb {
+    background: var(--brand);
+    border-radius: var(--rounded-full);
+  }
+
+  .icon-customization-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--brand-hover);
+  }
+
+  .icon-customization-scroll::-webkit-scrollbar-button {
+    background: var(--brand);
+  }
+
+  /* Dropdown de notificações do cabeçalho admin: a barra um pouco à direita do conteúdo; as setas (quando o navegador
+     as mostra) têm a cor da barra lateral. */
+  .notification-dropdown-scroll {
+    overflow-y: auto;
+    scrollbar-color: var(--brand) transparent;
+    scrollbar-width: thin;
+    padding-right: var(--space-0-5);
+    margin-right: var(--scroll-nudge);
+  }
+
+  .notification-dropdown-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .notification-dropdown-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .notification-dropdown-scroll::-webkit-scrollbar-thumb {
+    background: var(--brand);
+    border-radius: var(--rounded-sm);
+  }
+
+  .notification-dropdown-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--brand-hover);
+  }
+
+  .notification-dropdown-scroll::-webkit-scrollbar-button {
+    display: block;
+    height: 0;
+    width: 0;
+  }
+
+  .notification-dropdown-scroll::-webkit-scrollbar-button:single-button:vertical:decrement {
+    border-style: solid;
+    border-width: 0 var(--border-width-4) var(--border-width-6) var(--border-width-4);
+    border-color: transparent transparent var(--brand) transparent;
+  }
+
+  .notification-dropdown-scroll::-webkit-scrollbar-button:single-button:vertical:increment {
+    border-style: solid;
+    border-width: var(--border-width-6) var(--border-width-4) 0 var(--border-width-4);
+    border-color: var(--brand) transparent transparent transparent;
+  }
+
+  .notification-dropdown-scroll::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+    border-color: transparent transparent var(--brand-hover) transparent;
+  }
+
+  .notification-dropdown-scroll::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+    border-color: var(--brand-hover) transparent transparent transparent;
+  }
+}

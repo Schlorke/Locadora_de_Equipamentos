@@ -1,0 +1,272 @@
+/* Utilitários próprios e a semântica da produção (Tailwind 3.4.17) onde o 4 mudou: hover, transform, space-*, divide-y,
+   text-*, transition, justify-self-end e container (o contorno fica em outline.web.css); sombras dos controles, degradê,
+   emoji e rolagem. `--tw-sort` põe a regra daqui depois da do Tailwind (mesma especificidade: vence). */
+
+/* Gatilho (botão) enquanto controla um conteúdo aberto, fora das abas e dos botões com moldura própria
+   (data-own-frame). Usada por TRIGGER_FRAME e MENU_TRIGGER_FRAME (packages/ui/src/web/trigger.ts). */
+@custom-variant controls (&:is(button)[aria-controls]:not([role='tab'], [data-own-frame]));
+
+/* hover: como na produção (Tailwind 3), sem a condição (hover: hover) do Tailwind 4: vale também depois de um toque.
+   group-hover: e peer-hover: seguem. hover-always: é o mesmo seletor (nome antigo, mantido). */
+@custom-variant hover (&:hover);
+@custom-variant hover-always (&:hover);
+
+/* Transformações da produção: translate-*, scale-* e rotate-* compõem UMA propriedade transform (animação ou estilo
+   inline com transform a substituem, como no Tailwind 3), no lugar de translate/scale/rotate do Tailwind 4. Variáveis
+   do Tailwind (--tw-translate-*, --tw-scale-*) e --tw-rotate da produção. Sem skew nem scale-y (sem uso). */
+@property --tw-rotate {
+  syntax: '*';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@utility translate-x-* {
+  --tw-sort: transform;
+  --tw-tw3-translate: --value(number, [*], 'full', 'px');
+  --tw-tw3-fraction: --value(ratio);
+
+  translate: none;
+  transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0)) rotate(var(--tw-rotate, 0deg)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1));
+}
+
+@utility -translate-x-* {
+  --tw-sort: transform;
+  --tw-tw3-translate: --value(number, [*], 'full', 'px');
+  --tw-tw3-fraction: --value(ratio);
+
+  translate: none;
+  transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0)) rotate(var(--tw-rotate, 0deg)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1));
+}
+
+@utility translate-y-* {
+  --tw-sort: transform;
+  --tw-tw3-translate: --value(number, [*], 'full', 'px');
+  --tw-tw3-fraction: --value(ratio);
+
+  translate: none;
+  transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0)) rotate(var(--tw-rotate, 0deg)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1));
+}
+
+@utility -translate-y-* {
+  --tw-sort: transform;
+  --tw-tw3-translate: --value(number, [*], 'full', 'px');
+  --tw-tw3-fraction: --value(ratio);
+
+  translate: none;
+  transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0)) rotate(var(--tw-rotate, 0deg)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1));
+}
+
+@utility scale-* {
+  --tw-sort: transform;
+  --tw-tw3-scale: --value(integer);
+  --tw-scale-x: --value([*]);
+  --tw-scale-y: --value([*]);
+
+  scale: none;
+  transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0)) rotate(var(--tw-rotate, 0deg)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1));
+}
+
+@utility scale-x-* {
+  --tw-sort: transform;
+  --tw-tw3-scale: --value(integer);
+  --tw-scale-x: --value([*]);
+
+  scale: none;
+  transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0)) rotate(var(--tw-rotate, 0deg)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1));
+}
+
+@utility rotate-* {
+  --tw-sort: transform;
+  --tw-rotate: calc(--value(integer) * 1deg);
+
+  rotate: none;
+  transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0)) rotate(var(--tw-rotate, 0deg)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1));
+}
+
+@utility -rotate-* {
+  --tw-sort: transform;
+  --tw-rotate: calc(--value(integer) * -1deg);
+
+  rotate: none;
+  transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0)) rotate(var(--tw-rotate, 0deg)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1));
+}
+
+@utility transform {
+  --tw-sort: zoom;
+
+  transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0)) rotate(var(--tw-rotate, 0deg)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1));
+}
+
+@utility transform-gpu {
+  --tw-sort: zoom;
+
+  transform: translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), 0) rotate(var(--tw-rotate, 0deg)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1));
+}
+
+/* space-* e divide-y da produção: margem/borda nos filhos a partir do segundo visível, com a especificidade do
+   Tailwind 3 (vence as classes do filho). A regra de especificidade zero anula a margem/borda que o Tailwind 4 põe
+   no fim de cada filho (o primeiro fica com o que tinha, 0 pelo preflight). Sem as variantes -reverse (sem uso). */
+@utility space-y-* {
+  --tw-sort: divide-x-width;
+
+  :where(& > :not(:last-child)) {
+    margin-block-end: 0;
+  }
+
+  & > :not([hidden]) ~ :not([hidden]) {
+    margin-top: calc(var(--spacing) * --value(number));
+    margin-bottom: 0;
+  }
+}
+
+@utility space-x-* {
+  --tw-sort: divide-x-width;
+
+  :where(& > :not(:last-child)) {
+    margin-inline-end: 0;
+  }
+
+  & > :not([hidden]) ~ :not([hidden]) {
+    margin-right: 0;
+    margin-left: calc(var(--spacing) * --value(number));
+  }
+}
+
+@utility divide-y {
+  --tw-sort: divide-style;
+
+  :where(& > :not(:last-child)) {
+    border-top-width: 0;
+    border-bottom-width: 0;
+  }
+
+  & > :not([hidden]) ~ :not([hidden]) {
+    border-top-width: var(--border-width-1);
+    border-bottom-width: 0;
+  }
+}
+
+/* Transições da produção: as listas do Tailwind 3 (o 4 também anima outline-color, as paradas do degradê e
+   translate/scale/rotate, que aqui não são usados pelos utilitários). */
+@utility transition {
+  --tw-sort: transition-behavior;
+
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
+}
+
+@utility transition-colors {
+  --tw-sort: transition-behavior;
+
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+}
+
+@utility transition-transform {
+  --tw-sort: transition-behavior;
+
+  transition-property: transform;
+}
+
+/* Tamanho de texto da produção: text-* grava a altura de linha da escala (scales.css) sem ler --tw-leading. No
+   Tailwind 4, um leading-* do elemento vencia o text-* de uma variante responsiva (leading-tight md:text-3xl). */
+@utility text-* {
+  --tw-sort: font-size;
+
+  line-height: --value(--line-height-text-*, --text-*--line-height);
+}
+
+/* justify-self-end com `end` (o 4 escreve flex-end); container como a regra global da produção (`.container` com a
+   largura da janela e recorte horizontal, no lugar das larguras por breakpoint). */
+@utility justify-self-end {
+  --tw-sort: overflow;
+
+  justify-self: end;
+}
+
+@utility container {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+@utility shadow-control {
+  box-shadow: var(--shadow-control);
+}
+
+@utility shadow-control-hover {
+  box-shadow: var(--shadow-control-hover);
+}
+
+@utility shadow-control-focus {
+  box-shadow: var(--shadow-control-focus);
+}
+
+@utility shadow-control-invalid-focus {
+  box-shadow: var(--shadow-control-invalid-focus);
+}
+
+@utility shadow-textarea {
+  box-shadow: var(--shadow-textarea);
+}
+
+@utility shadow-raised {
+  box-shadow: var(--shadow-raised);
+}
+
+@utility shadow-raised-lg {
+  box-shadow: var(--shadow-raised-lg);
+}
+
+@utility shadow-raised-xl {
+  box-shadow: var(--shadow-raised-xl);
+}
+
+@utility shadow-checkbox-focus {
+  box-shadow: var(--shadow-checkbox-focus);
+}
+
+/* Degradê com a interpolação da produção (Tailwind 3, sRGB): o bg-gradient-to-* do Tailwind 4 interpola `in oklab` e
+   muda os tons do meio. A declaração daqui entra depois da do Tailwind na mesma regra e vence. */
+@utility bg-gradient-to-t {
+  --tw-gradient-position: to top;
+}
+
+@utility bg-gradient-to-tr {
+  --tw-gradient-position: to top right;
+}
+
+@utility bg-gradient-to-r {
+  --tw-gradient-position: to right;
+}
+
+@utility bg-gradient-to-br {
+  --tw-gradient-position: to bottom right;
+}
+
+@utility bg-gradient-to-b {
+  --tw-gradient-position: to bottom;
+}
+
+@utility bg-gradient-to-bl {
+  --tw-gradient-position: to bottom left;
+}
+
+@utility bg-gradient-to-l {
+  --tw-gradient-position: to left;
+}
+
+@utility bg-gradient-to-tl {
+  --tw-gradient-position: to top left;
+}
+
+/* Bandeiras e emojis (Twemoji, declarada em base.web.css). */
+@utility emoji-font {
+  font-family: 'Twemoji Country Flags', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'EmojiOne Color', sans-serif;
+}
+
+/* Esconde a barra de rolagem sem tirar a rolagem. */
+@utility scrollbar-hide {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

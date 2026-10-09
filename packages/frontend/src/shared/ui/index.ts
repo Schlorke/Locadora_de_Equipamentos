@@ -1,0 +1,3 @@
+// Facade over the design system: shared/ui never defines a second component source.
+export { Alert, AlertDescription, AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogHeaderIcon, AlertDialogTitle, AlertTitle, Badge, Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, CloseButton, Input, Label, Link, Separator, Stack, Text, Textarea, ThemeProvider, catalog } from "@gb-locacoes/ui";
+export type { ButtonProps, InputProps, StackProps, TextProps } from "@gb-locacoes/ui";

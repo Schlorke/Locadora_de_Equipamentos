@@ -1,0 +1,30 @@
+{
+  "schema": "context-window/install-record@1",
+  "libraryVersion": "2.1.0",
+  "source": {
+    "commit": "c4f9e462049cd0ec7a405270aeb849c9571f9a2b",
+    "distribution": "checkout"
+  },
+  "scope": "project",
+  "profile": "dev",
+  "clients": [
+    "claude",
+    "codex",
+    "cursor"
+  ],
+  "sinks": [
+    {
+      "sink": "claude",
+      "dir": "C:\\Projetos\\Locadora_Equipamentos\\.claude\\skills"
+    },
+    {
+      "sink": "agents",
+      "dir": "C:\\Projetos\\Locadora_Equipamentos\\.agents\\skills"
+    }
+  ],
+  "contract": true,
+  "usagePolicy": false,
+  "claudeHook": false,
+  "hookScriptHash": null,
+  "installedAt": "2026-09-25T12:29:43.399Z"
+}

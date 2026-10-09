@@ -1,0 +1,5 @@
+/* Fixture de tools/token-check.mjs: o config JS e os plugins que a folha de estilo carrega (fora do escopo). */
+@import "tailwindcss";
+@config '../../../tailwind.config.cjs';
+@plugin '../../../tailwind/base-plugin.cjs';
+@plugin 'tailwindcss-animate';

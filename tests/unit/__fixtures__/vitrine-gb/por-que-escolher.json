@@ -1,0 +1,37 @@
+{
+  "origem": "55763c1e:packages/frontend/src/widgets/por-que-escolher/ui/PorQueEscolher.web.tsx",
+  "identidade": {
+    "nome": "GB Locações",
+    "cidade": "Porto Alegre",
+    "uf": "RS",
+    "logoUrl": null
+  },
+  "textos": [
+    "Por",
+    "que",
+    "Escolher",
+    "a",
+    "GB",
+    "Locações?",
+    "Equipamentos Certificados",
+    "Todos os nossos equipamentos possuem certificação e passam por manutenção preventiva constante para garantir segurança total.",
+    "Entrega Rápida e Eficiente",
+    "Entregamos em toda região de Porto Alegre com logística própria e rastreamento dos equipamentos em tempo real.",
+    "Atendimento Especializado",
+    "Atendimento personalizado com profissionais experientes em equipamentos para obras e serviços em altura.",
+    "Parceira de Grandes Construtoras",
+    "Atendemos grandes construtoras como Melnick, Cyrela, Joal Teitelbaum, UMA Incorporadora, ABF Developments e outras.",
+    "10 Anos de Experiência",
+    "Há 10 anos oferecendo soluções em locação de equipamentos com foco em segurança, qualidade e comprometimento.",
+    "Rastreamento dos Equipamentos",
+    "Sistema de rastreamento que identifica onde cada equipamento está e quando foi feita a última manutenção.",
+    "Orçamento Grátis",
+    "Pronto para",
+    "Começar seu Projeto?",
+    "Solicite um orçamento gratuito e receba nossa proposta personalizada. Atendimento com segurança, qualidade e manutenção constante dos equipamentos.",
+    "(51) 2313-6262",
+    "|",
+    "(51) 99820-5163",
+    "Solicitar Orçamento Online"
+  ]
+}

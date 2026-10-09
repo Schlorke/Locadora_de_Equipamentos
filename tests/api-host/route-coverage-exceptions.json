@@ -1,0 +1,42 @@
+{
+  "exceptions": {
+    "DELETE /api/[...rest]": "Unknown endpoints deliberately return neutral NOT_FOUND 404; DELETE has no success branch (api/[...rest]/route.ts).",
+    "GET /api/[...rest]": "Unknown endpoints deliberately return neutral NOT_FOUND 404; GET has no success branch (api/[...rest]/route.ts).",
+    "PATCH /api/[...rest]": "Unknown endpoints deliberately return neutral NOT_FOUND 404; PATCH has no success branch (api/[...rest]/route.ts).",
+    "POST /api/[...rest]": "Unknown endpoints deliberately return neutral NOT_FOUND 404; POST has no success branch (api/[...rest]/route.ts).",
+    "PUT /api/[...rest]": "Unknown endpoints deliberately return neutral NOT_FOUND 404; PUT has no success branch (api/[...rest]/route.ts).",
+    "DELETE /api/admin/financial/entries/[id]": "Existing financial history is append-only: the authorized branch returns FINANCIAL_HISTORY_PRESERVED 409 and keeps the entry; financial-mutations.http.test.ts proves it.",
+    "DELETE /api/admin/quotes/[id]/adjustments/[adjustmentId]": "Existing adjustment history is append-only: the authorized branch returns ADJUSTMENT_HISTORY_PRESERVED 409 and keeps the adjustment; quote-mutations.http.test.ts proves it.",
+    "DELETE /api/admin/google-merchant/products/[id]": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine.",
+    "GET /api/admin/google-merchant/status": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine.",
+    "POST /api/admin/google-merchant/products/[id]": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine.",
+    "POST /api/admin/google-merchant/sync": "The ADMIN branch delegates to backend/http/merchant.ts and returns TENANT_MERCHANT_ADAPTER_UNAVAILABLE 503 without provider effects; shipping-merchant.http.test.ts proves this quarantine.",
+    "GET /api/admin/zoho-mail/oauth/authorize": "OAuth authorization succeeds by a 307 redirect to the provider with tenant-bound state/cookie; no 2xx branch exists. zoho-oauth.http.test.ts checks Location, state and cookie.",
+    "GET /api/admin/zoho-mail/oauth/callback": "OAuth completion succeeds by a 307 redirect to /admin/email?success=true after storing tenant credentials; no 2xx branch exists. zoho-oauth.http.test.ts checks effects and replay refusal.",
+    "GET /api/auth/verify-email": {
+      "reason": "The legacy verification contract always redirects with 307, including /login?verified=true after a consumed token. credential-accounts.http.test.ts checks persisted verification and single use; Better Auth JSON success remains required.",
+      "authModes": ["legacy"]
+    },
+    "GET /api/auth/owner-account": {
+      "reason": "Owner self-service reads call runtime/owner-account.ts checkSignup and assertSelfServiceOnboardingConfiguration: signup off returns 403 and signup on requires AUTH_MODE=better-auth (503 in legacy). onboarding.http.test.ts exercises the refusal; Better Auth 200 remains required.",
+      "authModes": ["legacy"]
+    },
+    "POST /api/auth/owner-register": {
+      "reason": "Owner self-service registration calls assertSelfServiceOnboardingConfiguration: signup off returns 403 and signup on requires AUTH_MODE=better-auth (503 in legacy). onboarding.http.test.ts proves configuration refusal without an account or provider call; Better Auth 202 remains required.",
+      "authModes": ["legacy"]
+    },
+    "POST /api/auth/owner-verification": {
+      "reason": "Owner self-service verification calls runtime/owner-account.ts checkSignup and assertSelfServiceOnboardingConfiguration: signup off returns 403 and signup on requires AUTH_MODE=better-auth (503 in legacy). Better Auth neutral 202 remains required by onboarding.http.test.ts.",
+      "authModes": ["legacy"]
+    },
+    "GET /api/onboarding/slug-availability": {
+      "reason": "Self-service slug lookup calls platform-jobs.ts checkSignup before the platform read: signup off returns 403 and signup on requires AUTH_MODE=better-auth (503 in legacy). Better Auth availability 200 remains required by onboarding.http.test.ts.",
+      "authModes": ["legacy"]
+    },
+    "POST /api/onboarding/organizations": {
+      "reason": "Self-service provisioning calls platform-jobs.ts checkSignup before parsing/provisioning: signup off returns 403 and signup on requires AUTH_MODE=better-auth (503 in legacy). Better Auth durable provisioning 201 remains required by onboarding.http.test.ts.",
+      "authModes": ["legacy"]
+    },
+    "GET /api/payments/boleto/[id]/pdf": "An authorized issued boleto succeeds by a private 302 redirect to its validated provider document URL and never downloads provider bytes; payment-requests.http.test.ts checks Location and URL refusals."
+  }
+}

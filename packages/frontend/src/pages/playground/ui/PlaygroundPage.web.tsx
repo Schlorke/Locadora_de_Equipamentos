@@ -1,0 +1,152 @@
+'use client'
+
+import { useState } from 'react'
+import { PLATFORM } from '@gb-locacoes/contracts/platform'
+import { usePublicSettings } from '../../../entities/configuracao'
+import {
+  BlurText,
+  ScrollStack,
+  ScrollStackBenefitCard,
+  ScrollStackItem,
+  beneficiosComVisual,
+} from '../../../widgets/por-que-escolher'
+
+// Os mesmos benefícios da vitrine, sem locadora: só o texto do modelo (antes, cópia com clientes, anos de mercado e
+// região da GB; achado 143).
+const benefits = beneficiosComVisual(null)
+
+export function PlaygroundPage() {
+  const { settings } = usePublicSettings()
+  const [secondLineReady, setSecondLineReady] = useState(false)
+
+  return (
+    <section className="bg-gray-900 text-white relative min-h-screen overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-yellow-500/5 rounded-full blur-3xl" />
+      </div>
+
+      {/* Title and stack */}
+      <div className="relative z-10 py-12 md:py-16 lg:py-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+          <BlurText
+            text="Por que Escolher a"
+            delay={150}
+            animateBy="words"
+            direction="top"
+            className="text-[1.25rem] md:text-[3rem] lg:text-[4rem] mb-1 text-white justify-center leading-tight"
+            style={{
+              fontWeight:
+                'bolder' /* token-check-allow: peso original do título blur do playground */,
+              lineHeight:
+                '1.2' /* token-check-allow: line-height original do título blur do playground */,
+            }}
+            onAnimationCompleteAction={() => setSecondLineReady(true)}
+          />
+          <BlurText
+            text={`${PLATFORM.displayName}?`}
+            delay={150}
+            animateBy="words"
+            direction="top"
+            className="text-[1.25rem] md:text-[3rem] lg:text-[4rem] text-white justify-center leading-tight"
+            style={{
+              fontWeight:
+                'bolder' /* token-check-allow: peso original do título blur do playground */,
+              lineHeight:
+                '1.2' /* token-check-allow: line-height original do título blur do playground */,
+            }}
+            shouldStartAnimating={secondLineReady}
+          />
+        </div>
+
+        <div className="mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ScrollStack
+            useWindowScroll={true}
+            itemDistance={300}
+            itemScale={0.025}
+            itemStackDistance={30}
+            stackPosition="20%"
+            scaleEndPosition="15%"
+            baseScale={0.85}
+            blurAmount={0}
+            onStackComplete={() => {
+              // Stack animation completed
+            }}
+          >
+            {benefits.map((benefit, index) => (
+              <ScrollStackItem
+                key={benefit.title}
+                itemClassName="bg-gradient-to-br from-gray-800/95 backdrop-blur-xl border border-gray-700/50 shadow-[0_0_40px_rgba(234,88,12,0.12)]"
+              >
+                <ScrollStackBenefitCard
+                  icon={benefit.icon}
+                  title={benefit.title}
+                  description={benefit.description}
+                  accentColor={benefit.accentColor}
+                  index={index}
+                />
+              </ScrollStackItem>
+            ))}
+          </ScrollStack>
+        </div>
+      </div>
+
+      {/* CTA Section - after scroll stack */}
+      <div className="relative z-20 py-16 md:py-20 bg-gradient-to-b from-transparent via-gray-900/55 to-gray-900">
+        {/* Gradient fade mask to blend with cards above - smooth transition */}
+        <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-transparent via-gray-900/30 to-gray-900 pointer-events-none z-10 backdrop-blur-md" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
+          <div
+            className="bg-gradient-to-r from-orange-600 to-orange-700 rounded-3xl p-8 md:p-12 lg:p-16 relative overflow-hidden min-h-[400px] md:min-h-[450px] flex items-center"
+            data-scroll-reveal="true"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-yellow-400/20 rounded-full blur-xl" />
+
+            {/* Badge no canto superior direito - oculta em mobile */}
+            <div className="hidden md:inline-flex absolute top-6 right-6 items-center justify-center px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm text-white text-sm font-medium">
+              Orcamento Gratis
+            </div>
+
+            <div className="relative z-10 max-w-3xl w-full">
+              <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight text-white drop-shadow-lg text-center md:text-left">
+                Pronto para Comecar
+                <br />
+                seu Projeto?
+              </h3>
+              <p className="text-lg md:text-xl text-white/90 mb-10 leading-relaxed max-w-2xl drop-shadow-md text-center md:text-left mx-auto md:mx-0">
+                Solicite um orcamento gratuito e receba nossa proposta
+                personalizada. Atendimento com seguranca, qualidade e manutencao
+                constante.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 items-center md:items-start w-full">
+                <div className="w-full sm:w-auto inline-flex items-center justify-center px-8 h-14 bg-white text-orange-600 font-semibold rounded-xl hover:bg-gray-100 transition-all duration-300 hover:scale-105 group gap-2 shadow-lg">
+                  <a
+                    href={`tel:+55${settings.companyPhone.replace(/\D/g, '')}`}
+                    className="hidden sm:inline"
+                  >
+                    {settings.companyPhone}
+                  </a>
+                  <span className="hidden sm:inline text-orange-400">|</span>
+                  <a
+                    href={`tel:+55${settings.whatsappNumber.replace(/\D/g, '')}`}
+                    className=""
+                  >
+                    {settings.whatsappNumber}
+                  </a>
+                </div>
+                <a
+                  href="/orcamento"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-8 h-14 bg-yellow-500 text-gray-900 font-semibold rounded-xl hover:bg-yellow-400 transition-all duration-300 hover:scale-105 shadow-lg"
+                >
+                  Solicitar Orcamento Online
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}

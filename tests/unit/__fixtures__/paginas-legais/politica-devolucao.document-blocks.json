@@ -1,0 +1,818 @@
+{
+  "metadata": {
+    "title": "Política de Devolução",
+    "subtitle": "Saiba como funciona o processo de devolução dos equipamentos locados",
+    "updatedAt": "13 de Fevereiro de 2026"
+  },
+  "sections": [
+    {
+      "id": "condicoes-gerais",
+      "title": "Condições Gerais"
+    },
+    {
+      "id": "prazo-devolucao",
+      "title": "Prazo para Devolução"
+    },
+    {
+      "id": "estado-equipamentos",
+      "title": "Estado dos Equipamentos"
+    },
+    {
+      "id": "processo-devolucao",
+      "title": "Processo de Devolução"
+    },
+    {
+      "id": "inspecao",
+      "title": "Inspeção e Verificação"
+    },
+    {
+      "id": "custos-taxas",
+      "title": "Custos e Taxas"
+    },
+    {
+      "id": "cancelamento",
+      "title": "Cancelamento de Locação"
+    },
+    {
+      "id": "contato",
+      "title": "Contato"
+    }
+  ],
+  "documentBlocks": [
+    {
+      "tag": "Card",
+      "props": {
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "div",
+              "props": {
+                "className": "p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-blue-100/50"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] leading-relaxed text-gray-700 m-0"
+                  },
+                  "children": [
+                    "A GB Locações preza pela transparência e satisfação dos nossos clientes. Esta política descreve os procedimentos, prazos e condições para a devolução dos equipamentos locados. Ao contratar nossos serviços, você concorda com os termos aqui descritos."
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Card",
+      "props": {
+        "id": "condicoes-gerais",
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0 scroll-mt-32"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "h2",
+              "props": {
+                "className": "text-[20px] font-bold text-gray-900 mb-4 flex items-center gap-3"
+              },
+              "children": [
+                {
+                  "tag": "span",
+                  "props": {
+                    "className": "text-orange-600"
+                  },
+                  "children": [
+                    "1."
+                  ]
+                },
+                "Condições Gerais"
+              ]
+            },
+            {
+              "tag": "div",
+              "props": {
+                "className": "space-y-4 leading-relaxed"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "A devolução dos equipamentos locados deve seguir as condições estabelecidas no contrato de locação. O cliente é responsável pela devolução do equipamento nas mesmas condições em que o recebeu, considerando o desgaste natural de uso."
+                  ]
+                },
+                {
+                  "tag": "ul",
+                  "props": {
+                    "className": "list-disc list-inside space-y-2 ml-4 text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Os equipamentos devem ser devolvidos limpos e em pleno funcionamento"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Todos os acessórios e componentes fornecidos devem acompanhar a devolução"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "A devolução pode ser realizada presencialmente em nosso estabelecimento ou por meio de coleta agendada"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Equipamentos devolvidos fora do horário comercial serão inspecionados no próximo dia útil"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Card",
+      "props": {
+        "id": "prazo-devolucao",
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0 scroll-mt-32"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "h2",
+              "props": {
+                "className": "text-[20px] font-bold text-gray-900 mb-4 flex items-center gap-3"
+              },
+              "children": [
+                {
+                  "tag": "span",
+                  "props": {
+                    "className": "text-orange-600"
+                  },
+                  "children": [
+                    "2."
+                  ]
+                },
+                "Prazo para Devolução"
+              ]
+            },
+            {
+              "tag": "div",
+              "props": {
+                "className": "space-y-4 leading-relaxed"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "O equipamento deve ser devolvido até a data estabelecida no contrato de locação. Caso necessite de prorrogação, entre em contato conosco com antecedência mínima de 24 horas."
+                  ]
+                },
+                {
+                  "tag": "ul",
+                  "props": {
+                    "className": "list-disc list-inside space-y-2 ml-4 text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    {
+                      "tag": "li",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "children": [
+                            "Locação diária:"
+                          ]
+                        },
+                        " devolução até o horário contratado no dia seguinte"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "children": [
+                            "Locação semanal:"
+                          ]
+                        },
+                        " devolução até o mesmo dia e horário da semana seguinte"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "children": [
+                            "Locação mensal:"
+                          ]
+                        },
+                        " devolução até a mesma data do mês subsequente"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Atrasos na devolução serão cobrados proporcionalmente ao período excedente, com acréscimo de multa conforme contrato"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Card",
+      "props": {
+        "id": "estado-equipamentos",
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0 scroll-mt-32"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "h2",
+              "props": {
+                "className": "text-[20px] font-bold text-gray-900 mb-4 flex items-center gap-3"
+              },
+              "children": [
+                {
+                  "tag": "span",
+                  "props": {
+                    "className": "text-orange-600"
+                  },
+                  "children": [
+                    "3."
+                  ]
+                },
+                "Estado dos Equipamentos"
+              ]
+            },
+            {
+              "tag": "div",
+              "props": {
+                "className": "space-y-4 leading-relaxed"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "Na retirada do equipamento, é realizado um laudo de vistoria que documenta o estado atual do equipamento. Na devolução, um novo laudo será elaborado para comparação."
+                  ]
+                },
+                {
+                  "tag": "ul",
+                  "props": {
+                    "className": "list-disc list-inside space-y-2 ml-4 text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    {
+                      "tag": "li",
+                      "children": [
+                        "O desgaste natural decorrente do uso adequado é aceito sem custos adicionais"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Danos causados por mau uso, negligência ou operação inadequada serão de responsabilidade do locatário"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "O equipamento deve ser devolvido com o mesmo nível de combustível/carga em que foi entregue"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Peças quebradas ou danificadas devem ser reportadas imediatamente à GB Locações"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Card",
+      "props": {
+        "id": "processo-devolucao",
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0 scroll-mt-32"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "h2",
+              "props": {
+                "className": "text-[20px] font-bold text-gray-900 mb-4 flex items-center gap-3"
+              },
+              "children": [
+                {
+                  "tag": "span",
+                  "props": {
+                    "className": "text-orange-600"
+                  },
+                  "children": [
+                    "4."
+                  ]
+                },
+                "Processo de Devolução"
+              ]
+            },
+            {
+              "tag": "div",
+              "props": {
+                "className": "space-y-4 leading-relaxed"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "Para devolver um equipamento, siga os passos abaixo:"
+                  ]
+                },
+                {
+                  "tag": "ul",
+                  "props": {
+                    "className": "list-disc list-inside space-y-2 ml-4 text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    {
+                      "tag": "li",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "children": [
+                            "Agendamento:"
+                          ]
+                        },
+                        " entre em contato para agendar a devolução ou coleta do equipamento"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "children": [
+                            "Limpeza:"
+                          ]
+                        },
+                        " realize a limpeza básica do equipamento antes da devolução"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "children": [
+                            "Entrega:"
+                          ]
+                        },
+                        " leve o equipamento ao nosso estabelecimento ou aguarde a equipe de coleta no local combinado"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "children": [
+                            "Vistoria:"
+                          ]
+                        },
+                        " acompanhe a inspeção do equipamento e assine o laudo de devolução"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "children": [
+                            "Recibo:"
+                          ]
+                        },
+                        " receba o comprovante de devolução que encerra o contrato de locação"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Card",
+      "props": {
+        "id": "inspecao",
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0 scroll-mt-32"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "h2",
+              "props": {
+                "className": "text-[20px] font-bold text-gray-900 mb-4 flex items-center gap-3"
+              },
+              "children": [
+                {
+                  "tag": "span",
+                  "props": {
+                    "className": "text-orange-600"
+                  },
+                  "children": [
+                    "5."
+                  ]
+                },
+                "Inspeção e Verificação"
+              ]
+            },
+            {
+              "tag": "div",
+              "props": {
+                "className": "space-y-4 leading-relaxed"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "Todos os equipamentos passam por inspeção no momento da devolução. Esta vistoria é realizada por nossa equipe técnica e inclui:"
+                  ]
+                },
+                {
+                  "tag": "ul",
+                  "props": {
+                    "className": "list-disc list-inside space-y-2 ml-4 text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Verificação do funcionamento geral do equipamento"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Comparação com o laudo de vistoria inicial"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Conferência de todos os acessórios e componentes"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Registro fotográfico do estado de devolução"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "Caso sejam identificados danos não previstos no desgaste natural, o cliente será notificado e um orçamento de reparo será apresentado."
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Card",
+      "props": {
+        "id": "custos-taxas",
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0 scroll-mt-32"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "h2",
+              "props": {
+                "className": "text-[20px] font-bold text-gray-900 mb-4 flex items-center gap-3"
+              },
+              "children": [
+                {
+                  "tag": "span",
+                  "props": {
+                    "className": "text-orange-600"
+                  },
+                  "children": [
+                    "6."
+                  ]
+                },
+                "Custos e Taxas"
+              ]
+            },
+            {
+              "tag": "div",
+              "props": {
+                "className": "space-y-4 leading-relaxed"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "A devolução do equipamento dentro do prazo e nas condições adequadas não gera custos adicionais. No entanto, as seguintes situações podem acarretar cobranças:"
+                  ]
+                },
+                {
+                  "tag": "ul",
+                  "props": {
+                    "className": "list-disc list-inside space-y-2 ml-4 text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    {
+                      "tag": "li",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "children": [
+                            "Atraso na devolução:"
+                          ]
+                        },
+                        " cobrança proporcional ao período excedente acrescido de multa contratual"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "children": [
+                            "Danos ao equipamento:"
+                          ]
+                        },
+                        " custo de reparo conforme orçamento apresentado ao cliente"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "children": [
+                            "Peças faltantes:"
+                          ]
+                        },
+                        " cobrança do valor de reposição das peças ou acessórios"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "children": [
+                            "Limpeza especial:"
+                          ]
+                        },
+                        " taxa aplicável caso o equipamento necessite de limpeza além do padrão"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "Não cobramos taxa de restocking (reestocagem) para devoluções realizadas dentro do prazo contratual."
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Card",
+      "props": {
+        "id": "cancelamento",
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0 scroll-mt-32"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "h2",
+              "props": {
+                "className": "text-[20px] font-bold text-gray-900 mb-4 flex items-center gap-3"
+              },
+              "children": [
+                {
+                  "tag": "span",
+                  "props": {
+                    "className": "text-orange-600"
+                  },
+                  "children": [
+                    "7."
+                  ]
+                },
+                "Cancelamento de Locação"
+              ]
+            },
+            {
+              "tag": "div",
+              "props": {
+                "className": "space-y-4 leading-relaxed"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    "O cliente pode solicitar o cancelamento antecipado da locação e devolução do equipamento a qualquer momento, observando as seguintes condições:"
+                  ]
+                },
+                {
+                  "tag": "ul",
+                  "props": {
+                    "className": "list-disc list-inside space-y-2 ml-4 text-[16px] text-gray-700"
+                  },
+                  "children": [
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Cancelamentos com mais de 48 horas de antecedência: sem custos adicionais"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Cancelamentos com menos de 48 horas: pode incidir taxa conforme contrato"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "O valor da locação será cobrado proporcionalmente ao período utilizado"
+                      ]
+                    },
+                    {
+                      "tag": "li",
+                      "children": [
+                        "Reembolsos, quando aplicáveis, são processados em até 10 dias úteis"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "Card",
+      "props": {
+        "id": "contato",
+        "className": "relative overflow-hidden bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-0 scroll-mt-32"
+      },
+      "children": [
+        {
+          "tag": "CardContent",
+          "props": {
+            "className": "relative z-10 p-6 md:p-8"
+          },
+          "children": [
+            {
+              "tag": "h2",
+              "props": {
+                "className": "text-[20px] font-bold text-gray-900 mb-4 flex items-center gap-3"
+              },
+              "children": [
+                {
+                  "tag": "span",
+                  "props": {
+                    "className": "text-orange-600"
+                  },
+                  "children": [
+                    "8."
+                  ]
+                },
+                "Contato"
+              ]
+            },
+            {
+              "tag": "div",
+              "props": {
+                "className": "space-y-4"
+              },
+              "children": [
+                {
+                  "tag": "p",
+                  "props": {
+                    "className": "text-[16px] text-gray-700 leading-relaxed"
+                  },
+                  "children": [
+                    "Para dúvidas sobre devolução de equipamentos, agendamento de coletas ou qualquer outra questão relacionada, entre em contato conosco:"
+                  ]
+                },
+                {
+                  "tag": "ContactInfoCard",
+                  "props": {
+                    "description": "Estamos à disposição para ajudar com a devolução dos seus equipamentos."
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

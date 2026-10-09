@@ -1,0 +1,12 @@
+packages:
+  - 'apps/clients/*'
+  - 'apps/services/*'
+  - 'packages/*'
+
+onlyBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@vercel/speed-insights'
+  - esbuild
+  - prisma
+  - sharp

@@ -1,0 +1,35 @@
+# Formata o Markdown que vai no commit (prettier + markdownlint --fix) e re-adiciona só os arquivos que o próprio
+# hook mudou. Nunca `git add .`: mudança não preparada (sua, de outra pessoa ou de outro agente no mesmo checkout)
+# e arquivo novo fora do índice ficam fora do commit. Arquivo com parte não preparada fica como está: formatá-lo e
+# re-adicioná-lo levaria junto a parte não preparada (rode `pnpm fix:md` e prepare de novo).
+# Teste: tests/unit/pre-commit-hook.test.ts (pnpm test:gates).
+set --
+while IFS= read -r file; do
+  [ -f "$file" ] || continue
+  if git diff --quiet -- "$file"; then
+    set -- "$@" "$file"
+  else
+    echo "pre-commit: $file tem mudança não preparada; não foi formatado"
+  fi
+done <<EOF
+$(git -c core.quotepath=off diff --cached --name-only --diff-filter=ACMR -- '*.md')
+EOF
+[ "$#" -eq 0 ] && exit 0
+prettier --write --log-level warn -- "$@"
+# O markdownlint recebe só o que o .markdownlintignore não ignora (lido pelo próprio git, mesma sintaxe do
+# .gitignore): quando todo arquivo recebido está ignorado, o markdownlint-cli imprime a ajuda inteira no commit.
+ignored_md=
+if [ -f .markdownlintignore ]; then
+  ignored_md=$(git -c core.quotepath=off --literal-pathspecs ls-files --cached --ignored --exclude-from=.markdownlintignore -- "$@")
+fi
+lint_md() {
+  for file do
+    shift
+    printf '%s\n' "$ignored_md" | grep -Fqx -e "$file" || set -- "$@" "$file"
+  done
+  [ "$#" -eq 0 ] || markdownlint --fix -- "$@"
+}
+lint_md "$@"
+for file in "$@"; do
+  git diff --quiet -- "$file" || git add -- "$file"
+done

@@ -1,0 +1,7 @@
+/* Base UI (diálogos), na camada components: as sentinelas de foco dentro de um diálogo não encadeiam a rolagem. */
+
+@layer components {
+  [role='dialog'] [data-base-ui-focusable] {
+    overscroll-behavior: contain;
+  }
+}

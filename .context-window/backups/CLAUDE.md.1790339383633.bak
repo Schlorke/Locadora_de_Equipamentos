@@ -1,0 +1,184 @@
+# CLAUDE.md - GB Locações
+
+This file provides context for AI assistants working on this codebase.
+
+## Project Overview
+
+**GB Locações** is a full-stack SaaS platform for equipment rental management in
+Brazil, targeting construction equipment leasing. It includes:
+
+- Equipment catalog and search
+- Quote/proposal generation system
+- Rental management dashboard
+- Admin panel for operations
+- Payment processing (Stripe, Mercado Pago, Boleto)
+- Email and logistics integrations
+- Analytics and KPI tracking
+
+## Tech Stack
+
+| Layer           | Technology                         |
+| --------------- | ---------------------------------- |
+| Framework       | Next.js 16 (App Router, Turbopack) |
+| Language        | TypeScript (strict mode)           |
+| UI              | React 19, Radix UI, Tailwind CSS   |
+| State           | Zustand, React Hook Form           |
+| Validation      | Zod (auto-generated from Prisma)   |
+| Database        | PostgreSQL + Prisma ORM            |
+| Auth            | NextAuth.js (JWT, OAuth)           |
+| Testing         | Vitest, Playwright                 |
+| Package Manager | pnpm                               |
+
+## Key Commands
+
+```bash
+# Development
+pnpm dev              # Start dev server (Turbopack)
+pnpm build            # Production build
+pnpm start            # Run production server
+
+# Database
+pnpm db:generate      # Generate Prisma client + Zod schemas
+pnpm db:push          # Push schema to database
+pnpm db:studio        # Open Prisma Studio GUI
+
+# Code Quality
+pnpm lint             # Run ESLint
+pnpm lint:fix         # Fix linting issues
+pnpm format           # Format with Prettier
+pnpm type-check       # TypeScript check
+pnpm quality:fix      # Format + lint + markdown fix
+
+# Testing
+pnpm test             # Run all tests
+pnpm test:watch       # Watch mode
+pnpm test:coverage    # Coverage report
+
+# Design System
+pnpm storybook        # Run Storybook on :6006
+```
+
+## Project Structure
+
+```
+app/                  # Next.js App Router
+  admin/              # Admin dashboard (dashboard, email, equipamentos, etc.)
+  api/                # API routes (RESTful)
+  area-cliente/       # Customer portal
+  equipamentos/       # Public equipment listing
+  auth/               # Authentication pages
+
+components/           # React components
+  ui/                 # Base UI (Button, Card, Dialog, etc.)
+  admin/              # Admin-specific components
+  client/             # Customer-facing components
+
+lib/                  # Utilities & shared logic
+  auth.ts             # NextAuth configuration
+  prisma.ts           # Prisma client singleton
+  validations/        # Auto-generated Zod schemas from Prisma
+  validators/         # Custom validation functions
+  payment-gateways/   # Payment processor implementations
+
+hooks/                # React custom hooks
+stores/               # Zustand global stores
+types/                # TypeScript type definitions
+tests/                # Test files (critical/, api/, components/)
+prisma/               # Schema & migrations
+docs/                 # Documentation
+```
+
+## Coding Conventions
+
+### File Naming
+
+- Components: `PascalCase.tsx` (e.g., `Button.tsx`)
+- Hooks: `use-kebab-case.ts` (e.g., `use-cart.ts`)
+- Utilities: `kebab-case.ts` (e.g., `api-response.ts`)
+- Stores: `useXxxStore.ts` (e.g., `useCartStore.ts`)
+
+### Components
+
+- Use Radix UI primitives with Tailwind
+- Server Components by default (add `'use client'` when needed)
+- Use CVA (Class Variance Authority) for variants
+- Use `cn()` utility for class merging
+
+### API Routes
+
+```typescript
+export const dynamic = "force-dynamic"
+export const runtime = "nodejs"
+export const revalidate = 0
+
+export async function GET(req: NextRequest) {
+  const auth = await requireAdmin()
+  if (!auth.success) return authError(auth)
+  // ... handler logic
+}
+```
+
+### Database
+
+- Always use Prisma ORM (never raw SQL)
+- Use `Decimal.js` for currency (never floats!)
+- Use auto-generated Zod schemas from `lib/validations/`
+
+### State Management
+
+- Zustand for client-side state (cart, notifications)
+- React Hook Form for form state
+- Server Components for server state
+
+## Critical Rules
+
+1. **Currency calculations**: Always use `Decimal.js`, never floats
+2. **Admin routes**: Must call `requireAdmin()` middleware
+3. **API routes**: Set `dynamic = 'force-dynamic'` and `revalidate = 0`
+4. **Validation**: Use Zod schemas from `lib/validations/`
+5. **Types**: TypeScript strict mode - all types must be explicit
+6. **Tests**: Critical payment/quote tests must pass before merging
+
+## Authentication
+
+- NextAuth.js with roles: `ADMIN`, `CLIENT`, `OPERATOR`
+- JWT-based sessions
+- OAuth: Google, Facebook
+- Credentials with bcrypt hashing
+
+## External Services
+
+| Service      | Purpose                  |
+| ------------ | ------------------------ |
+| Stripe       | Card payments            |
+| Mercado Pago | Brazilian payments       |
+| Asaas        | Boleto generation        |
+| Resend       | Transactional emails     |
+| Zoho Mail    | Admin email integration  |
+| ZapSign      | Digital contract signing |
+| Melhor Envio | Shipping logistics       |
+| Supabase     | File storage             |
+
+## Environment Setup
+
+```bash
+pnpm install                 # Install dependencies
+cp .env.example .env.local   # Create env file (fill in values)
+pnpm db:generate             # Generate Prisma client
+pnpm db:push                 # Create database schema
+pnpm dev                     # Start development server
+```
+
+Required Node.js 20+ and pnpm 10+.
+
+## Language
+
+The application is in Brazilian Portuguese (`pt-BR`). UI text, error messages,
+and documentation are primarily in Portuguese.
+
+## Performance Considerations
+
+- Turbopack for fast dev builds
+- Bundle splitting for Three.js, Framer Motion, GSAP, Radix UI
+- Lazy loading for admin dashboard components
+- Console removal in production builds

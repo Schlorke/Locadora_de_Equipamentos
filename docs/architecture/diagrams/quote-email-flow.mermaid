@@ -1,0 +1,18 @@
+flowchart TD
+    Contact[/contato/] --> ContactApi[/api/contact/]
+    ContactApi --> ContactEmail[Send contact email]
+
+    Hero[/hero quote/] --> HeroApi[/api/orcamentos/]
+    HeroApi --> HeroEmail[Send quote email]
+
+    Quote[/orcamento/] --> QuoteApi[/api/quotes/]
+    QuoteApi --> QuoteEmail[Send quote email]
+
+    AdminBoleto[Admin sends boleto] --> BoletoApi[/api/admin/quotes/[id]/send-boleto/]
+    BoletoApi --> BoletoEmail[Send boleto email]
+
+    AdminAdjust[Admin sends adjusted quote] --> AdjustApi[/api/admin/quotes/[id]/send-adjusted-quote/]
+    AdjustApi --> AdjustEmail[Send adjusted quote email]
+
+    Webhook[Asaas paid webhook] --> WebhookApi[/api/payments/boleto/webhook/]
+    WebhookApi --> PaidEmail[Send payment confirmation email]

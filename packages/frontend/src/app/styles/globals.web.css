@@ -1,0 +1,59 @@
+/* Entrada do CSS global do web: ordem das camadas, tokens do design-tokens, Tailwind 4, arquivos de estilo e a ponte
+   de tema. O estilo de um componente vive no próprio componente; aqui só entra o que não tem componente dono. */
+
+@layer theme, base, components, utilities;
+
+@import '@gb-locacoes/design-tokens/theme.css';
+@import '@gb-locacoes/design-tokens/tokens.css';
+@import '@gb-locacoes/design-tokens/palette.css';
+@import '@gb-locacoes/design-tokens/scales.css';
+@import 'tailwindcss' source(none);
+@import './utilities.web.css';
+@import './outline.web.css';
+@import './base.web.css';
+@import './forms.web.css';
+@import './layout.web.css';
+@import './scrollbars.web.css';
+@import './components.web.css';
+@import './animations.web.css';
+@import './vendor/day-picker.web.css';
+@import './vendor/day-picker-states.web.css';
+@import './vendor/recharts.web.css';
+@import './vendor/base-ui.web.css';
+
+@config '../../../../../tailwind.config.cjs';
+
+/* Cores dos controles de formulário e do anel de foco como cores do tema (border-field, outline-focus-ring…). Os
+   campos usam o cinza 200 e o azul 500 da paleta; a área de texto, os filtros e o erro (aria-invalid), os tokens. */
+@theme inline {
+  --color-brand: var(--brand);
+  --color-focus-ring: var(--focus-ring);
+  --color-field: var(--color-gray-200);
+  --color-field-focus: var(--color-blue-500);
+  --color-field-legacy: var(--border-subtle);
+  --color-field-legacy-focus: var(--focus-border);
+  --color-field-invalid: var(--field-invalid);
+  --color-checkbox: var(--border-strong);
+  --color-checkbox-checked: var(--brand);
+  --color-checkbox-checked-hover: var(--brand-hover);
+  --color-filter-selected: var(--brand);
+  --color-filter-selected-border: var(--brand-border);
+  --color-filter-selected-surface: var(--brand-surface);
+}
+
+/* Fontes de classes declaradas (source(none) desliga a detecção automática, que lia a pasta do build: na raiz legada,
+   docs/ e tools/ entravam no CSS). Mais a raiz legada pelo `content` do tailwind.config.cjs. */
+@source '../../../../ui/src';
+@source '../../';
+@source '../../../../../apps/clients/web/src';
+
+/* Testes e as fixtures deles não são fonte de classes: o que citam (ex.: `!h-auto` num expect) não entra no CSS. */
+@source not '../../../../../**/*.test.*';
+@source not '../../../../../**/*.spec.*';
+@source not '../../../../../**/__fixtures__/**';
+
+/* Só servidor no host web (proxy, roteamento, gateway, Route Handlers): nome solto ali virava utilitário (`paused`). */
+@source not '../../../../../apps/clients/web/src/proxy.ts';
+@source not '../../../../../apps/clients/web/src/host/routing/**';
+@source not '../../../../../apps/clients/web/src/host/server/**';
+@source not '../../../../../apps/clients/web/src/app/**/route.ts';

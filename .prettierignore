@@ -1,0 +1,11 @@
+node_modules
+build
+dist
+.next
+coverage
+*.lock
+storybook-static/
+# Cópias de skills gerenciadas por instalador (manifesto)
+.agents/
+.claude/skills/
+.tmp/

@@ -1,0 +1,136 @@
+/* react-day-picker, estados dos dias: selecionado, hoje, fora do mês, desabilitado, intervalo (laranja da marca nas
+   pontas, tom claro no meio), fins de semana incluídos ou não e hover. Na camada components, depois da estrutura; as
+   regras seguem da menos para a mais específica, então a ordem nunca decide entre elas. */
+
+@layer components {
+  .rdp-hidden {
+    visibility: hidden;
+  }
+
+  /* Estados do dia. */
+  .rdp-selected .rdp-day_button {
+    background-color: var(--brand);
+    color: var(--on-brand);
+  }
+
+  .rdp-today .rdp-day_button {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+  }
+
+  .rdp-outside .rdp-day_button {
+    color: hsl(var(--muted-foreground));
+    opacity: 0.5;
+  }
+
+  .rdp-disabled .rdp-day_button {
+    color: hsl(var(--muted-foreground));
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Intervalo: pontas na cor da marca com o canto externo arredondado, meio no tom claro com texto escuro. */
+  .rdp-range_start .rdp-day_button,
+  .rdp-range_end .rdp-day_button {
+    background-color: var(--brand);
+    color: var(--on-brand);
+    border-radius: var(--rounded-md);
+  }
+
+  .rdp-range_middle .rdp-day_button {
+    background-color: var(--brand-tint);
+    color: var(--text-emphasis);
+    border-radius: 0;
+  }
+
+  .rdp-range_start .rdp-day_button {
+    border-radius: var(--rounded-md) 0 0 var(--rounded-md);
+  }
+
+  .rdp-range_end .rdp-day_button {
+    border-radius: 0 var(--rounded-md) var(--rounded-md) 0;
+  }
+
+  /* Cabeçalho dos dias da semana com fins de semana incluídos: todos na mesma cor forte. */
+  .rdp-include-weekends .rdp-weekday {
+    color: var(--text-emphasis);
+    font-weight: 500;
+  }
+
+  /* Fins de semana fora do período: dias úteis com cor forte, sábado e domingo fracos e desabilitados. */
+  .rdp-exclude-weekends .rdp-weekday:not(:first-child, :last-child) {
+    color: var(--text-emphasis);
+    font-weight: 500;
+  }
+
+  .rdp-exclude-weekends .rdp-weekday:first-child,
+  .rdp-exclude-weekends .rdp-weekday:last-child {
+    color: var(--text-faint);
+    font-weight: 400;
+  }
+
+  .rdp-range_start.rdp-range_end .rdp-day_button {
+    border-radius: var(--rounded-md);
+  }
+
+  /* Hover no selecionado e no intervalo: o texto continua branco nas pontas e escuro no meio. */
+  .rdp-selected .rdp-day_button:hover {
+    background-color: var(--brand);
+    color: var(--on-brand);
+  }
+
+  .rdp-range_start .rdp-day_button:hover,
+  .rdp-range_end .rdp-day_button:hover,
+  .rdp-range_middle .rdp-day_button:hover {
+    color: var(--on-brand);
+  }
+
+  .rdp-range_start .rdp-day_button:hover {
+    background-color: var(--brand);
+  }
+
+  .rdp-range_end .rdp-day_button:hover {
+    background-color: var(--brand);
+  }
+
+  .rdp-range_middle .rdp-day_button:hover {
+    background-color: var(--brand-tint);
+    color: var(--text-emphasis);
+  }
+
+  /* Fim de semana fora do período: desabilitado, também sobre a seleção e o intervalo (vem depois deles). */
+  .rdp-exclude-weekends .rdp-weekend .rdp-day_button {
+    color: var(--text-disabled);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .rdp-exclude-weekends .rdp-weekend .rdp-day_button:hover {
+    background-color: transparent;
+    color: var(--text-disabled);
+  }
+
+  /* Fins de semana incluídos: dias clicáveis e o intervalo com as cores de sempre. */
+  .rdp-include-weekends .rdp-weekend .rdp-day_button:not(:disabled) {
+    color: inherit;
+    cursor: pointer;
+    opacity: 1;
+  }
+
+  .rdp-include-weekends .rdp-weekend.rdp-range_middle .rdp-day_button {
+    background-color: var(--brand-tint);
+    color: var(--text-emphasis);
+  }
+
+  .rdp-include-weekends .rdp-weekend.rdp-range_start .rdp-day_button,
+  .rdp-include-weekends .rdp-weekend.rdp-range_end .rdp-day_button {
+    background-color: var(--brand);
+    color: var(--on-brand);
+  }
+
+  /* Hover dos dias fora da seleção (a regra mais específica do calendário). */
+  .rdp-day:not(.rdp-selected, .rdp-range_start, .rdp-range_end, .rdp-range_middle) .rdp-day_button:hover:not(:disabled) {
+    color: var(--brand);
+    background-color: hsl(var(--accent));
+  }
+}

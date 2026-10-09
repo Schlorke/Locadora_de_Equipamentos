@@ -1,0 +1,81 @@
+/* Controles de formulário nativos sem componente de packages/ui, na camada base: a moldura dos campos soltos e a caixa
+   de seleção nativa. Os componentes de formulário (Input, Select, Checkbox…) trazem o próprio estilo. */
+
+@layer base {
+  /* Campos soltos (seletores de mês e ano do calendário, cor, arquivo): especificidade zero, então qualquer classe do
+     elemento vence. No foco, só o campo de texto ganha o halo azul. */
+  :where(input:not([type='checkbox'], [type='radio']), select, textarea) {
+    @apply border-field focus:border-field-focus focus:outline-field-focus focus:outline-2 focus:ring-0 transition-[border-color,box-shadow,outline-color] duration-200 shadow-control;
+  }
+
+  :where(input:not([type='checkbox'], [type='radio']), select, textarea):hover {
+    @apply shadow-control-hover;
+  }
+
+  :where(input:not([type='checkbox'], [type='radio']), select, textarea):focus {
+    outline: none;
+    outline-width: 0;
+    outline-offset: 0;
+    box-shadow: none;
+  }
+
+  :where(input:not([type='checkbox'], [type='radio'])):focus {
+    @apply shadow-control-focus;
+  }
+
+  /* Caixa de seleção nativa, laranja quando marcada (a do Radix é o Checkbox de packages/ui). Seletor de elemento com
+     atributo para vencer o preflight do Tailwind na mesma camada; as classes do elemento vencem pela camada. */
+  input[type='checkbox'] {
+    appearance: none;
+    width: 1rem;
+    height: 1rem;
+    border: var(--border-width-2) solid var(--border-strong);
+    border-radius: var(--rounded-sm);
+    background-color: var(--surface-control);
+    cursor: pointer;
+    position: relative;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  input[type='checkbox']:hover {
+    border-color: var(--brand);
+  }
+
+  /* No foco, só a borda laranja: sem contorno e sem halo. */
+  input[type='checkbox']:focus {
+    outline: none;
+    outline-width: 0;
+    outline-offset: 0;
+    border-color: var(--brand);
+    box-shadow: none;
+  }
+
+  input[type='checkbox']:checked {
+    background-color: var(--brand);
+    border-color: var(--brand);
+  }
+
+  input[type='checkbox']:checked::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 4px;
+    height: 8px;
+    border: solid var(--on-brand);
+    border-width: 0 var(--border-width-2) var(--border-width-2) 0;
+  }
+
+  input[type='checkbox']:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  input[type='checkbox']:checked:hover {
+    background-color: var(--brand-hover);
+    border-color: var(--brand-hover);
+  }
+}

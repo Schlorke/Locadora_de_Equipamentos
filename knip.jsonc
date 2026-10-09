@@ -1,0 +1,105 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  // Gate de higiene: pnpm hygiene (tools/hygiene-check.mjs). O knip acha arquivos, exports e dependências sem uso a
+  // partir das entradas reais de cada workspace: os plugins (next, expo, vitest, playwright, storybook, eslint,
+  // prisma, postcss, tailwind, stylelint, husky, github-actions...) leem as configs, os scripts do package.json e a
+  // CI; as entradas abaixo cobrem só o que nenhum deles vê, arquivo por arquivo (glob de entrada faria todo arquivo
+  // novo da pasta contar como usado). O project de cada workspace cobre a pasta inteira e todo tipo de código e CSS.
+  // O hygiene-check roda um segundo passe sem os testes: código que só um teste alcança também reprova.
+  // O que ainda espera decisão fica em tools/hygiene-baseline.json, cada item com motivo.
+  // Exceção nova aqui (ignore*, entry, negação "!" em project, ou outra regra) precisa de aprovação com motivo em
+  // tools/ratchet-transfers.json ({ approve: "hygiene.knip", entry, reason }): o ratchet-guard compara este arquivo
+  // com o da base.
+  // Export usado dentro do próprio arquivo não é código morto (só um `export` a mais): não conta.
+  "ignoreExportsUsedInFile": true,
+  "ignore": [
+    // Cópias da biblioteca de skills gerenciadas pelo instalador (.context-window/install.json); não se editam à mão.
+    ".agents/**",
+    ".claude/**",
+    // Fixtures lidas como arquivo pelos testes dos gates (token-check, arch-check); nunca são importadas.
+    "tests/unit/__fixtures__/**",
+  ],
+  "workspaces": {
+    ".": {
+      "entry": [
+        // Gerador rodado à mão depois de mexer em public/ (e pelo teste do host web com --check, por caminho).
+        "tools/generate-public-entries.mjs",
+        // Backend simulado que o webServer de tests/visual/playwright.visual.config.ts sobe por comando.
+        "tests/visual/support/mock-backend.mjs",
+        // Gerador da referência de paridade com a produção (tests/visual/README.md, "Paridade com a produção").
+        "tests/visual/support/tailwind-parity-fixture.mjs",
+        // CLIs de runbook rodadas à mão pelo operador: docs/guides/legacy-cents-reconciliation.md,
+        // docs/issues/modernization-security.md e docs/operations/gb-site-settings.md (os testes as importam, mas elas
+        // não existem por causa deles).
+        "scripts/ops/legacy-cents-report.ts",
+        "scripts/security/maintenance.mjs",
+        "tools/gb-site-settings.mjs",
+        // Suítes de teste e suporte que as configs de vitest/playwright carregam.
+        "tests/**/*.{test,spec}.{ts,tsx}",
+        // Stories e páginas MDX do Storybook (.storybook/main.ts: ../stories/**).
+        "stories/**/*.{stories.ts,stories.tsx,mdx}",
+      ],
+      "project": ["**/*.{ts,tsx,js,mjs,cjs,mts,cts,mdx,css,prisma}"],
+      // Assets servidos como arquivo.
+      "ignore": ["public/**"],
+      "ignoreDependencies": [
+        // Nomeado em transpilePackages e turbopack.resolveAlias do next.config.mjs da raiz, não por import.
+        // require opcional dentro de try/catch em tools/token-check.mjs (fallback da API clássica do TypeScript).
+        "@typescript/typescript6",
+      ],
+    },
+    "apps/clients/web": {
+      "entry": [
+        "src/**/*.test.{ts,tsx}",
+        // Declarações de next.config.mjs que o TypeScript lê ao lado do .mjs importado pelo teste do host.
+        "next.config.d.mts",
+      ],
+      "project": ["**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,css}"],
+    },
+    "apps/clients/mobile": {
+      "entry": ["src/app/**/*.{ts,tsx}", "src/**/*.test.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,css}"],
+      "ignoreDependencies": [
+        // Módulo nativo: o autolinking do Expo só o liga ao app se o host o declarar (usado por ui/frontend .native).
+        "react-native-svg",
+        // O plugin expo do knip supõe expo-updates quando app.json não diz updates.enabled=false; o app não o usa.
+        "expo-updates",
+      ],
+    },
+    // Pacotes: o export sem consumidor do próprio ponto de entrada (package.json "exports") também é sobra.
+    "packages/frontend": {
+      // O knip não resolve o sufixo .native do Metro: toda variante .native é entrada, e o hygiene-check exige que
+      // cada uma tenha a irmã (web/universal) ou seja alvo de "exports" do pacote; o export que só a .native tem reprova.
+      "entry": ["src/**/*.test.{ts,tsx}", "src/**/*.native.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,css}"],
+      "includeEntryExports": true,
+      // Peers opcionais que o host fornece: next, next-auth e react-dom no web, react-native no mobile.
+      "ignoreDependencies": ["next", "next-auth", "react-dom", "react-native"],
+    },
+    "packages/ui": {
+      "entry": ["src/**/*.test.{ts,tsx}", "src/**/*.native.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,css}"],
+      "includeEntryExports": true,
+      "ignoreDependencies": ["next", "react-dom", "react-native"],
+    },
+    "packages/contracts": {
+      "entry": ["src/**/*.test.ts"],
+      "project": ["**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,css}"],
+      "includeEntryExports": true,
+    },
+    "packages/design-tokens": {
+      "entry": ["src/**/*.test.ts"],
+      "project": ["**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,css}"],
+      "includeEntryExports": true,
+    },
+    "packages/domain": {
+      "entry": ["src/**/*.test.ts"],
+      "project": ["**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,css}"],
+      "includeEntryExports": true,
+    },
+    "packages/backend": {
+      "project": ["**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,css}"],
+      "includeEntryExports": true,
+    },
+  },
+}

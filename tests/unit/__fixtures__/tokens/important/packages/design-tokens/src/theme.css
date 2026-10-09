@@ -1,0 +1,9 @@
+/* Fonte canônica do fixture: tokens podem ser definidos aqui; !important, não. */
+:root {
+  --brand: 24.6 95% 53.1%;
+  --layer-dialog: 90;
+}
+
+.token-sample {
+  color: hsl(var(--brand)) !important;
+}

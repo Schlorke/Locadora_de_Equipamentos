@@ -1,0 +1,8 @@
+{
+  "description": "Testes colocados que não podem aparecer aninhados sob um arquivo-assunto (tools/test-colocation-check.mjs, regras de .vscode/settings.json). Cada entrada precisa de motivo; uma entrada cujo arquivo sumiu ou que voltou a ter assunto irmão falha o check, então a lista só encolhe.",
+  "orphans": {
+    "apps/clients/mobile/src/host/routes.test.ts": "Prova a topologia da árvore inteira apps/clients/mobile/src/app com o construtor real do expo-router; não há arquivo-assunto. Não pode ficar em src/app (o expo-router trataria o teste como tela) e apps/clients/mobile/vitest.config.mts só coleta src/host/**.",
+    "apps/clients/web/src/host/architecture.test.ts": "Teste de arquitetura transversal do host web (T15): fronteiras de import, server-only, layout raiz e handlers de API de toda a árvore apps/clients/web/src e de app/api; não há um arquivo-assunto.",
+    "apps/clients/web/src/host/routing/next-config.test.ts": "O assunto é apps/clients/web/next.config.mjs, fora de src/. vitest.web.config.ts só coleta apps/clients/web/src/**/*.test.* e apps/clients/web/tsconfig.json só inclui src, então mover o teste para junto do assunto o tiraria da suíte e do typecheck."
+  }
+}

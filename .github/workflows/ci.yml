@@ -1,0 +1,250 @@
+name: Workspace validation
+# Única fonte de CI em push/PR (test.yml e os fallbacks com Node 20 e db:push foram aposentados).
+# Node vem de .node-version (24.21.0, o mesmo de "engines"); pnpm vem de "packageManager".
+# O banco de teste é descartável e recebe as migrations com `prisma migrate deploy`, nunca `db push`.
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+permissions:
+  contents: read
+# Pull request: a newer push replaces the running check (the ratchet guard compares the whole PR with its base).
+# Push to main/develop: every run has its own group and is never cancelled, not even while pending; the ratchet
+# guard compares each push with github.event.before, so a cancelled run would leave its commits unchecked.
+concurrency:
+  # prettier-ignore
+  group: ci-${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # tools/ratchet-guard.mjs lê as baselines no commit base (git show) e mede o código base.
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm arch
+      - run: pnpm tokens
+      - name:
+          Product CSS lint (.stylelintrc.json,
+          tools/stylelint-css-structure.mjs)
+        run: pnpm lint:css
+      - name:
+          Colocated tests nest under their subject (.vscode/settings.json,
+          tools/test-colocation-allowlist.json)
+        run: pnpm check:test-names
+      - name: Ratchet baselines anchored to the base
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.base_ref }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            base="origin/$PR_BASE"
+          elif [ -n "$PUSH_BEFORE" ] && [ "$PUSH_BEFORE" != "0000000000000000000000000000000000000000" ]; then
+            base="$PUSH_BEFORE"
+          elif git rev-parse --verify 'HEAD^' >/dev/null 2>&1; then
+            base="HEAD^"
+          else
+            # The reviewed initial snapshot seeds the baseline on a fresh repository.
+            base="HEAD"
+          fi
+          RATCHET_BASE_REF="$base" pnpm ratchet:guard
+      - name:
+          Hygiene — unused files, exports and dependencies, tool outputs
+          (knip.jsonc, tools/hygiene-baseline.json)
+        run: pnpm hygiene
+      - run: pnpm test:gates
+      - name:
+          'Visual baseline tooling (capture runs manually: pnpm visual:capture +
+          visual:compare)'
+        run: pnpm test:visual-tools
+      - run: pnpm docs:validate
+      - name:
+          Token propagation matches tools/token-propagation-expectations.json
+        run: pnpm check:tokens
+  tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    env:
+      DATABASE_URL: postgresql://unused:unused@127.0.0.1:5433/unused
+      DIRECT_URL: postgresql://unused:unused@127.0.0.1:5433/unused
+      TEST_DATABASE_URL: postgresql://test:test@127.0.0.1:5432/test_db
+      TEST_DATABASE_DISPOSABLE: 'true'
+      NEXTAUTH_SECRET: ci-only-not-a-production-secret
+      NEXTAUTH_URL: http://localhost:3101
+      NODE_OPTIONS: --max-old-space-size=6144
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm exec prisma generate --generator client
+      - name: Migrate disposable PostgreSQL
+        run: pnpm exec prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://test:test@127.0.0.1:5432/test_db
+      - run: pnpm test:unit
+      - run: pnpm test:security
+      - name:
+          Provider contract suites (vitest.contract.config.ts,
+          tests/contract/**)
+        run: pnpm test:contract
+      - run: pnpm test:identity
+      - run: pnpm test:platform
+      - name: Mobile host tests (apps/clients/mobile/vitest.config.mts)
+        run: pnpm test:mobile
+      - name: Web host tests (vitest.web.config.ts)
+        run: pnpm test:web
+      - name: Build legacy API host for production parity
+        run: pnpm exec next build
+      - name: Build shared API host
+        run: pnpm build:api
+      - name: Build web consumer for real proxy and rollback checks
+        run: pnpm build:web
+      - name: Check localhost TLS fixture tool
+        run: openssl version
+      - name: Legacy/shared API HTTP parity with PostgreSQL RLS
+        run: pnpm test:api
+        env:
+          API_HOST_MODE: production
+          API_LEGACY_MODE: production
+          API_AUTH_MODE: legacy
+      - name: Legacy/shared API HTTP parity with Better Auth cookies
+        run: pnpm test:api
+        env:
+          API_HOST_MODE: production
+          API_LEGACY_MODE: production
+          API_AUTH_MODE: better-auth
+      - run: pnpm test:integration
+      - run: pnpm type-check
+      - name:
+          Typecheck packages and both hosts (includes
+          apps/clients/mobile/tsconfig.test.json)
+        run: pnpm typecheck
+      - run: pnpm lint
+  builds:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://unused:unused@127.0.0.1:5433/unused
+      NEXTAUTH_SECRET: ci-only-not-a-production-secret
+      NEXTAUTH_URL: http://localhost:3000
+      NODE_OPTIONS: --max-old-space-size=6144
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm exec prisma generate --generator client
+      - name: Build current root host
+        run: pnpm exec next build
+      - name: Build destination web host
+        run: pnpm build:web
+      - name: Bundle both native targets
+        run: pnpm bundle:mobile
+  docker:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the image (Dockerfile, no secrets in the build)
+        run: docker build --tag gb-locacoes:ci .
+      - name: Container answers 200 on /api/health
+        env:
+          # Credenciais do PostgreSQL descartável do job; o segredo abaixo só existe no CI.
+          DATABASE_URL: postgresql://test:test@127.0.0.1:5432/test_db
+          NEXTAUTH_SECRET: ci-only-not-a-production-secret
+        run: |
+          docker run --detach --name app --network host \
+            --env DATABASE_URL --env NEXTAUTH_SECRET --env NEXTAUTH_URL=http://localhost:3000 \
+            gb-locacoes:ci
+          for attempt in $(seq 1 60); do
+            status=$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:3000/api/health || true)
+            if [ "$status" = "200" ]; then
+              echo "GET /api/health -> 200"
+              test "$(docker exec app id -u)" != "0"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "GET /api/health did not answer 200 (last status: $status)"
+          docker logs app
+          exit 1
+  # Imagem da API compartilhada (apps/services/api/Dockerfile, standalone na porta 3002, USER node). O job
+  # "docker" acima (imagem da raiz legada) segue até a exclusão da raiz (plano da onda 135, Bloco F).
+  api-docker:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - name:
+          Build the shared API image (contexto na raiz do workspace, sem
+          segredos no build)
+        run: |
+          docker build --file apps/services/api/Dockerfile --tag gb-locacoes-api:ci .
+      - name: API container answers 200 on /api/health as a non-root user
+        env:
+          # Credenciais do PostgreSQL descartável do job: /api/health só faz SELECT 1.
+          DATABASE_URL: postgresql://test:test@127.0.0.1:5432/test_db
+        run: |
+          docker run --detach --name api --network host \
+            --env DATABASE_URL \
+            gb-locacoes-api:ci
+          for attempt in $(seq 1 60); do
+            status=$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:3002/api/health || true)
+            if [ "$status" = "200" ]; then
+              echo "GET /api/health -> 200"
+              test "$(docker exec api id -u)" != "0"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "GET /api/health did not answer 200 (last status: $status)"
+          docker logs api
+          exit 1

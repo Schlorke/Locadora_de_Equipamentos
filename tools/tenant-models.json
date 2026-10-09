@@ -1,0 +1,239 @@
+{
+  "tenantModels": [
+    {
+      "model": "ZohoMailCommand",
+      "table": "zoho_mail_commands"
+    },
+    {
+      "model": "ZohoMailToken",
+      "table": "zoho_mail_tokens"
+    },
+    {
+      "model": "WhatsAppConversation",
+      "table": "whatsapp_conversations"
+    },
+    {
+      "model": "WhatsAppMessage",
+      "table": "whatsapp_messages"
+    },
+    {
+      "model": "Address",
+      "table": "addresses"
+    },
+    {
+      "model": "Cart",
+      "table": "carts"
+    },
+    {
+      "model": "CartItem",
+      "table": "cart_items"
+    },
+    {
+      "model": "Category",
+      "table": "categories"
+    },
+    {
+      "model": "Equipment",
+      "table": "equipments"
+    },
+    {
+      "model": "EquipmentUnit",
+      "table": "equipment_units"
+    },
+    {
+      "model": "Quote",
+      "table": "quotes"
+    },
+    {
+      "model": "QuoteItem",
+      "table": "quote_items"
+    },
+    {
+      "model": "rental_items",
+      "table": "rental_items"
+    },
+    {
+      "model": "rentals",
+      "table": "rentals"
+    },
+    {
+      "model": "Setting",
+      "table": "settings"
+    },
+    {
+      "model": "Maintenance",
+      "table": "maintenances"
+    },
+    {
+      "model": "Payment",
+      "table": "payments"
+    },
+    {
+      "model": "FinancialSetting",
+      "table": "financial_settings"
+    },
+    {
+      "model": "QuoteAdjustment",
+      "table": "quote_adjustments"
+    },
+    {
+      "model": "ClientDocument",
+      "table": "client_documents"
+    },
+    {
+      "model": "Delivery",
+      "table": "deliveries"
+    },
+    {
+      "model": "Vehicle",
+      "table": "vehicles"
+    },
+    {
+      "model": "Driver",
+      "table": "drivers"
+    },
+    {
+      "model": "Contract",
+      "table": "contracts"
+    },
+    {
+      "model": "AuditLog",
+      "table": "audit_logs"
+    },
+    {
+      "model": "Notification",
+      "table": "notifications"
+    },
+    {
+      "model": "Permission",
+      "table": "permissions"
+    },
+    {
+      "model": "OutboxEvent",
+      "table": "outbox_events"
+    },
+    {
+      "model": "WebhookInbox",
+      "table": "webhook_inbox"
+    },
+    {
+      "model": "PaymentAttempt",
+      "table": "payment_attempts"
+    },
+    {
+      "model": "ClientProfile",
+      "table": "client_profiles"
+    },
+    {
+      "model": "ContractSignatureAttempt",
+      "table": "contract_signature_attempts"
+    }
+  ],
+  "globalModels": [
+    "User",
+    "Account",
+    "Session",
+    "VerificationToken",
+    "AuthSession",
+    "AuthAccount",
+    "AuthVerification",
+    "AuthRateLimit",
+    "PlatformRateLimit",
+    "Organization",
+    "Membership",
+    "TenantIntegration",
+    "ExternalResourceTenant"
+  ],
+  "platformModels": [
+    {
+      "model": "Plan",
+      "table": "plans",
+      "read": "public"
+    },
+    {
+      "model": "PlanVersion",
+      "table": "plan_versions",
+      "read": "public"
+    },
+    {
+      "model": "Subscription",
+      "table": "subscriptions",
+      "read": "tenant"
+    },
+    {
+      "model": "SubscriptionEvent",
+      "table": "subscription_events",
+      "read": "tenant"
+    },
+    {
+      "model": "PlatformInvoice",
+      "table": "platform_invoices",
+      "read": "tenant"
+    },
+    {
+      "model": "EntitlementOverride",
+      "table": "entitlement_overrides",
+      "read": "tenant"
+    },
+    {
+      "model": "TrialClaim",
+      "table": "trial_claims",
+      "read": "platform"
+    },
+    {
+      "model": "PaymentAccount",
+      "table": "payment_accounts",
+      "read": "tenant"
+    },
+    {
+      "model": "PaymentAccountProvisioningRequest",
+      "table": "payment_account_provisioning_requests",
+      "read": "platform"
+    },
+    {
+      "model": "IntegrationSecret",
+      "table": "integration_secrets",
+      "read": "tenant"
+    },
+    {
+      "model": "PayoutRequest",
+      "table": "payout_requests",
+      "read": "tenant"
+    },
+    {
+      "model": "PlatformWebhookInbox",
+      "table": "platform_webhook_inbox",
+      "read": "platform"
+    },
+    {
+      "model": "PlatformOutboxEvent",
+      "table": "platform_outbox_events",
+      "read": "platform"
+    },
+    {
+      "model": "PlatformAuditLog",
+      "table": "platform_audit_logs",
+      "read": "platform"
+    },
+    {
+      "model": "PlatformStaff",
+      "table": "platform_staff",
+      "read": "platform"
+    },
+    {
+      "model": "SupportAccessGrant",
+      "table": "support_access_grants",
+      "read": "tenant"
+    },
+    {
+      "model": "LegalAcceptance",
+      "table": "legal_acceptances",
+      "read": "tenant"
+    },
+    {
+      "model": "TenantUsageSnapshot",
+      "table": "tenant_usage_snapshots",
+      "read": "tenant"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "task": {
+    "type": "bugfix",
+    "objective": "<one-line objective>",
+    "scope_in": ["<in-scope item>"],
+    "scope_out": ["<out-of-scope item>"],
+    "constraints": ["<non-negotiable constraint>"],
+    "required_sources": ["<path/to/doc.md>"]
+  },
+  "context_capsule": {
+    "objective": "<objective>",
+    "constraints": ["<constraint>"],
+    "required_sources": ["<path>"],
+    "validation": ["<how to verify>"]
+  },
+  "output": {
+    "summary": "<short summary>",
+    "root_cause": "<root cause>",
+    "fixes": [
+      {
+        "change": "<what changed>",
+        "rationale": "<why it changed>",
+        "source": "<path/to/source>",
+        "confidence": 0.0
+      }
+    ],
+    "risks": ["<risk>"],
+    "validation": ["<manual or automated check>"]
+  }
+}

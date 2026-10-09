@@ -1,0 +1,305 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Introduction/Welcome" />
+
+# 🎨 GB Locações Design System
+
+Bem-vindo ao **Design System GB Locações** - uma coleção completa e moderna de
+componentes, padrões e diretrizes para construir interfaces consistentes,
+acessíveis e de alta qualidade.
+
+---
+
+## 📚 O que você encontrará aqui
+
+### 🎨 Design Tokens
+
+Valores fundamentais que definem a identidade visual do sistema:
+
+- **Cores** - Paleta primária, secundária e semântica
+- **Tipografia** - Fontes, tamanhos e hierarquia
+- **Espaçamento** - Sistema consistente de spacing
+- **Sombras** - Elevações e profundidade
+- **Breakpoints** - Sistema responsivo mobile-first
+
+### 🧩 Componentes Públicos
+
+Componentes para o site público e área do cliente:
+
+- **Atoms** - Componentes básicos (Button, Input, Badge, etc.)
+- **Molecules** - Componentes compostos (Card, SearchBar, Alert, etc.)
+- **Organisms** - Componentes complexos (Navigation, Form, Dialog, etc.)
+- **Templates** - Layouts de página completos
+
+### 🔐 Componentes Administrativos
+
+Componentes específicos para o painel administrativo:
+
+- **Layout** - Sidebar, Header e estrutura admin
+- **Components** - AdminCard, SettingsBlock, etc.
+- **Features** - Funcionalidades complexas (Carousel Manager, etc.)
+- **Pages** - Páginas completas do admin
+
+### 🤝 Componentes Compartilhados
+
+Componentes usados em ambos os domínios:
+
+- **Form** - Sistema completo de formulários (React Hook Form + Zod)
+- **Data Display** - Tabelas, calendários, gráficos
+- **Feedback** - Toasts, alerts, notificações
+
+---
+
+## 🚀 Como Usar Este Storybook
+
+### 1. Explorar Componentes
+
+Navegue pelo menu lateral para encontrar o componente que precisa. Cada
+componente tem:
+
+- **Canvas** - Visualização interativa
+- **Docs** - Documentação completa
+- **Controls** - Playground para testar props
+- **Stories** - Variações e casos de uso
+
+### 2. Testar Variações
+
+Use o **Playground** em cada componente para experimentar diferentes combinações
+de props em tempo real.
+
+### 3. Copiar Código
+
+Cada componente inclui exemplos de código prontos para copiar e usar no projeto.
+
+### 4. Verificar Acessibilidade
+
+Use a aba **Accessibility** (addon A11y) para validar se o componente atende aos
+padrões WCAG 2.1 AA.
+
+---
+
+## 🎯 Princípios do Design System
+
+### ✅ Consistência
+
+Todos os componentes seguem os mesmos design tokens, garantindo uma aparência
+uniforme em toda a aplicação.
+
+### ♿ Acessibilidade
+
+Componentes construídos com acessibilidade em mente:
+
+- Navegação por teclado
+- ARIA labels apropriados
+- Contraste de cores adequado
+- Suporte a leitores de tela
+
+### 📱 Responsividade
+
+Design mobile-first com breakpoints bem definidos:
+
+- Mobile: < 640px
+- Tablet: 640px - 1024px
+- Desktop: > 1024px
+
+### ⚡ Performance
+
+Componentes otimizados para velocidade:
+
+- Lazy loading quando apropriado
+- Animações suaves (60fps)
+- Bundle size otimizado
+
+### 🧪 Testabilidade
+
+Componentes projetados para serem facilmente testáveis:
+
+- Props bem definidas
+- Estados previsíveis
+- Integração com Vitest
+
+---
+
+## 🛠️ Stack Tecnológico
+
+Este design system é construído com:
+
+- **Next.js 15** - Framework React com App Router
+- **TypeScript** - Type safety e melhor DX
+- **Tailwind CSS** - Utility-first CSS framework
+- **Radix UI** - Componentes primitivos acessíveis
+- **Framer Motion** - Animações suaves
+- **Lucide React** - Ícones consistentes
+- **React Hook Form** - Gerenciamento de formulários
+- **Zod** - Validação de schemas
+
+---
+
+## 📖 Guias Rápidos
+
+### Para Desenvolvedores
+
+```tsx
+// 1. Importar componente
+import { Button } from '@gb-locacoes/ui'
+
+// 2. Usar no código
+;<Button variant="default" size="lg">
+  Meu Botão
+</Button>
+
+// 3. Consultar Storybook para mais exemplos
+```
+
+### Para Designers
+
+1. Consulte **Design Tokens** para valores de cores, espaçamentos e tipografia
+2. Use os componentes como referência para designs no Figma
+3. Mantenha consistência seguindo os padrões estabelecidos
+
+### Para QA
+
+1. Use as **Stories** como casos de teste visual
+2. Valide acessibilidade com o addon **A11y**
+3. Teste responsividade em diferentes viewports
+
+---
+
+## 🔗 Links Úteis
+
+### Documentação do Projeto
+
+- [AGENTS.md](https://github.com/seu-repo/AGENTS.md) - Regras e personas para
+  IAs
+- [Design System Docs](https://github.com/seu-repo/docs/features/design-system.md) -
+  Documentação completa
+
+### Ferramentas Externas
+
+- [Storybook Docs](https://storybook.js.org/docs)
+- [Radix UI](https://www.radix-ui.com/primitives/docs/overview/introduction)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [Lucide Icons](https://lucide.dev/)
+
+---
+
+## 🎨 Identidade Visual
+
+### Cores Principais
+
+<div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+  <div>
+    <div
+      style={{
+        width: '80px',
+        height: '80px',
+        backgroundColor: '#ea580c',
+        borderRadius: '8px',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+      }}
+    ></div>
+    <p style={{ fontSize: '12px', marginTop: '0.5rem', textAlign: 'center' }}>
+      <strong>Primary</strong>
+      <br />
+      #ea580c
+    </p>
+  </div>
+  <div>
+    <div
+      style={{
+        width: '80px',
+        height: '80px',
+        backgroundColor: '#334155',
+        borderRadius: '8px',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+      }}
+    ></div>
+    <p style={{ fontSize: '12px', marginTop: '0.5rem', textAlign: 'center' }}>
+      <strong>Secondary</strong>
+      <br />
+      #334155
+    </p>
+  </div>
+  <div>
+    <div
+      style={{
+        width: '80px',
+        height: '80px',
+        backgroundColor: '#10b981',
+        borderRadius: '8px',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+      }}
+    ></div>
+    <p style={{ fontSize: '12px', marginTop: '0.5rem', textAlign: 'center' }}>
+      <strong>Success</strong>
+      <br />
+      #10b981
+    </p>
+  </div>
+  <div>
+    <div
+      style={{
+        width: '80px',
+        height: '80px',
+        backgroundColor: '#ef4444',
+        borderRadius: '8px',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+      }}
+    ></div>
+    <p style={{ fontSize: '12px', marginTop: '0.5rem', textAlign: 'center' }}>
+      <strong>Error</strong>
+      <br />
+      #ef4444
+    </p>
+  </div>
+</div>
+
+### Tipografia
+
+- **Sans**: Inter - Para corpo de texto
+- **Heading**: Jost - Para títulos e headings
+
+---
+
+## 🤝 Contribuindo
+
+Ao adicionar novos componentes:
+
+1. ✅ Consulte **AI_CONTEXT.md** para padrões obrigatórios
+2. ✅ Use design tokens existentes (nunca cores hardcoded)
+3. ✅ Crie stories completas (Default + Playground + Variantes)
+4. ✅ Escreva documentação MDX detalhada
+5. ✅ Teste acessibilidade com addon A11y
+6. ✅ Valide responsividade em todos os breakpoints
+
+---
+
+## 📞 Suporte
+
+Dúvidas ou problemas? Consulte:
+
+- **AI_CONTEXT.md** - Contexto completo para IAs
+- **Design System Docs** - Documentação técnica
+- **Team** - Equipe de desenvolvimento
+
+---
+
+<div
+  style={{
+    marginTop: '3rem',
+    padding: '2rem',
+    backgroundColor: '#f8fafc',
+    borderRadius: '8px',
+    border: '1px solid #e2e8f0',
+  }}
+>
+  <h2 style={{ marginTop: 0 }}>🚀 Comece Agora</h2>
+  <p>
+    Explore o menu lateral para descobrir todos os componentes disponíveis. Cada
+    seção foi cuidadosamente documentada para facilitar seu trabalho.
+  </p>
+  <p>
+    <strong>Dica:</strong> Comece pelos Design Tokens para entender a base do
+    sistema!
+  </p>
+</div>

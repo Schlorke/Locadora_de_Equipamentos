@@ -1,0 +1,20 @@
+{
+  "status": "APPROVED",
+  "personType": "JURIDICA",
+  "cpfCnpj": "11222333000181",
+  "name": "Locadora Exemplo LTDA",
+  "birthDate": null,
+  "companyName": "Locadora Exemplo LTDA",
+  "companyType": "LIMITED",
+  "incomeValue": 50000,
+  "email": "financeiro@example.test",
+  "phone": null,
+  "mobilePhone": "11900000000",
+  "postalCode": "01001000",
+  "address": "Rua Exemplo",
+  "addressNumber": "100",
+  "complement": null,
+  "province": "Centro",
+  "site": "https://exemplo.plataforma.example.test",
+  "commercialInfoExpiration": { "isExpired": false, "scheduledDate": "2027-01-15 00:00:00" }
+}

@@ -1,0 +1,2447 @@
+{
+  "version": 1,
+  "scenario": "vitrine/cookies",
+  "viewport": "390",
+  "url": "http://loc-a.localhost:3320/cookies",
+  "unmappedApis": [],
+  "unstableWaits": 0,
+  "styles": [
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "color": "rgb(2, 8, 23)",
+      "display": "block",
+      "scrollbar-width": "thin"
+    },
+    { "display": "block", "scrollbar-width": "thin" },
+    {
+      "backdrop-filter": "blur(4px)",
+      "background-color": "rgba(255, 255, 255, 0.95)",
+      "border-bottom-color": "rgba(229, 231, 235, 0.8)",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "display": "block",
+      "left": "0px",
+      "position": "fixed",
+      "right": "0px",
+      "scrollbar-width": "thin",
+      "top": "0px",
+      "z-index": "30"
+    },
+    {
+      "background-color": "rgb(51, 65, 85)",
+      "color": "rgb(255, 255, 255)",
+      "display": "block",
+      "padding-bottom": "10px",
+      "padding-top": "10px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "margin-left": "auto",
+      "margin-right": "auto",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "flex",
+      "font-size": "14px",
+      "line-height": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "16px",
+      "display": "flex",
+      "row-gap": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "8px",
+      "display": "flex",
+      "font-weight": "500",
+      "row-gap": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(226, 232, 240)",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(226, 232, 240)"
+    },
+    {
+      "column-gap": "4px",
+      "display": "flex",
+      "row-gap": "4px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(241, 245, 249)",
+      "cursor": "pointer",
+      "display": "block",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(226, 232, 240)",
+      "cursor": "pointer",
+      "display": "block",
+      "font-weight": "500",
+      "scrollbar-width": "thin"
+    },
+    { "cursor": "pointer", "display": "flex", "scrollbar-width": "thin" },
+    {
+      "border-bottom-color": "oklab(0.868975 -0.0057984 -0.018952 / 0.5)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "2px",
+      "border-left-color": "oklab(0.868975 -0.0057984 -0.018952 / 0.5)",
+      "border-left-style": "solid",
+      "border-left-width": "2px",
+      "border-right-color": "oklab(0.868975 -0.0057984 -0.018952 / 0.5)",
+      "border-right-style": "solid",
+      "border-right-width": "2px",
+      "border-top-color": "oklab(0.868975 -0.0057984 -0.018952 / 0.5)",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "border-top-style": "solid",
+      "border-top-width": "2px",
+      "bottom": "auto",
+      "display": "flex",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "background-color": "oklab(0.710665 -0.00799343 -0.03417 / 0.8)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "display": "flex",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(255, 255, 255)"
+    },
+    {
+      "backdrop-filter": "blur(12px)",
+      "background-color": "oklab(0.999994 0.0000455678 0.0000200868 / 0.95)",
+      "display": "block",
+      "scrollbar-width": "thin"
+    },
+    { "display": "flex", "scrollbar-width": "thin" },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(51, 65, 85) 0%, rgb(30, 41, 59) 50%, rgb(15, 23, 42) 100%)",
+      "border-bottom-left-radius": "12px",
+      "border-bottom-right-radius": "12px",
+      "border-top-left-radius": "12px",
+      "border-top-right-radius": "12px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "color": "rgb(255, 255, 255)",
+      "display": "block",
+      "font-size": "18px",
+      "font-weight": "700",
+      "line-height": "28px",
+      "padding-bottom": "10px",
+      "padding-left": "10px",
+      "padding-right": "10px",
+      "padding-top": "10px",
+      "scrollbar-width": "thin"
+    },
+    { "display": "block", "margin-left": "12px", "scrollbar-width": "thin" },
+    {
+      "color": "rgb(30, 41, 59)",
+      "display": "block",
+      "font-size": "18px",
+      "font-weight": "700",
+      "line-height": "28px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(100, 116, 139)",
+      "display": "block",
+      "font-size": "12px",
+      "line-height": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "border-bottom-color": "rgba(0, 0, 0, 0)",
+      "border-bottom-left-radius": "12px",
+      "border-bottom-right-radius": "12px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgba(0, 0, 0, 0)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgba(0, 0, 0, 0)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgba(0, 0, 0, 0)",
+      "border-top-left-radius": "12px",
+      "border-top-right-radius": "12px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "color": "rgb(51, 65, 85)",
+      "column-gap": "8px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "row-gap": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(51, 65, 85)"
+    },
+    { "display": "block", "padding-top": "104px", "scrollbar-width": "thin" },
+    {
+      "background-color": "rgb(249, 250, 251)",
+      "display": "block",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "margin-left": "auto",
+      "margin-right": "auto",
+      "padding-bottom": "32px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "32px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "32px",
+      "display": "grid",
+      "row-gap": "32px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "position": "sticky",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "96px"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-color": "rgb(226, 232, 240)",
+      "border-bottom-left-radius": "16px",
+      "border-bottom-right-radius": "16px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(226, 232, 240)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(226, 232, 240)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(226, 232, 240)",
+      "border-top-left-radius": "16px",
+      "border-top-right-radius": "16px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "display": "block",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(255, 247, 237) 0%, rgba(0, 0, 0, 0) 100%)",
+      "bottom": "0px",
+      "display": "block",
+      "left": "0px",
+      "opacity": "0.3",
+      "position": "absolute",
+      "right": "0px",
+      "scrollbar-width": "thin",
+      "top": "0px"
+    },
+    {
+      "border-bottom-color": "rgb(243, 244, 246)",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "padding-bottom": "24px",
+      "padding-left": "24px",
+      "padding-right": "24px",
+      "padding-top": "24px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "column-gap": "12px",
+      "display": "flex",
+      "row-gap": "12px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(249, 115, 22) 0%, rgb(234, 88, 12) 100%)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "color": "rgb(255, 255, 255)",
+      "display": "block",
+      "padding-bottom": "8px",
+      "padding-left": "8px",
+      "padding-right": "8px",
+      "padding-top": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(55, 65, 81)",
+      "display": "block",
+      "font-family": "Jost, Georgia, serif, sans-serif",
+      "font-size": "14px",
+      "font-weight": "500",
+      "letter-spacing": "0.21px",
+      "line-height": "20px",
+      "scrollbar-width": "thin",
+      "text-transform": "uppercase"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "display": "block",
+      "padding-bottom": "16px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right, rgb(249, 115, 22) 0%, rgb(234, 88, 12) 100%)",
+      "border-bottom-left-radius": "12px",
+      "border-bottom-right-radius": "12px",
+      "border-top-left-radius": "12px",
+      "border-top-right-radius": "12px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "color": "rgb(255, 255, 255)",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "padding-bottom": "12px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "12px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "display": "block",
+      "font-size": "12px",
+      "line-height": "16px",
+      "scrollbar-width": "thin"
+    },
+    { "display": "block", "scrollbar-width": "thin", "text-align": "left" },
+    { "display": "block", "margin-top": "4px", "scrollbar-width": "thin" },
+    {
+      "border-bottom-left-radius": "12px",
+      "border-bottom-right-radius": "12px",
+      "border-top-left-radius": "12px",
+      "border-top-right-radius": "12px",
+      "color": "rgb(55, 65, 81)",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "padding-bottom": "12px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "12px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "color": "rgb(156, 163, 175)",
+      "display": "block",
+      "font-size": "12px",
+      "line-height": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(156, 163, 175)",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(156, 163, 175)"
+    },
+    {
+      "background-color": "rgb(249, 250, 251)",
+      "display": "block",
+      "padding-top": "84px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(234, 88, 12) 0%, rgb(194, 65, 12) 50%, rgb(154, 52, 18) 100%)",
+      "bottom": "auto",
+      "color": "rgb(255, 255, 255)",
+      "display": "block",
+      "left": "auto",
+      "margin-left": "-16px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "margin-left": "auto",
+      "margin-right": "auto",
+      "padding-bottom": "24px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "24px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "10"
+    },
+    { "display": "block", "scrollbar-width": "thin", "text-align": "center" },
+    {
+      "backdrop-filter": "blur(4px)",
+      "background-color": "oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
+      "border-bottom-left-radius": "16px",
+      "border-bottom-right-radius": "16px",
+      "border-top-left-radius": "16px",
+      "border-top-right-radius": "16px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.1) 0px 8px 10px -6px",
+      "display": "inline-flex",
+      "margin-bottom": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "font-family": "Jost, Georgia, serif, sans-serif",
+      "font-size": "30px",
+      "font-weight": "700",
+      "letter-spacing": "-0.75px",
+      "line-height": "37.5px",
+      "margin-top": "12px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "font-size": "18px",
+      "line-height": "29.25px",
+      "margin-left": "auto",
+      "margin-right": "auto",
+      "margin-top": "12px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(255, 237, 213)",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "margin-top": "12px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "margin-top": "-80px",
+      "overflow-x": "hidden",
+      "overflow-y": "auto",
+      "padding-bottom": "48px",
+      "padding-top": "48px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "display": "block",
+      "margin-left": "auto",
+      "margin-right": "auto",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-left-radius": "16px",
+      "border-bottom-right-radius": "16px",
+      "border-top-left-radius": "16px",
+      "border-top-right-radius": "16px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.1) 0px 8px 10px -6px",
+      "display": "block",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "padding-bottom": "24px",
+      "padding-left": "24px",
+      "padding-right": "24px",
+      "padding-top": "24px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(239, 246, 255) 0%, rgb(238, 242, 255) 100%)",
+      "border-bottom-color": "oklab(0.93191 -0.00782195 -0.0305777 / 0.5)",
+      "border-bottom-left-radius": "12px",
+      "border-bottom-right-radius": "12px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "oklab(0.93191 -0.00782195 -0.0305777 / 0.5)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "oklab(0.93191 -0.00782195 -0.0305777 / 0.5)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "oklab(0.93191 -0.00782195 -0.0305777 / 0.5)",
+      "border-top-left-radius": "12px",
+      "border-top-right-radius": "12px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "display": "block",
+      "padding-bottom": "24px",
+      "padding-left": "24px",
+      "padding-right": "24px",
+      "padding-top": "24px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(55, 65, 81)",
+      "display": "block",
+      "line-height": "26px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-left-radius": "16px",
+      "border-bottom-right-radius": "16px",
+      "border-top-left-radius": "16px",
+      "border-top-right-radius": "16px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.1) 0px 8px 10px -6px",
+      "display": "block",
+      "left": "auto",
+      "margin-top": "24px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "color": "rgb(17, 24, 39)",
+      "column-gap": "12px",
+      "display": "flex",
+      "font-family": "Jost, Georgia, serif, sans-serif",
+      "font-size": "20px",
+      "font-weight": "700",
+      "letter-spacing": "-0.5px",
+      "line-height": "26px",
+      "margin-bottom": "16px",
+      "row-gap": "12px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(234, 88, 12)",
+      "display": "block",
+      "scrollbar-width": "thin"
+    },
+    { "display": "block", "line-height": "26px", "scrollbar-width": "thin" },
+    {
+      "color": "rgb(55, 65, 81)",
+      "display": "block",
+      "line-height": "25.6px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(55, 65, 81)",
+      "display": "block",
+      "line-height": "25.6px",
+      "margin-top": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "16px",
+      "display": "grid",
+      "margin-top": "16px",
+      "row-gap": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(240, 253, 244) 0%, rgb(236, 253, 245) 100%)",
+      "border-bottom-left-radius": "12px",
+      "border-bottom-right-radius": "12px",
+      "border-left-color": "rgb(34, 197, 94)",
+      "border-left-style": "solid",
+      "border-left-width": "4px",
+      "border-top-left-radius": "12px",
+      "border-top-right-radius": "12px",
+      "display": "block",
+      "padding-bottom": "20px",
+      "padding-left": "20px",
+      "padding-right": "20px",
+      "padding-top": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(34, 197, 94)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "display": "block",
+      "padding-bottom": "8px",
+      "padding-left": "8px",
+      "padding-right": "8px",
+      "padding-top": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(255, 255, 255)",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(255, 255, 255)"
+    },
+    {
+      "color": "rgb(17, 24, 39)",
+      "display": "block",
+      "font-weight": "600",
+      "margin-bottom": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(239, 246, 255) 0%, rgb(240, 249, 255) 100%)",
+      "border-bottom-left-radius": "12px",
+      "border-bottom-right-radius": "12px",
+      "border-left-color": "rgb(59, 130, 246)",
+      "border-left-style": "solid",
+      "border-left-width": "4px",
+      "border-top-left-radius": "12px",
+      "border-top-right-radius": "12px",
+      "display": "block",
+      "padding-bottom": "20px",
+      "padding-left": "20px",
+      "padding-right": "20px",
+      "padding-top": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(59, 130, 246)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "display": "block",
+      "padding-bottom": "8px",
+      "padding-left": "8px",
+      "padding-right": "8px",
+      "padding-top": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(250, 245, 255) 0%, rgb(245, 243, 255) 100%)",
+      "border-bottom-left-radius": "12px",
+      "border-bottom-right-radius": "12px",
+      "border-left-color": "rgb(168, 85, 247)",
+      "border-left-style": "solid",
+      "border-left-width": "4px",
+      "border-top-left-radius": "12px",
+      "border-top-right-radius": "12px",
+      "display": "block",
+      "padding-bottom": "20px",
+      "padding-left": "20px",
+      "padding-right": "20px",
+      "padding-top": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(168, 85, 247)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "display": "block",
+      "padding-bottom": "8px",
+      "padding-left": "8px",
+      "padding-right": "8px",
+      "padding-top": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(240, 253, 244) 0%, rgb(236, 253, 245) 100%)",
+      "border-bottom-color": "oklab(0.925016 -0.0735395 0.0327853 / 0.5)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "oklab(0.925016 -0.0735395 0.0327853 / 0.5)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "oklab(0.925016 -0.0735395 0.0327853 / 0.5)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "oklab(0.925016 -0.0735395 0.0327853 / 0.5)",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "display": "block",
+      "margin-top": "16px",
+      "padding-bottom": "16px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(21, 128, 61)",
+      "display": "inline",
+      "font-weight": "500",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(239, 246, 255) 0%, rgb(240, 249, 255) 100%)",
+      "border-bottom-color": "oklab(0.882334 -0.0155644 -0.0548632 / 0.5)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "oklab(0.882334 -0.0155644 -0.0548632 / 0.5)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "oklab(0.882334 -0.0155644 -0.0548632 / 0.5)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "oklab(0.882334 -0.0155644 -0.0548632 / 0.5)",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "display": "block",
+      "margin-top": "16px",
+      "padding-bottom": "16px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(29, 78, 216)",
+      "display": "inline",
+      "font-weight": "500",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(250, 245, 255) 0%, rgb(245, 243, 255) 100%)",
+      "border-bottom-color": "oklab(0.902353 0.0361441 -0.048412 / 0.5)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "oklab(0.902353 0.0361441 -0.048412 / 0.5)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "oklab(0.902353 0.0361441 -0.048412 / 0.5)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "oklab(0.902353 0.0361441 -0.048412 / 0.5)",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "display": "block",
+      "margin-top": "16px",
+      "padding-bottom": "16px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(126, 34, 206)",
+      "display": "inline",
+      "font-weight": "500",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(254, 252, 232) 0%, rgb(255, 251, 235) 100%)",
+      "border-bottom-color": "oklab(0.945101 -0.0248216 0.121804 / 0.5)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "oklab(0.945101 -0.0248216 0.121804 / 0.5)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "oklab(0.945101 -0.0248216 0.121804 / 0.5)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "oklab(0.945101 -0.0248216 0.121804 / 0.5)",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "display": "block",
+      "margin-top": "16px",
+      "padding-bottom": "16px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(161, 98, 7)",
+      "display": "inline",
+      "font-weight": "500",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(255, 247, 237) 0%, rgb(255, 237, 213) 100%)",
+      "border-bottom-left-radius": "12px",
+      "border-bottom-right-radius": "12px",
+      "border-top-left-radius": "12px",
+      "border-top-right-radius": "12px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "display": "block",
+      "margin-top": "16px",
+      "padding-bottom": "24px",
+      "padding-left": "24px",
+      "padding-right": "24px",
+      "padding-top": "24px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(249, 115, 22) 0%, rgb(234, 88, 12) 100%)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "color": "rgb(255, 255, 255)",
+      "display": "flex",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(17, 24, 39)",
+      "display": "block",
+      "font-family": "Jost, Georgia, serif, sans-serif",
+      "font-size": "20px",
+      "font-weight": "700",
+      "line-height": "28px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(75, 85, 99)",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "margin-top": "6px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(55, 65, 81)",
+      "display": "block",
+      "line-height": "26px",
+      "margin-top": "14px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(55, 65, 81)",
+      "display": "block",
+      "margin-top": "14px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "8px",
+      "display": "flex",
+      "row-gap": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(249, 115, 22)",
+      "display": "block",
+      "fill": "none",
+      "margin-top": "2px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(249, 115, 22)"
+    },
+    { "display": "inline", "font-weight": "500", "scrollbar-width": "thin" },
+    {
+      "color": "rgb(31, 41, 55)",
+      "cursor": "pointer",
+      "display": "inline",
+      "font-weight": "500",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(75, 85, 99)",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "8px",
+      "display": "flex",
+      "margin-top": "12px",
+      "row-gap": "8px",
+      "scrollbar-width": "thin"
+    },
+    { "display": "block", "line-height": "25.6px", "scrollbar-width": "thin" },
+    {
+      "display": "block",
+      "line-height": "25.6px",
+      "margin-top": "4px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(31, 41, 55)",
+      "cursor": "pointer",
+      "display": "inline",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(rgb(17, 24, 39) 0%, rgb(31, 41, 55) 50%, rgb(0, 0, 0) 100%)",
+      "bottom": "auto",
+      "color": "rgb(255, 255, 255)",
+      "display": "block",
+      "left": "auto",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "margin-left": "auto",
+      "margin-right": "auto",
+      "padding-bottom": "48px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "48px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "column-gap": "24px",
+      "display": "grid",
+      "row-gap": "24px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(249, 115, 22) 0%, rgb(234, 88, 12) 50%, rgb(194, 65, 12) 100%)",
+      "border-bottom-left-radius": "12px",
+      "border-bottom-right-radius": "12px",
+      "border-top-left-radius": "12px",
+      "border-top-right-radius": "12px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "display": "block",
+      "font-size": "18px",
+      "font-weight": "700",
+      "line-height": "28px",
+      "padding-bottom": "10px",
+      "padding-left": "10px",
+      "padding-right": "10px",
+      "padding-top": "10px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(249, 115, 22)",
+      "display": "block",
+      "font-size": "20px",
+      "font-weight": "700",
+      "line-height": "28px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(156, 163, 175)",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(209, 213, 219)",
+      "display": "block",
+      "line-height": "26px",
+      "margin-top": "12px",
+      "scrollbar-width": "thin"
+    },
+    { "display": "flex", "margin-top": "12px", "scrollbar-width": "thin" },
+    {
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "color": "rgb(209, 213, 219)",
+      "cursor": "pointer",
+      "display": "flex",
+      "padding-bottom": "8px",
+      "padding-left": "8px",
+      "padding-right": "8px",
+      "padding-top": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(209, 213, 219)"
+    },
+    {
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "color": "rgb(209, 213, 219)",
+      "cursor": "pointer",
+      "display": "flex",
+      "margin-left": "12px",
+      "padding-bottom": "8px",
+      "padding-left": "8px",
+      "padding-right": "8px",
+      "padding-top": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "color": "rgb(209, 213, 219)",
+      "display": "flex",
+      "margin-left": "12px",
+      "padding-bottom": "8px",
+      "padding-left": "8px",
+      "padding-right": "8px",
+      "padding-top": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(249, 115, 22)",
+      "display": "block",
+      "font-family": "Jost, Georgia, serif, sans-serif",
+      "font-size": "18px",
+      "font-weight": "700",
+      "line-height": "28px",
+      "margin-bottom": "8px",
+      "scrollbar-width": "thin"
+    },
+    { "display": "flex", "margin-top": "8px", "scrollbar-width": "thin" },
+    { "display": "list-item", "scrollbar-width": "thin" },
+    {
+      "color": "rgb(209, 213, 219)",
+      "cursor": "pointer",
+      "display": "inline-block",
+      "scrollbar-width": "thin",
+      "transform": "matrix(1, 0, 0, 1, 0, 0)"
+    },
+    { "display": "list-item", "margin-top": "8px", "scrollbar-width": "thin" },
+    {
+      "color": "rgb(209, 213, 219)",
+      "cursor": "pointer",
+      "display": "inline",
+      "font-size": "14px",
+      "line-height": "20px",
+      "scrollbar-width": "thin"
+    },
+    { "display": "flex", "margin-left": "12px", "scrollbar-width": "thin" },
+    {
+      "color": "rgb(209, 213, 219)",
+      "cursor": "pointer",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(209, 213, 219)",
+      "cursor": "pointer",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "margin-top": "4px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(156, 163, 175)",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "margin-top": "4px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(209, 213, 219)",
+      "cursor": "default",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "scrollbar-width": "thin"
+    },
+    { "display": "inline", "scrollbar-width": "thin" },
+    {
+      "color": "rgb(249, 115, 22)",
+      "display": "block",
+      "fill": "none",
+      "margin-top": "4px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(249, 115, 22)"
+    },
+    {
+      "border-top-color": "rgb(55, 65, 81)",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "display": "flex",
+      "margin-top": "48px",
+      "padding-top": "32px",
+      "scrollbar-width": "thin"
+    },
+    { "display": "flex", "margin-top": "16px", "scrollbar-width": "thin" },
+    {
+      "color": "rgb(156, 163, 175)",
+      "cursor": "pointer",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(156, 163, 175)",
+      "cursor": "pointer",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "margin-left": "32px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "bottom": "24px",
+      "display": "block",
+      "left": "auto",
+      "position": "fixed",
+      "right": "24px",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "100000"
+    },
+    {
+      "background-color": "rgb(239, 68, 68)",
+      "border-bottom-color": "rgb(255, 255, 255)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "2px",
+      "border-left-color": "rgb(255, 255, 255)",
+      "border-left-style": "solid",
+      "border-left-width": "2px",
+      "border-right-color": "rgb(255, 255, 255)",
+      "border-right-style": "solid",
+      "border-right-width": "2px",
+      "border-top-color": "rgb(255, 255, 255)",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "border-top-style": "solid",
+      "border-top-width": "2px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "color": "rgb(255, 255, 255)",
+      "display": "flex",
+      "font-size": "12px",
+      "font-weight": "700",
+      "left": "auto",
+      "line-height": "16px",
+      "padding-left": "4px",
+      "padding-right": "4px",
+      "position": "absolute",
+      "right": "-4px",
+      "scrollbar-width": "thin",
+      "top": "-4px",
+      "z-index": "10"
+    },
+    {
+      "background-color": "rgb(37, 211, 102)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "color": "rgb(255, 255, 255)",
+      "cursor": "pointer",
+      "display": "flex",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "display": "block",
+      "overflow-x": "hidden",
+      "overflow-y": "auto",
+      "scrollbar-width": "thin"
+    }
+  ],
+  "captures": {
+    "base": {
+      "kind": "full",
+      "elements": [
+        ["body:1", "", 0],
+        ["body:1>div:2", "", 1],
+        ["body:1>div:2>header:1", "", 2],
+        ["body:1>div:2>header:1>div:1", "", 3],
+        ["body:1>div:2>header:1>div:1>div:1", "", 4],
+        ["body:1>div:2>header:1>div:1>div:1>div:1", "", 5],
+        ["body:1>div:2>header:1>div:1>div:1>div:1>div:1", "", 6],
+        ["body:1>div:2>header:1>div:1>div:1>div:1>div:1>div:1", "", 7],
+        ["body:1>div:2>header:1>div:1>div:1>div:1>div:1>div:1>svg:1", "", 8],
+        ["body:1>div:2>header:1>div:1>div:1>div:1>div:1>div:1>div:1", "", 9],
+        [
+          "body:1>div:2>header:1>div:1>div:1>div:1>div:1>div:1>div:1>a:2",
+          "(51) 99999-0000",
+          10
+        ],
+        ["body:1>div:2>header:1>div:1>div:1>div:1>div:2", "", 6],
+        ["body:1>div:2>header:1>div:1>div:1>div:1>div:2>a:1", "Log In", 11],
+        [
+          "body:1>div:2>header:1>div:1>div:1>div:1>div:2>a:2",
+          "\"Entrar ou criar conta\"",
+          12
+        ],
+        ["body:1>div:2>header:1>div:1>div:1>div:1>div:2>a:2>span:1", "", 13],
+        [
+          "body:1>div:2>header:1>div:1>div:1>div:1>div:2>a:2>span:1>span:1",
+          "",
+          14
+        ],
+        [
+          "body:1>div:2>header:1>div:1>div:1>div:1>div:2>a:2>span:1>span:1>svg:1",
+          "",
+          15
+        ],
+        ["body:1>div:2>header:1>div:2", "", 16],
+        ["body:1>div:2>header:1>div:2>div:1", "", 4],
+        ["body:1>div:2>header:1>div:2>div:1>div:1", "", 17],
+        ["body:1>div:2>header:1>div:2>div:1>div:1>a:1", "", 12],
+        ["body:1>div:2>header:1>div:2>div:1>div:1>a:1>div:1", "LA", 18],
+        ["body:1>div:2>header:1>div:2>div:1>div:1>a:1>div:2", "", 19],
+        [
+          "body:1>div:2>header:1>div:2>div:1>div:1>a:1>div:2>div:1",
+          "Locadora Alfa",
+          20
+        ],
+        [
+          "body:1>div:2>header:1>div:2>div:1>div:1>a:1>div:2>div:2",
+          "Equipamentos para Construção",
+          21
+        ],
+        [
+          "body:1>div:2>header:1>div:2>div:1>div:1>button:1",
+          "\"Abrir menu\"",
+          22
+        ],
+        ["body:1>div:2>header:1>div:2>div:1>div:1>button:1>svg:1", "", 23],
+        ["body:1>div:2>div:1", "", 24],
+        ["body:1>div:2>div:1>div:1", "", 25],
+        ["body:1>div:2>div:1>div:1>div:1", "", 26],
+        ["body:1>div:2>div:1>div:1>div:1>div:1", "", 27],
+        ["body:1>div:2>div:1>div:1>div:1>div:1>div:1", "", 1],
+        ["body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1", "", 28],
+        ["body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1", "", 29],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:1",
+          "",
+          30
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:2",
+          "",
+          31
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:2>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1",
+          "",
+          33
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:2>div:1>div:1>svg:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:2>div:1>h3:1",
+          "Índice",
+          34
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3",
+          "",
+          35
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1",
+          "",
+          36
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:1>button:1",
+          "",
+          37
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:1>button:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:1>button:1>div:1>span:1",
+          "1.",
+          38
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:1>button:1>div:1>span:2",
+          "Introdução",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:1>button:1>svg:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:2",
+          "",
+          40
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:2>button:1",
+          "",
+          41
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:2>button:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:2>button:1>div:1>span:1",
+          "2.",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:2>button:1>div:1>span:2",
+          "Tipos de Cookies",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:2>button:1>svg:1",
+          "",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:3",
+          "",
+          40
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:3>button:1",
+          "",
+          41
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:3>button:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:3>button:1>div:1>span:1",
+          "3.",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:3>button:1>div:1>span:2",
+          "Cookies Essenciais",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:3>button:1>svg:1",
+          "",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:4",
+          "",
+          40
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:4>button:1",
+          "",
+          41
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:4>button:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:4>button:1>div:1>span:1",
+          "4.",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:4>button:1>div:1>span:2",
+          "Cookies de Funcionalidade",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:4>button:1>svg:1",
+          "",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:5",
+          "",
+          40
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:5>button:1",
+          "",
+          41
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:5>button:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:5>button:1>div:1>span:1",
+          "5.",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:5>button:1>div:1>span:2",
+          "Cookies de Analytics",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:5>button:1>svg:1",
+          "",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:6",
+          "",
+          40
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:6>button:1",
+          "",
+          41
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:6>button:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:6>button:1>div:1>span:1",
+          "6.",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:6>button:1>div:1>span:2",
+          "Como Gerenciar Cookies",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:6>button:1>svg:1",
+          "",
+          43
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:7",
+          "",
+          40
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:7>button:1",
+          "",
+          41
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:7>button:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:7>button:1>div:1>span:1",
+          "7.",
+          42
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:7>button:1>div:1>span:2",
+          "Contato",
+          39
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1>div:1>div:3>nav:1>div:7>button:1>svg:1",
+          "",
+          43
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:1>div:2", "", 1],
+        ["body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1", "", 1],
+        ["body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1", "", 44],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1",
+          "",
+          45
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:1",
+          "",
+          46
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:1>div:1",
+          "",
+          47
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:1>div:1>div:1",
+          "",
+          48
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:1>div:1>div:1>svg:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:1>div:1>h1:1",
+          "Política de Cookies",
+          49
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:1>div:1>p:1",
+          "Entenda como utilizamos cookies para mel",
+          50
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:1>div:1>p:2",
+          "Última atualização: 23 de Junho de 2025",
+          51
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:2",
+          "",
+          52
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:1>div:2>svg:1",
+          "",
+          52
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2",
+          "",
+          53
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1",
+          "",
+          54
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:1",
+          "",
+          55
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:1>div:1",
+          "",
+          56
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:1>div:1>div:1",
+          "",
+          57
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:1>div:1>div:1>p:1",
+          "Esta Política de Cookies explica o que s",
+          58
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:2",
+          "",
+          59
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:2>div:1",
+          "",
+          56
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:2>div:1>h2:1",
+          "Introdução",
+          60
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:2>div:1>h2:1>span:1",
+          "1.",
+          61
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:2>div:1>div:1",
+          "",
+          62
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:2>div:1>div:1>p:1",
+          "Cookies são pequenos arquivos de texto q",
+          63
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:2>div:1>div:1>p:2",
+          "Usamos cookies para melhorar sua experiê",
+          64
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3",
+          "",
+          59
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:1",
+          "",
+          30
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2",
+          "",
+          56
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>h2:1",
+          "Tipos de Cookies",
+          60
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>h2:1>span:1",
+          "2.",
+          61
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1",
+          "",
+          62
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>p:1",
+          "Utilizamos os seguintes tipos de cookies",
+          63
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1",
+          "",
+          65
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:1",
+          "",
+          66
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:1>div:1>div:1",
+          "",
+          67
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:1>div:1>div:1>svg:1",
+          "",
+          68
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:1>div:1>div:2",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:1>div:1>div:2>h4:1",
+          "Cookies Essenciais",
+          69
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:1>div:1>div:2>p:1",
+          "Necessários para o funcionamento básico ",
+          63
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:2",
+          "",
+          70
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:2>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:2>div:1>div:1",
+          "",
+          71
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:2>div:1>div:1>svg:1",
+          "",
+          68
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:2>div:1>div:2",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:2>div:1>div:2>h4:1",
+          "Cookies de Funcionalidade",
+          69
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:2>div:1>div:2>p:1",
+          "Lembram suas preferências e escolhas",
+          63
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:3",
+          "",
+          72
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:3>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:3>div:1>div:1",
+          "",
+          73
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:3>div:1>div:1>svg:1",
+          "",
+          68
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:3>div:1>div:2",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:3>div:1>div:2>h4:1",
+          "Cookies de Analytics",
+          69
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:3>div:2>div:1>div:1>div:3>div:1>div:2>p:1",
+          "Ajudam a entender como você usa o site",
+          63
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4",
+          "",
+          59
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1",
+          "",
+          56
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>h2:1",
+          "Cookies Essenciais",
+          60
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>h2:1>span:1",
+          "3.",
+          61
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>div:1",
+          "",
+          62
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>div:1>p:1",
+          "Estes cookies são estritamente necessári",
+          63
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>div:1>div:1",
+          "",
+          74
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>div:1>div:1>p:1",
+          "Cookies de autenticação, segurança e ger",
+          63
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:4>div:1>div:1>div:1>p:1>span:1",
+          "Exemplos:",
+          75
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5",
+          "",
+          59
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1",
+          "",
+          56
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>h2:1",
+          "Cookies de Funcionalidade",
+          60
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>h2:1>span:1",
+          "4.",
+          61
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>div:1",
+          "",
+          62
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>div:1>p:1",
+          "Estes cookies nos permitem lembrar as es",
+          63
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>div:1>div:1",
+          "",
+          76
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>div:1>div:1>p:1",
+          "Preferências de idioma, configurações de",
+          63
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>div:1>div:1>p:1>span:1",
+          "Exemplos:",
+          77
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:5>div:1>div:1>p:2",
+          "O objetivo destes cookies é proporcionar",
+          64
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6",
+          "",
+          59
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1",
+          "",
+          56
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>h2:1",
+          "Cookies de Analytics",
+          60
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>h2:1>span:1",
+          "5.",
+          61
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>div:1",
+          "",
+          62
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>div:1>p:1",
+          "Estes cookies nos permitem reconhecer e ",
+          63
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>div:1>div:1",
+          "",
+          78
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>div:1>div:1>p:1",
+          "Google Analytics, métricas de performanc",
+          63
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>div:1>div:1>p:1>span:1",
+          "Exemplos:",
+          79
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:6>div:1>div:1>p:2",
+          "Isso nos ajuda a melhorar a forma como n",
+          64
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7",
+          "",
+          59
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1",
+          "",
+          56
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>h2:1",
+          "Como Gerenciar Cookies",
+          60
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>h2:1>span:1",
+          "6.",
+          61
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>div:1",
+          "",
+          62
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>div:1>p:1",
+          "Você pode controlar e excluir cookies co",
+          63
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>div:1>p:2",
+          "No entanto, se você fizer isso, talvez p",
+          64
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>div:1>div:1",
+          "",
+          80
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>div:1>div:1>p:1",
+          "Para gerenciar cookies, acesse as config",
+          63
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:7>div:1>div:1>div:1>p:1>span:1",
+          "Nota:",
+          81
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8",
+          "",
+          59
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1",
+          "",
+          56
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>h2:1",
+          "Contato",
+          60
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>h2:1>span:1",
+          "7.",
+          61
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>p:1",
+          "Se você tiver dúvidas sobre nossa Políti",
+          58
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1",
+          "",
+          82
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:1>div:1>div:1",
+          "",
+          83
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:1>div:1>div:1>svg:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:1>div:1>h3:1",
+          "Entre em Contato",
+          84
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:1>p:1",
+          "Respondemos com agilidade e transparênci",
+          85
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>p:1",
+          "Estamos prontos para esclarecer suas dúv",
+          86
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2",
+          "",
+          87
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:1",
+          "",
+          88
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:1>svg:1",
+          "",
+          89
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:1>div:1>span:1",
+          "E-mail:",
+          90
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:1>div:1>a:1",
+          "contato@locadora-alfa.example",
+          91
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:1>div:1>p:1",
+          "marketing@locadora-alfa.example · automa",
+          92
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:2",
+          "",
+          93
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:2>svg:1",
+          "",
+          89
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:2>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:2>div:1>p:1",
+          "",
+          94
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:2>div:1>p:1>span:1",
+          "Telefone:",
+          90
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:2>div:1>p:1>a:1",
+          "(51) 3000-0000",
+          91
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:2>div:1>p:2",
+          "",
+          95
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:2>div:1>p:2>span:1",
+          "WhatsApp:",
+          90
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:2>div:1>p:2>a:1",
+          "(51) 99999-0000",
+          96
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:3",
+          "",
+          93
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:3>svg:1",
+          "",
+          89
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:3>p:1",
+          "Rua Exemplo, 100 - Centro, Porto Alegre ",
+          94
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>section:2>div:1>div:1>div:8>div:1>div:1>div:1>div:1>div:2>div:3>p:1>span:1",
+          "Endereço:",
+          90
+        ],
+        ["body:1>div:2>footer:1", "", 97],
+        ["body:1>div:2>footer:1>div:1", "", 98],
+        ["body:1>div:2>footer:1>div:1>div:1", "", 99],
+        ["body:1>div:2>footer:1>div:1>div:1>div:1", "", 17],
+        ["body:1>div:2>footer:1>div:1>div:1>div:1>div:1", "", 17],
+        ["body:1>div:2>footer:1>div:1>div:1>div:1>div:1>div:1", "LA", 100],
+        ["body:1>div:2>footer:1>div:1>div:1>div:1>div:1>div:2", "", 19],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:1>div:1>div:2>div:1",
+          "Locadora Alfa",
+          101
+        ],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:1>div:1>div:2>div:2",
+          "Equipamentos para Construção",
+          102
+        ],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:1>p:1",
+          "Locação de equipamentos para construção ",
+          103
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:1>div:2", "", 104],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:1>div:2>a:1",
+          "\"Facebook\"",
+          105
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:1>div:2>a:1>svg:1", "", 106],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:1>div:2>a:2",
+          "\"Instagram\"",
+          107
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:1>div:2>a:2>svg:1", "", 106],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:1>div:2>span:1",
+          "\"LinkedIn\"",
+          108
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:1>div:2>span:1>svg:1", "", 106],
+        ["body:1>div:2>footer:1>div:1>div:1>div:2", "", 17],
+        ["body:1>div:2>footer:1>div:1>div:1>div:2>h3:1", "Links Rápidos", 109],
+        ["body:1>div:2>footer:1>div:1>div:1>div:2>ul:1", "", 110],
+        ["body:1>div:2>footer:1>div:1>div:1>div:2>ul:1>li:1", "", 111],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:2>ul:1>li:1>a:1",
+          "Catálogo de Equipamentos",
+          112
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:2>ul:1>li:2", "", 113],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:2>ul:1>li:2>a:1",
+          "Categorias",
+          112
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:2>ul:1>li:3", "", 113],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:2>ul:1>li:3>a:1",
+          "Solicitar Orçamento",
+          112
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:2>ul:1>li:4", "", 113],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:2>ul:1>li:4>a:1",
+          "Sobre Nós",
+          112
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:2>ul:1>li:5", "", 113],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:2>ul:1>li:5>a:1",
+          "Contato",
+          112
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:2>ul:1>li:6", "", 113],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:2>ul:1>li:6>a:1",
+          "Área do Cliente",
+          112
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:3", "", 17],
+        ["body:1>div:2>footer:1>div:1>div:1>div:3>h3:1", "Equipamentos", 109],
+        ["body:1>div:2>footer:1>div:1>div:1>div:3>ul:1", "", 110],
+        ["body:1>div:2>footer:1>div:1>div:1>div:3>ul:1>li:1", "", 111],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:3>ul:1>li:1>a:1",
+          "Andaimes Suspensos",
+          112
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:3>ul:1>li:2", "", 113],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:3>ul:1>li:2>a:1",
+          "Cadeiras Elétricas",
+          112
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:3>ul:1>li:3", "", 113],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:3>ul:1>li:3>a:1",
+          "Andaimes Tubulares",
+          112
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:3>ul:1>li:4", "", 113],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:3>ul:1>li:4>a:1",
+          "Betoneiras",
+          112
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:3>ul:1>li:5", "", 113],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:3>ul:1>li:5>a:1",
+          "Rompedores",
+          112
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:3>ul:1>li:6", "", 113],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:3>ul:1>li:6>a:1",
+          "Compressores",
+          112
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:4", "", 17],
+        ["body:1>div:2>footer:1>div:1>div:1>div:4>h3:1", "Contato", 109],
+        ["body:1>div:2>footer:1>div:1>div:1>div:4>div:1", "", 110],
+        ["body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:1", "", 17],
+        ["body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:1>svg:1", "", 89],
+        ["body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:1>div:1", "", 19],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:1>div:1>a:1",
+          "(51) 3000-0000",
+          114
+        ],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:1>div:1>a:2",
+          "(51) 99999-0000",
+          114
+        ],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:1>div:1>p:1",
+          "Atendimento especializado",
+          102
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:2", "", 110],
+        ["body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:2>svg:1", "", 89],
+        ["body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:2>div:1", "", 115],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:2>div:1>a:1",
+          "contato@locadora-alfa.example",
+          116
+        ],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:2>div:1>a:2",
+          "marketing@locadora-alfa.example",
+          117
+        ],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:2>div:1>p:1",
+          "Resposta rápida garantida",
+          118
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:3", "", 110],
+        ["body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:3>svg:1", "", 89],
+        ["body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:3>div:1", "", 19],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:3>div:1>p:1",
+          "",
+          119
+        ],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:3>div:1>p:1>span:1",
+          "Rua Exemplo, 100",
+          120
+        ],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:3>div:1>p:1>span:2",
+          "Centro, Porto Alegre - RS",
+          120
+        ],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:3>div:1>p:2",
+          "Entregamos em toda região",
+          102
+        ],
+        ["body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:4", "", 110],
+        ["body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:4>svg:1", "", 121],
+        ["body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:4>div:1", "", 19],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:4>div:1>p:1",
+          "Seg-Sex: 8h às 18h",
+          119
+        ],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:4>div:1>p:2",
+          "Sáb: 8h às 12h",
+          119
+        ],
+        [
+          "body:1>div:2>footer:1>div:1>div:1>div:4>div:1>div:4>div:1>p:3",
+          "CNPJ: 11.222.333/0001-81",
+          102
+        ],
+        ["body:1>div:2>footer:1>div:1>div:2", "", 122],
+        [
+          "body:1>div:2>footer:1>div:1>div:2>p:1",
+          "© 2024 Locadora Alfa. Todos os direitos ",
+          102
+        ],
+        ["body:1>div:2>footer:1>div:1>div:2>div:1", "", 123],
+        ["body:1>div:2>footer:1>div:1>div:2>div:1>a:1", "Privacidade", 124],
+        ["body:1>div:2>footer:1>div:1>div:2>div:1>a:2", "Termos", 125],
+        ["body:1>div:2>footer:1>div:1>div:2>div:1>a:3", "Cookies", 125],
+        ["body:1>div:2>footer:1>div:1>div:2>div:1>a:4", "Devolução", 125],
+        ["body:1>div:2>div:2", "", 126],
+        ["body:1>div:2>div:2>div:1", "1", 127],
+        ["body:1>div:2>div:2>button:1", "\"Abrir chat do WhatsApp\"", 128],
+        ["body:1>div:2>div:2>button:1>svg:1", "", 15],
+        ["body:1>div:2>section:1", "\"Notifications alt+T\"", 129]
+      ]
+    }
+  }
+}

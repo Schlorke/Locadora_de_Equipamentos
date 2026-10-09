@@ -1,0 +1,4993 @@
+{
+  "version": 1,
+  "scenario": "painel/financeiro",
+  "viewport": "390",
+  "url": "http://app.localhost:3320/admin/financeiro",
+  "unmappedApis": [],
+  "unstableWaits": 0,
+  "styles": [
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "color": "rgb(2, 8, 23)",
+      "display": "block",
+      "overflow-x": "auto",
+      "overflow-y": "auto",
+      "scrollbar-width": "thin"
+    },
+    { "display": "block", "scrollbar-width": "thin" },
+    {
+      "background-color": "rgb(249, 250, 251)",
+      "display": "flex",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin"
+    },
+    {
+      "bottom": "auto",
+      "display": "flex",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "backdrop-filter": "blur(4px)",
+      "background-color": "rgb(51, 65, 85)",
+      "bottom": "auto",
+      "display": "block",
+      "left": "0px",
+      "position": "fixed",
+      "right": "0px",
+      "scrollbar-width": "thin",
+      "top": "0px",
+      "z-index": "9999"
+    },
+    {
+      "column-gap": "8px",
+      "display": "flex",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "row-gap": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "12px",
+      "cursor": "pointer",
+      "display": "flex",
+      "row-gap": "12px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(249, 115, 22) 0%, rgb(234, 88, 12) 50%, rgb(194, 65, 12) 100%)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklab(0 0 0 / 0.2) 0px 10px 15px -3px, oklab(0 0 0 / 0.2) 0px 4px 6px -4px",
+      "color": "rgb(255, 255, 255)",
+      "display": "flex",
+      "font-size": "18px",
+      "font-weight": "700",
+      "left": "auto",
+      "line-height": "28px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 50%, oklab(0 0 0 / 0.1) 100%)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "bottom": "0px",
+      "display": "block",
+      "left": "0px",
+      "position": "absolute",
+      "right": "0px",
+      "scrollbar-width": "thin",
+      "top": "0px"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "color": "rgb(255, 255, 255)",
+      "display": "block",
+      "font-weight": "600",
+      "line-height": "25.6px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "8px",
+      "display": "flex",
+      "row-gap": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "bottom": "auto",
+      "color": "rgb(255, 255, 255)",
+      "column-gap": "8px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-weight": "500",
+      "left": "auto",
+      "position": "relative",
+      "right": "auto",
+      "row-gap": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center",
+      "top": "auto"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(255, 255, 255)"
+    },
+    {
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "cursor": "pointer",
+      "display": "flex",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "border-bottom-color": "oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "2px",
+      "border-left-color": "oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
+      "border-left-style": "solid",
+      "border-left-width": "2px",
+      "border-right-color": "oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
+      "border-right-style": "solid",
+      "border-right-width": "2px",
+      "border-top-color": "oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "border-top-style": "solid",
+      "border-top-width": "2px",
+      "bottom": "auto",
+      "display": "flex",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "background-color": "rgb(148, 163, 184)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "color": "rgb(255, 255, 255)",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "backdrop-filter": "blur(12px)",
+      "background-image": "linear-gradient(145deg, rgba(51, 65, 85, 0.9), rgba(30, 41, 59, 0.8))",
+      "border-bottom-color": "rgba(255, 255, 255, 0.1)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgba(255, 255, 255, 0.1)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgba(255, 255, 255, 0.1)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgba(255, 255, 255, 0.1)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "bottom": "auto",
+      "box-shadow": "rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.3) 0px -1px 0px 0px inset, rgba(0, 0, 0, 0.4) 0px 4px 12px 0px, rgba(0, 0, 0, 0.2) 0px 2px 4px 0px",
+      "color": "rgb(255, 255, 255)",
+      "column-gap": "8px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-weight": "500",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "row-gap": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center",
+      "top": "auto",
+      "z-index": "40"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, oklab(0.999994 0.0000455678 0.0000200868 / 0.1) 0%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 100%)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "bottom": "0px",
+      "display": "block",
+      "left": "0px",
+      "position": "absolute",
+      "right": "0px",
+      "scrollbar-width": "thin",
+      "top": "0px"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "fill": "none",
+      "filter": "drop-shadow(rgba(0, 0, 0, 0.05) 0px 1px 1px)",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(255, 255, 255)",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "background-color": "oklab(0 0 0 / 0.8)",
+      "bottom": "0px",
+      "display": "block",
+      "left": "0px",
+      "opacity": "0",
+      "position": "fixed",
+      "right": "0px",
+      "scrollbar-width": "thin",
+      "top": "0px",
+      "z-index": "9998"
+    },
+    {
+      "backdrop-filter": "blur(20px)",
+      "background-image": "linear-gradient(145deg, rgba(51, 65, 85, 0.95), rgba(30, 41, 59, 0.9))",
+      "border-left-color": "rgba(255, 255, 255, 0.1)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "bottom": "0px",
+      "box-shadow": "rgba(0, 0, 0, 0.3) -4px 0px 20px 0px, rgba(0, 0, 0, 0.2) -2px 0px 8px 0px, rgba(255, 255, 255, 0.1) 1px 0px 0px 0px inset",
+      "display": "block",
+      "left": "auto",
+      "position": "fixed",
+      "right": "0px",
+      "scrollbar-width": "thin",
+      "top": "0px",
+      "transform": "matrix(1, 0, 0, 1, 320, 0)",
+      "z-index": "9999"
+    },
+    { "display": "flex", "scrollbar-width": "thin" },
+    {
+      "border-bottom-color": "oklab(0.999994 0.0000455678 0.0000200868 / 0.1)",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "display": "block",
+      "padding-bottom": "16px",
+      "padding-left": "24px",
+      "padding-right": "24px",
+      "padding-top": "24px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "12px",
+      "display": "flex",
+      "row-gap": "12px",
+      "scrollbar-width": "thin"
+    },
+    { "display": "block", "scrollbar-width": "thin", "text-align": "left" },
+    {
+      "color": "rgb(255, 255, 255)",
+      "display": "block",
+      "font-family": "Jost, Georgia, serif, sans-serif",
+      "font-size": "18px",
+      "font-weight": "700",
+      "letter-spacing": "-0.45px",
+      "line-height": "28px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(203, 213, 225)",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "backdrop-filter": "blur(8px)",
+      "background-image": "linear-gradient(145deg, rgba(71, 85, 105, 0.8), rgba(51, 65, 85, 0.6))",
+      "border-bottom-color": "rgba(255, 255, 255, 0.1)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgba(255, 255, 255, 0.1)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgba(255, 255, 255, 0.1)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgba(255, 255, 255, 0.1)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "bottom": "auto",
+      "box-shadow": "rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.3) 0px -1px 0px 0px inset, rgba(0, 0, 0, 0.3) 0px 2px 8px 0px",
+      "color": "rgb(255, 255, 255)",
+      "column-gap": "8px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-weight": "500",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "row-gap": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center",
+      "top": "auto"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, oklab(0.999994 0.0000455678 0.0000200868 / 0.05) 0%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 100%)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "bottom": "0px",
+      "display": "block",
+      "left": "0px",
+      "position": "absolute",
+      "right": "0px",
+      "scrollbar-width": "thin",
+      "top": "0px"
+    },
+    {
+      "display": "block",
+      "overflow-x": "auto",
+      "overflow-y": "auto",
+      "padding-bottom": "16px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "backdrop-filter": "blur(4px)",
+      "background-image": "linear-gradient(145deg, rgba(71, 85, 105, 0.3), rgba(51, 65, 85, 0.2))",
+      "border-bottom-color": "rgba(255, 255, 255, 0.1)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgba(255, 255, 255, 0.1)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgba(255, 255, 255, 0.1)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgba(255, 255, 255, 0.1)",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "bottom": "auto",
+      "box-shadow": "rgba(255, 255, 255, 0.1) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.2) 0px -1px 0px 0px inset, rgba(0, 0, 0, 0.2) 0px 2px 8px 0px",
+      "color": "rgb(203, 213, 225)",
+      "column-gap": "12px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "left": "auto",
+      "line-height": "20px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "padding-bottom": "12px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "12px",
+      "position": "relative",
+      "right": "auto",
+      "row-gap": "12px",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "fill": "none",
+      "filter": "drop-shadow(rgba(0, 0, 0, 0.05) 0px 1px 1px)",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(203, 213, 225)",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "backdrop-filter": "blur(8px)",
+      "background-image": "linear-gradient(145deg, rgba(251, 146, 60, 0.9), rgba(234, 88, 12, 0.8))",
+      "border-bottom-color": "rgba(255, 255, 255, 0.2)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgba(255, 255, 255, 0.2)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgba(255, 255, 255, 0.2)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgba(255, 255, 255, 0.2)",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "bottom": "auto",
+      "box-shadow": "rgba(255, 255, 255, 0.3) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.2) 0px -1px 0px 0px inset, rgba(251, 146, 60, 0.3) 0px 4px 12px 0px",
+      "color": "rgb(255, 255, 255)",
+      "column-gap": "12px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "left": "auto",
+      "line-height": "20px",
+      "margin-top": "8px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "padding-bottom": "12px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "12px",
+      "position": "relative",
+      "right": "auto",
+      "row-gap": "12px",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "backdrop-filter": "blur(4px)",
+      "background-image": "linear-gradient(145deg, rgba(71, 85, 105, 0.3), rgba(51, 65, 85, 0.2))",
+      "border-bottom-color": "rgba(255, 255, 255, 0.1)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgba(255, 255, 255, 0.1)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgba(255, 255, 255, 0.1)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgba(255, 255, 255, 0.1)",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "bottom": "auto",
+      "box-shadow": "rgba(255, 255, 255, 0.1) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.2) 0px -1px 0px 0px inset, rgba(0, 0, 0, 0.2) 0px 2px 8px 0px",
+      "color": "rgb(203, 213, 225)",
+      "column-gap": "12px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "left": "auto",
+      "line-height": "20px",
+      "margin-top": "8px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "padding-bottom": "12px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "12px",
+      "position": "relative",
+      "right": "auto",
+      "row-gap": "12px",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "background-color": "rgb(239, 68, 68)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "color": "rgb(255, 255, 255)",
+      "display": "flex",
+      "font-size": "11px",
+      "font-weight": "700",
+      "left": "auto",
+      "line-height": "14.6666px",
+      "position": "absolute",
+      "right": "-8px",
+      "scrollbar-width": "thin",
+      "top": "-8px",
+      "z-index": "20"
+    },
+    {
+      "border-top-color": "oklab(0.999994 0.0000455678 0.0000200868 / 0.1)",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "display": "block",
+      "padding-bottom": "16px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "backdrop-filter": "blur(4px)",
+      "background-image": "linear-gradient(145deg, rgba(71, 85, 105, 0.3), rgba(51, 65, 85, 0.2))",
+      "border-bottom-color": "rgba(255, 255, 255, 0.1)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgba(255, 255, 255, 0.1)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgba(255, 255, 255, 0.1)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgba(255, 255, 255, 0.1)",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "bottom": "auto",
+      "box-shadow": "rgba(255, 255, 255, 0.1) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.2) 0px -1px 0px 0px inset, rgba(0, 0, 0, 0.2) 0px 2px 8px 0px",
+      "column-gap": "12px",
+      "display": "flex",
+      "left": "auto",
+      "margin-bottom": "16px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "padding-bottom": "12px",
+      "padding-left": "12px",
+      "padding-right": "12px",
+      "padding-top": "12px",
+      "position": "relative",
+      "right": "auto",
+      "row-gap": "12px",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "bottom": "auto",
+      "color": "rgb(203, 213, 225)",
+      "display": "block",
+      "fill": "none",
+      "filter": "drop-shadow(rgba(0, 0, 0, 0.05) 0px 1px 1px)",
+      "left": "auto",
+      "margin-left": "3.2px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(203, 213, 225)",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "color": "rgb(255, 255, 255)",
+      "display": "block",
+      "font-weight": "500",
+      "line-height": "25.6px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(203, 213, 225)",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "oklab(0.999994 0.0000455678 0.0000200868 / 0.1)",
+      "display": "block",
+      "margin-bottom": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "backdrop-filter": "blur(4px)",
+      "background-image": "linear-gradient(145deg, rgba(71, 85, 105, 0.3), rgba(51, 65, 85, 0.2))",
+      "border-bottom-color": "rgba(255, 255, 255, 0.1)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgba(255, 255, 255, 0.1)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgba(255, 255, 255, 0.1)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgba(255, 255, 255, 0.1)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "bottom": "auto",
+      "box-shadow": "rgba(255, 255, 255, 0.1) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.2) 0px -1px 0px 0px inset, rgba(0, 0, 0, 0.2) 0px 2px 8px 0px",
+      "color": "rgb(255, 255, 255)",
+      "column-gap": "12px",
+      "cursor": "pointer",
+      "display": "inline-flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "left": "auto",
+      "line-height": "20px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "padding-bottom": "8px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "8px",
+      "position": "relative",
+      "right": "auto",
+      "row-gap": "12px",
+      "scrollbar-width": "thin",
+      "text-align": "center",
+      "top": "auto"
+    },
+    {
+      "background-color": "rgb(249, 250, 251)",
+      "display": "block",
+      "overflow-x": "hidden",
+      "overflow-y": "auto",
+      "padding-top": "64px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-color": "rgb(226, 232, 240)",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "display": "block",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "12px",
+      "display": "flex",
+      "padding-bottom": "8px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "8px",
+      "row-gap": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(100, 116, 139)",
+      "column-gap": "8px",
+      "cursor": "default",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "14px",
+      "row-gap": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(100, 116, 139)"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-color": "rgb(229, 231, 235)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(229, 231, 235)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(229, 231, 235)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "line-height": "20px",
+      "padding-bottom": "8px",
+      "padding-left": "12px",
+      "padding-right": "12px",
+      "padding-top": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "display": "flow-root",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "opacity": "0.5",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(2, 8, 23)"
+    },
+    {
+      "background-color": "rgb(249, 250, 251)",
+      "display": "block",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "margin-left": "auto",
+      "margin-right": "auto",
+      "padding-bottom": "96px",
+      "padding-left": "12px",
+      "padding-right": "12px",
+      "padding-top": "12px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(249, 115, 22) 0%, rgb(234, 88, 12) 50%, rgb(194, 65, 12) 100%)",
+      "border-bottom-left-radius": "16px",
+      "border-bottom-right-radius": "16px",
+      "border-top-left-radius": "16px",
+      "border-top-right-radius": "16px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.1) 0px 8px 10px -6px",
+      "color": "rgb(255, 255, 255)",
+      "display": "block",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "padding-bottom": "24px",
+      "padding-left": "24px",
+      "padding-right": "24px",
+      "padding-top": "24px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "bottom": "0px",
+      "display": "block",
+      "left": "0px",
+      "position": "absolute",
+      "right": "0px",
+      "scrollbar-width": "thin",
+      "top": "0px"
+    },
+    {
+      "background-image": "linear-gradient(to right top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%)",
+      "bottom": "0px",
+      "display": "block",
+      "left": "0px",
+      "position": "absolute",
+      "right": "0px",
+      "scrollbar-width": "thin",
+      "top": "0px"
+    },
+    {
+      "column-gap": "16px",
+      "display": "flex",
+      "margin-bottom": "16px",
+      "row-gap": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "filter": "drop-shadow(rgba(0, 0, 0, 0.05) 0px 1px 1px)",
+      "font-family": "Jost, Georgia, serif, sans-serif",
+      "font-size": "24px",
+      "font-weight": "700",
+      "letter-spacing": "-0.6px",
+      "line-height": "32px",
+      "margin-bottom": "4px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(255, 247, 237)",
+      "display": "block",
+      "font-weight": "500",
+      "line-height": "25.6px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "backdrop-filter": "blur(4px)",
+      "background-color": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "column-gap": "8px",
+      "display": "flex",
+      "margin-top": "8px",
+      "padding-bottom": "8px",
+      "padding-left": "12px",
+      "padding-right": "12px",
+      "padding-top": "8px",
+      "row-gap": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(255, 247, 237)",
+      "display": "block",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(255, 247, 237)"
+    },
+    { "display": "block", "font-weight": "600", "scrollbar-width": "thin" },
+    { "display": "block", "margin-top": "24px", "scrollbar-width": "thin" },
+    {
+      "column-gap": "16px",
+      "display": "grid",
+      "row-gap": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 50%, rgb(248, 250, 252) 100%)",
+      "border-bottom-color": "rgb(243, 244, 246)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(243, 244, 246)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(243, 244, 246)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(243, 244, 246)",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "color": "rgb(17, 24, 39)",
+      "display": "block",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, oklab(0.968254 -0.00253484 -0.00633037 / 0.6) 0%, rgb(255, 255, 255) 50%, oklab(0.984146 -0.00124145 -0.00314122 / 0.4) 100%)",
+      "bottom": "0px",
+      "display": "block",
+      "left": "0px",
+      "position": "absolute",
+      "right": "0px",
+      "scrollbar-width": "thin",
+      "top": "0px"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "padding-bottom": "16px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "16px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "background-color": "rgb(236, 253, 245)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 2px 4px 0px inset",
+      "display": "flex",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(5, 150, 105)",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(5, 150, 105)"
+    },
+    {
+      "color": "rgb(107, 114, 128)",
+      "display": "block",
+      "font-size": "12px",
+      "line-height": "16px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin"
+    },
+    { "display": "block", "margin-top": "8px", "scrollbar-width": "thin" },
+    {
+      "display": "block",
+      "font-weight": "700",
+      "line-height": "25.6px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(75, 85, 99)",
+      "display": "block",
+      "font-size": "12px",
+      "font-weight": "500",
+      "line-height": "16px",
+      "margin-top": "4px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(239, 246, 255)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 2px 4px 0px inset",
+      "display": "flex",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(37, 99, 235)",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(37, 99, 235)"
+    },
+    {
+      "background-color": "rgb(240, 253, 244)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 2px 4px 0px inset",
+      "display": "flex",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(22, 163, 74)",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(22, 163, 74)"
+    },
+    {
+      "background-color": "rgb(255, 251, 235)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 2px 4px 0px inset",
+      "display": "flex",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(217, 119, 6)",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(217, 119, 6)"
+    },
+    {
+      "background-color": "rgb(255, 247, 237)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 2px 4px 0px inset",
+      "display": "flex",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(234, 88, 12)",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(234, 88, 12)"
+    },
+    {
+      "background-color": "rgb(250, 245, 255)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 2px 4px 0px inset",
+      "display": "flex",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(147, 51, 234)",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(147, 51, 234)"
+    },
+    {
+      "backdrop-filter": "blur(4px)",
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.1) 0px 8px 10px -6px",
+      "display": "block",
+      "left": "auto",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, oklab(0.984619 -0.000598699 -0.00156033 / 0.5) 0%, rgba(0, 0, 0, 0) 50%, oklab(0.96695 -0.000229478 -0.00284159 / 0.3) 100%)",
+      "bottom": "0px",
+      "display": "block",
+      "left": "0px",
+      "position": "absolute",
+      "right": "0px",
+      "scrollbar-width": "thin",
+      "top": "0px"
+    },
+    {
+      "background-image": "linear-gradient(to right top, rgba(0, 0, 0, 0) 0%, oklab(0.999994 0.0000455678 0.0000200868 / 0.2) 50%, oklab(0.984619 -0.000598699 -0.00156033 / 0.4) 100%)",
+      "bottom": "0px",
+      "display": "block",
+      "left": "0px",
+      "position": "absolute",
+      "right": "0px",
+      "scrollbar-width": "thin",
+      "top": "0px"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(249, 115, 22) 0%, rgb(234, 88, 12) 50%, rgb(194, 65, 12) 100%)",
+      "border-bottom-color": "oklab(0.469804 0.113802 0.0867005 / 0.25)",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(255, 255, 255, 0.15) 0px 1px 0px 0px inset",
+      "display": "block",
+      "left": "auto",
+      "padding-bottom": "16px",
+      "padding-left": "24px",
+      "padding-right": "24px",
+      "padding-top": "16px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "background-color": "oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "display": "flex",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(255, 255, 255)",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(255, 255, 255)"
+    },
+    {
+      "color": "rgb(255, 255, 255)",
+      "display": "block",
+      "font-family": "Jost, Georgia, serif, sans-serif",
+      "font-size": "18px",
+      "font-weight": "600",
+      "line-height": "28px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "cursor": "pointer",
+      "display": "flex",
+      "padding-bottom": "6px",
+      "padding-left": "6px",
+      "padding-right": "6px",
+      "padding-top": "6px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(255, 255, 255)",
+      "cursor": "help",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(255, 255, 255)"
+    },
+    {
+      "color": "oklab(0.999994 0.0000455677 0.0000200868 / 0.8)",
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "padding-bottom": "24px",
+      "padding-left": "24px",
+      "padding-right": "24px",
+      "padding-top": "24px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "border-bottom-color": "rgb(243, 244, 246)",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "color": "rgb(55, 65, 81)",
+      "column-gap": "8px",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "600",
+      "line-height": "20px",
+      "padding-bottom": "8px",
+      "row-gap": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(249, 115, 22)",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(249, 115, 22)"
+    },
+    {
+      "color": "rgb(156, 163, 175)",
+      "cursor": "help",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(156, 163, 175)"
+    },
+    {
+      "column-gap": "16px",
+      "display": "grid",
+      "margin-top": "12px",
+      "row-gap": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(55, 65, 81)",
+      "column-gap": "6px",
+      "cursor": "default",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "row-gap": "6px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "margin-top": "6px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-color": "rgb(229, 231, 235)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(229, 231, 235)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(229, 231, 235)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "color": "rgb(15, 23, 42)",
+      "cursor": "text",
+      "display": "flex",
+      "line-height": "25.6px",
+      "overflow-x": "clip",
+      "overflow-y": "clip",
+      "padding-bottom": "8px",
+      "padding-left": "12px",
+      "padding-right": "24px",
+      "padding-top": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "bottom": "auto",
+      "column-gap": "0px",
+      "display": "flex",
+      "left": "auto",
+      "position": "absolute",
+      "right": "6px",
+      "row-gap": "0px",
+      "scrollbar-width": "thin",
+      "top": "50%",
+      "transform": "matrix(1, 0, 0, 1, 0, -12)"
+    },
+    {
+      "color": "rgb(234, 88, 12)",
+      "cursor": "pointer",
+      "display": "flex",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin"
+    },
+    {
+      "cursor": "pointer",
+      "display": "inline-block",
+      "margin-top": "24px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "bottom": "auto",
+      "column-gap": "12px",
+      "display": "flex",
+      "left": "auto",
+      "padding-bottom": "8px",
+      "padding-top": "8px",
+      "position": "relative",
+      "right": "auto",
+      "row-gap": "12px",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "background-image": "linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgb(229, 231, 235) 50%, rgba(0, 0, 0, 0) 100%)",
+      "display": "block",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(249, 250, 251)",
+      "border-bottom-color": "rgb(229, 231, 235)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(229, 231, 235)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(229, 231, 235)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "color": "rgb(75, 85, 99)",
+      "column-gap": "8px",
+      "display": "flex",
+      "font-size": "14px",
+      "line-height": "20px",
+      "padding-bottom": "6px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "6px",
+      "row-gap": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(75, 85, 99)"
+    },
+    { "display": "block", "font-weight": "500", "scrollbar-width": "thin" },
+    { "display": "grid", "margin-top": "24px", "scrollbar-width": "thin" },
+    {
+      "display": "block",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin"
+    },
+    { "display": "block", "padding-top": "4px", "scrollbar-width": "thin" },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "margin-top": "6px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "60"
+    },
+    {
+      "background-color": "rgb(255, 247, 237)",
+      "border-bottom-color": "rgb(251, 146, 60)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(251, 146, 60)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(251, 146, 60)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(251, 146, 60)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "color": "rgb(234, 88, 12)",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "line-height": "20px",
+      "padding-bottom": "8px",
+      "padding-left": "36px",
+      "padding-right": "12px",
+      "padding-top": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "bottom": "auto",
+      "color": "rgb(249, 115, 22)",
+      "display": "block",
+      "fill": "none",
+      "left": "12px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "absolute",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(249, 115, 22)",
+      "top": "50%",
+      "transform": "matrix(1, 0, 0, 1, 0, -8)"
+    },
+    {
+      "display": "block",
+      "font-weight": "500",
+      "margin-right": "8px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "text-align": "left"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(234, 88, 12)"
+    },
+    {
+      "color": "rgb(100, 116, 139)",
+      "font-size": "16px",
+      "font-weight": "400"
+    },
+    {
+      "column-gap": "12px",
+      "display": "flex",
+      "margin-top": "12px",
+      "row-gap": "12px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(15, 23, 42)",
+      "border-bottom-color": "rgba(0, 0, 0, 0)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "2px",
+      "border-left-color": "rgba(0, 0, 0, 0)",
+      "border-left-style": "solid",
+      "border-left-width": "2px",
+      "border-right-color": "rgba(0, 0, 0, 0)",
+      "border-right-style": "solid",
+      "border-right-width": "2px",
+      "border-top-color": "rgba(0, 0, 0, 0)",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "border-top-style": "solid",
+      "border-top-width": "2px",
+      "cursor": "pointer",
+      "display": "flex",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "display": "block",
+      "scrollbar-width": "thin",
+      "transform": "matrix(1, 0, 0, 1, 20, 0)"
+    },
+    {
+      "color": "rgb(55, 65, 81)",
+      "column-gap": "6px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "row-gap": "6px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "display": "flex",
+      "padding-bottom": "6px",
+      "padding-left": "6px",
+      "padding-right": "6px",
+      "padding-top": "6px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(245, 158, 11)",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(245, 158, 11)"
+    },
+    {
+      "background-color": "rgb(255, 251, 235)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "color": "rgb(217, 119, 6)",
+      "display": "block",
+      "font-size": "12px",
+      "font-weight": "400",
+      "line-height": "16px",
+      "padding-bottom": "2px",
+      "padding-left": "8px",
+      "padding-right": "8px",
+      "padding-top": "2px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(226, 232, 240)",
+      "border-bottom-color": "rgba(0, 0, 0, 0)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "2px",
+      "border-left-color": "rgba(0, 0, 0, 0)",
+      "border-left-style": "solid",
+      "border-left-width": "2px",
+      "border-right-color": "rgba(0, 0, 0, 0)",
+      "border-right-style": "solid",
+      "border-right-width": "2px",
+      "border-top-color": "rgba(0, 0, 0, 0)",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "border-top-style": "solid",
+      "border-top-width": "2px",
+      "cursor": "pointer",
+      "display": "flex",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "display": "block",
+      "scrollbar-width": "thin",
+      "transform": "matrix(1, 0, 0, 1, 0, 0)"
+    },
+    {
+      "column-gap": "12px",
+      "display": "flex",
+      "margin-top": "24px",
+      "row-gap": "12px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "opacity": "0",
+      "scrollbar-width": "thin",
+      "transform": "matrix(0.95, 0, 0, 0.95, 0, 0)"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-color": "rgb(229, 231, 235)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(229, 231, 235)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(229, 231, 235)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "column-gap": "8px",
+      "cursor": "pointer",
+      "display": "inline-flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "padding-bottom": "8px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "8px",
+      "row-gap": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(2, 8, 23)"
+    },
+    {
+      "background-color": "rgb(51, 65, 85)",
+      "border-bottom-color": "rgb(51, 65, 85)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(51, 65, 85)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(51, 65, 85)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(51, 65, 85)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "color": "rgb(255, 255, 255)",
+      "column-gap": "8px",
+      "cursor": "default",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "opacity": "0.5",
+      "padding-bottom": "8px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "8px",
+      "row-gap": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "margin-right": "8px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(255, 255, 255)"
+    },
+    {
+      "backdrop-filter": "blur(4px)",
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px",
+      "display": "block",
+      "left": "auto",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "transform": "matrix(1, 0, 0, 1, 0, 0)",
+      "z-index": "1"
+    },
+    {
+      "bottom": "auto",
+      "color": "rgb(156, 163, 175)",
+      "display": "block",
+      "fill": "none",
+      "left": "12px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "absolute",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(156, 163, 175)",
+      "top": "50%",
+      "transform": "matrix(1, 0, 0, 1, 0, -8)"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-color": "rgb(229, 231, 235)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(229, 231, 235)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(229, 231, 235)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "color": "rgb(15, 23, 42)",
+      "cursor": "text",
+      "display": "flex",
+      "line-height": "25.6px",
+      "overflow-x": "clip",
+      "overflow-y": "clip",
+      "padding-bottom": "8px",
+      "padding-left": "36px",
+      "padding-right": "12px",
+      "padding-top": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto",
+      "z-index": "60"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-color": "rgb(229, 231, 235)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(229, 231, 235)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(229, 231, 235)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "line-height": "20px",
+      "padding-bottom": "8px",
+      "padding-left": "36px",
+      "padding-right": "12px",
+      "padding-top": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "display": "block",
+      "margin-right": "8px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "text-align": "left"
+    },
+    {
+      "border-bottom-color": "rgb(229, 231, 235)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(229, 231, 235)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(229, 231, 235)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "column-gap": "8px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-weight": "500",
+      "row-gap": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px",
+      "column-gap": "4px",
+      "display": "flex",
+      "left": "auto",
+      "position": "relative",
+      "right": "auto",
+      "row-gap": "4px",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "background-color": "rgb(51, 65, 85)",
+      "border-bottom-left-radius": "8px",
+      "border-bottom-right-radius": "8px",
+      "border-top-left-radius": "8px",
+      "border-top-right-radius": "8px",
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "position": "absolute",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "z-index": "0"
+    },
+    {
+      "border-bottom-color": "rgba(0, 0, 0, 0)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgba(0, 0, 0, 0)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgba(0, 0, 0, 0)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgba(0, 0, 0, 0)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "bottom": "auto",
+      "color": "rgb(255, 255, 255)",
+      "column-gap": "8px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "left": "auto",
+      "line-height": "20px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "position": "relative",
+      "right": "auto",
+      "row-gap": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "border-bottom-color": "rgba(0, 0, 0, 0)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgba(0, 0, 0, 0)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgba(0, 0, 0, 0)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgba(0, 0, 0, 0)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "bottom": "auto",
+      "column-gap": "8px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "left": "auto",
+      "line-height": "20px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "position": "relative",
+      "right": "auto",
+      "row-gap": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center",
+      "top": "auto",
+      "z-index": "10"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-color": "rgb(229, 231, 235)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(229, 231, 235)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(229, 231, 235)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "column-gap": "8px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "padding-bottom": "8px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "8px",
+      "row-gap": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "margin-right": "8px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(2, 8, 23)"
+    },
+    {
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "display": "flex",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(51, 65, 85)",
+      "border-bottom-color": "rgb(71, 85, 105)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(71, 85, 105)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(71, 85, 105)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(71, 85, 105)",
+      "border-top-left-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "color": "rgb(255, 255, 255)",
+      "column-gap": "8px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "padding-bottom": "8px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "8px",
+      "row-gap": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "background-color": "rgb(51, 65, 85)",
+      "border-bottom-color": "rgb(51, 65, 85)",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(51, 65, 85)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(51, 65, 85)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(51, 65, 85)",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "color": "rgb(255, 255, 255)",
+      "column-gap": "8px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "padding-bottom": "8px",
+      "padding-left": "8px",
+      "padding-right": "8px",
+      "padding-top": "8px",
+      "row-gap": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "display": "block",
+      "overflow-x": "auto",
+      "overflow-y": "auto",
+      "scrollbar-width": "thin"
+    },
+    { "display": "table", "scrollbar-width": "thin" },
+    { "display": "table-header-group", "scrollbar-width": "thin" },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(249, 115, 22) 0%, rgb(234, 88, 12) 50%, rgb(194, 65, 12) 100%)",
+      "border-bottom-color": "oklab(0.469804 0.113802 0.0867005 / 0.25)",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(255, 255, 255, 0.15) 0px 1px 0px 0px inset",
+      "display": "table-row",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(255, 255, 255)",
+      "display": "table-cell",
+      "font-weight": "600",
+      "padding-bottom": "16px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "16px",
+      "scrollbar-width": "thin",
+      "text-align": "left"
+    },
+    {
+      "color": "rgb(255, 255, 255)",
+      "display": "table-cell",
+      "font-weight": "600",
+      "padding-bottom": "16px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "16px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    { "display": "table-row-group", "scrollbar-width": "thin" },
+    {
+      "border-bottom-color": "rgb(243, 244, 246)",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "display": "table-row",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "table-cell",
+      "padding-bottom": "16px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-image": "linear-gradient(to right bottom, rgb(59, 130, 246) 0%, rgb(249, 115, 22) 100%)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "bottom": "0px",
+      "color": "rgb(255, 255, 255)",
+      "display": "flex",
+      "font-weight": "600",
+      "left": "0px",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "absolute",
+      "right": "0px",
+      "scrollbar-width": "thin",
+      "top": "0px"
+    },
+    {
+      "display": "block",
+      "font-size": "14px",
+      "line-height": "20px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "color": "rgb(17, 24, 39)",
+      "display": "block",
+      "font-weight": "500",
+      "scrollbar-width": "thin"
+    },
+    {
+      "column-gap": "6px",
+      "display": "inline-flex",
+      "row-gap": "6px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(249, 115, 22)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+      "color": "rgb(255, 255, 255)",
+      "display": "flex",
+      "font-size": "9px",
+      "font-weight": "600",
+      "letter-spacing": "0.45px",
+      "line-height": "13.5px",
+      "padding-bottom": "2px",
+      "padding-left": "8px",
+      "padding-right": "8px",
+      "padding-top": "2px",
+      "scrollbar-width": "thin",
+      "text-align": "center",
+      "text-transform": "uppercase"
+    },
+    {
+      "color": "rgb(100, 116, 139)",
+      "cursor": "help",
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(100, 116, 139)"
+    },
+    {
+      "display": "table-cell",
+      "padding-bottom": "16px",
+      "padding-left": "16px",
+      "padding-right": "16px",
+      "padding-top": "16px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-color": "rgb(229, 231, 235)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(229, 231, 235)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(229, 231, 235)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px",
+      "column-gap": "8px",
+      "cursor": "pointer",
+      "display": "inline-flex",
+      "font-weight": "500",
+      "opacity": "0",
+      "row-gap": "8px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(16, 185, 129)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+      "color": "rgb(255, 255, 255)",
+      "display": "flex",
+      "font-size": "9px",
+      "font-weight": "600",
+      "letter-spacing": "0.45px",
+      "line-height": "13.5px",
+      "padding-bottom": "2px",
+      "padding-left": "8px",
+      "padding-right": "8px",
+      "padding-top": "2px",
+      "scrollbar-width": "thin",
+      "text-align": "center",
+      "text-transform": "uppercase"
+    },
+    {
+      "background-color": "rgb(239, 68, 68)",
+      "border-bottom-left-radius": "9999px",
+      "border-bottom-right-radius": "9999px",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+      "color": "rgb(255, 255, 255)",
+      "display": "flex",
+      "font-size": "9px",
+      "font-weight": "600",
+      "letter-spacing": "0.45px",
+      "line-height": "13.5px",
+      "padding-bottom": "2px",
+      "padding-left": "8px",
+      "padding-right": "8px",
+      "padding-top": "2px",
+      "scrollbar-width": "thin",
+      "text-align": "center",
+      "text-transform": "uppercase"
+    },
+    {
+      "display": "block",
+      "overflow-x": "hidden",
+      "overflow-y": "auto",
+      "scrollbar-width": "thin"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "left": "auto",
+      "opacity": "0",
+      "position": "fixed",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "background-color": "rgb(71, 85, 105)",
+      "border-bottom-color": "rgb(229, 231, 235)",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(229, 231, 235)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(229, 231, 235)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+      "color": "rgb(255, 255, 255)",
+      "column-gap": "8px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "padding-bottom": "8px",
+      "padding-left": "8px",
+      "padding-right": "8px",
+      "padding-top": "8px",
+      "row-gap": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center",
+      "transform": "matrix(1.05, 0, 0, 1.05, 0, 0)"
+    },
+    {
+      "bottom": "auto",
+      "display": "block",
+      "position": "fixed",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "transform": "matrix(1, 0, 0, 1, 75, 447)",
+      "z-index": "100"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-color": "rgb(226, 232, 240)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(226, 232, 240)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(226, 232, 240)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(226, 232, 240)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "display": "block",
+      "overflow-x": "auto",
+      "overflow-y": "auto",
+      "padding-bottom": "4px",
+      "padding-left": "4px",
+      "padding-right": "4px",
+      "padding-top": "4px",
+      "scrollbar-width": "thin",
+      "z-index": "100"
+    },
+    {
+      "border-bottom-left-radius": "4px",
+      "border-bottom-right-radius": "4px",
+      "border-top-left-radius": "4px",
+      "border-top-right-radius": "4px",
+      "bottom": "auto",
+      "column-gap": "2px",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "left": "auto",
+      "line-height": "20px",
+      "padding-bottom": "12px",
+      "padding-left": "8px",
+      "padding-right": "8px",
+      "padding-top": "12px",
+      "position": "relative",
+      "right": "auto",
+      "row-gap": "2px",
+      "scrollbar-width": "thin",
+      "text-align": "left",
+      "top": "auto"
+    },
+    {
+      "color": "rgb(100, 116, 139)",
+      "display": "block",
+      "font-size": "12px",
+      "line-height": "16px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(241, 245, 249)",
+      "display": "block",
+      "margin-bottom": "4px",
+      "margin-left": "-4px",
+      "margin-right": "-4px",
+      "margin-top": "4px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "display": "block",
+      "scrollbar-width": "thin",
+      "transform": "matrix(-1, 0, 0, -1, 0, 0)"
+    },
+    {
+      "background-color": "rgb(255, 247, 237)",
+      "border-bottom-color": "rgb(59, 130, 246)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(59, 130, 246)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(59, 130, 246)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(59, 130, 246)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "box-shadow": "rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px, rgba(59, 130, 246, 0.1) 0px 0px 0px 3px",
+      "color": "rgb(234, 88, 12)",
+      "cursor": "pointer",
+      "display": "flex",
+      "font-size": "14px",
+      "line-height": "20px",
+      "padding-bottom": "8px",
+      "padding-left": "36px",
+      "padding-right": "12px",
+      "padding-top": "8px",
+      "scrollbar-width": "thin",
+      "text-align": "center"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(234, 88, 12)",
+      "transform": "matrix(-1, 0, 0, -1, 0, 0)"
+    },
+    {
+      "background-color": "rgb(255, 255, 255)",
+      "border-bottom-color": "rgb(226, 232, 240)",
+      "border-bottom-left-radius": "6px",
+      "border-bottom-right-radius": "6px",
+      "border-bottom-style": "solid",
+      "border-bottom-width": "1px",
+      "border-left-color": "rgb(226, 232, 240)",
+      "border-left-style": "solid",
+      "border-left-width": "1px",
+      "border-right-color": "rgb(226, 232, 240)",
+      "border-right-style": "solid",
+      "border-right-width": "1px",
+      "border-top-color": "rgb(226, 232, 240)",
+      "border-top-left-radius": "6px",
+      "border-top-right-radius": "6px",
+      "border-top-style": "solid",
+      "border-top-width": "1px",
+      "bottom": "auto",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.1) 0px 8px 10px -6px",
+      "display": "block",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "position": "fixed",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "z-index": "25"
+    },
+    {
+      "display": "block",
+      "overflow-x": "auto",
+      "overflow-y": "auto",
+      "padding-bottom": "4px",
+      "padding-left": "4px",
+      "padding-right": "4px",
+      "padding-top": "4px",
+      "scrollbar-width": "thin"
+    },
+    {
+      "background-color": "rgb(241, 245, 249)",
+      "border-bottom-left-radius": "4px",
+      "border-bottom-right-radius": "4px",
+      "border-top-left-radius": "4px",
+      "border-top-right-radius": "4px",
+      "bottom": "auto",
+      "color": "rgb(15, 23, 42)",
+      "cursor": "default",
+      "display": "flex",
+      "font-size": "14px",
+      "left": "auto",
+      "line-height": "20px",
+      "padding-bottom": "6px",
+      "padding-left": "32px",
+      "padding-right": "8px",
+      "padding-top": "6px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "text-align": "left",
+      "top": "auto"
+    },
+    {
+      "bottom": "auto",
+      "display": "flex",
+      "left": "8px",
+      "position": "absolute",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "top": "auto"
+    },
+    {
+      "display": "block",
+      "fill": "none",
+      "overflow-x": "hidden",
+      "overflow-y": "hidden",
+      "scrollbar-width": "thin",
+      "stroke": "rgb(15, 23, 42)"
+    },
+    {
+      "border-bottom-left-radius": "4px",
+      "border-bottom-right-radius": "4px",
+      "border-top-left-radius": "4px",
+      "border-top-right-radius": "4px",
+      "bottom": "auto",
+      "cursor": "default",
+      "display": "flex",
+      "font-size": "14px",
+      "left": "auto",
+      "line-height": "20px",
+      "padding-bottom": "6px",
+      "padding-left": "32px",
+      "padding-right": "8px",
+      "padding-top": "6px",
+      "position": "relative",
+      "right": "auto",
+      "scrollbar-width": "thin",
+      "text-align": "left",
+      "top": "auto"
+    }
+  ],
+  "captures": {
+    "base": {
+      "kind": "full",
+      "elements": [
+        ["body:1", "", 0],
+        ["body:1>div:2", "", 1],
+        ["body:1>div:2>div:1", "", 1],
+        ["body:1>div:2>div:1>div:1", "", 2],
+        ["body:1>div:2>div:1>div:1>div:1", "", 3],
+        ["body:1>div:2>div:1>div:1>div:1>header:1", "", 4],
+        ["body:1>div:2>div:1>div:1>div:1>header:1>div:1", "", 5],
+        ["body:1>div:2>div:1>div:1>div:1>header:1>div:1>a:1", "", 6],
+        ["body:1>div:2>div:1>div:1>div:1>header:1>div:1>a:1>div:1", "", 7],
+        [
+          "body:1>div:2>div:1>div:1>div:1>header:1>div:1>a:1>div:1>div:1",
+          "",
+          8
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>header:1>div:1>a:1>div:1>span:1",
+          "L",
+          9
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>header:1>div:1>a:1>span:1",
+          "L Admin",
+          10
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>header:1>div:1>div:1", "", 11],
+        [
+          "body:1>div:2>div:1>div:1>div:1>header:1>div:1>div:1>button:1",
+          "\"Notificações\"",
+          12
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>header:1>div:1>div:1>button:1>svg:1",
+          "",
+          13
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>header:1>div:1>div:1>button:2",
+          "\"Ana Administradora\"",
+          14
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>header:1>div:1>div:1>button:2>span:1",
+          "",
+          15
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>header:1>div:1>div:1>button:2>span:1>span:1",
+          "AA",
+          16
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>header:1>div:1>button:1",
+          "\"Abrir menu de navegação\"",
+          17
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>header:1>div:1>button:1>div:1",
+          "",
+          18
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>header:1>div:1>button:1>svg:1",
+          "",
+          19
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:1", "", 20],
+        ["body:1>div:2>div:1>div:1>div:1>div:2", "", 21],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1", "", 22],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1", "", 23],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1", "", 22],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1>div:1",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1>div:1>div:1",
+          "",
+          7
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1>div:1>div:1>div:1",
+          "",
+          8
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1>div:1>div:1>span:1",
+          "L",
+          9
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1>div:1>div:2",
+          "",
+          25
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1>div:1>div:2>h2:1",
+          "Locadora",
+          26
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1>div:1>div:2>p:1",
+          "Painel Administrativo",
+          27
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1>button:1",
+          "",
+          28
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1>button:1>div:1",
+          "",
+          29
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1>button:1>svg:1",
+          "",
+          19
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1", "", 30],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1", "", 1],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:1", "", 31],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:1>div:1",
+          "",
+          29
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:1>div:2",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:1>div:2>svg:1",
+          "",
+          33
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:1>span:1",
+          "Dashboard",
+          9
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:2", "", 34],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:2>div:1",
+          "",
+          29
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:2>div:2",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:2>div:2>svg:1",
+          "",
+          19
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:2>span:1",
+          "Financeiro",
+          9
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:3", "", 35],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:3>div:1",
+          "",
+          29
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:3>div:2",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:3>div:2>svg:1",
+          "",
+          33
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:3>span:1",
+          "Equipamentos",
+          9
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:4", "", 35],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:4>div:1",
+          "",
+          29
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:4>div:2",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:4>div:2>svg:1",
+          "",
+          33
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:4>span:1",
+          "Categorias",
+          9
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:5", "", 35],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:5>div:1",
+          "",
+          29
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:5>div:2",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:5>div:2>svg:1",
+          "",
+          33
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:5>div:2>div:1",
+          "2",
+          36
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:5>span:1",
+          "Orçamentos",
+          9
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:6", "", 35],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:6>div:1",
+          "",
+          29
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:6>div:2",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:6>div:2>svg:1",
+          "",
+          33
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:6>div:2>div:1",
+          "1",
+          36
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:6>span:1",
+          "Locações",
+          9
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:7", "", 35],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:7>div:1",
+          "",
+          29
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:7>div:2",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:7>div:2>svg:1",
+          "",
+          33
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:7>span:1",
+          "WhatsApp",
+          9
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:8", "", 35],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:8>div:1",
+          "",
+          29
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:8>div:2",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:8>div:2>svg:1",
+          "",
+          33
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:8>span:1",
+          "E-mail",
+          9
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:9", "", 35],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:9>div:1",
+          "",
+          29
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:9>div:2",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:9>div:2>svg:1",
+          "",
+          33
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:9>span:1",
+          "Manutenção",
+          9
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:10", "", 35],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:10>div:1",
+          "",
+          29
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:10>div:2",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:10>div:2>svg:1",
+          "",
+          33
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:10>span:1",
+          "Logística",
+          9
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:11", "", 35],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:11>div:1",
+          "",
+          29
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:11>div:2",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:11>div:2>svg:1",
+          "",
+          33
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>nav:1>div:1>a:11>span:1",
+          "Configurações",
+          9
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:2", "", 37],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:2>div:1", "", 38],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:2>div:1>div:1",
+          "",
+          29
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:2>div:1>svg:1",
+          "",
+          39
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:2>div:1>div:2", "", 9],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:2>div:1>div:2>p:1",
+          "Ana Administradora",
+          40
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:2>div:1>div:2>p:2",
+          "ADMIN",
+          41
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:2>div:2",
+          "[none]",
+          42
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:2>button:1", "", 43],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:2>button:1>div:1",
+          "",
+          29
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:2>button:1>svg:1",
+          "",
+          19
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>div:2>div:1>div:2>button:1>span:1",
+          "Sair do Sistema",
+          9
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>main:1", "", 44],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:1",
+          "[region] \"Locadora do painel\"",
+          45
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1", "", 46],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1>label:1",
+          "Locadora",
+          47
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1>label:1>svg:1",
+          "",
+          48
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1>button:1",
+          "[combobox]",
+          49
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1>button:1>span:1",
+          "Locadora Alfa",
+          50
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1>button:1>svg:1",
+          "",
+          51
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>main:1>div:2", "", 52],
+        ["body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1", "", 53],
+        ["body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1", "", 54],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:1",
+          "",
+          55
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:2",
+          "",
+          56
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3",
+          "",
+          9
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:1",
+          "",
+          57
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:1>div:1>h1:1",
+          "Painel Financeiro",
+          58
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:1>div:1>p:1",
+          "Boletos, pagamentos, notas fiscais e lan",
+          59
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:2",
+          "",
+          60
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:2>div:1",
+          "",
+          61
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:2>div:1>svg:1",
+          "",
+          62
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:2>span:1",
+          "4 lançamento(s)",
+          63
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2", "", 64],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1",
+          "",
+          65
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1",
+          "",
+          66
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:1",
+          "",
+          67
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2",
+          "",
+          68
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:1",
+          "",
+          11
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1",
+          "",
+          11
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1",
+          "",
+          69
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1>svg:1",
+          "",
+          70
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>p:1",
+          "Total Bruto",
+          71
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:2",
+          "",
+          72
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:2>p:1",
+          "R$ 4.005,00",
+          73
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:2>p:2",
+          "4 lançamento(s)",
+          74
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1",
+          "",
+          66
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:1",
+          "",
+          67
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2",
+          "",
+          68
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:1",
+          "",
+          11
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:1>div:1",
+          "",
+          11
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:1>div:1>div:1",
+          "",
+          75
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:1>div:1>div:1>svg:1",
+          "",
+          76
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:1>div:1>p:1",
+          "Total Líquido",
+          71
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:2",
+          "",
+          72
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:2>p:1",
+          "R$ 3.765,00",
+          73
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:2>p:2",
+          "Após retenções",
+          74
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1",
+          "",
+          66
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:1",
+          "",
+          67
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2",
+          "",
+          68
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:1",
+          "",
+          11
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:1>div:1",
+          "",
+          11
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:1>div:1>div:1",
+          "",
+          77
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:1>div:1>div:1>svg:1",
+          "",
+          78
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:1>div:1>p:1",
+          "Total Pago",
+          71
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:2",
+          "",
+          72
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:2>p:1",
+          "R$ 1.280,00",
+          73
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:2>p:2",
+          "1 pago(s)",
+          74
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1",
+          "",
+          66
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:1",
+          "",
+          67
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2",
+          "",
+          68
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:1",
+          "",
+          11
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:1>div:1",
+          "",
+          11
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:1>div:1>div:1",
+          "",
+          79
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:1>div:1>div:1>svg:1",
+          "",
+          80
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:1>div:1>p:1",
+          "Pendente",
+          71
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:2",
+          "",
+          72
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:2>p:1",
+          "R$ 2.725,00",
+          73
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:2>p:2",
+          "3 pendente(s)",
+          74
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1",
+          "",
+          66
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:1",
+          "",
+          67
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2",
+          "",
+          68
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:1",
+          "",
+          11
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:1>div:1",
+          "",
+          11
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:1>div:1>div:1",
+          "",
+          81
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:1>div:1>div:1>svg:1",
+          "",
+          82
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:1>div:1>p:1",
+          "Inadimplência",
+          71
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:2",
+          "",
+          72
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:2>p:1",
+          "0%",
+          73
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:2>p:2",
+          "Nenhum atraso",
+          74
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1",
+          "",
+          66
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:1",
+          "",
+          67
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2",
+          "",
+          68
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:1",
+          "",
+          11
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:1>div:1",
+          "",
+          11
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:1>div:1>div:1",
+          "",
+          83
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:1>div:1>div:1>svg:1",
+          "",
+          84
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:1>div:1>p:1",
+          "Registros",
+          71
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:2",
+          "",
+          72
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:2>p:1",
+          "4",
+          73
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:2>p:2",
+          "Total de lançamentos",
+          74
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3", "", 64],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1",
+          "",
+          85
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:1",
+          "",
+          86
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:2",
+          "",
+          87
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3",
+          "",
+          88
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:1",
+          "",
+          89
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:1>svg:1",
+          "",
+          90
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:2",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:2>div:1",
+          "",
+          11
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:2>div:1>h3:1",
+          "Configuração Tributária",
+          91
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:2>div:1>span:1",
+          "[button]",
+          92
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:2>div:1>span:1>svg:1",
+          "",
+          93
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:2>p:1",
+          "Regime, alíquotas e conformidade fiscal",
+          94
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4",
+          "",
+          95
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>h4:1",
+          "Alíquotas de Retenção",
+          96
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>h4:1>svg:1",
+          "",
+          97
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>h4:1>span:1",
+          "[button]",
+          92
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>h4:1>span:1>svg:1",
+          "",
+          98
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1",
+          "",
+          99
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>label:1",
+          "CPF (%)",
+          100
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>label:1>span:1",
+          "[button]",
+          92
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>label:1>span:1>svg:1",
+          "",
+          98
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>div:1",
+          "",
+          101
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>div:1>input:1",
+          "",
+          102
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>div:1>div:1",
+          "",
+          103
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>div:1>div:1>span:1",
+          "[button] \"Incrementar\"",
+          104
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>div:1>div:1>span:1>svg:1",
+          "",
+          105
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>div:1>div:1>span:2",
+          "[button] \"Decrementar\"",
+          104
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>div:1>div:1>span:2>svg:1",
+          "",
+          105
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>label:1",
+          "CNPJ (%)",
+          100
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>label:1>span:1",
+          "[button]",
+          92
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>label:1>span:1>svg:1",
+          "",
+          98
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>div:1",
+          "",
+          101
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>div:1>input:1",
+          "",
+          102
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>div:1>div:1",
+          "",
+          103
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>div:1>div:1>span:1",
+          "[button] \"Incrementar\"",
+          104
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>div:1>div:1>span:1>svg:1",
+          "",
+          105
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>div:1>div:1>span:2",
+          "[button] \"Decrementar\"",
+          104
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>div:1>div:1>span:2>svg:1",
+          "",
+          105
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>label:1",
+          "CNI (%)",
+          100
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>label:1>span:1",
+          "[button]",
+          92
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>label:1>span:1>svg:1",
+          "",
+          98
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>div:1",
+          "",
+          101
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>div:1>input:1",
+          "",
+          102
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>div:1>div:1",
+          "",
+          103
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>div:1>div:1>span:1",
+          "[button] \"Incrementar\"",
+          104
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>div:1>div:1>span:1>svg:1",
+          "",
+          105
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>div:1>div:1>span:2",
+          "[button] \"Decrementar\"",
+          104
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>div:1>div:1>span:2>svg:1",
+          "",
+          105
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1",
+          "",
+          106
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1",
+          "",
+          107
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1>div:1",
+          "",
+          108
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1>div:2",
+          "",
+          109
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1>div:2>svg:1",
+          "",
+          110
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1>div:2>span:1",
+          "Configurações avançadas",
+          111
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1>div:2>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1>div:2>div:1>svg:1",
+          "",
+          110
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1>div:3",
+          "",
+          108
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2",
+          "",
+          112
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1",
+          "",
+          113
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1",
+          "",
+          114
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>h4:1",
+          "Regime Tributário",
+          96
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>h4:1>svg:1",
+          "",
+          97
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1",
+          "",
+          99
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:1>label:1",
+          "Regime",
+          100
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:1>label:1>span:1",
+          "[button]",
+          92
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:1>label:1>span:1>svg:1",
+          "",
+          98
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:1>div:1",
+          "",
+          115
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:1>div:1>button:1",
+          "\"Simples Nacional\"",
+          116
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:1>div:1>button:1>svg:1",
+          "",
+          117
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:1>div:1>button:1>span:1",
+          "Simples Nacional",
+          118
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:1>div:1>button:1>svg:2",
+          "",
+          119
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:2",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:2>label:1",
+          "Alíquota ISS (%)",
+          100
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:2>label:1>span:1",
+          "[button]",
+          92
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:2>label:1>span:1>svg:1",
+          "",
+          98
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:2>div:1",
+          "",
+          101
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:2>div:1>input:1",
+          "",
+          102
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1",
+          "",
+          103
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>span:1",
+          "[button] \"Incrementar\"",
+          104
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>span:1>svg:1",
+          "",
+          105
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>span:2",
+          "[button] \"Decrementar\"",
+          104
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:2>div:1>div:1>span:2>svg:1",
+          "",
+          105
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:3",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:3>label:1",
+          "Alíquota Efetiva (%)",
+          100
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:3>label:1>span:1",
+          "[button]",
+          92
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:3>label:1>span:1>svg:1",
+          "",
+          98
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:3>div:1",
+          "",
+          101
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:3>div:1>input:1",
+          "\"Ex: 10.00\"",
+          102
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:3>div:1>input:1::placeholder",
+          "",
+          120
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:3>div:1>div:1",
+          "",
+          103
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:3>div:1>div:1>span:1",
+          "[button] \"Incrementar\"",
+          104
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:3>div:1>div:1>span:1>svg:1",
+          "",
+          105
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:3>div:1>div:1>span:2",
+          "[button] \"Decrementar\"",
+          104
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:3>div:1>div:1>span:2>svg:1",
+          "",
+          105
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:2",
+          "",
+          121
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:2>button:1",
+          "[switch]",
+          122
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:2>button:1>span:1",
+          "",
+          123
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:2>label:1",
+          "Locação pura isenta de ISS",
+          124
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:2>label:1>span:1",
+          "[button]",
+          125
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:2>label:1>span:1>svg:1",
+          "",
+          98
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:2",
+          "",
+          64
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:2>h4:1",
+          "Reforma Tributária (IBS/CBS)",
+          96
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:2>h4:1>svg:1",
+          "",
+          126
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:2>h4:1>span:1",
+          "Futuro",
+          127
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:2>div:1",
+          "",
+          99
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:2>div:1>div:1",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:2>div:1>div:1>div:1",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:2>div:1>div:1>div:1>button:1",
+          "[switch]",
+          128
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:2>div:1>div:1>div:1>button:1>span:1",
+          "",
+          129
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:2>div:1>div:1>div:1>label:1",
+          "IBS/CBS ativo",
+          124
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:2>div:1>div:1>div:1>label:1>span:1",
+          "[button]",
+          125
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:2>div:1>div:1>div:1>label:1>span:1>svg:1",
+          "",
+          98
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:3",
+          "",
+          130
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:3>div:1",
+          "",
+          131
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:3>div:1>button:1",
+          "Desfazer",
+          132
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:3>div:1>button:1>svg:1",
+          "",
+          133
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:3>button:1",
+          "Salvar configurações",
+          134
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:3>button:1>svg:1",
+          "",
+          135
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4", "", 64],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1",
+          "",
+          136
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:1",
+          "",
+          86
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:2",
+          "",
+          87
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3",
+          "",
+          68
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:1>svg:1",
+          "",
+          137
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:1>input:1",
+          "\"Buscar por cliente ou código do orçament\"",
+          138
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:1>input:1::placeholder",
+          "",
+          120
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:1",
+          "",
+          139
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:1>button:1",
+          "\"Todos os períodos\"",
+          140
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:1>button:1>svg:1",
+          "",
+          137
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:1>button:1>span:1",
+          "Todos os períodos",
+          141
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:1>button:1>svg:2",
+          "",
+          51
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:2",
+          "",
+          139
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:2>button:1",
+          "\"Todos\"",
+          140
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:2>button:1>svg:1",
+          "",
+          137
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:2>button:1>span:1",
+          "Todos",
+          141
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:2>button:1>svg:2",
+          "",
+          51
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:3",
+          "",
+          22
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:3>button:1",
+          "\"Resetar filtros\"",
+          142
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:3>button:1>svg:1",
+          "",
+          133
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:4",
+          "",
+          22
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:4>div:1",
+          "",
+          143
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:4>div:1>div:1",
+          "",
+          144
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:4>div:1>button:1",
+          "",
+          145
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:4>div:1>button:1>svg:1",
+          "",
+          13
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:4>div:1>button:2",
+          "",
+          146
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:4>div:1>button:2>svg:1",
+          "",
+          133
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:4>div:1>button:3",
+          "",
+          146
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:2>div:1>div:4>div:1>button:3>svg:1",
+          "",
+          133
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:3",
+          "",
+          11
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:3>div:1",
+          "",
+          11
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:3>div:1>button:1",
+          "Atualizar",
+          147
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:3>div:1>button:1>svg:1",
+          "",
+          148
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:3>div:1>div:1",
+          "",
+          149
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:3>div:1>div:1>button:1",
+          "PDF (Ofício)",
+          150
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:3>div:1>div:1>button:1>svg:1",
+          "",
+          135
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:3>div:1>div:1>button:2",
+          "\"Selecionar formato de exportação\"",
+          151
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:3>div:1>div:1>button:2>svg:1",
+          "",
+          13
+        ],
+        ["body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5", "", 64],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1",
+          "",
+          85
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:1",
+          "",
+          86
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:2",
+          "",
+          87
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3",
+          "",
+          9
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1",
+          "",
+          152
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1",
+          "",
+          153
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>thead:1",
+          "",
+          154
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>thead:1>tr:1",
+          "",
+          155
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>thead:1>tr:1>th:1",
+          "",
+          156
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>thead:1>tr:1>th:1>div:1",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>thead:1>tr:1>th:1>div:1>span:1",
+          "Cliente",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>thead:1>tr:1>th:5",
+          "Status",
+          156
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>thead:1>tr:1>th:7",
+          "Ações",
+          157
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1",
+          "",
+          158
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1",
+          "",
+          159
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:1",
+          "",
+          160
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:1>div:1",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:1>div:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:1>div:1>div:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:1>div:1>div:1>div:1>div:1",
+          "[img] \"Cliente: Construtora Beta\"",
+          161
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:1>div:1>div:1>div:1>div:1>span:1",
+          "CB",
+          162
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:1>div:1>div:2",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:1>div:1>div:2>div:1",
+          "Construtora Beta",
+          163
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:5",
+          "",
+          160
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:5>div:1",
+          "",
+          164
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:5>div:1>div:1",
+          "Aguardando Pagamento",
+          165
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:5>div:1>span:1",
+          "[button]",
+          92
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:5>div:1>span:1>svg:1",
+          "",
+          166
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:7",
+          "",
+          167
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:7>button:1",
+          "",
+          168
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:1>td:7>button:1>svg:1",
+          "",
+          133
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2",
+          "",
+          159
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:1",
+          "",
+          160
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:1>div:1",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:1>div:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:1>div:1>div:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:1>div:1>div:1>div:1>div:1",
+          "[img] \"Cliente: Maria Souza\"",
+          161
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:1>div:1>div:1>div:1>div:1>span:1",
+          "MS",
+          162
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:1>div:1>div:2",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:1>div:1>div:2>div:1",
+          "Maria Souza",
+          163
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:5",
+          "",
+          160
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:5>div:1",
+          "",
+          164
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:5>div:1>div:1",
+          "Pago",
+          169
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:5>div:1>span:1",
+          "[button]",
+          92
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:5>div:1>span:1>svg:1",
+          "",
+          166
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:7",
+          "",
+          167
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:7>button:1",
+          "",
+          168
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:2>td:7>button:1>svg:1",
+          "",
+          133
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3",
+          "",
+          159
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:1",
+          "",
+          160
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:1>div:1",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:1>div:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:1>div:1>div:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:1>div:1>div:1>div:1>div:1",
+          "[img] \"Cliente: João Lima\"",
+          161
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:1>div:1>div:1>div:1>div:1>span:1",
+          "JL",
+          162
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:1>div:1>div:2",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:1>div:1>div:2>div:1",
+          "João Lima",
+          163
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:5",
+          "",
+          160
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:5>div:1",
+          "",
+          164
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:5>div:1>div:1",
+          "Não Pago",
+          170
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:5>div:1>span:1",
+          "[button]",
+          92
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:5>div:1>span:1>svg:1",
+          "",
+          166
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:7",
+          "",
+          167
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:7>button:1",
+          "",
+          168
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:3>td:7>button:1>svg:1",
+          "",
+          133
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4",
+          "",
+          159
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:1",
+          "",
+          160
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:1>div:1",
+          "",
+          24
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:1>div:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:1>div:1>div:1>div:1",
+          "",
+          32
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:1>div:1>div:1>div:1>div:1",
+          "[img] \"Cliente: Obras Gama\"",
+          161
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:1>div:1>div:1>div:1>div:1>span:1",
+          "OG",
+          162
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:1>div:1>div:2",
+          "",
+          1
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:1>div:1>div:2>div:1",
+          "Obras Gama",
+          163
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:5",
+          "",
+          160
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:5>div:1",
+          "",
+          164
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:5>div:1>div:1",
+          "Aguardando Pagamento",
+          165
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:5>div:1>span:1",
+          "[button]",
+          92
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:5>div:1>span:1>svg:1",
+          "",
+          166
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:7",
+          "",
+          167
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:7>button:1",
+          "",
+          168
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:5>div:1>div:3>div:1>table:1>tbody:1>tr:4>td:7>button:1>svg:1",
+          "",
+          133
+        ],
+        ["body:1>div:2>section:1", "\"Notifications alt+T\"", 171]
+      ]
+    },
+    "estado:dropdown-exportacao-aberto": {
+      "kind": "delta",
+      "of": "base",
+      "changed": [
+        ["body:1>span:1", "", 172],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:4>div:1>div:3>div:1>div:1>div:3>div:1>div:1>button:2",
+          "\"Selecionar formato de exportação\"",
+          173
+        ],
+        ["body:1>div:3", "", 174],
+        ["body:1>div:3>div:1", "[menu]", 175],
+        ["body:1>div:3>div:1>div:1", "[menuitem]", 176],
+        ["body:1>div:3>div:1>div:1>div:1", "", 22],
+        ["body:1>div:3>div:1>div:1>div:1>span:1", "PDF (Ofício)", 111],
+        ["body:1>div:3>div:1>div:1>div:1>svg:1", "", 82],
+        [
+          "body:1>div:3>div:1>div:1>span:1",
+          "Relatório formatado para impressão em ta",
+          177
+        ],
+        ["body:1>div:3>div:1>div:2", "[menuitem]", 176],
+        ["body:1>div:3>div:1>div:2>div:1", "", 22],
+        ["body:1>div:3>div:1>div:2>div:1>span:1", "Excel (.xlsx)", 111],
+        [
+          "body:1>div:3>div:1>div:2>span:1",
+          "Planilha editável com todos os dados fil",
+          177
+        ],
+        ["body:1>div:3>div:1>div:3", "[separator]", 178],
+        ["body:1>div:3>div:1>div:4", "[menuitem]", 176],
+        ["body:1>div:3>div:1>div:4>div:1", "", 22],
+        ["body:1>div:3>div:1>div:4>div:1>span:1", "CSV", 111],
+        [
+          "body:1>div:3>div:1>div:4>span:1",
+          "Arquivo texto para importação em outros ",
+          177
+        ],
+        ["body:1>span:2", "", 172]
+      ],
+      "removed": [
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1>label:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1>label:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1>button:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1>button:1>span:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1>button:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:1>div:1>h1:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:1>div:1>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:2>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:2>span:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:2>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:2>p:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:1>div:1>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:1>div:1>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:2>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:2>p:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:1>div:1>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:1>div:1>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:2>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:2>p:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:1>div:1>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:1>div:1>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:2>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:2>p:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:1>div:1>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:1>div:1>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:2>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:2>p:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:1>div:1>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:1>div:1>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:2>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:2>p:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:2>div:1>h3:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:2>div:1>span:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:2>div:1>span:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:3>div:1>div:2>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>h4:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>h4:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>h4:1>span:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>h4:1>span:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>label:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>label:1>span:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>label:1>span:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>div:1>input:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>div:1>div:1>span:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>div:1>div:1>span:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>div:1>div:1>span:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:1>div:1>div:1>span:2>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>label:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>label:1>span:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>label:1>span:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>div:1>input:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>div:1>div:1>span:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>div:1>div:1>span:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>div:1>div:1>span:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:2>div:1>div:1>span:2>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>label:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>label:1>span:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>label:1>span:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>div:1>input:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>div:1>div:1>span:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>div:1>div:1>span:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>div:1>div:1>span:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:1>div:1>div:3>div:1>div:1>span:2>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1>div:2>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1>div:2>span:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1>div:2>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1>div:3",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>h4:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>h4:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:1>label:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:1>label:1>span:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:1>label:1>span:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:3>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:3>div:1>button:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:3>div:1>button:1>svg:1"
+      ]
+    },
+    "estado:avancadas-select-regime-aberto": {
+      "kind": "delta",
+      "of": "base",
+      "changed": [
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>button:1>div:1>div:2>div:1",
+          "",
+          179
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:1>div:1>button:1",
+          "\"Simples Nacional\"",
+          180
+        ],
+        [
+          "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:3>div:1>div:4>div:2>div:1>div:1>div:1>div:1>div:1>div:1>button:1>svg:2",
+          "",
+          181
+        ],
+        ["body:1>div:3", "", 182],
+        ["body:1>div:3>div:1", "", 183],
+        ["body:1>div:3>div:1>button:1", "Simples Nacional", 184],
+        ["body:1>div:3>div:1>button:1>span:1", "", 185],
+        ["body:1>div:3>div:1>button:1>span:1>svg:1", "", 186],
+        ["body:1>div:3>div:1>button:2", "Lucro Presumido", 187],
+        ["body:1>div:3>div:1>button:2>span:1", "", 185],
+        ["body:1>div:3>div:1>button:3", "Lucro Real", 187],
+        ["body:1>div:3>div:1>button:3>span:1", "", 185]
+      ],
+      "removed": [
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1>label:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1>label:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1>button:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1>button:1>span:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:1>div:1>button:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:1>div:1>h1:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:1>div:1>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:2>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:1>div:3>div:2>span:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:1>div:1>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:2>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:1>div:1>div:2>div:2>p:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:1>div:1>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:1>div:1>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:2>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:2>div:1>div:2>div:2>p:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:1>div:1>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:1>div:1>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:2>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:3>div:1>div:2>div:2>p:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:1>div:1>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:1>div:1>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:2>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:4>div:1>div:2>div:2>p:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:1>div:1>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:1>div:1>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:2>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:5>div:1>div:2>div:2>p:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:1>div:1>div:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:1>div:1>div:1>svg:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:1>div:1>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:2",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:2>p:1",
+        "body:1>div:2>div:1>div:1>div:1>main:1>div:2>div:1>div:2>div:1>div:6>div:1>div:2>div:2>p:2"
+      ]
+    }
+  }
+}

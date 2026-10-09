@@ -1,0 +1,101 @@
+{
+  "frontend": "packages/frontend",
+  "foundations": {
+    "ui": "packages/ui",
+    "tokens": "packages/design-tokens"
+  },
+  "clients": {
+    "web": "apps/clients/web",
+    "mobile": "apps/clients/mobile"
+  },
+  "clientEntrypoints": [
+    "app",
+    "pages/*",
+    "app/styles.css"
+  ],
+  "serverOnlyPackages": [],
+  "universalSourceRoots": [
+    "packages/frontend/src"
+  ],
+  "ratchetBaseline": "tools/arch-baseline.json",
+  "legacyRoots": [
+    {
+      "path": "app",
+      "runtime": "web-host"
+    },
+    {
+      "path": "lib",
+      "runtime": "server-and-shared"
+    },
+    {
+      "path": "middlewares",
+      "runtime": "server"
+    },
+    {
+      "path": "schemas",
+      "runtime": "shared"
+    },
+    {
+      "path": "types/global.d.ts",
+      "runtime": "types"
+    },
+    {
+      "path": "types/google-maps-ecl.d.ts",
+      "runtime": "types"
+    },
+    {
+      "path": "proxy.ts",
+      "runtime": "server"
+    },
+    {
+      "path": "public",
+      "runtime": "browser-assets"
+    },
+    {
+      "path": "design-tokens",
+      "runtime": "generated-token-compatibility"
+    }
+  ],
+  "nonRuntimeRoots": [
+    {
+      "path": "docs",
+      "reason": "Documentation and executable examples; imported source is still followed by the runtime graph."
+    },
+    {
+      "path": "tests",
+      "reason": "Test suites and fixtures, not production entrypoints."
+    },
+    {
+      "path": "tools",
+      "reason": "Local architecture and build tooling."
+    },
+    {
+      "path": "scripts",
+      "reason": "Explicit operational/build scripts, not client runtime entrypoints."
+    },
+    {
+      "path": "prisma",
+      "reason": "Schema, migrations and database tooling."
+    },
+    {
+      "path": "stories",
+      "reason": "Storybook stories, not production entrypoints."
+    },
+    {
+      "path": "reports",
+      "reason": "Generated research/report artifacts."
+    },
+    {
+      "path": "cspell.config.js",
+      "reason": "Spelling tooling configuration."
+    },
+    {
+      "path": "prisma.config.ts",
+      "reason": "Prisma CLI configuration; must not be imported by clients."
+    },
+    {
+      "path": "types/next-auth.d.ts",
+      "reason": "Raiz declarada só de tipos (onda 135, E9): augmentation do NextAuth sem corpo de runtime, incluída pelos tsconfig de apps/clients/web e packages/frontend; só importa o entrypoint @gb-locacoes/backend/identity. Fica depois da exclusão da raiz legada."
+    }
+  ]
+}

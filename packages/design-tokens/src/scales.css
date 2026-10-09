@@ -1,0 +1,37 @@
+/* Escalas da produção (main eb4c0098, Tailwind 3.4.17) onde o Tailwind 4 mudou o valor: shadow-sm, blur-sm, drop-shadow,
+   rounded-full, altura de linha absoluta de text-xs…9xl, `outline` sem largura, `ring` sem largura (3px, azul 500 a 50%)
+   e os breakpoints sm…2xl em px (o 4 os dá em rem: com a fonte do navegador aumentada, md: passava a valer só numa
+   janela mais larga). O `outline` do 3 só dava o estilo sólido: a largura fica a das camadas de baixo (revert-layer),
+   3px em repouso e a do anel do navegador no foco por teclado; outline-1/2… vêm depois e a trocam. Valores de
+   primitives.ts (primitives.test.ts). */
+
+@theme inline {
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 5%);
+  --blur-sm: 4px;
+  --drop-shadow-sm: 0 1px 1px rgb(0 0 0 / 5%);
+  --drop-shadow-md: 0 4px 3px rgb(0 0 0 / 7%), 0 2px 2px rgb(0 0 0 / 6%);
+  --drop-shadow-lg: 0 10px 8px rgb(0 0 0 / 4%), 0 4px 3px rgb(0 0 0 / 10%);
+  --drop-shadow-xl: 0 20px 13px rgb(0 0 0 / 3%), 0 8px 5px rgb(0 0 0 / 8%);
+  --drop-shadow-2xl: 0 25px 25px rgb(0 0 0 / 15%);
+  --radius-full: 9999px;
+  --line-height-text-xs: 1rem;
+  --line-height-text-sm: 1.25rem;
+  --line-height-text-lg: 1.75rem;
+  --line-height-text-xl: 1.75rem;
+  --line-height-text-2xl: 2rem;
+  --line-height-text-3xl: 2.25rem;
+  --line-height-text-4xl: 2.5rem;
+  --line-height-text-5xl: 1;
+  --line-height-text-6xl: 1;
+  --line-height-text-7xl: 1;
+  --line-height-text-8xl: 1;
+  --line-height-text-9xl: 1;
+  --default-outline-width: revert-layer;
+  --default-ring-width: 3px;
+  --default-ring-color: rgb(59 130 246 / 50%);
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}

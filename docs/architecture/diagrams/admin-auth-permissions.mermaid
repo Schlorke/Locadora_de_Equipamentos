@@ -1,0 +1,21 @@
+sequenceDiagram
+    participant User as User
+    participant Middleware as requireAdmin
+    participant NextAuth as NextAuth
+    participant Admin as Admin Page
+    participant API as Admin API
+
+    User->>Middleware: Request /admin/*
+    Middleware->>NextAuth: getServerSession
+    NextAuth-->>Middleware: session + role
+
+    alt not authenticated
+        Middleware-->>User: redirect /admin/login
+    else role not allowed
+        Middleware-->>User: 403 access denied
+    else allowed
+        Middleware-->>Admin: allow request
+        Admin->>Admin: usePermissions()
+        Admin->>API: fetch data / action
+        API-->>Admin: response
+    end

@@ -1,0 +1,45 @@
+/* Fixture de tools/token-check.mjs: css-important em folha de estilo. Um !important em comentário não conta. */
+@import "tailwindcss" important;
+
+.card {
+  color: var(--foreground) !important;
+  margin: 0 ! important;
+}
+
+.field {
+  @apply !bg-card hover:bg-muted! font-medium !important;
+}
+
+/* Sem exceção: o bloco de movimento reduzido também conta, inclusive blocos aninhados e @apply. */
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .field {
+    animation: none !important;
+    transition-duration: 0s !important;
+  }
+  @supports (display: grid) {
+    .grid {
+      transform: none !important;
+    }
+  }
+  .spin {
+    @apply !animate-none;
+  }
+}
+
+/* Também contam: a negação e a outra preferência. */
+@media not (prefers-reduced-motion: reduce) {
+  .spin {
+    animation-play-state: running !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fade {
+    opacity: 1 !important;
+  }
+}
+
+.important {
+  content: "importante";
+}

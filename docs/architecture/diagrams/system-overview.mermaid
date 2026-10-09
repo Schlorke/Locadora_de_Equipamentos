@@ -1,0 +1,10 @@
+flowchart LR
+    Client[Client Browser] --> NextApp[Next.js App]
+    NextApp --> ServerComponents[Server Components]
+    NextApp --> ApiRoutes[API Routes]
+    ApiRoutes --> Prisma[Prisma]
+    Prisma --> Postgres[(PostgreSQL)]
+    NextApp --> NextAuth[NextAuth]
+    NextAuth --> Postgres
+    ApiRoutes --> Resend[Resend Email]
+    ApiRoutes --> Asaas[Asaas Boleto]

@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant Actor as Actor
+    participant UI as UI
+    participant API as API
+    participant Service as Service
+    participant DB as Database
+
+    Actor->>UI: Trigger action
+    UI->>API: Request
+    API->>Service: Process
+    Service->>DB: Read/Write
+    DB-->>Service: Result
+    Service-->>API: Response
+    API-->>UI: Response
+    UI-->>Actor: Outcome

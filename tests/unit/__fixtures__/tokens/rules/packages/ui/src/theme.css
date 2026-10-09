@@ -1,0 +1,25 @@
+/* Fixture de tools/token-check.mjs: hsl-triple, z-index-literal e @apply em CSS. */
+:root {
+  --brand: 24.6 95% 53.1%;
+  --chart-1: 12 76% 61%;
+  --overlay: 210deg 40% 98% / 50%;
+  --layer-dialog: 90;
+  --header-height: 5rem;
+  --ring-color: hsl(var(--brand));
+}
+
+.dialog {
+  z-index: 9999 !important;
+}
+
+.tooltip {
+  z-index: var(--layer-dialog);
+}
+
+.auto {
+  z-index: auto;
+}
+
+.field {
+  @apply border-gray-200 focus:ring-0 z-10;
+}

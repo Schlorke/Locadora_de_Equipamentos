@@ -1,0 +1,76 @@
+# Árvore materializada (arquivos vazios) num diretório temporário com o .vscode/settings.json REAL do
+# repositório. Os nomes de teste não podem existir de verdade aqui: o vitest.unit.config.ts coletaria
+# qualquer *.test.ts sob tests/unit. "# órfão" marca o que o check precisa acusar.
+
+# Assunto .tsx: teste simples, com aspecto e com plataforma.
+packages/demo/src/ui/Button.tsx
+packages/demo/src/ui/Button.stories.tsx
+packages/demo/src/ui/Button.test.tsx
+packages/demo/src/ui/Button.hover.test.tsx
+packages/demo/src/ui/Button.web.test.tsx
+
+# Assunto .web.tsx: <assunto>.web.test.tsx e <assunto>.<aspecto>.web.test.tsx.
+packages/demo/src/web/Card.web.tsx
+packages/demo/src/web/Card.web.test.tsx
+packages/demo/src/web/Card.surface.web.test.tsx
+
+# Caixa diferente só aninha em sistema de arquivos que ignora caixa (pasta própria: o Windows não guarda os dois nomes).
+packages/demo/src/web-case/Form.web.tsx
+packages/demo/src/web-case/form.web.test.tsx  # órfão
+
+# Assunto .native.tsx: o settings só tem a chave *.tsx para ele, então o aspecto vem depois de .native.
+packages/demo/src/native/overlay.native.tsx
+packages/demo/src/native/overlay.native.test.tsx
+packages/demo/src/native/overlay.native.focus.test.tsx
+packages/demo/src/native/overlay.focus.native.test.tsx  # órfão
+
+# Assunto .ts (testes .ts e .tsx) e .generated.ts.
+packages/demo/src/routing/decide.ts
+packages/demo/src/routing/decide.test.ts
+packages/demo/src/routing/decide.visible-routes.test.ts
+packages/demo/src/routing/decide.render.test.tsx
+packages/demo/src/routing/public-entries.generated.ts
+packages/demo/src/routing/public-entries.test.ts
+packages/demo/src/routing/tenant-api-allowlist.test.ts  # órfão
+
+# API pública do slice.
+packages/demo/src/pages/home/index.ts
+packages/demo/src/pages/home/index.contract.test.ts
+packages/demo/src/pages/home/contrato.migracao.test.ts  # órfão
+
+# Configuração .mjs: só <nome>.test.mjs e <nome>.test.ts; a cadeia termina no package.json.
+apps/web/package.json
+apps/web/next.config.mjs
+apps/web/next.config.test.ts
+apps/web/next.config.redirects.test.ts  # órfão
+
+# Rotas e páginas do Next.
+app/api/items/route.ts
+app/api/items/route.test.ts
+app/api/items/route.auth.test.ts
+app/(site)/sobre/page.tsx
+app/(site)/sobre/page.test.tsx
+
+# Teste cujo único ancestral é outro teste continua solto.
+packages/demo/src/lib/helper.test.ts  # órfão
+packages/demo/src/lib/helper.test.extra.test.ts  # órfão
+
+# .spec e .js.
+packages/demo/src/lib/util.ts
+packages/demo/src/lib/util.spec.ts
+packages/demo/src/lib/other.spec.ts  # órfão
+scripts/tool.js
+scripts/tool.test.js
+
+# Pasta da raiz e arquivo solto na raiz.
+root.test.ts  # órfão
+
+# Fora do escopo: nunca contados nem acusados.
+tests/unit/loose.test.ts
+packages/demo/src/__fixtures__/case/loose.test.ts
+packages/demo/node_modules/dep/loose.test.ts
+packages/demo/dist/loose.test.ts
+.agents/skills/template/loose.test.ts
+
+# Uma pasta tests/ que não é a da raiz é examinada.
+packages/demo/tests/loose.test.ts  # órfão

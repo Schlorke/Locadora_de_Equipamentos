@@ -1,0 +1,4 @@
+{
+  "$comment": "Mudanças visuais aprovadas em relação a tests/visual/baseline (lidas por tools/visual-baseline/compare.mjs). Cada entrada: capture ('<viewport>/<cenário>' ou '*'), section ('base', 'estado:<nome>', 'receita:<id>' ou '*'), element (chave, prefixo terminado em '*' ou '*'), property (ou '*'), baseline/current opcionais (valores exatos) e reason (8+ caracteres). Vazio: nenhuma diferença é aceita.",
+  "changes": []
+}

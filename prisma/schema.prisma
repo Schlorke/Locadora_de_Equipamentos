@@ -1,0 +1,2034 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  platformStaff PlatformStaff?
+  memberships Membership[]
+  clientProfiles ClientProfile[]
+  id             String     @id @default(cuid())
+  name           String?
+  email          String     @unique
+  password       String?
+  role           Role       @default(CLIENT)
+  authEmailVerified Boolean @default(false)
+  authSessions AuthSession[]
+  authAccounts AuthAccount[]
+  emailVerified  DateTime?
+  image          String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  cnpj           String?    @unique
+  cpf            String?    @unique
+  phone          String?
+  company        String?
+  accounts       Account[]
+  addresses      Address[]
+  auditLogs      AuditLog[]
+  cart           Cart[]
+  approvedQuotes Quote[]    @relation("ApprovedQuotes")
+  clientDocuments ClientDocument[]
+  financialSettingsUpdated FinancialSetting[] @relation("FinancialSettingsUpdatedBy")
+  quoteAdjustments QuoteAdjustment[] @relation("QuoteAdjustmentsCreatedBy")
+  rejectedQuotes Quote[]    @relation("RejectedQuotes")
+  quotes         Quote[]
+  rentals        rentals[]
+  sessions       Session[]
+  uploadedClientDocuments ClientDocument[] @relation("UploadedClientDocuments")
+  zohoMailToken  ZohoMailToken[]
+
+  @@map("users")
+}
+
+model ZohoMailToken {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken  String   @db.Text
+  refreshToken String   @db.Text
+  expiresAt    DateTime
+  accountId    String?
+  datacenter   String   @default("com")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([tenantId, userId])
+  @@index([userId])
+  @@map("zoho_mail_tokens")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+enum WhatsAppMessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum WhatsAppMessageType {
+  TEXT
+  IMAGE
+  AUDIO
+  VIDEO
+  DOCUMENT
+  STICKER
+  UNKNOWN
+}
+
+model ZohoMailCommand {
+  id String @id @default(cuid())
+  tenantId String
+  userId String
+  operation String
+  accountId String
+  grantId String
+  keyHash String
+  requestHash String
+  status String @default("PROCESSING")
+  responseBody String? @db.Text
+  httpStatus Int?
+  createdAt DateTime @default(now())
+  completedAt DateTime?
+  organization Organization @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  membership Membership @relation(fields: [tenantId, userId], references: [tenantId, userId], onDelete: Restrict, onUpdate: NoAction, map: "zoho_mail_commands_membership_fk")
+  @@unique([tenantId, userId, operation, keyHash], map: "zoho_mail_commands_tenant_user_operation_key")
+  @@index([tenantId, status, createdAt], map: "zoho_mail_commands_tenant_status_created")
+  @@map("zoho_mail_commands")
+}
+
+model WhatsAppConversation {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id            String   @id @default(cuid())
+  phone         String
+  displayName   String?
+  lastMessageAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  messages      WhatsAppMessage[]
+
+  @@map("whatsapp_conversations")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+  @@unique([tenantId, phone])
+}
+
+model WhatsAppMessage {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id               String                   @id @default(cuid())
+  conversationId   String
+  conversation     WhatsAppConversation     @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  providerMessageId String?
+  direction        WhatsAppMessageDirection
+  type             WhatsAppMessageType      @default(TEXT)
+  body             String                   @db.Text
+  mediaUrl         String?
+  timestamp        DateTime                 @default(now())
+  status           String?
+  createdAt        DateTime                 @default(now())
+
+  @@index([conversationId])
+  @@map("whatsapp_messages")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+  @@unique([tenantId, providerMessageId])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@id([identifier, token])
+  @@map("verificationtokens")
+}
+
+model Address {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id           String   @id @default(cuid())
+  userId       String
+  street       String
+  number       String
+  complement   String?
+  neighborhood String
+  city         String
+  state        String
+  zipCode      String
+  isPrimary    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("addresses")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model Cart {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id        String     @id @default(cuid())
+  userId    String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  items     CartItem[]
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("carts")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+  @@unique([tenantId, userId])
+}
+
+model CartItem {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id          String    @id @default(cuid())
+  cartId      String
+  equipmentId String
+  quantity    Int
+  days        Int
+  pricePerDay Decimal
+  finalPrice  Decimal?
+  createdAt   DateTime  @default(now())
+  cart        Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  equipment   Equipment @relation(fields: [equipmentId], references: [id])
+
+  @@unique([cartId, equipmentId])
+  @@index([equipmentId])
+  @@map("cart_items")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model Category {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id          String      @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  icon        String?
+  iconColor   String      @default("#3B82F6")
+  bgColor     String      @default("#EFF6FF")
+  fontColor   String      @default("#1E40AF")
+  slug        String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  placement   String?
+  customIcon  Json?
+  equipments  Equipment[]
+
+  @@map("categories")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+  @@unique([tenantId, slug])
+}
+
+model Equipment {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id                     String          @id @default(cuid())
+  name                   String
+  description            String?
+  pricePerDay            Decimal
+  images                 String[]
+  available              Boolean         @default(true)
+  categoryId             String          @db.Uuid
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+  biweeklyDiscount       Int?            @default(0)
+  dailyDiscount          Int?            @default(0)
+  maxStock               Int?            @default(1)
+  monthlyDiscount        Int?            @default(0)
+  popularPeriod          String?         @default("weekly")
+  weeklyDiscount         Int?            @default(0)
+  specifications         Json?
+  biweeklyDirectValue    Decimal?
+  biweeklyUseDirectValue Boolean         @default(false)
+  dailyDirectValue       Decimal?
+  dailyUseDirectValue    Boolean         @default(false)
+  monthlyDirectValue     Decimal?
+  monthlyUseDirectValue  Boolean         @default(false)
+  weeklyDirectValue      Decimal?
+  weeklyUseDirectValue   Boolean         @default(false)
+  // Períodos de locação oferecidos (desativar = não oferecer orçamento por esse período)
+  dailyRentalEnabled     Boolean         @default(true)
+  weeklyRentalEnabled    Boolean         @default(true)
+  biweeklyRentalEnabled  Boolean        @default(true)
+  monthlyRentalEnabled   Boolean        @default(true)
+  depreciationRate       Decimal?        @db.Decimal
+  hourMeter              Decimal?        @db.Decimal
+  odometer               Decimal?        @db.Decimal
+  purchaseDate           DateTime?
+  purchasePrice          Decimal?        @db.Decimal
+  partsLossHistory       Json?          // Histórico de perdas de peças
+  partsLossCount         Int?            @default(0) // Contador de perdas de peças
+  cartItems              CartItem[]
+  units                  EquipmentUnit[]
+  category               Category        @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_category")
+  maintenances           Maintenance[]
+  quoteItems             QuoteItem[]
+  rental_items           rental_items[]
+
+  @@index([categoryId])
+  @@map("equipments")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model EquipmentUnit {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id           String              @id @default(cuid())
+  equipmentId  String
+  uniqueCode   String
+  status       EquipmentUnitStatus @default(AVAILABLE)
+  hourMeter    Decimal?            @db.Decimal
+  odometer     Decimal?            @db.Decimal
+  serialNumber String?
+  notes        String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  equipment    Equipment           @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  @@index([equipmentId])
+  @@map("equipment_units")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+  @@unique([tenantId, uniqueCode])
+}
+
+model Quote {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id                  String        @id @default(cuid())
+  quoteCode           String?
+  legacyExternalCode  String?
+  name                String
+  email               String
+  phone               String
+  company             String?
+  message             String?
+  total               Decimal       @default(0)
+  status              QuoteStatus   @default(PENDING)
+  userId              String?
+  clientDeletedAt     DateTime?     // Soft delete feito pelo cliente
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  cep                 String?
+  cnpj                String?
+  cpf                 String?
+  adminNotes          String?
+  approvedAt          DateTime?
+  approvedBy          String?
+  convertedToRentalId String?
+  paymentTerms        QuotePaymentTerms @default(UPFRONT)
+  deliveryAddress     Json?
+  deliveryFee         Decimal?
+  deliveryType        DeliveryType?
+  deposit             Decimal?
+  discount            Decimal?
+  endDate             DateTime?
+  finalTotal          Decimal?
+  internalNotes       String?
+  pickupFee           Decimal?
+  priority            Int?          @default(0)
+  rejectedAt          DateTime?
+  rejectedBy          String?
+  rejectionReason     String?
+  startDate           DateTime?
+  subtotal            Decimal?
+  taxes               Decimal?
+  validUntil          DateTime?
+  // Sistema de ajuste de valor final com justificativa
+  originalTotal       Decimal?          // Valor original completo (antes do ajuste)
+  priceAdjustmentReason String?         // Justificativa obrigatória ao editar valor
+  priceAdjustedAt     DateTime?        // Data/hora da edição do valor
+  priceAdjustedBy     String?           // ID do usuário que editou o valor
+  // Sistema de multa por atraso
+  lateFee             Decimal?          // Valor da multa calculada
+  lateFeeApproved     Boolean?          @default(false) // Se admin aprovou aplicação da multa
+  lateFeeApprovedAt   DateTime?         // Data de aprovação da multa
+  lateFeeApprovedBy   String?           // ID do admin que aprovou a multa
+  // Registro de danos e mau uso
+  damages             Json?             // Registro de danos
+  misuse              Json?             // Registro de mau uso
+  // Classificação tributária da operação
+  operationType       OperationType?
+  serviceAmount       Decimal?          @db.Decimal
+  adjustments         QuoteAdjustment[]
+  payments            Payment[]
+  items               QuoteItem[]
+  approvedByUser      User?         @relation("ApprovedQuotes", fields: [approvedBy], references: [id])
+  rejectedByUser      User?         @relation("RejectedQuotes", fields: [rejectedBy], references: [id])
+  user                User?         @relation(fields: [userId], references: [id])
+  rentals             rentals[]
+
+  @@index([userId])
+  @@index([endDate])
+  @@index([status])
+  @@index([approvedBy])
+  @@index([rejectedBy])
+  @@map("quotes")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+  @@unique([tenantId, quoteCode])
+}
+
+model QuoteItem {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id              String    @id @default(cuid())
+  quoteId         String
+  equipmentId     String
+  quantity        Int       @default(1)
+  days            Int       @default(1)
+  pricePerDay     Decimal
+  total           Decimal
+  // Datas específicas deste item (definidas na página de detalhes do equipamento)
+  startDate       DateTime?
+  endDate         DateTime?
+  // Indica se finais de semana estão incluídos na contagem de dias
+  includeWeekends Boolean   @default(false)
+  // Informações de preço aplicado
+  appliedDiscount Decimal? // Desconto percentual aplicado
+  appliedPeriod   String? // Período aplicado (daily, weekly, biweekly, monthly)
+  useDirectValue  Boolean   @default(false) // Se usou valor direto ao invés de desconto
+  directValue     Decimal? // Valor direto aplicado (se useDirectValue = true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  equipment       Equipment @relation(fields: [equipmentId], references: [id])
+  quote           Quote     @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([equipmentId])
+  @@index([quoteId])
+  @@map("quote_items")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model rental_items {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id              String    @id
+  rentalid        String
+  equipmentid     String
+  quantity        Int       @default(1)
+  priceperday     Decimal   @db.Decimal
+  totaldays       Int
+  totalprice      Decimal   @db.Decimal
+  // Datas específicas deste item (nullable para compatibilidade com rentals existentes)
+  startDate       DateTime? @db.Timestamp(6)
+  endDate         DateTime? @db.Timestamp(6)
+  includeWeekends Boolean   @default(false)
+  createdat       DateTime? @default(now()) @db.Timestamp(6)
+  updatedat       DateTime? @default(now()) @db.Timestamp(6)
+  equipments      Equipment @relation(fields: [equipmentid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  rentals         rentals   @relation(fields: [rentalid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([equipmentid])
+  @@index([rentalid])
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model rentals {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id            String         @id
+  startdate     DateTime       @db.Timestamp(6)
+  enddate       DateTime       @db.Timestamp(6)
+  total         Decimal        @db.Decimal
+  status        RentalStatus   @default(PENDING)
+  userid        String
+  createdat     DateTime?      @default(now()) @db.Timestamp(6)
+  updatedat     DateTime?      @default(now()) @db.Timestamp(6)
+  checkInAt     DateTime?      @db.Timestamp(6)
+  checkOutAt    DateTime?      @db.Timestamp(6)
+  extensionDays Int?
+  extensionFee  Decimal?       @db.Decimal
+  lateFee       Decimal?       @db.Decimal
+  notes            String?
+  quoteId          String?
+  clientDeletedAt  DateTime?  // Soft delete pelo cliente: esconde do histórico sem afetar o admin
+  contract         Contract?
+  clientDocuments ClientDocument[]
+  deliveries    Delivery[]
+  payments      Payment[]
+  rental_items  rental_items[]
+  quote         Quote?         @relation(fields: [quoteId], references: [id])
+  users         User           @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([userid])
+  // Índice único parcial mantido somente em SQL (Prisma não expressa índice parcial):
+  // rentals_tenant_quote_unique ("tenantId", "quoteId") WHERE "tenantId" IS NOT NULL
+  // AND "quoteId" IS NOT NULL — uma locação por orçamento em cada locadora
+  // (migrations 202609250005 e 202609260001). Não aceite DROP gerado por migrate diff.
+  @@index([quoteId])
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model Setting {
+  publicBaseUrl String?
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String? @unique
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id                  String   @id @default(uuid())
+  companyPhone        String   @default("")
+  companyIconUrl      String   @default("")
+  aboutUsText         String   @default("")
+  companyAddress      String   @default("")
+  heroCarousel        Json     @default("[]")
+  contactEmail        String   @default("")
+  socialLinks         Json     @default("{}")
+  // Onda 135 (A4, migration 202610080101): padrão neutro; o antigo trazia o nome da GB e a leitura pública da vitrine
+  // expõe o título (T12).
+  seoTitle            String   @default("")
+  seoDescription      String   @default("Locação de equipamentos para construção civil com qualidade e segurança")
+  themeColorPrimary   String   @default("#ea580c")
+  maintenanceMode     Boolean  @default(false)
+  analyticsTrackingId String   @default("")
+  footerText          String   @default("")
+  businessHours       Json     @default("{}")
+  supportChat         Boolean  @default(true)
+  whatsappNumber      String   @default("")
+  favicon             String   @default("")
+  logoSecondary       String   @default("")
+  defaultLanguage     String   @default("pt-BR")
+  baseCurrency        String   @default("BRL")
+  maintenanceMessage  String   @default("Site em manutenção. Voltamos em breve!")
+  smtpConfig          Json     @default("{}")
+  uploadLimits        Json     @default("{}")
+  securityConfig      Json     @default("{}")
+  customCss           String   @default("")
+  customJs            String   @default("")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  marketingEmail      String   @default("")
+  waveAnimation       String   @default("animated")
+  // Onda 134 (migration 202610060201): conteúdo institucional (contrato SiteContentSchema) e textos legais da vitrine
+  // (StorefrontLegalDocumentSchema). Documento e data da publicação sempre juntos (CHECK); tamanho por octet_length.
+  siteContent             Json      @default("{}")
+  termsDocument           Json?
+  termsPublishedAt        DateTime?
+  privacyDocument         Json?
+  privacyPublishedAt      DateTime?
+  returnPolicyDocument    Json?
+  returnPolicyPublishedAt DateTime?
+
+  @@map("settings")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model Maintenance {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id          String            @id @default(cuid())
+  equipmentId String
+  type        MaintenanceType
+  scheduledAt DateTime
+  completedAt DateTime?
+  cost        Decimal?          @db.Decimal
+  laborCost   Decimal?          @db.Decimal
+  partsCost   Decimal?          @db.Decimal
+  description String?
+  notes       String?
+  technician  String?
+  status      MaintenanceStatus @default(SCHEDULED)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  equipment   Equipment         @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  @@index([equipmentId])
+  @@map("maintenances")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model Payment {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  attempts      PaymentAttempt[]
+  id            String        @id @default(cuid())
+  rentalId      String?
+  quoteId       String?
+  amount        Decimal       @db.Decimal
+  method        PaymentMethod
+  status        PaymentStatus @default(PENDING)
+  billingStatus PaymentBillingStatus @default(AWAITING_PAYMENT)
+  type          PaymentType   @default(RENTAL)
+  paidAt        DateTime?     @db.Timestamp(6)
+  dueDate       DateTime      @db.Timestamp(6)
+  grossAmount   Decimal?      @db.Decimal
+  netAmount     Decimal?      @db.Decimal
+  taxRate       Decimal?      @db.Decimal
+  taxDocumentType TaxDocumentType?
+  invoiceNumber String?
+  boletoIssuedAt DateTime?
+  invoiceIssuedAt DateTime?
+  settledAt     DateTime?
+  transactionId String?
+  pixCode       String?
+  pixQrCode     String?
+  metadata      Json?
+
+  // Classificação da operação
+  operationType     OperationType?
+  rentalAmount      Decimal?  @db.Decimal
+  serviceAmount     Decimal?  @db.Decimal
+
+  // Snapshot do detalhamento tributário
+  taxRegimeSnapshot TaxRegime?
+  issAmount         Decimal?  @db.Decimal
+  irpjAmount        Decimal?  @db.Decimal
+  csllAmount        Decimal?  @db.Decimal
+  pisCofinsAmount   Decimal?  @db.Decimal
+  simplesAmount     Decimal?  @db.Decimal
+
+  // NFS-e (para integração futura)
+  nfseNumber        String?
+  nfseIssuedAt      DateTime?
+
+  // Detalhamento tributário completo (JSON extensível)
+  taxBreakdown      Json?
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  quote         Quote?        @relation(fields: [quoteId], references: [id])
+  rental        rentals?      @relation(fields: [rentalId], references: [id])
+
+  @@index([rentalId])
+  @@index([quoteId])
+  @@index([billingStatus])
+  // Índice único parcial mantido somente em SQL (Prisma não expressa índice parcial):
+  // payments_quote_method_type_active_unique ("quoteId", "method", "type")
+  // WHERE "quoteId" IS NOT NULL AND "status" NOT IN ('CANCELLED', 'REFUNDED') — no máximo
+  // uma cobrança vigente por orçamento/meio/tipo; cobranças canceladas ou estornadas
+  // permanecem como histórico (migration 202609260004). Não aceite DROP gerado por migrate diff.
+  @@map("payments")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model FinancialSetting {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id        String   @id @default(cuid())
+  cpfRate   Decimal  @default(6.0) @db.Decimal
+  cnpjRate  Decimal  @default(2.5) @db.Decimal
+  cniRate   Decimal  @default(6.0) @db.Decimal
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Regime tributário
+  taxRegime         TaxRegime @default(SIMPLES_NACIONAL)
+
+  // ISS
+  issRate           Decimal   @default(2.5) @db.Decimal
+  issExemptRental   Boolean   @default(true)
+
+  // Lucro Presumido (taxas efetivas sobre receita bruta)
+  irpjPresumidoRate Decimal?  @db.Decimal
+  csllPresumidoRate Decimal?  @db.Decimal
+  pisCofinsRate     Decimal?  @db.Decimal
+
+  // Simples Nacional
+  simplesAnexo      String?   @default("III")
+  simplesAliquota   Decimal?  @db.Decimal
+
+  // Reforma Tributária (futuro)
+  ibsCbsRate        Decimal?  @db.Decimal
+  ibsCbsActive      Boolean   @default(false)
+
+  updatedByUser User? @relation("FinancialSettingsUpdatedBy", fields: [updatedBy], references: [id])
+
+  @@index([updatedBy])
+  @@map("financial_settings")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model QuoteAdjustment {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id             String                  @id @default(cuid())
+  quoteId        String
+  category       QuoteAdjustmentCategory
+  amount         Decimal                 @db.Decimal
+  justification  String
+  sentEmailAt    DateTime?
+  sentEmailTo    String?
+  sentWhatsappAt DateTime?
+  sentWhatsappTo String?
+  createdBy      String
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  quote          Quote                   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  createdByUser  User                    @relation("QuoteAdjustmentsCreatedBy", fields: [createdBy], references: [id], onDelete: Restrict)
+
+  @@index([quoteId])
+  @@index([createdBy])
+  @@map("quote_adjustments")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model ClientDocument {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id              String             @id @default(cuid())
+  userId          String
+  rentalId        String?
+  type            ClientDocumentType
+  filePath        String
+  fileName        String
+  mimeType        String
+  fileSize        Int
+  fileHash        String?
+  captureMetadata Json?
+  uploadedBy      String
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  rental          rentals?           @relation(fields: [rentalId], references: [id], onDelete: SetNull)
+  uploadedByUser  User               @relation("UploadedClientDocuments", fields: [uploadedBy], references: [id], onDelete: Restrict)
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([rentalId])
+  @@index([uploadedBy])
+  @@map("client_documents")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model Delivery {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id          String         @id @default(cuid())
+  rentalId    String
+  type        DeliveryType
+  status      DeliveryStatus @default(SCHEDULED)
+  scheduledAt DateTime
+  completedAt DateTime?      @db.Timestamp(6)
+  address     Json
+  distance    Decimal?       @db.Decimal
+  vehicleId   String?
+  driverId    String?
+  driverName  String?
+  photos      String[]
+  checklist   Json?
+  notes       String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  rental      rentals        @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+
+  @@index([rentalId])
+  @@map("deliveries")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model Vehicle {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id        String        @id @default(cuid())
+  plate     String
+  brand     String?
+  model     String?
+  year      Int?
+  type      VehicleType   @default(TRUCK)
+  status    VehicleStatus @default(AVAILABLE)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@map("vehicles")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+  @@unique([tenantId, plate])
+}
+
+model Driver {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id          String       @id @default(cuid())
+  name        String
+  phone       String
+  cnh         String?
+  cnhCategory String?
+  status      DriverStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("drivers")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model Contract {
+  signatureAttempts ContractSignatureAttempt[]
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id        String         @id @default(cuid())
+  rentalId  String         @unique
+  template  String?
+  content   String?
+  pdfUrl    String?
+  signedAt  DateTime?
+  signedBy  String?
+  zapSignId String?
+  status    ContractStatus @default(DRAFT)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  rental    rentals        @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+
+  @@map("contracts")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model AuditLog {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String
+  changes   Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("audit_logs")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model Notification {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id         String               @id @default(cuid())
+  userId     String
+  type       NotificationType
+  title      String
+  message    String
+  priority   NotificationPriority @default(MEDIUM)
+  isRead     Boolean              @default(false)
+  actionUrl  String?
+  metadata   Json?
+  createdAt  DateTime             @default(now())
+  readAt     DateTime?
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([type])
+  @@map("notifications")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model Permission {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id        String   @id @default(cuid())
+  role      Role
+  module    String
+  action    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, role, module, action])
+  @@map("permissions")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+enum Role {
+  ADMIN
+  FINANCIAL
+  OPERATOR
+  CLIENT
+}
+
+enum QuoteStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+}
+
+enum QuotePaymentTerms {
+  UPFRONT
+  ON_DELIVERY
+  AT_END
+}
+
+enum DeliveryStatus {
+  SCHEDULED
+  IN_TRANSIT
+  COMPLETED
+  CANCELLED
+  FAILED
+}
+
+enum DeliveryType {
+  DELIVERY
+  PICKUP
+}
+
+enum PaymentMethod {
+  PIX
+  CREDIT_CARD
+  DEBIT_CARD
+  BANK_TRANSFER
+  CASH
+  BOLETO
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentBillingStatus {
+  PAID
+  UNPAID
+  AWAITING_PAYMENT
+  SETTLED
+}
+
+enum TaxDocumentType {
+  CPF
+  CNPJ
+  CNI
+}
+
+enum PaymentType {
+  RENTAL
+  DEPOSIT
+  FINE
+  DAMAGE
+  LATE_FEE
+}
+
+enum QuoteAdjustmentCategory {
+  LABOR
+  TRAVEL
+  MAINTENANCE
+  OTHER
+}
+
+enum TaxRegime {
+  SIMPLES_NACIONAL
+  LUCRO_PRESUMIDO
+  LUCRO_REAL
+}
+
+enum OperationType {
+  PURE_RENTAL
+  RENTAL_WITH_SERVICE
+}
+
+enum ClientDocumentType {
+  ID_DOCUMENT
+  SELFIE
+  SIGNED_CONTRACT
+  CPF_CNPJ_PROOF
+}
+
+enum RentalItemStatus {
+  RENTED
+  RETURNED
+  DAMAGED
+  LOST
+}
+
+enum RentalStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  OVERDUE
+  PENDING_RETURN
+}
+
+enum UserRole {
+  ADMIN
+  OPERATOR
+  FINANCIAL
+  CUSTOMER
+}
+
+enum delivery_type {
+  pickup
+  delivery
+  both
+}
+
+enum quote_status {
+  pending
+  approved
+  rejected
+  expired
+}
+
+enum user_role {
+  ADMIN
+  OPERATOR
+  FINANCIAL
+  CUSTOMER
+}
+
+enum MaintenanceType {
+  PREVENTIVE
+  CORRECTIVE
+  INSPECTION
+}
+
+enum MaintenanceStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum VehicleType {
+  TRUCK
+  VAN
+  PICKUP
+  MOTORCYCLE
+}
+
+enum VehicleStatus {
+  AVAILABLE
+  IN_USE
+  MAINTENANCE
+  OUT_OF_SERVICE
+}
+
+enum DriverStatus {
+  ACTIVE
+  INACTIVE
+  ON_LEAVE
+}
+
+enum ContractStatus {
+  DRAFT
+  SENT
+  SIGNED
+  EXPIRED
+  CANCELLED
+}
+
+enum EquipmentUnitStatus {
+  AVAILABLE
+  RESERVED
+  RENTED
+  MAINTENANCE
+  RETIRED
+}
+
+enum NotificationType {
+  QUOTE
+  ORDER
+  PAYMENT
+  EQUIPMENT
+  SYSTEM
+  RENTAL
+  DELIVERY
+  CONTRACT
+}
+
+enum NotificationPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model OutboxEvent {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id           String       @id @default(cuid())
+  topic        String
+  aggregateId  String
+  payload      Json
+  dedupeKey    String       @unique
+  status       OutboxStatus @default(PENDING)
+  attempts     Int          @default(0)
+  availableAt  DateTime     @default(now())
+  lockedUntil  DateTime?
+  lockedBy     String?
+  lastError    String?
+  createdAt    DateTime     @default(now())
+  completedAt  DateTime?
+
+  @@index([status, availableAt])
+  @@map("outbox_events")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+model WebhookInbox {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id           String   @id @default(cuid())
+  integrationId String?
+  integration TenantIntegration? @relation(fields: [integrationId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  payloadHash String?
+  processingToken String?
+  lockedUntil DateTime?
+  provider     String
+  eventKey     String
+  payload      Json
+  receivedAt   DateTime @default(now())
+  processedAt  DateTime?
+  lastError    String?
+
+  @@unique([integrationId, eventKey])
+  @@index([processedAt, receivedAt])
+  @@map("webhook_inbox")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+enum PaymentAttemptStatus {
+  QUEUED
+  PROCESSING
+  ISSUED
+  PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
+  FAILED
+  UNKNOWN
+}
+
+model PaymentAttempt {
+  cancellationStatus PaymentCancellationStatus @default(NONE)
+  cancellationRequestedAt DateTime?
+  cancelledAt DateTime?
+  integrationId String?
+  integration TenantIntegration? @relation(fields: [integrationId], references: [id], onDelete: Restrict)
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  id                String               @id @default(cuid())
+  paymentId         String
+  payment           Payment              @relation(fields: [paymentId], references: [id])
+  provider          String
+  externalId        String?
+  idempotencyKey    String               @unique
+  status            PaymentAttemptStatus @default(QUEUED)
+  amount            Decimal              @db.Decimal
+  dueDate           DateTime
+  response          Json?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@unique([integrationId, externalId])
+  @@index([paymentId, createdAt])
+  @@map("payment_attempts")
+  @@index([tenantId])
+  @@unique([id, tenantId])
+}
+
+
+model AuthSession {
+  id        String @id @default(cuid())
+  token     String @unique
+  userId    String
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("auth_sessions")
+}
+
+model AuthAccount {
+  id        String @id @default(cuid())
+  accountId String
+  providerId String
+  userId    String
+  accessToken String?
+  refreshToken String?
+  idToken String?
+  accessTokenExpiresAt DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope String?
+  password String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("auth_accounts")
+}
+
+model AuthVerification {
+  id         String @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@index([expiresAt])
+  @@map("auth_verifications")
+}
+
+model AuthRateLimit {
+  id          String @id @default(cuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+
+  @@map("auth_rate_limits")
+}
+
+// Janelas fixas de rate limit compartilhadas entre instâncias (ADR adr-tenant-hosts, Migração B).
+// Modelo global: a chave nunca guarda IP ou e-mail em claro, só HMAC com PLATFORM_RATE_LIMIT_SECRET.
+model PlatformRateLimit {
+  // "<rota>:<hmac(identificador)>:<índice da janela>"
+  key       String   @id
+  count     Int      @default(0)
+  expiresAt DateTime
+
+  @@index([expiresAt])
+  @@map("platform_rate_limits")
+}
+
+enum OrganizationStatus {
+  ACTIVE
+  SUSPENDED
+}
+enum MembershipStatus {
+  ACTIVE
+  SUSPENDED
+  REVOKED
+}
+enum IntegrationStatus {
+  ACTIVE
+  DISABLED
+  PROVISIONING
+  INBOUND_ONLY
+}
+model Organization {
+  access             OrganizationAccess @default(SETUP)   // projeção; só contexto de plataforma altera (trigger)
+  origin             OrganizationOrigin @default(LEGACY)
+  ownerUserId        String?            // FK composta DIFERIDA só em SQL -> memberships("tenantId","userId")
+  documentNormalized String?            // CNPJ ^[0-9A-Z]{12}[0-9]{2}$
+  documentVerifiedAt DateTime?
+  legalName          String?
+  companyType        CompanyType?
+  phone              String?
+  billingEmail       String?
+  addressLine        String?
+  addressNumber      String?
+  addressComplement  String?
+  district           String?
+  sitePublishedAt    DateTime?
+  siteIndexable      Boolean            @default(true)
+  adminHoldReason    String?
+  provisioningKey    String?            @unique            // HMAC(userId + Idempotency-Key)
+  subscriptions      Subscription[]
+  paymentAccounts    PaymentAccount[]
+  supportGrants      SupportAccessGrant[]
+  document String?
+  city String?
+  state String?
+  signatureAttempts ContractSignatureAttempt[]
+  postalCode String?
+  id String @id @default(cuid())
+  slug String @unique
+  name String
+  status OrganizationStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  memberships Membership[]
+  clientProfiles ClientProfile[]
+  integrations TenantIntegration[]
+  zohoMailTokenRecords ZohoMailToken[]
+  zohoMailCommands ZohoMailCommand[]
+  whatsAppConversationRecords WhatsAppConversation[]
+  whatsAppMessageRecords WhatsAppMessage[]
+  addressRecords Address[]
+  cartRecords Cart[]
+  cartItemRecords CartItem[]
+  categoryRecords Category[]
+  equipmentRecords Equipment[]
+  equipmentUnitRecords EquipmentUnit[]
+  quoteRecords Quote[]
+  quoteItemRecords QuoteItem[]
+  rental_itemsRecords rental_items[]
+  rentalsRecords rentals[]
+  settingRecords Setting[]
+  maintenanceRecords Maintenance[]
+  paymentRecords Payment[]
+  financialSettingRecords FinancialSetting[]
+  quoteAdjustmentRecords QuoteAdjustment[]
+  clientDocumentRecords ClientDocument[]
+  deliveryRecords Delivery[]
+  vehicleRecords Vehicle[]
+  driverRecords Driver[]
+  contractRecords Contract[]
+  auditLogRecords AuditLog[]
+  notificationRecords Notification[]
+  permissionRecords Permission[]
+  outboxEventRecords OutboxEvent[]
+  webhookInboxRecords WebhookInbox[]
+  paymentAttemptRecords PaymentAttempt[]
+  // Opt-in do diretório público (ADR adr-tenant-hosts, Migração B): ninguém entra sem escolher.
+  directoryListed Boolean @default(false)
+  @@index([directoryListed, status])
+  @@map("organizations")
+}
+model Membership {
+  zohoMailCommands ZohoMailCommand[]
+  id String @id @default(cuid())
+  tenantId String
+  userId String
+  role Role @default(CLIENT)
+  status MembershipStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  organization Organization @relation(fields:[tenantId], references:[id], onDelete:Restrict)
+  user User @relation(fields:[userId], references:[id], onDelete:Restrict)
+  @@unique([tenantId,userId])
+  @@index([userId,status])
+  @@map("memberships")
+}
+model ClientProfile {
+  id String @id @default(cuid())
+  tenantId String
+  userId String?
+  name String
+  email String?
+  phone String?
+  document String?
+  company String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  organization Organization @relation(fields:[tenantId], references:[id], onDelete:Restrict)
+  user User? @relation(fields:[userId], references:[id], onDelete:Restrict)
+  @@unique([tenantId,userId])
+  @@unique([tenantId,document])
+  @@unique([id,tenantId])
+  @@map("client_profiles")
+}
+// Routing metadata only. Credential values are resolved through a separate secret store.
+model TenantIntegration {
+  credentialSource          CredentialSource @default(ENV_REF)
+  environment               String?                        // sandbox | production
+  webhookTokenHash          String?                        // sha256 hex do authToken do Asaas
+  webhookTokenPreviousHash  String?
+  webhookTokenPreviousUntil DateTime?
+  secrets                   IntegrationSecret[]
+  paymentAccount            PaymentAccount?
+  webhookInbox WebhookInbox[]
+  signatureAttempts ContractSignatureAttempt[]
+  id String @id @default(cuid())
+  tenantId String
+  provider String
+  externalAccountId String?
+  credentialsRef String?
+  status IntegrationStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  organization Organization @relation(fields:[tenantId], references:[id], onDelete:Restrict)
+  externalResources ExternalResourceTenant[]
+  paymentAttempts PaymentAttempt[]
+  @@unique([id,tenantId])
+  @@unique([tenantId,provider,externalAccountId])
+  @@map("tenant_integrations")
+}
+model ExternalResourceTenant {
+  id String @id @default(cuid())
+  tenantId String
+  integrationId String
+  provider String
+  externalId String
+  resourceType String
+  resourceId String
+  createdAt DateTime @default(now())
+  integration TenantIntegration @relation(fields:[integrationId,tenantId], references:[id,tenantId], onDelete:Restrict)
+  @@unique([integrationId,resourceType,externalId])
+  @@index([tenantId,resourceType,resourceId])
+  @@map("external_resource_tenants")
+}
+
+
+enum ContractSignatureAttemptStatus {
+  QUEUED
+  PROCESSING
+  SUCCEEDED
+  UNKNOWN
+  FAILED
+}
+
+model ContractSignatureAttempt {
+  id String @id @default(cuid())
+  tenantId String
+  contractId String @unique
+  integrationId String
+  eventId String @unique
+  status ContractSignatureAttemptStatus @default(QUEUED)
+  externalId String?
+  lastError String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  organization Organization @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  contract Contract @relation(fields: [contractId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  integration TenantIntegration @relation(fields: [integrationId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  @@unique([id, tenantId])
+  @@index([tenantId, status])
+  @@map("contract_signature_attempts")
+}
+
+
+enum PaymentCancellationStatus {
+  NONE
+  REQUESTED
+  PROCESSING
+  UNKNOWN
+  CONFIRMED
+}
+
+
+// Platform commercial data: FORCE RLS, separate runtime, no business-table access.
+enum BillingInterval {
+  MONTHLY
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  INCOMPLETE
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+  CANCELED
+}
+
+enum SubscriptionBillingMode {
+  ASAAS
+  COMPLIMENTARY
+}
+
+enum ProviderSyncState {
+  NOT_REQUIRED
+  PENDING
+  PROCESSING
+  UNKNOWN
+  SYNCED
+  FAILED
+}
+
+enum SubscriptionEventSource {
+  WEBHOOK
+  JOB
+  OWNER
+  STAFF
+  SYSTEM
+  RECONCILIATION
+}
+
+enum PlatformInvoiceKind {
+  CYCLE
+  ADJUSTMENT
+}
+
+enum PlatformInvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELED
+  REFUNDED
+  CHARGEBACK
+}
+
+enum OrganizationAccess {
+  SETUP
+  FULL
+  RESTRICTED
+  ARCHIVED
+}
+
+enum OrganizationOrigin {
+  LEGACY
+  ONBOARDING
+}
+
+enum CompanyType {
+  MEI
+  LIMITED
+  INDIVIDUAL
+  ASSOCIATION
+}
+
+enum PaymentAccountMode {
+  ASAAS_SUBACCOUNT
+  ASAAS_CONNECTED_ACCOUNT
+}
+
+enum SubaccountModel {
+  STANDARD
+  BAAS
+}
+
+enum PaymentAccountStatus {
+  DRAFT
+  PROVISIONING
+  UNKNOWN
+  KEY_RECOVERY_REQUIRED
+  AWAITING_OWNER
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  RESTRICTED
+  BLOCKED
+  DISCONNECTED
+}
+
+enum CredentialSource {
+  ENV_REF
+  VAULT
+}
+
+enum SecretPurpose {
+  ASAAS_API_KEY
+  PROVIDER_API_KEY
+  PROVIDER_SIGNING_SECRET
+  PROVIDER_VERIFY_TOKEN
+  PROVIDER_USER_AGENT
+}
+
+enum SecretState {
+  PENDING
+  ACTIVE
+  PREVIOUS
+  RETIRED
+  DESTROYED
+}
+
+enum PayoutStatus {
+  REQUESTED
+  SUBMITTING
+  SUBMITTED
+  DONE
+  REFUSED
+  FAILED
+}
+
+enum PlatformStaffRole {
+  PLATFORM_ADMIN
+  PLATFORM_FINANCE
+  PLATFORM_SUPPORT
+  PLATFORM_VIEWER
+}
+
+enum SupportAccessScope {
+  READ_ONLY
+}
+
+enum LegalDocumentKind {
+  PLATFORM_TERMS
+  PRIVACY_POLICY
+  DATA_PROCESSING_AGREEMENT
+  PAYMENTS_PARTNER_NOTICE
+  MARKETING_OPT_IN
+}
+
+model Plan {
+  id         String    @id @default(cuid())
+  code       String    @unique                  // CHECK ^[a-z0-9-]{2,32}$
+  name       String
+  isPublic   Boolean   @default(false)
+  sortOrder  Int       @default(0)
+  archivedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  versions   PlanVersion[]
+  @@map("plans")
+}
+
+model PlanVersion {                             // imutável, exceto sellableUntil (trigger)
+  id             String          @id @default(cuid())
+  planId         String
+  version        Int
+  interval       BillingInterval @default(MONTHLY)
+  amount         Decimal         @db.Decimal(12, 2)   // CHECK >= 0; 0 só em plano não público
+  trialDays      Int             @default(0)          // CHECK 0..30
+  graceDays      Int             @default(7)          // CHECK 0..15
+  suspendDays    Int             @default(30)         // CHECK 7..90
+  incompleteDays Int             @default(30)
+  entitlements   Json                                 // EntitlementsV1 (@gb-locacoes/contracts/entitlements)
+  sellableFrom   DateTime        @default(now())
+  sellableUntil  DateTime?
+  createdAt      DateTime        @default(now())
+  plan           Plan            @relation(fields: [planId], references: [id], onDelete: Restrict)
+  subscriptions  Subscription[]  @relation("CurrentPlanVersion")
+  scheduledIn    Subscription[]  @relation("ScheduledPlanVersion")
+  @@unique([planId, version])
+  @@map("plan_versions")
+}
+
+model Subscription {
+  id                     String                  @id @default(cuid())
+  tenantId               String
+  planVersionId          String
+  scheduledPlanVersionId String?
+  scheduledChangeAt      DateTime?               @db.Date
+  status                 SubscriptionStatus                        // projeção de derivarEstado
+  billingMode            SubscriptionBillingMode @default(ASAAS)
+  complimentaryUntil     DateTime?               @db.Date
+  complimentaryReason    String?
+  trialEndsAt            DateTime?               @db.Date
+  currentPeriodStart     DateTime?               @db.Date
+  currentPeriodEnd       DateTime?               @db.Date
+  pastDueSince           DateTime?               @db.Date
+  graceEndsAt            DateTime?               @db.Date
+  suspendedAt            DateTime?
+  cancelAtPeriodEnd      Boolean                 @default(false)
+  cancelRequestedAt      DateTime?
+  cancelReason           String?   // OWNER_REQUEST | NON_PAYMENT | TRIAL_EXPIRED | ABANDONED | STAFF (CHECK)
+  canceledAt             DateTime?
+  billingEmail           String?
+  providerEnvironment    String?                                   // sandbox | production (CHECK)
+  providerCustomerId     String?
+  providerSubscriptionId String?                 @unique
+  providerSync           ProviderSyncState       @default(NOT_REQUIRED)
+  providerAttempts       Int                     @default(0)
+  providerNextAttemptAt  DateTime                @default(now())
+  providerLastError      String?                                   // só código
+  reconciledAt           DateTime?
+  revision               Int                     @default(0)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  organization           Organization            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  planVersion            PlanVersion             @relation("CurrentPlanVersion", fields: [planVersionId], references: [id], onDelete: Restrict)
+  scheduledPlanVersion   PlanVersion?            @relation("ScheduledPlanVersion", fields: [scheduledPlanVersionId], references: [id], onDelete: Restrict)
+  events                 SubscriptionEvent[]
+  invoices               PlatformInvoice[]
+  @@unique([id, tenantId])
+  @@index([tenantId, status])
+  @@index([status, graceEndsAt])
+  @@index([providerSync, providerNextAttemptAt])
+  @@map("subscriptions")
+  // SQL: UNIQUE ("tenantId") WHERE status <> 'CANCELED'
+}
+
+model SubscriptionEvent {                         // só acréscimo
+  id             String                  @id @default(cuid())
+  tenantId       String
+  subscriptionId String
+  fromStatus     SubscriptionStatus?
+  toStatus       SubscriptionStatus
+  reason         String                  // TRIAL_STARTED, INVOICE_PAID, GRACE_ELAPSED, NON_PAYMENT, OWNER_CANCEL, PLAN_CHANGED...
+  source         SubscriptionEventSource
+  dedupeKey      String                  // asaas:<evt> | job:<AAAA-MM-DD>:<regra> | owner:<idempotency>
+  actorUserId    String?
+  planVersionId  String?
+  mrrDelta       Decimal?                @db.Decimal(12, 2)
+  occurredAt     DateTime                @default(now())
+  subscription   Subscription            @relation(fields: [subscriptionId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  @@unique([subscriptionId, dedupeKey])
+  @@index([tenantId, occurredAt])
+  @@index([occurredAt])
+  @@map("subscription_events")
+}
+
+model PlatformInvoice {                           // sem DELETE
+  id                String                @id @default(cuid())
+  tenantId          String
+  subscriptionId    String
+  kind              PlatformInvoiceKind   @default(CYCLE)
+  status            PlatformInvoiceStatus @default(PENDING)
+  providerStatus    String?                                  // valor bruto do Asaas
+  providerPaymentId String                @unique
+  amount            Decimal               @db.Decimal(12, 2)
+  dueDate           DateTime              @db.Date
+  periodStart       DateTime?             @db.Date
+  periodEnd         DateTime?             @db.Date
+  billingType       String?                                  // PIX | BOLETO | CREDIT_CARD | UNDEFINED | RECEIVED_IN_CASH
+  invoiceUrl        String?                                  // só https://*.asaas.com (validado)
+  paidAt            DateTime?
+  chargebackAt      DateTime?
+  settlesInvoiceId  String?
+  debtWaivedAt      DateTime?
+  voluntaryRefund   Boolean               @default(false)
+  canceledReason    String?                                  // FUTURE_AFTER_CANCEL | REACTIVATION_WAIVER | PROVIDER_DELETED
+  providerCancelState String              @default("NONE")   // NONE | PROCESSING | UNKNOWN | CONFIRMED
+  syncedAt          DateTime
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  subscription      Subscription          @relation(fields: [subscriptionId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  @@unique([id, subscriptionId, tenantId])
+  @@index([tenantId, status, dueDate])
+  @@index([status, dueDate])
+  @@map("platform_invoices")
+}
+
+model EntitlementOverride {
+  id              String    @id @default(cuid())
+  tenantId        String
+  key             String    // "limits.equipments" | "features.customDomain" ...
+  value           Json
+  reason          String
+  grantedByUserId String
+  expiresAt       DateTime?
+  revokedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  @@index([tenantId])
+  @@map("entitlement_overrides")
+}
+
+model TrialClaim {                                // sobrevive a qualquer eliminação futura
+  keyHash   String   @id                          // HMAC(PLATFORM_TRIAL_SECRET, 'cnpj:'|'email:' + valor normalizado)
+  kind      String                                // CNPJ | EMAIL
+  tenantId  String
+  createdAt DateTime @default(now())
+  @@map("trial_claims")
+}
+
+model PaymentAccount {
+  id                      String               @id @default(cuid())
+  tenantId                String
+  integrationId           String               @unique
+  mode                    PaymentAccountMode
+  subaccountModel         SubaccountModel?     // obrigatório se ASAAS_SUBACCOUNT (CHECK)
+  status                  PaymentAccountStatus @default(DRAFT)
+  environment             String               // sandbox | production (CHECK)
+  providerAccountId       String?              @unique
+  walletId                String?              @unique
+  commercialInfoStatus    String?
+  bankAccountInfoStatus   String?
+  documentationStatus     String?
+  generalStatus           String?
+  commercialInfoExpiresAt DateTime?
+  commercialInfoExpired   Boolean              @default(false)
+  keyIdleExpiresAt        DateTime?            // projectedExpirationDateByLackOfUse
+  lastKeyUseAt            DateTime?
+  healthIssue             String?              // KEY_DISABLED | WEBHOOK_MISSING | WEBHOOK_INTERRUPTED | COMMERCIAL_INFO_EXPIRED
+  provisioningAttempts    Int                  @default(0)
+  nextAttemptAt           DateTime             @default(now())
+  lockedUntil             DateTime?
+  lastErrorCode           String?
+  requestedByUserId       String?
+  approvedAt              DateTime?
+  lastSyncedAt            DateTime?
+  disconnectedAt          DateTime?
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
+  organization            Organization         @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  integration             TenantIntegration    @relation(fields: [integrationId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  payouts                 PayoutRequest[]
+  provisioningRequest     PaymentAccountProvisioningRequest?
+  @@unique([integrationId, tenantId])
+  @@unique([id, tenantId])
+  @@index([status, nextAttemptAt])
+  @@map("payment_accounts")
+  // SQL: UNIQUE ("tenantId") WHERE "disconnectedAt" IS NULL
+}
+
+model PaymentAccountProvisioningRequest {          // só plataforma; sem DELETE; ver a migration 202610060101
+  id                 String         @id @default(cuid())
+  tenantId           String
+  paymentAccountId   String         @unique
+  incomeValue        Decimal?       @db.Decimal(12, 2)  // faturamento mensal declarado; NULL depois da purga
+  mobilePhone        String?                             // celular declarado; NULL depois da purga
+  companyDataVersion String                              // sha256 hex dos dados da empresa confirmados
+  createdAt          DateTime       @default(now())
+  purgedAt           DateTime?
+  purgeReason        String?        // CREATED | UNCERTAIN | REJECTED | CANCELLED | EXISTING_ACCOUNT | BLOCKED
+  paymentAccount     PaymentAccount @relation(fields: [paymentAccountId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  @@unique([paymentAccountId, tenantId])
+  @@unique([id, tenantId])
+  @@map("payment_account_provisioning_requests")
+  // SQL: CHECK de purga/celular/versão, trigger de imutabilidade e FORCE RLS só de plataforma
+}
+
+model IntegrationSecret {
+  id                   String        @id @default(cuid())
+  tenantId             String
+  integrationId        String
+  purpose              SecretPurpose
+  version              Int
+  state                SecretState   @default(PENDING)
+  environment          String?
+  kekProvider          String        // env | aws-kms
+  kekId                String
+  wrappedDek           Bytes?        // null = DESTROYED (crypto-shredding)
+  iv                   Bytes?
+  ciphertext           Bytes?
+  authTag              Bytes?
+  aadVersion           Int           @default(1)
+  fingerprint          String        // HMAC-SHA256(PLATFORM_SECRET_FINGERPRINT_KEY, valor)
+  providerCredentialId String?       // accessToken.id no Asaas
+  expiresAt            DateTime?
+  createdByUserId      String?
+  createdAt            DateTime      @default(now())
+  activatedAt          DateTime?
+  retiredAt            DateTime?
+  destroyedAt          DateTime?
+  integration          TenantIntegration @relation(fields: [integrationId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  @@unique([integrationId, purpose, version])
+  @@unique([id, tenantId])
+  @@index([tenantId, purpose, state])
+  @@index([kekId])
+  @@map("integration_secrets")
+}
+
+model PayoutRequest {                             // só BaaS
+  id                String         @id @default(cuid())
+  tenantId          String
+  paymentAccountId  String
+  amount            Decimal        @db.Decimal(12, 2)
+  status            PayoutStatus   @default(REQUESTED)
+  idempotencyKey    String         @unique
+  providerTransferId String?       @unique
+  requestedByUserId String
+  bankAccountRef    String         // identificador da conta bancária do próprio titular (sem número completo)
+  failureCode       String?
+  createdAt         DateTime       @default(now())
+  submittedAt       DateTime?
+  validatedAt       DateTime?
+  completedAt       DateTime?
+  paymentAccount    PaymentAccount @relation(fields: [paymentAccountId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  @@index([tenantId, createdAt])
+  @@index([status, submittedAt])
+  @@map("payout_requests")
+}
+
+model PlatformWebhookInbox {
+  id              String    @id @default(cuid())
+  source          String    // ASAAS_ROOT | ASAAS_ACCOUNT | ASAAS_TRANSFER_VALIDATION
+  sourceEnvironment String? // ambiente atestado da raiz; null em recibos legados/subcontas
+  routeKey        String?   // integrationId quando veio da URL da subconta
+  eventId         String    // "id:<evt>" ou "sha256:<hash>"
+  eventType       String
+  payloadHash     String
+  payload         Json      // podado para {} após 90 dias (UPDATE permitido)
+  tenantId        String?
+  status          String    @default("RECEIVED")   // RECEIVED | PROCESSED | IGNORED | UNROUTED | CONFLICT | FAILED
+  attempts        Int       @default(0)
+  processingToken String?
+  lockedUntil     DateTime?
+  lastError       String?
+  receivedAt      DateTime  @default(now())
+  processedAt     DateTime?
+  @@unique([source, eventId])
+  @@index([status, receivedAt])
+  @@map("platform_webhook_inbox")
+}
+
+model PlatformOutboxEvent {                       // mesma forma de OutboxEvent; tenantId informativo
+  id          String       @id @default(cuid())
+  tenantId    String?
+  topic       String
+  aggregateId String
+  payload     Json
+  dedupeKey   String       @unique
+  status      OutboxStatus @default(PENDING)
+  attempts    Int          @default(0)
+  availableAt DateTime     @default(now())
+  lockedUntil DateTime?
+  lockedBy    String?
+  lastError   String?
+  createdAt   DateTime     @default(now())
+  completedAt DateTime?
+  @@index([status, availableAt])
+  @@map("platform_outbox_events")
+}
+
+model PlatformAuditLog {                          // só acréscimo
+  id          String   @id @default(cuid())
+  actorKind   String   // STAFF | OWNER | SYSTEM
+  actorUserId String?
+  action      String   // subscription.suspended, support.grant.created, secret.rotated, payout.refused...
+  tenantId    String?
+  targetType  String?
+  targetId    String?
+  reasonCategory String?
+  reason      String?
+  metadata    Json?    // nunca segredo nem payload de negócio
+  ipHash      String?
+  createdAt   DateTime @default(now())
+  @@index([tenantId, createdAt])
+  @@index([action, createdAt])
+  @@map("platform_audit_logs")
+}
+
+model PlatformStaff {
+  id        String            @id @default(cuid())
+  userId    String            @unique
+  role      PlatformStaffRole
+  active    Boolean           @default(true)
+  createdBy String?
+  createdAt DateTime          @default(now())
+  revokedAt DateTime?
+  user      User              @relation(fields: [userId], references: [id], onDelete: Restrict)
+  @@map("platform_staff")
+}
+
+model SupportAccessGrant {
+  id               String             @id @default(cuid())
+  tenantId         String
+  grantedByUserId  String?            // dono (null só em break-glass)
+  staffUserId      String?            // null = qualquer PLATFORM_SUPPORT
+  scope            SupportAccessScope @default(READ_ONLY)
+  reason           String             // 10..500 caracteres (CHECK)
+  ticketRef        String?
+  breakGlass       Boolean            @default(false)
+  approverStaffIds String[]           // break-glass: dois ids distintos (CHECK)
+  startsAt         DateTime           @default(now())
+  expiresAt        DateTime           // CHECK <= startsAt + 72h (break-glass: 4h)
+  revokedAt        DateTime?
+  revokedByUserId  String?
+  createdAt        DateTime           @default(now())
+  organization     Organization       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  @@index([tenantId, expiresAt])
+  @@map("support_access_grants")
+}
+
+model LegalAcceptance {                           // só acréscimo
+  id          String            @id @default(cuid())
+  userId      String
+  tenantId    String?
+  kind        LegalDocumentKind
+  version     String            // ex.: 2026-10-01
+  textSha256  String
+  acceptedAt  DateTime          @default(now())
+  withdrawnAt DateTime?         // só MARKETING_OPT_IN (UPDATE permitido só nesta coluna)
+  ipHash      String?           // HMAC(PLATFORM_RATE_LIMIT_SECRET, ip)
+  userAgent   String?           // truncado em 200
+  @@index([userId, kind])
+  @@index([tenantId, kind])
+  @@map("legal_acceptances")
+}
+
+model TenantUsageSnapshot {                       // só contagens
+  tenantId       String   @id
+  equipments     Int
+  staffSeats     Int
+  storageBytes   BigInt   @default(0)
+  lastActivityAt DateTime?
+  capturedAt     DateTime
+  @@map("tenant_usage_snapshots")
+}

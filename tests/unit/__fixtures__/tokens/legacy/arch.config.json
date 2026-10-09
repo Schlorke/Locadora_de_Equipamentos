@@ -1,0 +1,6 @@
+{
+  "tokens": {
+    "scope": ["packages/ui/src"],
+    "legacyScope": ["app", "lib", "proxy.ts"]
+  }
+}

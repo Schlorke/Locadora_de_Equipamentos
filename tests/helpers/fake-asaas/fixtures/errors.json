@@ -1,0 +1,7 @@
+{
+  "400": { "errors": [{ "code": "invalid_value", "description": "Valor de exemplo invalido." }] },
+  "401": { "errors": [{ "code": "invalid_access_token", "description": "Chave de API de exemplo invalida." }] },
+  "403": { "errors": [{ "code": "forbidden", "description": "Operacao de exemplo nao permitida." }] },
+  "404": { "errors": [{ "code": "not_found", "description": "Recurso de exemplo nao encontrado." }] },
+  "429": { "errors": [{ "code": "too_many_requests", "description": "Limite de requisicoes de exemplo atingido." }] }
+}

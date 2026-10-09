@@ -1,0 +1,142 @@
+/* Base do documento, na camada base (qualquer classe do elemento vence, como na produção): emoji, cor de borda padrão,
+   html e body, títulos, parágrafos, small, seções, campos numéricos, seleção e o preflight da produção (Tailwind 3) onde
+   o do 4 mudou: cursor dos botões, fundo dos campos, cor do placeholder e margem do <dialog>. */
+
+@layer base {
+  @font-face {
+    font-family: 'Twemoji Country Flags';
+    src: url('/fonts/twemoji-country-flags.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* Cor de borda padrão em todo elemento (especificidade zero; vence o border: 0 solid do preflight, que vem antes). */
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  /* Rolagem suave, inclusive a volta ao topo na navegação de rota (sem data-scroll-behavior no <html> o Next 16 não a
+     troca por auto). O documento recorta na horizontal; scroll-padding-top desconta o cabeçalho fixo e a safe area. */
+  html {
+    max-width: 100%;
+    overflow: hidden auto;
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 84px);
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-inter), sans-serif;
+    font-size: var(--font-size-body);
+    margin: 0;
+    max-width: 100%;
+    overflow: visible;
+    scroll-behavior: smooth;
+  }
+
+  /* Tipografia dos títulos, parágrafos e textos pequenos (Jost nos títulos, tamanhos fluidos). Depois do preflight
+     do Tailwind na mesma camada: vencem o reset dele; as classes de texto do elemento vencem estas regras. */
+  h1 {
+    font-size: var(--font-size-h1);
+    line-height: var(--line-height-h1);
+    font-family: var(--font-jost), sans-serif;
+    font-weight: 700;
+    letter-spacing: var(--letter-spacing-display);
+  }
+
+  h2 {
+    font-size: var(--font-size-h2);
+    line-height: var(--line-height-h2);
+    font-family: var(--font-jost), sans-serif;
+    font-weight: 600;
+    letter-spacing: var(--letter-spacing-display);
+  }
+
+  h3 {
+    font-size: var(--font-size-h3);
+    line-height: var(--line-height-h3);
+    font-family: var(--font-jost), sans-serif;
+    font-weight: 600;
+  }
+
+  p {
+    font-size: var(--font-size-paragraph);
+    line-height: var(--line-height-paragraph);
+  }
+
+  small {
+    font-size: var(--font-size-small);
+    line-height: var(--line-height-small);
+  }
+
+  /* Seções: largura cheia, no máximo a da janela, sem vazar na horizontal. */
+  section {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* Campos numéricos sem as setas nativas: o Input de packages/ui desenha as próprias. */
+  input[type='number'] {
+    appearance: textfield;
+  }
+
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  ::selection {
+    background-color: var(--selection-surface);
+    color: var(--selection-text);
+  }
+
+  /* Preflight da produção (Tailwind 3) onde o do Tailwind 4 mudou: botão com cursor de mão, campo de texto e lista com
+     o fundo do navegador (o 4 os deixa transparentes) e placeholder no cinza 400 (o 4 usa a cor do texto a 50%). */
+  button,
+  [role='button'] {
+    cursor: pointer;
+  }
+
+  :disabled {
+    cursor: default;
+  }
+
+  input:where(
+    :not(
+      [type='button'],
+      [type='reset'],
+      [type='submit'],
+      [type='checkbox'],
+      [type='radio'],
+      [type='file'],
+      [type='image'],
+      [type='range'],
+      [type='color'],
+      [type='hidden']
+    )
+  ),
+  select,
+  textarea {
+    background-color: field;
+  }
+
+  input[type='color'] {
+    background-color: buttonface;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-400);
+  }
+
+  /* <dialog> centralizado pelo navegador (o preflight do 4 zera a margem de todo elemento). */
+  dialog {
+    margin: auto;
+  }
+}

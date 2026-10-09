@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "task": {
+    "type": "feature-change",
+    "objective": "<one-line objective>",
+    "scope_in": ["<in-scope item>"],
+    "scope_out": ["<out-of-scope item>"],
+    "constraints": ["<non-negotiable constraint>"],
+    "required_sources": ["<path/to/doc.md>"]
+  },
+  "context_capsule": {
+    "objective": "<objective>",
+    "constraints": ["<constraint>"],
+    "required_sources": ["<path>"],
+    "validation": ["<how to verify>"]
+  },
+  "output": {
+    "summary": "<short summary>",
+    "plan": [
+      {
+        "step": "<step>",
+        "rationale": "<why>",
+        "source": "<path/to/source>",
+        "confidence": 0.0
+      }
+    ],
+    "changes": [
+      {
+        "change": "<what changed>",
+        "rationale": "<why>",
+        "source": "<path/to/source>",
+        "confidence": 0.0
+      }
+    ],
+    "risks": ["<risk>"],
+    "validation": ["<manual or automated check>"]
+  }
+}

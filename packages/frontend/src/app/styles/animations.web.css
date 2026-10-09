@@ -1,0 +1,191 @@
+/* Animações: keyframes na camada base (como os do Tailwind) e classes de animação na camada components (as classes
+   utilitárias do elemento vencem). slide-in-*, fade-in-up-smooth e pulse-slow são usados em estilo inline pelo
+   ScrollRevealInit e pelos cartões de "Por que escolher"; fade-in-header, pela página Sobre. */
+
+@layer base {
+  @keyframes slide-in-left {
+    0% {
+      opacity: 0;
+      transform: translate3d(-100px, 0, 0);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes slide-in-right {
+    0% {
+      opacity: 0;
+      transform: translate3d(80px, 0, 0);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  /* Revelação por rolagem: sobe 60px, como o slideInUp da produção (main, app/globals.css). */
+  @keyframes slide-in-up {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, 60px, 0);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes fade-in-up-smooth {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, 20px, 0);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes fade-in-header {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scale-x {
+    0% {
+      transform: scaleX(0);
+    }
+
+    100% {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes count-up {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes reset {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(-360deg);
+    }
+  }
+
+  @keyframes slow-pulse {
+    0%,
+    100% {
+      opacity: 0.3;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.8;
+      transform: scale(1.1);
+    }
+  }
+
+  @keyframes very-slow-pulse {
+    0%,
+    100% {
+      opacity: 0.2;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.7;
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes pulse-slow {
+    0%,
+    100% {
+      opacity: 0.015;
+    }
+
+    50% {
+      opacity: 0.04;
+    }
+  }
+}
+
+@layer components {
+  /* Pulso lento para elementos de iluminação e pulso muito lento para luzes de fundo grandes. */
+  .animate-slow-pulse {
+    animation: slow-pulse 3s ease-in-out infinite;
+  }
+
+  .animate-very-slow-pulse {
+    animation: very-slow-pulse 4s ease-in-out infinite;
+  }
+
+  .animate-scale-x {
+    animation: scale-x 1s ease-out forwards;
+    animation-delay: 0.5s;
+  }
+
+  .animate-count-up {
+    animation: count-up 1s ease-out forwards;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.6s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.4s ease-out;
+  }
+
+  .animate-reset {
+    animation: reset 0.6s ease-in-out;
+  }
+}

@@ -1,0 +1,22 @@
+# Browserslist configuration for modern browsers only
+# This configuration targets browsers that support ES2020+ features natively
+# This reduces legacy JavaScript and improves performance
+
+# Modern browsers only - support ES2020+ features (Array.at, Object.fromEntries, etc.)
+# Chrome >= 92 (supports Array.at, Object.hasOwn)
+# Firefox >= 90 (supports Array.at, Object.hasOwn)
+# Safari >= 15.4 (supports Array.at, Object.hasOwn)
+# Edge >= 92 (Chromium-based, same as Chrome)
+Chrome >= 92
+ChromeAndroid >= 92
+Edge >= 92
+Firefox >= 90
+Safari >= 15.4
+iOS >= 15.4
+Samsung >= 16.0
+
+# Exclude all legacy browsers
+not IE 11
+not IE_Mob 11
+not dead
+not op_mini all

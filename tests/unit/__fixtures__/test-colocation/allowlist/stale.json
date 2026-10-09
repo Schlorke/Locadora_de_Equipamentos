@@ -1,0 +1,8 @@
+{
+  "orphans": {
+    "src/cross-cutting.test.ts": "teste de arquitetura sem arquivo-assunto",
+    "src/legacy.test.ts": "assunto fora de src/, fora do include do vitest",
+    "src/a.test.ts": "já aninha sob src/a.ts: a entrada precisa sair",
+    "src/removed.test.ts": "o arquivo não existe mais: a entrada precisa sair"
+  }
+}
