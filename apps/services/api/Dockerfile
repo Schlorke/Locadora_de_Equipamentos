@@ -1,6 +1,5 @@
-# syntax=docker/dockerfile:1
 # Contexto: raiz do workspace. Nenhum .env entra na imagem (.dockerignore).
-FROM node:24.21-alpine AS build
+FROM public.ecr.aws/docker/library/node@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1 AS build
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -9,7 +8,7 @@ COPY . .
 RUN pnpm install --frozen-lockfile --ignore-scripts
 RUN pnpm db:generate && pnpm --filter @gb-locacoes/api build
 
-FROM node:24.21-alpine AS runtime
+FROM public.ecr.aws/docker/library/node@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1 AS runtime
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 ENV NODE_ENV=production PORT=3002 HOSTNAME=0.0.0.0 NEXT_TELEMETRY_DISABLED=1
