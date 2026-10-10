@@ -8,7 +8,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Sistema completo de cores do GB Locações. Todas as cores são definidas em design-tokens/base.json e devem ser usadas através de classes Tailwind CSS.',
+          'Sistema completo de cores do GB Locações. Os tokens canônicos ficam em packages/design-tokens/src e devem ser usados através das classes Tailwind CSS do design system.',
       },
     },
   },

@@ -17,10 +17,6 @@
     {
       "path": "public",
       "runtime": "browser-assets"
-    },
-    {
-      "path": "design-tokens",
-      "runtime": "generated-token-compatibility"
     }
   ],
   "nonRuntimeRoots": [

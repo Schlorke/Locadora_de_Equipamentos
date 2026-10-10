@@ -2,6 +2,14 @@
   "$comment": "Renomeações registradas para tools/ratchet-guard.mjs: a contagem da base em `from` (limitada por `counts`) passa para `to` (o total não aumenta). Só vale quando `from` sumiu da árvore, `to` não existia na base e o git reconhece a renomeação (git diff -M). Gere com `node tools/ratchet-guard.mjs --rename <de> <para> --reason <motivo>`. Entradas cuja origem já não existe na base são ignoradas e podem ser removidas.",
   "transfers": [
     {
+      "approve": "arch.legacyRoots",
+      "entry": {
+        "path": "design-tokens",
+        "runtime": "generated-token-compatibility"
+      },
+      "reason": "Organização autorizada pelo usuário em 2026-10-10: o único arquivo design-tokens/base.json foi movido byte a byte para packages/design-tokens/src/__tests__/fixtures/base.json, com o leitor de paridade atualizado e a pasta vazia da raiz removida. A referência é exclusiva dos testes; valores produtivos, exports, baselines e assertions permanecem. Retira somente a declaração obsoleta deste caminho em arch.legacyRoots, sem ignorar fontes ou ampliar tolerâncias."
+    },
+    {
       "approve": "package.exports",
       "entry": "@gb-locacoes/frontend#./pages/assinatura-admin",
       "reason": "Modernização SaaS autorizada: entrada exata da tela compartilhada de assinatura. Default monta plano, uso e faturas somente por GETs existentes; react-native conserva a decisão da ADR de estado e link ao navegador, sem compra ou backoffice nativo. Não exclui fontes, não amplia baseline ou tolerância, não afrouxa testes ou guardas. A API continua revalidando dono e vínculo em RLS nos dois hosts; o legado permanece ativo."

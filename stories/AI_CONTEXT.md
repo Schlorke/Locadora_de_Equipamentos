@@ -45,8 +45,9 @@
 ```
 
 **Fontes canônicas do runtime**: `packages/design-tokens/src/palette.css`,
-`scales.css` e `theme.css`. `design-tokens/base.json` continua como referência
-das stories; não substitui os contratos de componentes ou os tokens do runtime.
+`scales.css` e `theme.css`. A referência original dos testes de paridade fica em
+`packages/design-tokens/src/__tests__/fixtures/base.json`; os componentes e as
+stories usam os contratos e tokens do runtime.
 
 ---
 
@@ -424,7 +425,8 @@ Antes de marcar como concluído, verificar:
 
 1. ✅ **SEMPRE consulte o Storybook** antes de criar novos componentes
 2. ✅ **SEMPRE use os tokens canônicos** de `packages/design-tokens`; confira a
-   referência das stories em `design-tokens/base.json`
+   referência de paridade em
+   `packages/design-tokens/src/__tests__/fixtures/base.json`
 3. ✅ **SEMPRE use classes Tailwind** do design system
 4. ✅ **SEMPRE documente "quando usar" e "quando NÃO usar"**
 5. ✅ **SEMPRE teste acessibilidade** com addon A11y
@@ -481,7 +483,8 @@ import { Plus, Trash2, Edit, Search } from "lucide-react"
 ### Arquivos Importantes
 
 - **Tokens do runtime**: `packages/design-tokens/src/`;
-  `design-tokens/base.json` é a referência das stories
+  `packages/design-tokens/src/__tests__/fixtures/base.json` é a referência dos
+  testes
 - **Configuração Tailwind compartilhada**: `tailwind.config.cjs`, carregada pelo
   CSS do frontend; as fontes do produto usam seus `@source` explícitos
 - **Estilos do preview**: entrada pública `@gb-locacoes/frontend/app/styles.css`

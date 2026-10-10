@@ -1,5 +1,34 @@
 # 🐛 Problemas Conhecidos e Soluções - GB Locações
 
+## 342. Pasta de tokens da raiz confundia referência de teste com tokens do produto
+
+**Data:** 2026-10-10.
+
+**Causa:** a pipeline antiga do Style Dictionary foi retirada na entrada 227,
+mas seu `design-tokens/base.json` permaneceu na raiz como referência dos valores
+originais. O runtime já usa `packages/design-tokens/src`; apenas os testes de
+paridade leem o JSON.
+
+**Solução:** mover o JSON, com todos os bytes preservados, para
+`packages/design-tokens/src/__tests__/fixtures/base.json`. O leitor
+`web-sources.ts` resolve a referência ao lado do próprio módulo. A pasta vazia
+da raiz foi retirada sem remoção recursiva. `arch.config.json` e seu teste
+retiram somente a declaração antiga; `ratchet-transfers.json` registra essa
+mudança individual autorizada. A exceção documental obsoleta de `primitives.ts`
+sai de `retired-artifacts.test.ts`; baselines e assertions de paridade ficam.
+
+**Arquivos:** referência JSON, helper e comentários de `packages/design-tokens`,
+teste `primitives.test.ts`, configuração e regressões de arquitetura/artefatos
+aposentados, registro do ratchet, guia do design system, contexto IA, instruções
+e descrição de cores do Storybook e changelog. Registros históricos da migração
+conservam seus caminhos da época.
+
+**Como validar:** executar os testes de `packages/design-tokens` pelo perfil de
+plataforma, `pnpm test:gates`, `pnpm arch`, `pnpm tokens`, `pnpm check:tokens`,
+`pnpm check:test-names`, `pnpm ratchet:guard`, `pnpm hygiene`, lint, tipos e
+índices documentais. Conferir o build de produção web, a ausência da antiga
+pasta e a identidade dos bytes do JSON antes/depois.
+
 ## 341. CI Linux pós-F revela checkout sem tag, fixture de fuso e IDs internos OpenAPI
 
 ### Continuidade em G e candidato H — 2026-10-10

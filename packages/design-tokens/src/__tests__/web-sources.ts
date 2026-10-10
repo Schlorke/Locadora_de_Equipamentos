@@ -15,7 +15,7 @@ export function readRepoFile(relative: string): string {
   return fs.readFileSync(path.join(repoRoot, ...relative.split('/')), 'utf8')
 }
 
-/** Folhas `{ value }` de design-tokens/base.json, por caminho pontuado. */
+/** Folhas `{ value }` da referência fixtures/base.json, por caminho pontuado. */
 export function readBaseJson(): Record<string, string> {
   const out: Record<string, string> = {}
   const visit = (node: unknown, prefix: string) => {
@@ -28,7 +28,12 @@ export function readBaseJson(): Record<string, string> {
     for (const [key, child] of Object.entries(record))
       visit(child, prefix ? `${prefix}.${key}` : key)
   }
-  visit(JSON.parse(readRepoFile('design-tokens/base.json')), '')
+  visit(
+    JSON.parse(
+      fs.readFileSync(new URL('./fixtures/base.json', import.meta.url), 'utf8')
+    ),
+    ''
+  )
   return out
 }
 

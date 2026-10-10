@@ -50,10 +50,10 @@ comprova conformidade completa. Confira também a composição em diferentes
 tamanhos de viewport e as fontes efetivamente carregadas.
 
 Os tokens do runtime pertencem a `packages/design-tokens/src`. A referência
-`design-tokens/base.json` usada pelas stories não substitui os contratos do
-design system. O preview importa `@gb-locacoes/frontend/app/styles.css`;
-preserve cores, medidas, camadas e variantes documentadas em
-[design-system.md](../docs/features/design-system.md).
+`packages/design-tokens/src/__tests__/fixtures/base.json` é usada pelos testes
+de paridade e não substitui os contratos do design system. O preview importa
+`@gb-locacoes/frontend/app/styles.css`; preserve cores, medidas, camadas e
+variantes documentadas em [design-system.md](../docs/features/design-system.md).
 
 ## Construir sem deixar artefatos no repo
 

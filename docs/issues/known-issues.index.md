@@ -1,5 +1,9 @@
 # Known Issues Index (AI Quick Use)
 
+- 342: referência original de tokens removida da raiz e colocada em
+  `packages/design-tokens/src/__tests__/fixtures/base.json`, com bytes
+  preservados; leitor, guardas e documentação atualizados sem mudar valores.
+
 - 341: CI Linux pós-F RED: tag ausente no checkout de tests, fixture de ofício
   dependente de fuso e IDs internos TypeScript no OpenAPI; formato CRLF do
   checkout Windows explicitado no Prettier. Correções preparadas; focos, geração

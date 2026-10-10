@@ -1186,10 +1186,7 @@ describe('types/ é raiz declarada só de tipos', () => {
         retiredRoot
       ).toEqual([])
     }
-    expect(legacyRoots).toEqual([
-      { path: 'public', runtime: 'browser-assets' },
-      { path: 'design-tokens', runtime: 'generated-token-compatibility' },
-    ])
+    expect(legacyRoots).toEqual([{ path: 'public', runtime: 'browser-assets' }])
     const declared = nonRuntimeRoots.find(
       (entry) => entry.path === 'types/next-auth.d.ts'
     )

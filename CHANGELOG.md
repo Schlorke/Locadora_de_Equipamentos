@@ -8,6 +8,16 @@ adere ao [Versionamento Semântico](HTTPS://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
+### Organização da referência de tokens — 2026-10-10
+
+- A referência original `design-tokens/base.json` saiu da raiz e passou para
+  `packages/design-tokens/src/__tests__/fixtures/base.json`, com conteúdo
+  integralmente preservado. Os tokens canônicos continuam no mesmo pacote;
+  cores, medidas, estilos e exports do produto permanecem.
+- Leitor de paridade, declarações de arquitetura e guardas acompanham o novo
+  caminho; uma exceção documental obsoleta foi retirada. Guias e instruções do
+  Storybook apontam para os owners atuais, preservando registros históricos.
+
 ### CI G e preparação H — 2026-10-10
 
 - A primeira tentativa Linux de G passou os 4.107 testes unitários, mas o job

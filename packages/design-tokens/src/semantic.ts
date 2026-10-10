@@ -3,121 +3,125 @@
 // fachada antiga (`themes.*.primary` = #ea580c continua existindo lá, intocado):
 //   - variáveis shadcn do theme.css (:root/.dark) -> surface/text/action/border/focus/
 //     feedback/chart/sidebar (ex.: --primary #0f172a vira surface.inverse);
-//   - cores de marca e de estado de design-tokens/base.json -> brand/action.secondary/feedback;
+//   - cores de marca e de estado de __tests__/fixtures/base.json -> brand/action.secondary/feedback;
 //   - tokens nomeados do tokens.css (hover de marca, bordas, halo de foco) -> brand.hover/border.*/focus.*.
 // Papéis que o web não troca no .dark (marca, base.json) mantêm no escuro o valor claro.
 // A correspondência papel <-> variável CSS é verificada em semantic.test.ts.
-import { primitives } from "./primitives";
+import { primitives } from './primitives'
 
-const { color: c, alpha: a } = primitives;
+const { color: c, alpha: a } = primitives
 
-export type SemanticMode = "light" | "dark";
+export type SemanticMode = 'light' | 'dark'
 
 export interface SemanticTheme {
   brand: {
     /** Laranja da marca (base.json color.primary, tokens.css --brand). */
-    default: string;
+    default: string
     /** Hover de controles marcados (checkbox :checked:hover). */
-    hover: string;
+    hover: string
     /** base.json color.primary-dark (#f97316, mais vivo que o default). */
-    vivid: string;
+    vivid: string
     /** base.json color.primary-light. */
-    subtle: string;
+    subtle: string
     /** Texto/ícone sobre a cor de marca. */
-    onBrand: string;
-  };
+    onBrand: string
+  }
   surface: {
     /** --background */
-    default: string;
+    default: string
     /** --card */
-    raised: string;
+    raised: string
     /** --popover */
-    overlay: string;
+    overlay: string
     /** --muted */
-    muted: string;
+    muted: string
     /** --accent (fundo de hover de itens de menu). */
-    accent: string;
+    accent: string
     /** base.json background.primary. */
-    subtle: string;
+    subtle: string
     /** base.json background.card (cartão translúcido). */
-    translucent: string;
+    translucent: string
     /** --primary: superfície escura invertida (badge padrão, texto de link). */
-    inverse: string;
-  };
+    inverse: string
+  }
   text: {
     /** --foreground, --card-foreground, --popover-foreground */
-    default: string;
+    default: string
     /** --muted-foreground */
-    muted: string;
+    muted: string
     /** --primary-foreground */
-    onInverse: string;
+    onInverse: string
     /** --accent-foreground */
-    onAccent: string;
+    onAccent: string
     /** Texto de campo (text-slate-900 dark:text-slate-50 do Input web). */
-    strong: string;
-  };
+    strong: string
+  }
   action: {
     /** base.json color.secondary; fundo do botão padrão (slate-700). */
-    secondary: string;
-    onSecondary: string;
+    secondary: string
+    onSecondary: string
     /** --secondary */
-    subtle: string;
+    subtle: string
     /** --secondary-foreground */
-    onSubtle: string;
-  };
+    onSubtle: string
+  }
   border: {
     /** --border */
-    default: string;
+    default: string
     /** --input */
-    input: string;
+    input: string
     /** Borda cinza clara (gray-200) do tokens.css (--border-subtle) e do botão outline. */
-    subtle: string;
+    subtle: string
     /** Borda cinza média (gray-300) do tokens.css (--border-strong) e do botão reset. */
-    strong: string;
-  };
+    strong: string
+  }
   focus: {
     /** --ring */
-    ring: string;
+    ring: string
     /** --focus-ring: anel de foco por teclado, o laranja da marca nos dois temas. */
-    keyboard: string;
+    keyboard: string
     /** Halo de 3px dos campos em foco (tokens.css --focus-halo). */
-    halo: string;
+    halo: string
     /** Borda de textarea em foco (tokens.css --focus-border). */
-    border: string;
-  };
+    border: string
+  }
   feedback: {
     /** --destructive (base.json color.error no claro). */
-    danger: string;
+    danger: string
     /** --destructive-foreground */
-    onDanger: string;
-    success: string;
-    warning: string;
-    info: string;
-  };
+    onDanger: string
+    success: string
+    warning: string
+    info: string
+  }
   /** --chart-1..5 */
-  chart: { "1": string; "2": string; "3": string; "4": string; "5": string };
+  chart: { '1': string; '2': string; '3': string; '4': string; '5': string }
   /** --sidebar-* */
   sidebar: {
-    background: string;
-    foreground: string;
-    primary: string;
-    onPrimary: string;
-    accent: string;
-    onAccent: string;
-    border: string;
-    ring: string;
-  };
+    background: string
+    foreground: string
+    primary: string
+    onPrimary: string
+    accent: string
+    onAccent: string
+    border: string
+    ring: string
+  }
 }
 
-const brand: SemanticTheme["brand"] = {
+const brand: SemanticTheme['brand'] = {
   default: c.orange600,
   hover: c.orange700,
   vivid: c.orange500,
   subtle: c.orange200,
   onBrand: c.white,
-};
+}
 
-const feedbackFromBaseJson = { success: c.emerald500, warning: c.amber500, info: c.blue500 } as const;
+const feedbackFromBaseJson = {
+  success: c.emerald500,
+  warning: c.amber500,
+  info: c.blue500,
+} as const
 
 const light: SemanticTheme = {
   brand: { ...brand },
@@ -162,11 +166,11 @@ const light: SemanticTheme = {
     ...feedbackFromBaseJson,
   },
   chart: {
-    "1": c.chartLight1,
-    "2": c.chartLight2,
-    "3": c.chartLight3,
-    "4": c.chartLight4,
-    "5": c.chartLight5,
+    '1': c.chartLight1,
+    '2': c.chartLight2,
+    '3': c.chartLight3,
+    '4': c.chartLight4,
+    '5': c.chartLight5,
   },
   sidebar: {
     background: c.zinc50,
@@ -178,7 +182,7 @@ const light: SemanticTheme = {
     border: c.gray200,
     ring: c.blue500,
   },
-};
+}
 
 const dark: SemanticTheme = {
   brand: { ...brand },
@@ -223,11 +227,11 @@ const dark: SemanticTheme = {
     ...feedbackFromBaseJson,
   },
   chart: {
-    "1": c.chartDark1,
-    "2": c.chartDark2,
-    "3": c.chartDark3,
-    "4": c.chartDark4,
-    "5": c.chartDark5,
+    '1': c.chartDark1,
+    '2': c.chartDark2,
+    '3': c.chartDark3,
+    '4': c.chartDark4,
+    '5': c.chartDark5,
   },
   sidebar: {
     background: c.zinc900,
@@ -239,6 +243,9 @@ const dark: SemanticTheme = {
     border: c.zinc800,
     ring: c.blue500,
   },
-};
+}
 
-export const semanticThemes: Readonly<Record<SemanticMode, SemanticTheme>> = { light, dark };
+export const semanticThemes: Readonly<Record<SemanticMode, SemanticTheme>> = {
+  light,
+  dark,
+}

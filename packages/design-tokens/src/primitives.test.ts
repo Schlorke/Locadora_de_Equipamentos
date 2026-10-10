@@ -339,7 +339,7 @@ describe('hslTripleToHex (conversão documentada)', () => {
   })
 })
 
-describe('paridade com design-tokens/base.json', () => {
+describe('paridade com __tests__/fixtures/base.json', () => {
   it('todo valor tem primitivo igual (0 sem mapeamento)', () => {
     const source = readBaseJson()
     expect(Object.keys(source)).toHaveLength(48)

@@ -38,15 +38,17 @@ o código não desaparecia do relatório por ser legado. As antigas raízes de
 código `app/`, `lib/`, `middlewares`, `schemas`, `types/global.d.ts`,
 `types/google-maps-ecl.d.ts` e `proxy.ts` foram retiradas no clone F.
 
-A configuração atual conserva `public` com runtime `browser-assets` e
-`design-tokens` com runtime `generated-token-compatibility`. O shim
-`types/next-auth.d.ts` permanece em `nonRuntimeRoots`, só de tipos, importando o
-entrypoint `@gb-locacoes/backend/identity`; não declara a pasta `types` inteira
-como legado. Hosts/pacotes mantêm seus próprios owners. Diretórios gerados de
-build/dependências e testes/documentação têm classificação explícita. Arquivo de
-runtime fora das raízes declaradas bloqueia, inclusive se uma antiga raiz for
-recriada; fixtures descartáveis ainda caracterizam os scopes explícitos de
-compatibilidade.
+A configuração atual conserva `public` com runtime `browser-assets`. Em
+2026-10-10, a referência original de tokens foi movida sem alteração de bytes
+para `packages/design-tokens/src/__tests__/fixtures/base.json`; a pasta
+`design-tokens` da raiz e sua declaração de compatibilidade foram retiradas. O
+shim `types/next-auth.d.ts` permanece em `nonRuntimeRoots`, só de tipos,
+importando o entrypoint `@gb-locacoes/backend/identity`; não declara a pasta
+`types` inteira como legado. Hosts/pacotes mantêm seus próprios owners.
+Diretórios gerados de build/dependências e testes/documentação têm classificação
+explícita. Arquivo de runtime fora das raízes declaradas bloqueia, inclusive se
+uma antiga raiz for recriada; fixtures descartáveis ainda caracterizam os scopes
+explícitos de compatibilidade.
 
 O typecheck inclui projetos separados para UI web/native, frontend web/native e
 hosts. packages/frontend/tsconfig.native.json inclui todas as variantes nativas,

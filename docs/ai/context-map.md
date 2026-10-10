@@ -1,5 +1,11 @@
 # AI Context Map
 
+**Organização dos tokens — 2026-10-10:** a antiga pasta `design-tokens` da raiz
+foi retirada após mover a referência original, com bytes preservados, para
+`packages/design-tokens/src/__tests__/fixtures/base.json`. Os tokens do runtime
+continuam em `packages/design-tokens/src`; leitor e guards foram atualizados. Os
+checkpoints anteriores abaixo conservam a estrutura existente na sua data.
+
 Continuidade vigente da onda 135 — decisão humana de 2026-10-09: interface
 aceita. A primeira etapa C foi publicada em `Schlorke/Locadora_de_Equipamentos`
 no commit `978ceb9244c81c7cb2888b798fad8ce90edad25e`, com a tag

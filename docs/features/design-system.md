@@ -124,6 +124,12 @@ responsabilidade, cabeçalho de 1 a 3 linhas e no máximo 300 linhas):
 
 ### Tokens no design-tokens
 
+Os tokens do produto pertencem a `packages/design-tokens/src`. A referência
+original dos valores fica em
+`packages/design-tokens/src/__tests__/fixtures/base.json`, lida somente pelos
+testes de paridade. A antiga pasta `design-tokens` da raiz foi retirada em
+2026-10-10 após mover esse arquivo sem alterar seus bytes.
+
 - `theme.css`: triplas HSL do claro e do escuro (`hsl(var(--x))`), `--radius`,
   `--header-height` e as camadas de sobreposição.
 - `z-index` só por token: `--layer-base`, `--layer-step`, `--layer-inset`,
@@ -536,8 +542,9 @@ pnpm design-system:storybook
 ### **2. Atualização de Design Tokens**
 
 ```bash
-# 1. Editar os tokens em packages/design-tokens/src (e design-tokens/base.json,
-#    que primitives.test.ts compara com primitives.ts)
+# 1. Editar os tokens em packages/design-tokens/src. Em uma mudança intencional
+#    de valores, atualizar também __tests__/fixtures/base.json, comparado com
+#    primitives.ts por primitives.test.ts.
 # 2. Conferir
 pnpm tokens
 pnpm check:tokens

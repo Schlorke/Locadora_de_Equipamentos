@@ -400,12 +400,6 @@ const ALLOWED: ReadonlyArray<{
     reason:
       'Comentário que explica por que os tokens do Style Dictionary não entravam como cor; a entrada 227 o deixou para o dono do arquivo, fora do lote fechamento-final.',
   },
-  {
-    file: 'packages/design-tokens/src/primitives.ts',
-    artifact: 'pipeline do Style Dictionary',
-    reason:
-      'Chama de "Style Dictionary da raiz" o design-tokens/base.json, que fica (lido por primitives.test.ts e web-sources.ts); arquivo fora do lote fechamento-final.',
-  },
 ]
 
 const COMMENT_LINE = /^\s*(?:\/\/+|\/\*+|\*+\/?|#+(?![\w{[]))\s?/

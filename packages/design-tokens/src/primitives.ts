@@ -1,6 +1,6 @@
 // Nível 1 do design system: primitivos. Valores crus usados pelo web aprovado, lidos de
 // quatro fontes (2026-09-26; a paleta, inteira, desde 2026-09-29), sem valor inventado:
-//   1. design-tokens/base.json (Style Dictionary da raiz);
+//   1. __tests__/fixtures/base.json (referência original preservada pelos testes);
 //   2. packages/design-tokens/src/theme.css (tema: :root, .dark e :root de ≥640px);
 //   3. packages/design-tokens/src/tokens.css (tokens nomeados do CSS web; as antigas variáveis --legacy-* com nome
 //      de hash viraram tokens nomeados aqui em 2026-09-29);
