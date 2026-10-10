@@ -50,7 +50,7 @@ export function readPlatformBuildEnv(env) {
   return { environment, rootDomain, protocol, publicPort }
 }
 
-/** Hosts de imagem remota que a raiz legada já aceitava (next.config.mjs da raiz), além do Supabase do projeto. */
+/** Hosts aceitos pelo antigo next.config.mjs da raiz, retirado em F; o host web mantém essa lista, além do Supabase do projeto. */
 const LEGACY_REMOTE_IMAGE_HOSTS = [
   'via.placeholder.com',
   'images.unsplash.com',

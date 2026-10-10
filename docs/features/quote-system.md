@@ -80,7 +80,12 @@ Página Admin de Orçamentos (/admin/orcamentos)
 
 ### 3.2. Página de Orçamento (`/orcamento`)
 
-**Localização**: `app/orcamento/page.tsx`
+**Localização**:
+`packages/frontend/src/pages/orcamento/ui/OrcamentoPage.web.tsx`; rota fina em
+`apps/clients/web/src/app/(public)/[locadora]/(vitrine)/orcamento/page.tsx`. O
+modelo `pages/orcamento/model/use-quote-page.ts` concentra o fluxo comum;
+`OrcamentoPage.native.tsx` fornece as portas nativas. O host não duplica a tela
+nem leva Prisma ou regras financeiras para o cliente.
 
 **O que o cliente vê**:
 
@@ -109,8 +114,10 @@ Página Admin de Orçamentos (/admin/orcamentos)
 3. **Disponibilidade**: Sistema valida disponibilidade de cada item nas suas
    datas específicas
 4. **CPF ou CNPJ**: Pelo menos um deve ser preenchido
-5. **CPF/CNPJ valido**: API valida `validateCPF`/`validateCNPJ`; invalidos
-   retornam erro
+5. **CPF/CNPJ valido**: o formulário usa `validateCPF`/`validateCNPJ` expostos
+   pela entidade orçamento. A entrada HTTP é validada pelo schema de contracts;
+   essas funções de UI não devem ser descritas como uma validação fiscal
+   adicional já presente em `QuoteRequestSchema`.
 6. **Empresa Obrigatória**: Se CNPJ é informado, empresa é obrigatória
 7. **Endereço Obrigatório**: Se tipo de entrega é DELIVERY, endereço completo é
    obrigatório
@@ -123,6 +130,7 @@ Página Admin de Orçamentos (/admin/orcamentos)
 
 ```typescript
 {
+  tenantSlug: string // Locadora explícita; no host de locadora deve repetir o slug da borda
   customerName: string
   customerEmail: string
   customerPhone: string
@@ -151,15 +159,21 @@ Página Admin de Orçamentos (/admin/orcamentos)
 4. Gera `quoteCode` único no padrão `Q-ANO-SEQUENCIAL` (ex.: `Q-2026-0001`)
 5. Salva no banco de dados: `Quote` (orçamento principal) e `QuoteItem[]`
    (itens)
-6. Envia email de confirmação para o cliente
-7. Tenta gerar boleto automaticamente apos criar o orcamento (CPF/CNPJ e total >
-   0); falhas sao logadas e nao interrompem o fluxo.
-8. Locacao e criada somente apos pagamento confirmado.
+6. Na mesma transação, enfileira `quote.created.notify` na outbox com `tenantId`
+   e chave de deduplicação; o 201 confirma persistência, não envio de e-mail ou
+   emissão no provedor.
+7. Criação, disponibilidade e preço usam a locadora resolvida antes do schema;
+   um usuário de sessão associado ao pedido precisa ter vínculo CLIENT vigente
+   nela. A ausência de vínculo conserva a recusa do backend.
+8. Conversão e cobrança seguem as políticas de quitação/paymentTerms abaixo;
+   criar um orçamento não confirma pagamento, estoque reservado ou locação.
 
 #### 3.3.1 Boleto (Asaas)
 
-- O boleto pode ser gerado automaticamente na criacao do orcamento (status
-  PENDING) quando ha CPF/CNPJ e total > 0.
+- A criação do orçamento persiste PENDING e enfileira a notificação. A emissão
+  usa os casos de cobrança/outbox; o retorno 201 da criação não declara boleto
+  emitido. A operação de geração administrativa pode retornar 202 PENDING ou 200
+  quando já há documento disponível.
 - Se o valor final for ajustado com boleto pendente, o boleto e regenerado com o
   valor atualizado (PDF deve ser reenviado ao cliente). Desde a onda 6 so a
   cobranca `PENDING` nunca emitida muda de valor; cobranca ja emitida no
@@ -188,7 +202,8 @@ Página Admin de Orçamentos (/admin/orcamentos)
   com tentativa desse `transactionId` em `CANCELLED` ou `cancellationStatus`
   `CONFIRMED`. Sem prova, a emissao consulta o provedor pela integracao Asaas
   ativa da locadora (onda 5: leitor `readTenantProviderCharge` ligado em
-  `lib/quote-boleto.ts`, criterio em
+  `apps/services/api/src/host/payments.ts`, por
+  `createTenantProviderChargeReader`, criterio em
   `packages/backend/src/modules/billing/cancelled-charges.ts`): cobranca
   removida emite um unico boleto novo; aberta com o mesmo valor e meio reativa a
   linha local sem boleto novo; ja paga reativa e confirma pela outbox;
@@ -200,9 +215,13 @@ Página Admin de Orçamentos (/admin/orcamentos)
   `docs/guides/legacy-cents-reconciliation.md`).
 - O envio para o cliente e feito manualmente pelo admin (preview + envio).
 - Vencimento padrao: 3 dias uteis a partir da geracao.
-- A key pode ser definida em `ASAAS_API_KEY` (ou `BOLETO_API_KEY`).
-- Se a key comeca com `$`, escape no `.env*` usando `\` (ex.:
-  `ASAAS_API_KEY="\$..."`) para evitar expansao do `@next/env`.
+- A composição atual resolve a credencial da integração ativa da locadora por
+  `createIntegrationCredentialResolver`, de backend/runtime. Uma chave global
+  não substitui o vínculo `TenantIntegration` nem autoriza usar a conta de outra
+  locadora. Consulte o manifesto de variáveis para os nomes da família dinâmica;
+  nunca registre o valor da credencial nesta documentação.
+- Operação de Asaas real e infraestrutura são uma etapa posterior; testes locais
+  e retirada da raiz não autorizam emissão externa.
 
 ### 3.4. Area do Cliente - Historico de Orcamentos
 
@@ -285,7 +304,10 @@ monthlyUseDirectValue?: boolean
 
 ## 5. Página Admin de Orçamentos
 
-**Localização**: `app/admin/orcamentos/page.tsx`
+**Localização**: `packages/frontend/src/pages/orcamentos-admin`; rotas finas em
+`apps/clients/web/src/app/(admin)/admin/orcamentos/page.tsx` e `[id]/page.tsx`
+da mesma pasta. APIs e modelos da própria página mantêm os filtros e descartam
+respostas de escopos encerrados.
 
 ### 5.1. Visões Disponíveis
 
@@ -348,24 +370,32 @@ monthlyUseDirectValue?: boolean
 
 ### 6.3. Schema Prisma
 
+Trechos de `prisma/schema.prisma`, não modelos completos. A chave operacional do
+orçamento é única por locadora. `tenantId` nullable existe para dados legados
+sem atribuição em quarentena; pedidos novos recebem o tenant do principal/borda
+resolvidos, sem aceitá-lo como escolha livre do corpo.
+
 ```prisma
 model Quote {
   // ... outros campos
-  quoteCode         String?       @unique
+  tenantId          String?
+  quoteCode         String?
   legacyExternalCode String?
   paymentTerms      QuotePaymentTerms @default(UPFRONT)
   deliveryType        DeliveryType?  // DELIVERY ou PICKUP
   deliveryAddress     Json?          // Endereço completo (quando DELIVERY)
   deliveryFee         Decimal?       // Taxa de entrega
   // ... outros campos
+  @@unique([tenantId, quoteCode])
 }
 
 model QuoteItem {
-  id              String    @id
+  tenantId        String?
+  id              String    @id @default(cuid())
   quoteId         String
   equipmentId     String
-  quantity        Int
-  days            Int
+  quantity        Int       @default(1)
+  days            Int       @default(1)
   pricePerDay     Decimal
   total           Decimal
   // Datas específicas deste item
@@ -429,7 +459,12 @@ admin para ser aplicada.
 - `PATCH /api/admin/quotes/[id]` com `{ lateFee, lateFeeApproved }`: Aprova
   multa
 
-**Utilitário**: `lib/late-fee-calculator.ts`
+**Cálculo puro**: `packages/domain/src/orcamento/multa.ts`, exportado por
+`@gb-locacoes/domain/orcamento`. A simulação administrativa é
+`calculateQuoteLateFee` em backend/quotations/administration, composta pelo host
+API; não grava multa. A aprovação passa pelo caso de atualização do orçamento,
+que recalcula a obrigação em centavos. O padrão conserva 2% ao dia, 30 dias de
+cálculo, mínimo R$ 50 e máximo R$ 5.000.
 
 ### 7.3. Registro de Perdas de Peças
 
@@ -453,7 +488,10 @@ admin nao muda status.
 - Bloqueia apos pagamento confirmado
 - Validacao server-side sempre antes de criar
 
-**Logica**: `lib/equipment-availability.ts`
+**Logica**: `packages/backend/src/modules/rentals/availability.ts`
+(`createRentalAvailability`, exportado por `@gb-locacoes/backend/rentals`).
+Composição em `apps/services/api/src/host/quotations.ts` e `host/rentals.ts`; as
+consultas e locks ficam no backend, sob o contexto da locadora.
 
 #### 7.4.1. Quitacao vigente (conversao, check-out e estoque)
 
@@ -484,7 +522,9 @@ aguarda confirmacao do usuario (alternativa: soma pura, como
 `resolvePaymentObligation`).
 
 Implementacao em `@gb-locacoes/backend/rentals` (conversao, disponibilidade) e
-`@gb-locacoes/backend/quotations` (boleto); `lib/*` sao fachadas de composicao.
+`@gb-locacoes/backend/quotations` (boleto); as composições atuais são
+`apps/services/api/src/host/quotations.ts`, `rentals.ts` e `payments.ts`.
+Domínio puro não contém persistência, leitura de sessão ou credenciais.
 Validacao: `tests/unit/quote-settlement-database.test.ts` e
 `tests/unit/rental-reservation.test.ts`.
 
@@ -551,22 +591,29 @@ trava `:issue:`, esperando no `pg_locks`),
 
 ## 8. Arquivos Principais
 
-| Arquivo                                                     | Propósito                                |
-| :---------------------------------------------------------- | :--------------------------------------- |
-| `app/orcamento/page.tsx`                                    | Página pública de orçamento              |
-| `app/admin/orcamentos/page.tsx`                             | Página admin de orçamentos               |
-| `app/api/quotes/route.ts`                                   | API para criar orçamento                 |
-| `app/api/admin/quotes/route.ts`                             | API admin para gerenciar orçamentos      |
-| `packages/frontend/src/entities/equipamento/model/preco.ts` | Sistema de cálculo de preços             |
-| `packages/frontend/src/entities/orcamento/model/preco.ts`   | Cálculo de preços para orçamentos        |
-| `packages/domain/src/equipamento/preco.ts`                  | Preço exato em Decimal (fonte única)     |
-| `packages/domain/src/orcamento/obrigacao.ts`                | Regra única da obrigação do orçamento    |
-| `packages/backend/src/modules/quotations/base-charges.ts`   | Cobranças base sob a trava `:issue:`     |
-| `prisma/schema.prisma`                                      | Models `Quote` e `QuoteItem`             |
-| `lib/validations/index.ts`                                  | Schema de validação `QuoteRequestSchema` |
-| `packages/frontend/src/features/carrinho/model/carrinho.ts` | Interface `CartItem`                     |
-
----
+| Arquivo                                                                     | Propósito                                                    |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `packages/frontend/src/pages/orcamento/ui/OrcamentoPage.web.tsx`            | Tela web pública                                             |
+| `packages/frontend/src/pages/orcamento/ui/OrcamentoPage.native.tsx`         | Tela nativa e portas da plataforma                           |
+| `packages/frontend/src/pages/orcamento/model/use-quote-page.ts`             | Fluxo comum de pedido, escopo e endereços                    |
+| `packages/frontend/src/pages/orcamento/api/quote-api.ts`                    | Transporte configurado, sem regras financeiras               |
+| `apps/clients/web/src/app/(public)/[locadora]/(vitrine)/orcamento/page.tsx` | Rota fina da vitrine                                         |
+| `packages/frontend/src/pages/orcamentos-admin`                              | Modelos/API e variantes web/native administrativas           |
+| `apps/clients/web/src/app/(admin)/admin/orcamentos/page.tsx`                | Rota fina administrativa                                     |
+| `apps/services/api/src/app/api/quotes/route.ts`                             | Listagem privada e criação com locadora explícita            |
+| `apps/services/api/src/app/api/admin/quotes/route.ts`                       | Lista administrativa com QUOTES/READ                         |
+| `apps/services/api/src/host/quotations.ts`                                  | Composição de casos de orçamento e transações                |
+| `packages/contracts/src/quotations.ts`                                      | Schemas públicos; export `@gb-locacoes/contracts/quotations` |
+| `packages/domain/src/equipamento/preco.ts`                                  | Preço exato em Decimal                                       |
+| `packages/domain/src/orcamento/obrigacao.ts`                                | Obrigação única, reajustes e multa aprovada                  |
+| `packages/domain/src/orcamento/multa.ts`                                    | Cálculo puro e configuração padrão de multa                  |
+| `packages/backend/src/modules/quotations/quote-request.ts`                  | Persistência, catálogo, locks e outbox por tenant            |
+| `packages/backend/src/modules/quotations/base-charges.ts`                   | Cobranças base sob a trava `:issue:`                         |
+| `packages/backend/src/modules/rentals/availability.ts`                      | Disponibilidade e estoque por locadora                       |
+| `packages/frontend/src/entities/equipamento/model/preco.ts`                 | Consumo dos cálculos de equipamento                          |
+| `packages/frontend/src/entities/orcamento/model/preco.ts`                   | Consumo dos cálculos de orçamento                            |
+| `packages/frontend/src/features/carrinho/model/carrinho.ts`                 | Contrato de item do carrinho                                 |
+| `prisma/schema.prisma`                                                      | Models de persistência Quote/QuoteItem                       |
 
 ## 9. Armadilhas a Evitar
 
@@ -629,9 +676,10 @@ _Última atualização: 2026-10-02 (incremento local, sem commit)_
 
 ## Host compartilhado — onda 34
 
-GET/DELETE /api/quotes/[id] e GET /api/admin/quotes e /[id] também estão
-compostos em apps/services/api. As regras permanecem nas factories existentes de
-backend/quotations; os clientes continuam consumindo a origem legada.
+Registro histórico da onda 34: GET/DELETE /api/quotes/[id] e GET
+/api/admin/quotes e /[id] também estavam compostos em apps/services/api. As
+regras permanecem nas factories existentes de backend/quotations; os clientes
+continuam consumindo a origem legada.
 
 O detalhe do cliente conserva posse por usuário/locadora, Decimals numéricos,
 status lowercase e metadata de pagamento nula quando REJECTED. DELETE apenas
@@ -646,12 +694,13 @@ bloco ao final da onda. Evidências e limites em
 
 ## Host compartilhado — lista do cliente (onda 35)
 
-GET /api/quotes também está montado no serviço. A query e transformação antes
-presentes no handler legado pertencem a quotations/client-portal, compartilhadas
-por ambos os adapters. Mantém posse por tenant/usuário, exclusão de linhas
-ocultas, números, datas ISO, status lowercase e ordenação. Header privado e Vary
-Cookie/x-tenant-id preservados. A lista conserva metadata dos pagamentos como
-antes; a política de REJECTED do detalhe continua específica daquele contrato.
+Registro histórico da onda 35: GET /api/quotes também foi montado no serviço. A
+query e transformação antes presentes no handler legado pertencem a
+quotations/client-portal, compartilhadas por ambos os adapters. Mantém posse por
+tenant/usuário, exclusão de linhas ocultas, números, datas ISO, status lowercase
+e ordenação. Header privado e Vary Cookie/x-tenant-id preservados. A lista
+conserva metadata dos pagamentos como antes; a política de REJECTED do detalhe
+continua específica daquele contrato.
 
 No checkpoint da onda 35, POST público e demais mutações administrativas de
 orçamento continuavam somente legados; a onda 36 abaixo monta os mesmos casos de
@@ -660,11 +709,15 @@ da onda em [API compartilhada](shared-api-host.md), seção da onda 35.
 
 ## Host compartilhado — mutações de orçamento (onda 36)
 
-POST /api/quotes e PATCH/DELETE /api/admin/quotes/[id], GET/POST adjustments,
-DELETE adjustments/[adjustmentId], POST calculate-late-fee, convert-to-rental e
-send-adjusted-quote estão também montados no serviço parcial. Casos de uso de
-quotations/rentals continuam autoritativos; quatro schemas existentes são comuns
-em contracts/quotations e lib/validations mantém seu export público.
+Registro histórico da onda 36: POST /api/quotes e PATCH/DELETE
+/api/admin/quotes/[id], GET/POST adjustments, DELETE adjustments/[adjustmentId],
+POST calculate-late-fee, convert-to-rental e send-adjusted-quote estão também
+montados no serviço parcial. Casos de uso de quotations/rentals continuam
+autoritativos; quatro schemas existentes são comuns em contracts/quotations.
+Nesse checkpoint histórico, a fachada a antiga `lib/validations`, retirada em F,
+ainda mantinha o export público; após a retirada da raiz, os adapters importam
+diretamente `@gb-locacoes/contracts/quotations`. A composição atual
+correspondente é `apps/services/api/src/host/quotations.ts`.
 
 As diferenças de papel/permissão do legado foram conservadas. Reajustes usam
 centavos e preservam histórico; DELETE desse histórico retorna 409. Simulação de

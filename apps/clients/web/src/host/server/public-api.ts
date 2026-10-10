@@ -373,8 +373,8 @@ async function publicList(
 }
 
 /**
- * Catálogo do sitemap.xml da locadora (S13; onda 135, A7): os equipamentos disponíveis e, como o `app/sitemap.ts` da
- * raiz legada, as categorias com ao menos um equipamento disponível (o filtro `/equipamentos?categoria=`), com a data
+ * Catálogo do sitemap.xml da locadora (S13; onda 135, A7): os equipamentos disponíveis e, como o antigo `app/sitemap.ts`
+ * da raiz retirado no clone F, as categorias com ao menos um equipamento disponível (o filtro `/equipamentos?categoria=`), com a data
  * de alteração de cada uma. Falha ou resposta fora do contrato em qualquer das duas leituras lança; o sitemap mantém
  * só as páginas fixas, como a raiz fazia.
  */

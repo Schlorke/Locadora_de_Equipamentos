@@ -470,7 +470,10 @@ escopo. Ver comentários em `handleToggleStar` e nas props de `EmailMessageList`
   - Criado `EmailLayoutContainer` com layout unificado e resizable
   - Modificado `EmailViewer` com botão Expandir
   - Criado `EmailFullViewDialog` para visualização completa
-  - Refatorado `app/admin/email/page.tsx` para usar novo layout
+  - Refatorado o wrapper antigo `app/admin/email/page.tsx` para usar novo layout
+    naquela data; retirado em F. A apresentação atual está em
+    `packages/frontend/src/pages/email-admin/ui/EmailAdminPage.web.tsx`,
+    consumida pelo host web através da entrada pública da slice.
   - Implementada persistência de preferências (localStorage)
   - Adicionada responsividade mobile/tablet com Sheet
   - Melhorias de acessibilidade (ARIA labels, keyboard nav, focus states)

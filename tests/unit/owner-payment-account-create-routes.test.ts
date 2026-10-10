@@ -4,12 +4,8 @@ const mock = vi.hoisted(() => ({
   creation: vi.fn(),
   session: vi.fn(),
 }))
-vi.mock('../../lib/tenant', () => ({ resolveTenantPrincipal: mock.gate }))
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: mock.gate,
-}))
-vi.mock('../../lib/application-session', () => ({
-  getServerSession: mock.session,
 }))
 vi.mock('../../apps/services/api/src/host/session', () => ({
   getServerSession: mock.session,
@@ -17,10 +13,6 @@ vi.mock('../../apps/services/api/src/host/session', () => ({
 vi.mock('@gb-locacoes/backend/runtime', () => ({
   handleConfiguredPaymentAccountCreation: mock.creation,
 }))
-import {
-  GET as legacyGET,
-  POST as legacyPOST,
-} from '../../app/api/admin/payment-account/create/route'
 import {
   GET as apiGET,
   POST as apiPOST,
@@ -42,8 +34,6 @@ beforeEach(() => {
   )
 })
 it.each([
-  ['legacy GET', legacyGET, 'GET'],
-  ['legacy POST', legacyPOST, 'POST'],
   ['service GET', apiGET, 'GET'],
   ['service POST', apiPOST, 'POST'],
 ] as const)(

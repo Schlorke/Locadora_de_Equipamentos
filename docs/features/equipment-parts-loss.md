@@ -70,12 +70,20 @@ Array<{
 
 - **PUT `/api/admin/equipments/[id]`**: Atualiza equipamento com histórico de
   perdas
-  - Body: `{ partsLossHistory: Array, partsLossCount: number }`
+  - Campos de perdas no body:
+    `{ partsLossHistory: Array, partsLossCount: number }`, junto dos campos
+    obrigatórios da edição (`name`, `pricePerDay`, `categoryId`). A rota
+    `apps/services/api/src/app/api/admin/equipments/[id]/route.ts` exige
+    permissão `EQUIPMENTS/WRITE`; `host/catalog.ts` compõe a atualização de
+    `packages/backend/src/modules/catalog/equipments.ts` dentro da transação da
+    locadora, sem usar `User.role` global para autorizar.
 
 ### 3.3. Componentes Frontend
 
-- **`app/admin/equipamentos/[id]/editar/page.tsx`**: Formulário de edição com
-  seção de perdas
+- **`apps/clients/web/src/app/(admin)/admin/equipamentos/[id]/editar/page.tsx`**:
+  host fino que consome `EditarEquipamentoPage` da entrada pública
+  `@gb-locacoes/frontend/pages/equipamentos-admin`. A seção de perdas pertence a
+  `packages/frontend/src/pages/equipamentos-admin/ui/Editar.web.tsx`.
 - **`packages/frontend/src/pages/equipamentos-admin/ui/VerEquipamento.web.tsx`**:
   Visualização de perdas
 

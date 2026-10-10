@@ -1,3 +1,6 @@
+import { ensureQuoteBoletoPayment } from '../../apps/services/api/src/host/payments'
+import { withTenantTransaction } from '../../apps/services/api/src/host/tenant-transaction'
+import { getDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 /**
  * Regra única do valor da obrigação do orçamento, pelas rotas reais sobre o
  * PostgreSQL descartável: toda edição que mexe no valor (itens, datas, frete,
@@ -23,9 +26,18 @@ import {
 } from 'vitest'
 
 const mocked = vi.hoisted(() => ({ principal: vi.fn() }))
-const fixtureDatabase = vi.hoisted(() => ({ prisma: undefined as unknown }))
-vi.mock('@/lib/prisma', async () => {
-  if (!process.env.TEST_DATABASE_URL) return { prisma: undefined }
+const fixtureDatabase = vi.hoisted(() => ({
+  prisma: undefined as unknown,
+  pool: undefined as import('pg').Pool | undefined,
+}))
+import { resolvePaymentObligation } from '../../packages/backend/src/modules/billing/payment-obligation'
+// Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
+// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()
+  if (!process.env.TEST_DATABASE_URL)
+    return { ...actual, getDatabaseRuntime: () => ({ prisma: undefined }) }
   const { requireTestDatabase } = await import('../helpers/test-database')
   const connectionString = requireTestDatabase(process.env)
   if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
@@ -34,36 +46,13 @@ vi.mock('@/lib/prisma', async () => {
   const { PrismaPg } = await import('@prisma/adapter-pg')
   const { PrismaClient } = await import('@prisma/client')
   const pool = new Pool({ connectionString, max: 8 })
-  return {
-    prisma: (fixtureDatabase.prisma = new PrismaClient({
-      adapter: new PrismaPg(pool),
-    })),
-    testPool: pool,
-  }
+  fixtureDatabase.pool = pool
+  const fixturePrisma = (fixtureDatabase.prisma = new PrismaClient({
+    adapter: new PrismaPg(pool),
+  }))
+  fixtureDatabase.prisma = fixturePrisma
+  return { ...actual, getDatabaseRuntime: () => ({ prisma: fixturePrisma }) }
 })
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => null,
-}))
-vi.mock('@/lib/tenant', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/lib/tenant')>()),
-  resolveTenantPrincipal: mocked.principal,
-}))
-vi.mock('@/lib/rate-limit', () => ({
-  checkRateLimit: () => ({ allowed: true }),
-  strictRateLimit: {},
-  adminApiRateLimit: {},
-}))
-
-import { prisma } from '@/lib/prisma'
-import { ensureQuoteBoletoPayment } from '@/lib/quote-boleto'
-import { resolvePaymentObligation } from '../../packages/backend/src/modules/billing/payment-obligation'
-import { withTenantTransaction } from '@/lib/tenant'
-// Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
-// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
-}))
 vi.mock('../../apps/services/api/src/host/rate-limit', () => ({
   checkRateLimit: () => ({ allowed: true }),
   strictRateLimit: {},
@@ -88,19 +77,10 @@ vi.mock(
     }))()),
   })
 )
-import * as legacyRoute0 from '@/app/api/admin/quotes/[id]/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/admin/quotes/[id]/route'
-import * as legacyRoute1 from '@/app/api/admin/quotes/[id]/adjustments/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/admin/quotes/[id]/adjustments/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      patchAdminQuote: legacyRoute0.PATCH,
-      createAdjustment: legacyRoute1.POST,
-    },
-  ],
   [
     'service',
     {
@@ -1064,9 +1044,7 @@ describe.each(HOSTS)('%s', (_host, { patchAdminQuote, createAdjustment }) => {
           paymentId: string,
           settled: () => boolean
         ) {
-          const { testPool } = (await import('@/lib/prisma')) as unknown as {
-            testPool: import('pg').Pool
-          }
+          const { testPool } = { testPool: requireFixturePool() }
           for (let attempt = 0; attempt < 400; attempt++) {
             const { rows } = await testPool.query<{ waiting: number }>(
               `SELECT count(*)::int AS waiting FROM pg_locks
@@ -1145,10 +1123,14 @@ describe.each(HOSTS)('%s', (_host, { patchAdminQuote, createAdjustment }) => {
 // O cliente e o pool do banco descartável são da fábrica deste arquivo: fecham uma vez, depois dos dois hosts.
 afterAll(async () => {
   if (!process.env.TEST_DATABASE_URL) return
-  const database = (await import('@/lib/prisma')) as unknown as {
-    prisma: { $disconnect(): Promise<void> }
-    testPool: { end(): Promise<void> }
-  }
+  const database = { prisma, testPool: requireFixturePool() }
   await database.prisma.$disconnect()
   await database.testPool.end()
 })
+
+const prisma = getDatabaseRuntime().prisma
+function requireFixturePool() {
+  const pool = fixtureDatabase.pool
+  if (!pool) throw new Error('Owned fixture pool was not initialized')
+  return pool
+}

@@ -2066,7 +2066,8 @@ export const COMBO_PASSES = [...BASE_PASSES, 'foco-mouse']
  * do navegador (a prova classe por classe não as vê): cada uma mostra uma restauração do lote css-paridade.
  * - `frames`: constantes de packages/ui/src/web (focus-ring.ts, field.ts, trigger.ts) lidas da fonte (uiFrames), antes
  *   de `classes`. Com `producao`, o lado da produção usa essas classes (o componente da main, cujo estilo vinha das
- *   regras globais de app/globals.css por elemento e atributo) e `props` limita a comparação às propriedades
+ *   regras globais da antiga app/globals.css, retirada em F e preservada como blob eb4c0098, por elemento e atributo)
+ *   e `props` limita a comparação às propriedades
  *   (expressão regular) que a combinação prova.
  * - `tag`, `attrs`, `parentClasses` (classes no pai) e `passes` (padrão COMBO_PASSES).
  */
@@ -2536,8 +2537,9 @@ const FOCUS_NATIVE_PASSES = Object.keys(FOCUS_PASSES).filter(
  * Elementos de packages/ui atingidos pela regra do foco (visível só no teclado, nunca no clique, nenhum contorno em
  * repouso em nenhum modo), com o DOM que o componente renderiza (Radix, Base UI) e as classes da versão atual
  * (`frames`, constantes lidas da fonte por uiFrames, mais `classes`) e da produção (`producao`: as do componente da
- * main; o resto vinha das regras globais de app/globals.css por papel, aria-label e aria-haspopup, que a fixture
- * resolve). Os testes de cada componente (trigger.test.tsx, *.foco.web.test.tsx, Checkbox, Tabs, CloseButton,
+ * main; o resto vinha das regras globais da antiga app/globals.css, retirada em F e preservada na fixture histórica,
+ * por papel, aria-label e aria-haspopup, que a fixture resolve). Os testes de cada componente
+ * (trigger.test.tsx, *.foco.web.test.tsx, Checkbox, Tabs, CloseButton,
  * SearchBar) provam que o componente aplica a moldura. `passes`: as passadas que o elemento vive (padrão: todas);
  * `teclado: 'halo'`: no modo normal o foco por teclado é uma sombra da produção, não o anel da marca.
  */

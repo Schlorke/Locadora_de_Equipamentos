@@ -80,7 +80,7 @@ export function isBlockedApi(pathname: string): boolean {
  * `basePath` do Better Auth por modo: a regra única de `@gb-locacoes/contracts/platform`, a mesma do cliente
  * (`host/auth/client.ts`), do app mobile e do backend. `null` no `legacy`, que não tem login por subdomínio, e sem modo
  * (falha fechada). No `better-auth-v2` o backend fica em `AUTH_MODE=legacy`: `/api/auth/*` é o NextAuth
- * (`app/api/auth/[...nextauth]`), que lê a ação só do primeiro segmento (`callback/credentials/oauth-proxy` é o callback
+ * (`apps/services/api/src/app/api/auth/[...nextauth]/route.ts`), que lê a ação só do primeiro segmento (`callback/credentials/oauth-proxy` é o callback
  * de credenciais dele). Por isso a entrada do cliente só vale no `basePath` do modo, nunca nos dois.
  */
 export { BETTER_AUTH_BASE_PATHS, betterAuthBasePath }

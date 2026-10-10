@@ -1,15 +1,12 @@
 // tailwind.config.cjs
 // Converted from ESM to CJS for compatibility with PostCSS in Next.js
-const path = require('node:path')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ['class'],
-  // Raiz legada. O produto (packages/frontend, packages/ui) e o host web entram pelos @source da entrada do CSS, que
-  // desliga a detecção automática; testes não são fonte de classes (e o @source not do CSS não vale para o content).
-  content: ['app', 'components', 'lib', 'hooks']
-    .map((dir) => path.join(__dirname, dir, '**/*.{js,jsx,ts,tsx,mdx}'))
-    .concat(['!' + path.join(__dirname, '**/*.{test,spec}.*')]),
+  // O produto e o host web são cobertos pelos @source explícitos do CSS.
+  // A raiz aposentada não fornece classes; testes continuam fora das fontes.
+  content: [],
   theme: {
     extend: {
       fontFamily: {

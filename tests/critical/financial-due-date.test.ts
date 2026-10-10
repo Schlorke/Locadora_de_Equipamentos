@@ -15,9 +15,6 @@ import {
 } from '../helpers/fixtures'
 
 let sessionUserId: string
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => ({ user: { id: sessionUserId } }),
-}))
 
 // Contraparte da API compartilhada (onda 135, E5): a mesma sessão no leitor do serviço (`host/session`), as mesmas
 // rotas montadas pelo serviço e o mesmo banco descartável (`getDatabaseRuntime`). A metade da raiz legada sai no F.
@@ -30,11 +27,6 @@ vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
 
 const { prisma } = getDatabaseRuntime()
 const HOSTS = [
-  {
-    name: 'legacy root',
-    adminFinancialEntriesIdDueDate: () =>
-      import('@/app/api/admin/financial/entries/[id]/due-date/route'),
-  },
   {
     name: 'service',
     adminFinancialEntriesIdDueDate: () =>

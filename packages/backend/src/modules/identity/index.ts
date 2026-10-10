@@ -1,4 +1,4 @@
-export type { Identity, IdentityMail } from './factory'
+export type { IdentityMail } from './factory'
 export { identityEnabled, identityMode } from './configuration'
 export type { IdentityMode } from './configuration'
 export { inspectIdentityMigration } from './preflight'
@@ -12,15 +12,12 @@ export type {
   MembershipRecord,
 } from './tenant-principal'
 export type {
-  LegacyAccount,
   LegacyAccountDatabase,
   LegacyCredentialVerification,
   LegacyHeaderSource,
   LegacySignInAttempt,
   LegacySignInDecision,
-  LegacySignInGuard,
 } from './legacy-credentials'
-export type { PlatformEdgeContext } from './platform-edge'
 export {
   isSameOriginMutation,
   rejectCrossOriginMutation,
@@ -57,18 +54,7 @@ export { createTenantPrincipalResolver } from './tenant-request-principal'
 export type { TenantPrincipalResolution } from './tenant-request-principal'
 export { createTenantPermissionResolver } from './tenant-permission'
 export { listTenantPermissions } from './tenant-permissions-read'
-export {
-  createIdentityLimiters,
-  createLegacySignInGuard,
-  limiterFailureFields,
-} from './rate-limit'
-export type {
-  IdentityLimiterOptions,
-  AuthAttemptScope,
-  AuthAttemptResult,
-  AccountFlowScope,
-  AccountNoticeKind,
-} from './rate-limit'
+export { createIdentityLimiters, limiterFailureFields } from './rate-limit'
 
 export { secretsMatch } from './webhook-auth'
 export { authenticatePlatformAsaasWebhook } from './platform-webhook'

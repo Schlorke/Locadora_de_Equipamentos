@@ -1,7 +1,8 @@
 # 📧 Sistema de Templates de Email - GB Locações
 
-> **Status**: ✅ Implementado e 100% Funcional **Última atualização**: Dezembro
-> 2024 **Compatibilidade**: Outlook, Gmail, Zoho, Apple Mail, Yahoo, ProtonMail
+> **Origem visual**: templates v2 de Dezembro 2024. A compatibilidade declarada
+> naquele registro não é uma nova validação de entrega nos clientes Outlook,
+> Gmail, Zoho, Apple Mail, Yahoo ou ProtonMail.
 
 ---
 
@@ -9,13 +10,14 @@
 
 Na onda 57 da extração incremental (2026-10-02, sem commit), os cinco
 renderizadores passam a morar em
-`packages/backend/src/modules/communications/email-templates.ts`.
-`lib/email-templates.ts` conserva a API de funções como fachada, usada pelo
-legado. HTML, parâmetros, assuntos, destinatários e chaves de entrega foram
-preservados; não houve mudança visual ou envio a provedores reais. O tipo de
-contato fica em `packages/contracts/src/quotations.ts`. Os efeitos de orçamento
-e boleto ficam em communications, com banco, marca e transporte injetados.
-Provas e limitações: [onda 57 da API compartilhada](shared-api-host.md).
+`packages/backend/src/modules/communications/email-templates.ts`. Naquela onda,
+o arquivo antigo `lib/email-templates.ts` conservava a API de funções como
+fachada do legado; foi retirado em F. HTML, parâmetros, assuntos, destinatários
+e chaves de entrega foram preservados naquele corte, sem mudança visual ou envio
+a provedores reais. O tipo de contato fica em
+`packages/contracts/src/quotations.ts`. Os efeitos de orçamento e boleto ficam
+em communications, com banco, marca e transporte injetados. Provas e limitações:
+[onda 57 da API compartilhada](shared-api-host.md).
 
 Sistema completo de templates de email para orçamentos e contatos, otimizado
 para **máxima compatibilidade** com todos os clientes de email através de:
@@ -79,20 +81,23 @@ Card Shadow: 0 4px 12px rgba(0, 0, 0, 0.05)
 ## 📁 Estrutura de Arquivos
 
 ```
-lib/
-├── email-templates.ts          # Funções geradoras de HTML
-│   ├── generateContactEmailHTML()
-│   └── generateQuoteEmailHTML()
-└── resend.ts                   # Cliente Resend
-
-app/api/
-├── contact/route.ts            # API formulário de contato
-├── orcamentos/route.ts         # API orçamentos (homepage)
-└── quotes/route.ts             # API orçamentos (/orcamento)
-
-public/email-templates/
-└── quote-template.html         # Template base para edição visual
+packages/backend/src/modules/communications/
+├── email-templates.ts          # renderizadores internos
+├── tenant-branding.ts          # Organization e URLs da locadora
+└── quote-created-effects.ts    # entrega dos eventos persistidos
+packages/backend/src/runtime/mail.ts # createResendClient(apiKey), sem singleton global
+apps/services/api/src/host/notification-effects.ts # composição dos ports
+apps/services/api/src/app/api/
+├── contact/route.ts            # contato persistido, 202/fila
+├── orcamentos/route.ts         # orçamento da homepage, 201/fila
+└── quotes/route.ts             # orçamento completo, 201/fila
+public/email-templates/quote-template.html # referência visual histórica
 ```
+
+O host usa factories públicas de communications; os geradores HTML não são
+reexportados por essa API. Prisma, chave Resend e corpo do email permanecem no
+servidor. `loadTenantBranding(context)` consulta a locadora ativa sob RLS, sem
+marca ou destinatário global de fallback.
 
 ---
 
@@ -100,7 +105,10 @@ public/email-templates/
 
 ### **1. generateContactEmailHTML()**
 
-Gera email HTML para formulários de contato simples.
+Gera email HTML para formulários de contato simples. Assinatura atual:
+`generateContactEmailHTML(branding, validatedData, contactId)`.
+`branding: EmailBranding` e `contactId: string` são obrigatórios; o efeito
+recebe o ID persistido, não gera um ID no renderer.
 
 **Parâmetros:**
 
@@ -119,7 +127,7 @@ validatedData: ValidatedContactData {
 
 **Características:**
 
-- ✅ Header com logo GB + data/hora
+- ✅ Header com marca da locadora + data/hora
 - ✅ Dados do cliente em blocos organizados
 - ✅ Informações adicionais (empresa/equipamento) se fornecidas
 - ✅ CPF/CNPJ se fornecidos
@@ -130,7 +138,10 @@ validatedData: ValidatedContactData {
 
 ### **2. generateQuoteEmailHTML()**
 
-Gera email HTML para orçamentos completos com equipamentos e valores.
+Gera email HTML para orçamentos completos com equipamentos e valores. Assinatura
+atual:
+`generateQuoteEmailHTML(branding, data, equipments, totalAmount, quoteId)`. O
+primeiro argumento é `EmailBranding` da locadora, carregado pelo backend.
 
 **Parâmetros:**
 
@@ -158,7 +169,7 @@ quoteId: string
 
 **Características:**
 
-- ✅ Header com logo GB + data/hora + ID do orçamento
+- ✅ Header com marca da locadora + data/hora + ID do orçamento
 - ✅ Dados do cliente
 - ✅ Tabela de equipamentos com valores
 - ✅ Valor total destacado em laranja
@@ -259,17 +270,23 @@ Label + Value Gap: 6px
 
 ```mermaid
 graph LR
-    A[Formulário] --> B[API Route]
-    B --> C{Validação Zod}
-    C -->|Sucesso| D[generateEmailHTML]
-    C -->|Erro| E[Error Response]
-    D --> F[Resend API]
-    F --> G{Email Enviado?}
-    G -->|Sim| H[Success Response]
-    G -->|Não| E
-    H --> I[Toast Notificação]
-    E --> J[Error Toast]
+    A[Formulário] --> B[API: locadora e origem]
+    B --> C{Validação}
+    C -->|Sucesso| D[Transação: Quote e Outbox]
+    C -->|Erro| E[Erro HTTP]
+    D --> H[201 orçamento ou 202 contato: aceito]
+    D --> W[Worker de outbox]
+    W --> M[Marca e destinatários do tenant]
+    M --> R[Renderer interno e Resend com idempotência]
+    R --> G{Entrega ao provedor}
+    G -->|Falha| Q[Retry do evento]
+    H --> I[Feedback da solicitação]
 ```
+
+Sucesso HTTP confirma persistência/agendamento; não comprova entrega. O contato
+vira Quote PENDING de total zero. O efeito consulta memberships ADMIN/OPERATOR
+ativos, preserva a chave por evento/destinatário e confirma por email o cliente
+do orçamento completo; contato não dispara essa confirmação do orçamento.
 
 ---
 
@@ -291,7 +308,11 @@ Antes de aprovar qualquer mudança:
 - [ ] ✅ Links de telefone clicáveis
 - [ ] ✅ Footer com instruções claras
 
-### **Clientes de Email Testados**
+### **Clientes de Email no registro de Dezembro 2024**
+
+Esta lista preserva o relato original. Compatibilidade presumida não equivale a
+um teste; esta revisão não realizou entregas externas nem revalidou esses
+clientes.
 
 - ✅ **Gmail** (web)
 - ✅ **Outlook** (web)
@@ -303,28 +324,31 @@ Antes de aprovar qualquer mudança:
 
 ## 🚀 Como Usar
 
-### **1. Formulário de Contato Simples**
+### **1. Renderização interna de contato e orçamento**
 
 ```typescript
-import { generateContactEmailHTML } from "@/lib/email-templates"
-import getResend from "@/lib/resend"
+// Exemplo interno de communications: loadTenantBranding e context são injetados.
+import { generateContactEmailHTML } from "./email-templates"
 
-const resend = getResend()
+const branding = await loadTenantBranding(context)
+const contactHtml = generateContactEmailHTML(
+  branding,
+  {
+    name: "João Silva",
+    email: "joao@exemplo.com",
+    phone: "51999887766",
+    message: "Preciso de orçamento",
+    company: "Construtora ABC", // opcional
+    equipment: "Andaime", // opcional
+    cnpj: "12.345.678/0001-90" // dado fictício para renderização
+  },
+  "contact-id-exemplo"
+)
 
-await resend.emails.send({
-  from: process.env.FROM_EMAIL!,
-  to: process.env.CONTACT_EMAIL!,
-  subject: `🎯 Novo Orçamento - ${validatedData.name}`,
-  html: generateContactEmailHTML(validatedData)
-})
-```
+import { generateQuoteEmailHTML } from "./email-templates"
 
-### **2. Orçamento Completo**
-
-```typescript
-import { generateQuoteEmailHTML } from "@/lib/email-templates"
-
-const html = generateQuoteEmailHTML(
+const quoteHtml = generateQuoteEmailHTML(
+  branding,
   {
     customerName: "João Silva",
     customerEmail: "joao@exemplo.com",
@@ -338,21 +362,34 @@ const html = generateQuoteEmailHTML(
       category: "Andaimes",
       quantity: 2,
       days: 15,
-      pricePerDay: 120.0,
-      total: 3600.0
+      pricePerDay: 120,
+      total: 3600
     }
   ],
-  3600.0,
-  "abc123def456"
+  3600,
+  "quote-id-exemplo"
 )
-
-await resend.emails.send({
-  from: process.env.FROM_EMAIL!,
-  to: process.env.CONTACT_EMAIL!,
-  subject: `🎯 Novo Orçamento #ABC123 - João Silva`,
-  html
-})
 ```
+
+Esses exemplos só geram HTML no módulo backend; não enviam email nem importam
+servidor no frontend. Os renderizadores não fazem parte da API pública de
+communications. O host compõe `createQuoteCreatedEffects` pela entrada
+`@gb-locacoes/backend/communications`; o worker usa a marca e o pedido da
+locadora persistidos, com destinatários e idempotência próprios.
+
+### **2. Entrega pelo efeito de outbox**
+
+`apps/services/api/src/host/notification-effects.ts` compõe
+`createQuoteCreatedEffects` com `withTenantTransaction`, `loadTenantBranding`,
+`getResend` e `fromEmail`. O worker chama
+`runQuoteCreatedEffects(context, eventId, { quoteId, kind: 'contact' })` para
+contato, ou `kind: 'quote'` para orçamento. O efeito lê o pedido persistido e
+endereços dos membros ativos da locadora; não usa `CONTACT_EMAIL` global para
+selecionar destinatários. `RESEND_API_KEY`/`FROM_EMAIL` ficam no host servidor;
+ausência de configuração é erro de entrega, não sucesso silencioso.
+
+Não copie um envio direto do renderer para a API: isso contornaria a transação,
+outbox, escopo e idempotência. Um teste do HTML não prova entrega no provedor.
 
 ---
 
@@ -373,9 +410,18 @@ Este arquivo contém o **HTML completo** do template e pode ser:
 1. Edite `public/email-templates/quote-template.html`
 2. Abra no navegador para visualizar mudanças
 3. Quando satisfeito, copie o HTML/CSS relevante
-4. Atualize `lib/email-templates.ts` com as mudanças
-5. Reinicie o servidor (`pnpm dev`)
-6. Teste enviando um formulário
+4. Porte somente a mudança autorizada para
+   `packages/backend/src/modules/communications/email-templates.ts`, preservando
+   branding, escape de HTML e chaves de entrega. O arquivo visual é referência
+   histórica, não um segundo renderer de produção.
+5. Valide o renderer/efeito com fixture de transporte e banco descartável;
+   iniciação dos hosts segue os scripts atuais do workspace.
+6. Entrega em cliente de email real exige ambiente e autorização próprios.
+
+`scripts/update-email-templates.cjs` é um helper antigo que grava previews em
+`public/email-templates/generated` e orienta colar HTML nas APIs. Ele não
+instala o renderer compartilhado; essa cópia direta não é o fluxo atual e seus
+gerados não devem ficar no repositório.
 
 ---
 

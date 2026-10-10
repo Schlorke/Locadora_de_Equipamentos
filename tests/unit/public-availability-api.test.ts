@@ -10,13 +10,6 @@ const db = vi.hoisted(() => ({
   rentals: vi.fn(),
   tenantSetting: vi.fn(),
 }))
-vi.mock('@/lib/prisma', () => ({
-  prisma: {
-    organization: { findUnique: db.organization },
-    $transaction: db.transaction,
-  },
-}))
-vi.mock('@/lib/application-session', () => ({ getServerSession: vi.fn() }))
 vi.mock('@gb-locacoes/backend/runtime', () => ({
   getDatabaseRuntime: () => ({
     prisma: {
@@ -25,7 +18,6 @@ vi.mock('@gb-locacoes/backend/runtime', () => ({
     },
   }),
 }))
-import { GET as legacy } from '@/app/api/equipments/[id]/availability/route'
 import { GET as service } from '../../apps/services/api/src/app/api/equipments/[id]/availability/route'
 
 beforeEach(() => {
@@ -63,73 +55,73 @@ const request = (query: string) =>
 const params = () => ({ params: Promise.resolve({ id: 'eq-alfa' }) })
 
 // Primeiro caracterizado no handler legado; depois aplicado ao serviço.
-describe.each([
-  ['legado', legacy],
-  ['serviço', service],
-] as const)('%s — adapter de disponibilidade', (_host, handler) => {
-  it('mês padrão usa UTC, cobre o ano bissexto e mantém a transação tenant', async () => {
-    const response = await handler(request(''), params())
-    expect(response.status).toBe(200)
-    const body = await response.json()
-    expect(body.month).toBe('2032-02')
-    expect(body.equipmentId).toBe('eq-alfa')
-    expect(body.maxStock).toBe(3)
-    expect(Object.keys(body.availability)).toHaveLength(29)
-    expect(body.availability['2032-02-29']).toEqual({
-      available: true,
-      availableQuantity: 3,
-      totalQuantity: 3,
-    })
-    expect(db.tenantSetting.mock.calls[0]![1]).toBe('tenant-alfa')
-    expect(db.equipment).toHaveBeenCalledWith({
-      where: { id: 'eq-alfa', tenantId: 'tenant-alfa' },
-      select: { id: true, name: true, maxStock: true, available: true },
-    })
-    expect(JSON.stringify(body)).not.toContain('private-equipment-name')
-  })
-  it('primeiro mês vence datas inválidas e segunda ocorrência', async () => {
-    const response = await handler(
-      request('&month=2030-01&month=bad&startDate=bad&endDate=bad'),
-      params()
-    )
-    expect(response.status).toBe(200)
-    expect(Object.keys((await response.json()).availability)).toHaveLength(31)
-  })
-  it('mês inválido recusa antes de ler o equipamento', async () => {
-    const response = await handler(request('&month=bad'), params())
-    expect(response.status).toBe(400)
-    expect(await response.json()).toEqual({
-      error: 'Formato de mês inválido. Use YYYY-MM',
-    })
-    expect(db.transaction).not.toHaveBeenCalled()
-  })
-  it('sem equipamento mantém o erro de domínio 404', async () => {
-    db.equipment.mockResolvedValue(null)
-    const response = await handler(request('&month=2030-01'), params())
-    expect(response.status).toBe(404)
-    expect(await response.json()).toEqual({
-      error: 'Equipamento não encontrado',
-    })
-  })
-  it('erro de domínio conserva somente mensagem e status', async () => {
-    db.equipment.mockRejectedValue(
-      new RentalMutationError('Locadora indisponível', 403, 'tenant_inactive')
-    )
-    const response = await handler(request('&month=2030-01'), params())
-    expect(response.status).toBe(403)
-    expect(await response.json()).toEqual({ error: 'Locadora indisponível' })
-  })
-  it.each(['organization', 'equipment'] as const)(
-    'falha em %s fica no servidor e responde 500 genérico',
-    async (stage) => {
-      db[stage].mockRejectedValue(new Error('fixture-private-db-error'))
-      const response = await handler(request('&month=2030-01'), params())
-      expect(response.status).toBe(500)
-      expect(await response.json()).toEqual({
-        error: 'Erro ao verificar disponibilidade',
+describe.each([['serviço', service]] as const)(
+  '%s — adapter de disponibilidade',
+  (_host, handler) => {
+    it('mês padrão usa UTC, cobre o ano bissexto e mantém a transação tenant', async () => {
+      const response = await handler(request(''), params())
+      expect(response.status).toBe(200)
+      const body = await response.json()
+      expect(body.month).toBe('2032-02')
+      expect(body.equipmentId).toBe('eq-alfa')
+      expect(body.maxStock).toBe(3)
+      expect(Object.keys(body.availability)).toHaveLength(29)
+      expect(body.availability['2032-02-29']).toEqual({
+        available: true,
+        availableQuantity: 3,
+        totalQuantity: 3,
       })
-      if (stage === 'organization')
-        expect(db.transaction).not.toHaveBeenCalled()
-    }
-  )
-})
+      expect(db.tenantSetting.mock.calls[0]![1]).toBe('tenant-alfa')
+      expect(db.equipment).toHaveBeenCalledWith({
+        where: { id: 'eq-alfa', tenantId: 'tenant-alfa' },
+        select: { id: true, name: true, maxStock: true, available: true },
+      })
+      expect(JSON.stringify(body)).not.toContain('private-equipment-name')
+    })
+    it('primeiro mês vence datas inválidas e segunda ocorrência', async () => {
+      const response = await handler(
+        request('&month=2030-01&month=bad&startDate=bad&endDate=bad'),
+        params()
+      )
+      expect(response.status).toBe(200)
+      expect(Object.keys((await response.json()).availability)).toHaveLength(31)
+    })
+    it('mês inválido recusa antes de ler o equipamento', async () => {
+      const response = await handler(request('&month=bad'), params())
+      expect(response.status).toBe(400)
+      expect(await response.json()).toEqual({
+        error: 'Formato de mês inválido. Use YYYY-MM',
+      })
+      expect(db.transaction).not.toHaveBeenCalled()
+    })
+    it('sem equipamento mantém o erro de domínio 404', async () => {
+      db.equipment.mockResolvedValue(null)
+      const response = await handler(request('&month=2030-01'), params())
+      expect(response.status).toBe(404)
+      expect(await response.json()).toEqual({
+        error: 'Equipamento não encontrado',
+      })
+    })
+    it('erro de domínio conserva somente mensagem e status', async () => {
+      db.equipment.mockRejectedValue(
+        new RentalMutationError('Locadora indisponível', 403, 'tenant_inactive')
+      )
+      const response = await handler(request('&month=2030-01'), params())
+      expect(response.status).toBe(403)
+      expect(await response.json()).toEqual({ error: 'Locadora indisponível' })
+    })
+    it.each(['organization', 'equipment'] as const)(
+      'falha em %s fica no servidor e responde 500 genérico',
+      async (stage) => {
+        db[stage].mockRejectedValue(new Error('fixture-private-db-error'))
+        const response = await handler(request('&month=2030-01'), params())
+        expect(response.status).toBe(500)
+        expect(await response.json()).toEqual({
+          error: 'Erro ao verificar disponibilidade',
+        })
+        if (stage === 'organization')
+          expect(db.transaction).not.toHaveBeenCalled()
+      }
+    )
+  }
+)

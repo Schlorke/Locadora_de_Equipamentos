@@ -81,10 +81,16 @@
 
 ## API do carrinho por locadora (corte 24, 2026-10-02)
 
-O legado (`app/api/cart`) e o serviço parcial
-(`apps/services/api/src/app/api/cart`) compõem a mesma factory
-`createCustomerCartService` de backend/customers. Clientes, origem configurada e
-scheduler continuam legados; não há cutover.
+Naquele corte, o adapter antigo (`app/api/cart`, retirado em F) e o serviço
+parcial (`apps/services/api/src/app/api/cart`) compunham a mesma factory
+`createCustomerCartService` de backend/customers. Clientes, origem e scheduler
+ainda eram legados naquele registro; não havia cutover.
+
+Hoje o dono HTTP é `apps/services/api/src/app/api/cart`; a composição está em
+`apps/services/api/src/host/customers.ts` e a implementação em
+`packages/backend/src/modules/customers/cart.ts`. Os consumidores FSD usam o
+HttpClient configurado nos hosts web/Expo; não há encaminhamento à raiz
+retirada.
 
 ### Contratos observados e preservados
 
@@ -116,11 +122,13 @@ scheduler continuam legados; não há cutover.
 
 ### Caracterização e evidências
 
-`tests/unit/cart-api.test.ts` exercita ambos os adapters sobre o serviço real,
-com transação simulada. `tests/api-host/cart.http.test.ts` compara HTTP com
-cookies reais, PostgreSQL RLS FORCE e papel temporário sem ownership/bypass,
-incluindo concorrência, espera real em pg_locks, rollback, preços e FKs.
-Relatório, comandos e resultados: corte 24 de `shared-api-host.md`.
+Na caracterização do corte24, `tests/unit/cart-api.test.ts` exercitava ambos os
+adapters sobre o serviço real, com transação simulada. Após F, o teste consome o
+adapter canônico da API; o arquivo da raiz antiga não é pré-requisito.
+`tests/api-host/cart.http.test.ts` compara HTTP com cookies reais, PostgreSQL
+RLS FORCE e papel temporário sem ownership/bypass, incluindo concorrência,
+espera real em pg_locks, rollback, preços e FKs. Relatório, comandos e
+resultados: corte 24 de `shared-api-host.md`.
 
 ### Integração dos consumidores (onda 61, 2026-10-03, sem commit)
 
@@ -132,7 +140,7 @@ persistência, sem copiar regras de preço.
 
 - Só sincroniza CLIENT confirmado quando o carrinho local está aberto para a
   locadora/usuário corretos e o vínculo corresponde à locadora da rota. No host
-  usa sua origem, sem header de seleção; no app/mobile captura x-tenant-id da
+  usa sua origem, sem header de seleção; no cliente Expo captura x-tenant-id da
   seleção validada. Visitante, papéis administrativos e seleção divergente da
   vitrine não iniciam chamadas de carrinho.
 - Primeira mesclagem usa `{ localCartItems }`, só com equipmentId/quantity/days,

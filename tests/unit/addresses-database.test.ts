@@ -1,8 +1,22 @@
+import { AddressNotFound } from '@gb-locacoes/backend/customers'
+import { getDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 import { randomUUID } from 'node:crypto'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-const fixtureDatabase = vi.hoisted(() => ({ prisma: undefined as unknown }))
-vi.mock('@/lib/prisma', async () => {
-  if (!process.env.TEST_DATABASE_URL) return { prisma: undefined }
+const fixtureDatabase = vi.hoisted(() => ({
+  prisma: undefined as unknown,
+  pool: undefined as import('pg').Pool | undefined,
+}))
+import {
+  AddressInputSchema,
+  AddressPatchSchema,
+} from '@gb-locacoes/contracts/addresses'
+// Contraparte da API compartilhada (onda 135, B5): o mesmo serviço de endereços montado pelo serviço
+// (`apps/services/api/src/host/customers.ts`), sobre o mesmo banco descartável pelo runtime do backend.
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()
+  if (!process.env.TEST_DATABASE_URL)
+    return { ...actual, getDatabaseRuntime: () => ({ prisma: undefined }) }
   const { requireTestDatabase } = await import('../helpers/test-database')
   if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
     throw new Error('Disposable opt-in required')
@@ -13,37 +27,21 @@ vi.mock('@/lib/prisma', async () => {
     connectionString: requireTestDatabase(process.env),
     max: 12,
   })
-  return {
-    prisma: (fixtureDatabase.prisma = new PrismaClient({
-      adapter: new PrismaPg(pool),
-    })),
-    testPool: pool,
-  }
+  fixtureDatabase.pool = pool
+  const fixturePrisma = (fixtureDatabase.prisma = new PrismaClient({
+    adapter: new PrismaPg(pool),
+  }))
+  fixtureDatabase.prisma = fixturePrisma
+  return { ...actual, getDatabaseRuntime: () => ({ prisma: fixturePrisma }) }
 })
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => null,
-}))
-import { prisma } from '@/lib/prisma'
-import {
-  AddressInputSchema,
-  AddressPatchSchema,
-} from '@gb-locacoes/contracts/addresses'
-// Contraparte da API compartilhada (onda 135, B5): o mesmo serviço de endereços montado pelo serviço
-// (`apps/services/api/src/host/customers.ts`), sobre o mesmo banco descartável pelo runtime do backend.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
-}))
-import * as legacyAddresses from '@/lib/customer-addresses'
 import {
   createAddress as serviceCreateAddress,
   listAddresses as serviceListAddresses,
   updateAddress as serviceUpdateAddress,
   deleteAddress as serviceDeleteAddress,
 } from '../../apps/services/api/src/host/customers'
-const { AddressNotFound } = legacyAddresses
+
 const HOSTS = [
-  ['legacy root', legacyAddresses],
   [
     'service',
     {
@@ -164,8 +162,13 @@ describe.skipIf(!process.env.TEST_DATABASE_URL).each(HOSTS)(
 afterAll(async () => {
   if (!process.env.TEST_DATABASE_URL) return
   await prisma.$disconnect()
-  const mocked = (await import('@/lib/prisma')) as unknown as {
-    testPool: { end(): Promise<void> }
-  }
+  const mocked = { testPool: requireFixturePool() }
   await mocked.testPool.end()
 })
+
+const prisma = getDatabaseRuntime().prisma
+function requireFixturePool() {
+  const pool = fixtureDatabase.pool
+  if (!pool) throw new Error('Owned fixture pool was not initialized')
+  return pool
+}

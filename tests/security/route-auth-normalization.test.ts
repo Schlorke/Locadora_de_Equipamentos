@@ -1,3 +1,11 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return { prisma: {} }
+}
 /**
  * Contrato HTTP das rotas normalizadas pela regra estrutural do inventário de
  * autorização (achado 108, tests/security/route-auth-inventory.test.ts): o
@@ -17,31 +25,36 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const mocks = vi.hoisted(() => ({
   principal: vi.fn(),
   transaction: vi.fn(),
-  admin: vi.fn(),
+  zohoTransaction: vi.fn(),
   cookie: '',
   deleted: vi.fn(),
   exchange: vi.fn(),
   mail: vi.fn(),
 }))
-vi.mock('@/lib/prisma', () => ({ prisma: {} }))
-vi.mock('@/lib/tenant', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/lib/tenant')>()),
-  resolveTenantPrincipal: mocks.principal,
-  withTenantTransaction: mocks.transaction,
-}))
-vi.mock('@/middlewares/require-admin', () => ({
-  requireAdminOrOperator: mocks.admin,
-}))
+
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
+
 vi.mock('next/headers', () => ({
   cookies: async () => ({
     get: () => ({ value: mocks.cookie }),
     delete: mocks.deleted,
   }),
 }))
-vi.mock('@/lib/zoho-mail', () => ({
-  exchangeCodeForTokens: mocks.exchange,
-  makeZohoMailRequest: mocks.mail,
-}))
+
 // Contraparte na API compartilhada (onda 135, B5): o mesmo gate e a mesma geração, pela composição do serviço. A regra
 // de papel (canManageContracts) é a real do backend; só a identidade e a geração são dublês.
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
@@ -57,9 +70,25 @@ vi.mock(
   })
 )
 
-import { POST as legacyGenerateContract } from '@/app/api/admin/rentals/[id]/contract/route'
+vi.mock('../../apps/services/api/src/host/tenant-transaction', () => ({
+  withTenantTransaction: mocks.zohoTransaction,
+}))
+vi.mock('@gb-locacoes/backend/communications', async (importOriginal) => {
+  const original =
+    await importOriginal<typeof import('@gb-locacoes/backend/communications')>()
+  return {
+    ...original,
+    createZohoMailClient: () => ({
+      ...original.createZohoMailClient(),
+      exchangeCodeForTokens: mocks.exchange,
+      makeZohoMailRequest: mocks.mail,
+    }),
+  }
+})
+import { zohoOAuthAuthorizationFailure } from '@gb-locacoes/backend/http'
+
 import { POST as serviceGenerateContract } from '../../apps/services/api/src/app/api/admin/rentals/[id]/contract/route'
-import { GET as zohoCallback } from '@/app/api/admin/zoho-mail/oauth/callback/route'
+import { GET as zohoCallback } from '../../apps/services/api/src/app/api/admin/zoho-mail/oauth/callback/route'
 
 const principalOf = (role: string) => ({
   tenantId: 'tenant-A',
@@ -77,10 +106,7 @@ beforeEach(() => {
   })
 })
 
-describe.each([
-  ['legacy root', legacyGenerateContract],
-  ['service', serviceGenerateContract],
-] as const)(
+describe.each([['service', serviceGenerateContract]] as const)(
   'POST /api/admin/rentals/[id]/contract (%s)',
   (_host, generateContract) => {
     const call = async () => {
@@ -251,9 +277,36 @@ describe('GET /api/admin/zoho-mail/oauth/callback', () => {
   it.each(table)(
     '%s, query %#: the same redirect',
     async (_who, auth, query, expected) => {
-      mocks.admin.mockResolvedValue(auth)
-      expect(await location(query)).toBe(expected)
+      const previous = auth as {
+        success: boolean
+        principal?: ReturnType<typeof principalOf>
+        error?: string
+      }
+      mocks.principal.mockResolvedValue(
+        previous.success
+          ? { ok: true, principal: previous.principal }
+          : { ok: false, error: previous.error }
+      )
+      // O resolvedor atual sempre devolve um error; preserve também o contrato
+      // histórico da função compartilhada quando um chamador não fornece mensagem.
+      if (!previous.success && previous.error === undefined) {
+        const refusal = zohoOAuthAuthorizationFailure(
+          new Request(
+            `https://app.plataforma.test/api/admin/zoho-mail/oauth/callback${query}`
+          ),
+          undefined
+        )
+        expect(refusal.status).toBe(307)
+        expect(refusal.headers.get('location')).toBe(expected)
+      }
+      expect(await location(query)).toBe(
+        !previous.success && previous.error === undefined
+          ? redirect('Acesso negado')
+          : expected
+      )
       expect(mocks.exchange).not.toHaveBeenCalled()
+      expect(mocks.mail).not.toHaveBeenCalled()
+      expect(mocks.zohoTransaction).not.toHaveBeenCalled()
       expect(mocks.transaction).not.toHaveBeenCalled()
     }
   )

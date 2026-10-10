@@ -3,6 +3,12 @@
 Data: 2026-09-25. Estado: implementado; não certifica paridade de produto nem
 execução em dispositivo.
 
+Atualização de inventário em 2026-10-09: a retirada local F está aplicada no
+clone independente da tag `checkpoint/onda-135-pre-exclusao`, commit publicado
+`978ceb9244c81c7cb2888b798fad8ce90edad25e`. Tipagem em 14 tarefas passou;
+consolidação das suítes, mutações e aceite P2/F permanecem pendentes. Não é
+atestação da árvore principal sem raiz ou de operação externa.
+
 ## Decisão
 
 O gate usa o AST TypeScript para enumerar imports, exports, requires, imports
@@ -25,12 +31,22 @@ bloqueiam com a cadeia de imports.
 
 ## Inventário explícito
 
-arch.config.json registra raízes legadas e arquivos de processo que não são
-runtime. O código legado não desaparece do relatório: app, lib, middlewares,
-schemas, stores, types, proxy.ts, instrumentation.ts, public e design-tokens da
-raiz são inventariados. Diretórios gerados de build/dependências e
-testes/documentação têm classificação explícita. Arquivo de runtime fora das
-raízes declaradas bloqueia.
+`arch.config.json` registra roots e arquivos de processo que não são runtime. No
+inventário histórico de 2026-09-25, app, lib, middlewares, schemas, stores,
+types, proxy.ts, instrumentation.ts, public e design-tokens eram inventariados;
+o código não desaparecia do relatório por ser legado. As antigas raízes de
+código `app/`, `lib/`, `middlewares`, `schemas`, `types/global.d.ts`,
+`types/google-maps-ecl.d.ts` e `proxy.ts` foram retiradas no clone F.
+
+A configuração atual conserva `public` com runtime `browser-assets` e
+`design-tokens` com runtime `generated-token-compatibility`. O shim
+`types/next-auth.d.ts` permanece em `nonRuntimeRoots`, só de tipos, importando o
+entrypoint `@gb-locacoes/backend/identity`; não declara a pasta `types` inteira
+como legado. Hosts/pacotes mantêm seus próprios owners. Diretórios gerados de
+build/dependências e testes/documentação têm classificação explícita. Arquivo de
+runtime fora das raízes declaradas bloqueia, inclusive se uma antiga raiz for
+recriada; fixtures descartáveis ainda caracterizam os scopes explícitos de
+compatibilidade.
 
 O typecheck inclui projetos separados para UI web/native, frontend web/native e
 hosts. packages/frontend/tsconfig.native.json inclui todas as variantes nativas,
@@ -65,10 +81,11 @@ componente que apenas retorna children pode passar arquitetura e ainda falhar
 funcionalmente. Essa lacuna deve ser tratada com receitas e testes de interação
 do catálogo.
 
-O gate chegou a zero após retirar as 15 raízes DOM remanescentes. Isso não
-significa que todo o produto foi conectado no Expo. Seleção de locadora,
-bootstrap de sessão, escopo de carrinho, rotas administrativas/cliente e
-componentes nativos incompletos continuam tendo critérios próprios.
+Na migração registrada em 2026-09-25, o gate chegou a zero após retirar as 15
+raízes DOM remanescentes. Isso não significa que todo o produto foi conectado no
+Expo. Seleção de locadora, bootstrap de sessão, escopo de carrinho, rotas
+administrativas/cliente e componentes nativos incompletos continuam tendo
+critérios próprios.
 
 ## Evidência reproduzível
 
@@ -80,8 +97,9 @@ componentes nativos incompletos continuam tendo critérios próprios.
 - pnpm build:web
 - pnpm --filter @gb-locacoes/mobile bundle
 
-Quatorze testes do verificador cobrem alias desconhecido, precedência de alias,
-FSD, reexports transitivos, DOM, bindings, servidor/cliente, RPC, imports
-dinâmicos e inventário legado. O resultado completo de cada execução deve ser
-informado: o catálogo do design system ainda tinha uma falha real de cobertura
-de receitas na primeira execução ampla posterior à migração.
+Na caracterização inicial, quatorze testes do verificador cobriram alias
+desconhecido, precedência de alias, FSD, reexports transitivos, DOM, bindings,
+servidor/cliente, RPC, imports dinâmicos e inventário legado. O resultado
+completo de cada execução deve ser informado: o catálogo do design system ainda
+tinha uma falha real de cobertura de receitas na primeira execução ampla
+posterior à migração.

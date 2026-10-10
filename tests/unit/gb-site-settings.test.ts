@@ -136,7 +136,7 @@ describe('gb-site-settings: argumentos e plano', () => {
     expect(content).not.toHaveProperty('reviews')
   })
 
-  // Onda 135, A11 (decisão do dono D4): a medição da GB tirada do código da produção (eb4c0098, app/layout.tsx) entra
+  // Onda 135, A11 (decisão do dono D4): a medição da GB tirada da produção histórica (eb4c0098, antiga app/layout.tsx retirada em F) entra
   // uma vez por campo, como o resto do conteúdo; os códigos de verificação, que vinham do ambiente, nunca.
   it('medição da GB: GA4 e Google Ads da produção, uma vez por campo; verificação nunca inventada', () => {
     const plan = planGbSettings(null)

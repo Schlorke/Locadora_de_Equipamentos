@@ -206,8 +206,11 @@ entrada 335 de known-issues.md.
 
 `tailwind-parity.test.ts` (roda em `pnpm test:visual-tools`, sem navegador)
 confere que cada utilitário e cada cadeia de variantes usados no código do
-produto dão ao elemento o estilo que a produção (`main`, `eb4c0098`, Tailwind
-3.4.17 com o `tailwind.config.cjs` e o `app/globals.css` da `main`) dava:
+produto dão ao elemento o estilo da referência histórica de produção
+(`eb4c0098`, Tailwind 3.4.17). A antiga `app/globals.css` da raiz foi retirada
+em F; ela e a configuração Tailwind dessa referência estão fixadas como fontes
+em `tailwind-parity/production-sources/`, com proveniência/hash conferidos pelo
+gerador. Não se trata de carregar a árvore aposentada ou o runtime da main:
 
 - o CSS global atual (`packages/frontend/src/app/styles/globals.web.css`,
   compilado como o `build:web`) é resolvido por `support/tailwind-parity.mjs`,
@@ -265,15 +268,20 @@ Tailwind 3 (como na produção) e desenha no foco nas cores forçadas, também p
 mouse: cartões das abas de categoria, item do `Select`, botões do `ImageUpload`
 e outros (pendente).
 
-Classe nova no código sem valor da produção na fixture faz o teste falhar.
-Regenere a fixture (precisa do Tailwind 3.4.17 e dos plugins da `main` no
-armazenamento do pnpm; `--pnpm <pasta>` aponta outro) e rode o teste de novo.
-Sem esses pacotes no `node_modules/.pnpm` do repositório, instale-os fora dele
-(pasta temporária, nunca no repositório) a partir do lockfile da `main`, com
-`pnpm install --offline --frozen-lockfile --ignore-workspace` e o mesmo
-`--store-dir`, e passe `--pnpm <pasta>/node_modules/.pnpm`. Nome solto no código
-lido pelo Tailwind (variável `paused`, por exemplo) também vira utilitário e
-entra na conta:
+Classe nova no código sem valor da produção na fixture faz o teste falhar. O
+gerador usa os quatro blobs históricos fixados e verificados em
+`tailwind-parity/production-sources/`, com a proveniência de `main eb4c0098`.
+Pode rodar no histórico limpo sem buscar o commit antigo. A execução normal de
+`pnpm test:visual-tools` continua lendo `tailwind-parity/production.json`.
+
+Para reproduzir manualmente, prepare as versões históricas de Tailwind e seus
+plugins em uma pasta temporária externa, indicada por `--pnpm`, e use `--out`
+para revisar a saída sem substituir a referência. As versões, os hashes e o
+procedimento estão em
+[Fontes fixadas da produção](tailwind-parity/production-sources/README.md). Nome
+solto no código lido pelo Tailwind (variável `paused`, por exemplo) também vira
+utilitário e entra na conta. Toda diferença exige revisão antes de uma
+atualização intencional da fixture.
 
 ```bash
 node tests/visual/support/tailwind-parity-fixture.mjs

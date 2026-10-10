@@ -21,16 +21,7 @@ describe('Manutenção admin', () => {
     expect(source).toContain('#F59E0B')
     expect(source).toContain('#6366F1')
     expect(source).toContain("type: 'maintenance'")
-    const route = readFileSync(
-      new URL(
-        '../../../../../../app/admin/maintenance/page.tsx',
-        import.meta.url
-      ),
-      'utf8'
-    )
-    expect(route).toContain("from '@gb-locacoes/frontend/pages/manutencao'")
-    expect(route).toContain('return <AdminMaintenancePage />')
-    // Onda 135 (A8): a mesma página no host web; a asserção sobre a raiz sai no bloco F.
+    // A rota do host web mantém a composição compartilhada.
     const webRoute = readFileSync(
       new URL(
         '../../../../../../apps/clients/web/src/app/(admin)/admin/maintenance/page.tsx',

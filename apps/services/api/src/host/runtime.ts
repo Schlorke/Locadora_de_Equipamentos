@@ -94,7 +94,7 @@ export const publicSettings = createPublicSettingsHandler({
   getSettings: (context) =>
     createPublicCatalog(getDatabaseRuntime().prisma).getPublicSettings(context),
 })
-/** Textos legais da vitrine (onda 134): a mesma fábrica da raiz legada (`lib/catalog.ts`). */
+/** Textos legais da vitrine (onda 134): mantém a fábrica compartilhada após retirar a antiga lib/catalog.ts no clone F. */
 export const publicStorefrontLegal = createPublicStorefrontLegalHandler({
   resolveTenant: (request, options) =>
     tenant.resolvePublicRequestTenant(request, options),

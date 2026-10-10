@@ -1,18 +1,16 @@
 /**
- * Script de Migração de Senhas
+ * Utilitário histórico de migração de senhas
  *
- * Este script migra senhas armazenadas em texto puro para bcrypt.
+ * Este script converte registros de senha em texto puro para bcrypt.
+ * A autenticação atual de packages/backend/src/modules/identity/legacy-credentials.ts
+ * verifica bcrypt; o fallback antigo de texto puro já foi retirado.
  *
  * IMPORTANTE:
- * - Execute este script ANTES de remover o fallback de senhas em texto puro
- * - Este script deve ser executado UMA ÚNICA VEZ
- * - Faça backup do banco de dados antes de executar
- *
- * Uso:
- *   pnpm tsx scripts/migrate-passwords.ts
- *
- * Ou com Node:
- *   node --loader tsx scripts/migrate-passwords.ts
+ * - Não é um procedimento validado para o runtime Prisma 7 atual: esta composição
+ *   ainda instancia PrismaClient sem adapter, ao contrário de seed/runtime.
+ * - Antes de uma operação autorizada, revisar composição, alvo e papel de banco,
+ *   obter backup e verificar os contadores de erros e os registros restantes.
+ * - Não remover nem afrouxar a verificação bcrypt do serviço de identidade.
  */
 
 import { PrismaClient } from '@prisma/client'
@@ -21,8 +19,8 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 /**
- * Verifica se uma string é um hash bcrypt válido
- * Bcrypt hashes sempre começam com $2a$, $2b$, ou $2y$
+ * Reconhece os prefixos bcrypt preservados pela migração.
+ * O prefixo $2a$, $2b$ ou $2y$ não valida sozinho o conteúdo completo do hash.
  */
 function isBcryptHash(password: string): boolean {
   return (
@@ -102,16 +100,16 @@ async function migratePasswords() {
     console.log(`   📊 Total processado: ${users.length}\n`)
 
     if (migratedCount > 0) {
-      console.log('✅ Migração concluída com sucesso!')
+      console.log('✅ Senhas migradas para bcrypt; confira os erros no resumo.')
       console.log(
-        '⚠️  Agora você pode remover o fallback de senhas em texto puro de lib/auth.ts\n'
+        '⚠️  Verifique os registros restantes e preserve a validação bcrypt do serviço de identidade.\n'
       )
     } else if (alreadyHashedCount === users.length) {
       console.log(
-        '✅ Todas as senhas já estão em bcrypt. Migração não necessária.'
+        '✓ Todos os registros encontrados já têm prefixo bcrypt; nenhuma senha foi regravada.'
       )
       console.log(
-        '⚠️  Você pode remover o fallback de senhas em texto puro de lib/auth.ts\n'
+        '⚠️  Preserve a validação bcrypt do serviço de identidade; o prefixo sozinho não prova um hash válido.\n'
       )
     }
   } catch (error) {

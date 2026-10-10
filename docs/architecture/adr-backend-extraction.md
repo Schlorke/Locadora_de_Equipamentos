@@ -1,5 +1,29 @@
 # ADR: extração incremental do backend e composição HTTP
 
+## Situação do clone pós-F — 2026-10-09
+
+A primeira etapa foi publicada na árvore limpa
+`978ceb9244c81c7cb2888b798fad8ce90edad25e`. A retirada da raiz está sendo
+validada no clone independente: o antigo `app/`, as fachadas `lib/`, `proxy.ts`,
+`next.config.mjs` e `vercel.json` da raiz foram aposentados nesse clone. Isso
+não descreve uma alteração de produção nem a retirada do modo de autenticação
+`legacy`.
+
+Os adapters ativos pertencem a `apps/services/api/src/app/api`, a composição do
+host a `apps/services/api/src/host`, e regras/infraestrutura a
+`packages/backend/src/modules`, `http` e `runtime`. Web e mobile consomem a
+mesma API. A medição de arquitetura registrada saiu com exit 0 e
+`oldScopesIntact=true`, atualizando a baseline; não é o gate final. Tipos,
+testes, builds e gates finais pós-F ainda estão pendentes. O log
+`p2-validation/test-unit.log` registra uma rodada focada com 245 aprovados e
+duas falhas de `retired-artifacts`, não uma suíte final verde.
+
+As contagens e commits nos incrementos abaixo são registros da etapa indicada.
+As condições do corte operacional e de dados continuam no
+[runbook de corte](../operations/runbook-corte-raiz-legada.md).
+
+## Registros dos incrementos anteriores ao clone pós-F
+
 Onda 129 (2026-10-05, sem commit): billing implementa o transporte de subcontas
 e payment-accounts inspeciona somente criação UNKNOWN por consulta. O mesmo
 runtime registra o consumidor nos dois hosts, condicionado à configuração da
@@ -16,16 +40,14 @@ outbox existente, sem I/O de provedor ou nova regra no host. Nenhum grant mudou.
 Inventário: 170 rotas/215 métodos por host. Recuperação final, subcontas,
 homologação/cutover e retirada da API legada continuam pendentes.
 
-Status: decisão de arquitetura em execução. Implementados: piloto
-customers/addresses, drivers (operations), catálogo e clientes (commit
-`0cff7b65`), cotação e locação e o módulo directory (ondas 2 e 3, `da19f601` e
-`be859915`). A transferência completa de APIs para `apps/services/api` permanece
-parcial: nove leituras públicas/health instaladas localmente em 2026-09-30,
-incluindo disponibilidade, detalhe, cartão e busca do diretório. A política de
-sessão e os adapters de identidade também foram extraídos para factories,
-consumidas pela composição legada e pelo serviço. Em 2026-10-01 foi montada a
-primeira leitura autenticada, `GET /api/auth/organizations`, seguida da leitura
-da preferência `GET /api/auth/organizations/selection` e do vínculo no host
+Estado registrado durante a extração incremental: piloto customers/addresses,
+drivers (operations), catálogo e clientes (commit `0cff7b65`), cotação e locação
+e directory (ondas 2 e 3, `da19f601` e `be859915`). Em 2026-09-30 o serviço
+ainda tinha nove leituras públicas/health; a sessão e os adapters de identidade
+eram consumidos tanto pela composição legada quanto pelo serviço. Esses cortes
+não são o inventário atual do clone pós-F. Em 2026-10-01 foi montada a primeira
+leitura autenticada, `GET /api/auth/organizations`, seguida da leitura da
+preferência `GET /api/auth/organizations/selection` e do vínculo no host
 `GET /api/auth/organizations/current`. O corte 12 compartilhou o principal
 privado e instalou `GET /api/admin/drivers`. O corte 13 instalou a leitura de
 endereços `GET /api/addresses`, reutilizando customers e o principal, com
@@ -153,29 +175,29 @@ serviço. O Next.js pode continuar sendo o adaptador HTTP durante a extração,
 preservando contratos e URLs existentes.
 
 Fonte da decisão: sessão Claude `4ad21d5f-c5f8-406a-a9ff-f4292e9d1296`,
-mensagens de 2026-09-30T14:14:12Z a 14:17:36Z. A retirada de `app/` ocorre
-depois da caracterização e da validação do serviço substituto; publicação e
-troca de configuração de produção são etapas próprias.
+mensagens de 2026-09-30T14:14:12Z a 14:17:36Z. A regra aprovada exigia
+caracterização e validação do serviço substituto antes da retirada; publicação e
+troca de configuração de produção permanecem etapas próprias.
 
-A pasta `app/` da raiz é transitória e ainda hospeda a API legada ativa. A
-árvore final mantém `apps/` na raiz. As pastas `src/app/` dentro dos hosts
-Next.js são convenção do framework e permanecem; `packages/frontend/src/app` é a
-camada de composição do produto em FSD. A retirada da raiz exige paridade dos
-handlers e da operação, incluindo identidade, efeitos e scheduler, antes de
-desativá-la.
+O antigo `app/` da raiz foi aposentado no clone pós-F de 2026-10-09. A árvore
+mantém `apps/`; os `src/app/` internos dos hosts Next.js e Expo permanecem,
+assim como `packages/frontend/src/app`, a camada de composição FSD. A retirada
+local não certifica o corte de tráfego, dados, callbacks ou scheduler em
+produção.
 
-O código de implementação deve existir em um lugar. Fachadas antigas podem ligar
-dependências e reexportar nomes explícitos durante a migração, mas não duplicam
-regras nem funcionam como uma segunda implementação. Um módulo backend nunca
-importa `@/lib`, `app/api` ou um host. A composição fornece o Prisma e outras
-dependências; criar factories específicas é suficiente para CRUD simples, sem
-introduzir camadas genéricas desnecessárias.
+O código de implementação existe em um lugar. As antigas fachadas `lib/` e os
+aliases `@/lib` foram aposentados no clone durante o transplante; a validação
+final dos consumidores continua em curso. Um módulo backend não importa `@/lib`,
+o antigo `app/api` ou um host; recebe Prisma e demais dependências pela
+composição. Factories específicas bastam para CRUD simples, sem camadas
+genéricas desnecessárias.
 
-### Organização final pretendida
+### Organização do clone pós-F
 
-Árvore de destino resumida; a raiz legada continua necessária durante a
-migração. Essa organização mantém as decisões aprovadas, sem introduzir novos
-hosts ou pacotes apenas para preencher um padrão.
+Árvore resumida dos owners presentes. Os arquivos de proxy dos hosts são
+`apps/clients/web/src/proxy.ts` e `apps/services/api/src/proxy.ts`; o antigo
+`proxy.ts` da raiz foi aposentado. Esta organização mantém as decisões
+aprovadas, sem novos hosts ou pacotes só para preencher um padrão.
 
 ```text
 Locadora_Equipamentos/
@@ -185,9 +207,8 @@ Locadora_Equipamentos/
 │   │   └── mobile/src/            # Expo: rotas, bootstrap e integração nativa
 │   └── services/
 │       └── api/src/
-│           ├── app/api/           # Rotas HTTP finas
-│           ├── host/              # Composição de dependências
-│           └── proxy.ts           # Integração HTTP do host
+│           ├── app/api/           # Rotas HTTP finas do serviço
+│           └── host/              # Composição de dependências
 ├── packages/
 │   ├── frontend/src/
 │   │   ├── app/
@@ -241,11 +262,13 @@ serviço tem 2 rotas/2 métodos declarados. Não existe fallback nem cutover.
 
 A resolução pública de tenant foi transplantada para uma factory de identity,
 com lookup injetado. Prisma/pg por processo foi transplantado para
-`backend/runtime`; `lib/tenant.ts` e `lib/prisma.ts` mantêm fachadas de
-composição. Catálogo e RLS continuam nos módulos existentes. Os adapters legados
-de categories e health foram preservados para manter seus guards visíveis ao
-inventário. O serviço usa os adapters Request/Response de `backend/http` e não
-importa a raiz.
+`backend/runtime`; as antigas fachadas `lib/tenant.ts` e `lib/prisma.ts`
+mantinham a composição nesse incremento e foram aposentadas no clone pós-F. A
+composição atual fica em `apps/services/api/src/host/runtime.ts`, com
+`packages/backend/src/modules/identity/public-tenant.ts` e
+`packages/backend/src/runtime/database.ts`. Os adapters legados de categories e
+health foram preservados naquela caracterização; as rotas atuais do serviço usam
+`backend/http`, sem importar a raiz.
 
 Caracterização anterior: 112 testes (catálogo e matriz pública) passaram antes
 da alteração. Depois: 128 testes nos dois adapters/catálogo; 20 testes HTTP
@@ -288,10 +311,10 @@ de pacotes/hosts e raiz, lint, arch, ratchet, higiene e documentação passaram;
 baselines e handlers legados intactos. Docker/CI remotos, deploy e cutover não
 foram executados.
 
-Arquivos, validação e limitações:
-[API compartilhada](../features/shared-api-host.md). Próximo corte:
-disponibilidade e suas dependências de reservas, após caracterização. A retirada
-de `app/` da raiz continua pendente.
+Arquivos, validação e limitações daquele incremento:
+[API compartilhada](../features/shared-api-host.md). O próximo corte então era
+disponibilidade e reservas. O antigo `app/` da raiz, ainda necessário em
+2026-09-30, foi aposentado somente no clone pós-F de 2026-10-09.
 
 ## Disponibilidade, detalhe e cartão no host (2026-09-30)
 
@@ -311,35 +334,41 @@ testes unitários e de segurança (876 e 660 aprovados nas suítes completas).
 Limitações e resultados completos em
 [API compartilhada](../features/shared-api-host.md).
 
-Próximo corte público: diretório por busca e rate limit compartilhado. Depois,
-identidade/guard privado e efeitos exigem cortes próprios; este serviço ainda
-não pode assumir `/api` por inteiro. A raiz `app/` permanece operacional.
+O próximo corte naquele checkpoint era diretório por busca e rate limit, seguido
+de identidade/guard privado e efeitos. O serviço parcial não assumia `/api` por
+inteiro; o antigo `app/` permanecia operacional naquele momento e foi aposentado
+no clone pós-F, sem corte de produção.
 
 ## Busca do diretório no host (2026-09-30)
 
 O serviço agora tem nove rotas/GETs declarados; o legado mantém 149/193. A rota
 `GET /api/public/tenants?q=` usa os serviços de busca e contador persistente
 existentes. `clientIpFromHeaders` saiu para identity/client-ip;
-`isPlatformProduction` e `identityRateLimitSecret` para directory/security-env,
-preservando as implementações e os imports/reexports usados de
-`lib/rate-limit.ts`. O adapter HTTP fica em backend/http e o host contém somente
-a composição.
+`isPlatformProduction` e `identityRateLimitSecret` para directory/security-env.
+Os imports/reexports da antiga `lib/rate-limit.ts` foram preservados nesse
+corte; a fachada foi aposentada no clone pós-F. A composição atual usa
+`apps/services/api/src/host/rate-limit.ts` e `session.ts`, com políticas
+persistentes em `packages/backend/src/modules/identity/rate-limit.ts` e
+`packages/backend/src/modules/directory/security-env.ts`; o adapter HTTP
+permanece em backend/http.
 
-O legado não foi removido nem redirecionado. Caracterização anterior, comparação
-dos dois artefatos e prova de orçamento compartilhado em PostgreSQL descartável:
-[API compartilhada](../features/shared-api-host.md). Próximo corte é a
-composição de identidade e uma leitura privada, com extensão do inventário de
-autorização aos dois hosts. Cookies, CSRF, OAuth, efeitos e scheduler continuam
-exigindo provas próprias antes da troca de tráfego. A raiz `app/` ainda é
-operacional; somente suas substituições validadas poderão ser retiradas.
+O legado não foi removido nem redirecionado nesse incremento. Caracterização
+anterior, comparação dos dois artefatos e prova de orçamento compartilhado em
+PostgreSQL descartável: [API compartilhada](../features/shared-api-host.md).
+Cookies, CSRF, OAuth, efeitos e scheduler exigiam provas próprias antes da troca
+de tráfego. O antigo `app/`, operacional no corte de 2026-09-30, foi aposentado
+no clone pós-F; operação de produção continua separada.
 
 ## Composição de identidade compartilhada (2026-09-30)
 
 Preparação para a leitura privada, sem instalar endpoints de autenticação no
 serviço. `createApplicationSessionReader` contém a política de coexistência e
 corte: Better Auth não reativa JWTs legados quando sessão, configuração,
-cabeçalhos ou projeção falham. A fachada `lib/application-session.ts` mantém o
-leitor de cabeçalhos do Next, os leitores reais e a projeção existente.
+cabeçalhos ou projeção falham. A antiga `lib/application-session.ts` mantinha o
+leitor de cabeçalhos do Next e foi aposentada no clone pós-F. Hoje
+`apps/services/api/src/host/session.ts` compõe os leitores reais e a projeção
+sobre `packages/backend/src/modules/identity/application-session.ts`, sem
+fallback Better Auth para JWT legado.
 
 `createLegacyAuthentication` recebe banco, guard de tentativas, ambiente e
 campos de log redigidos. Conserva os providers/options/callbacks existentes,
@@ -409,9 +438,10 @@ Não houve troca de tráfego, callbacks, guard central de principal, scheduler,
 schema ou autoridade de escrita. Sessões emitidas pelo legado são consumidas
 pelo serviço na prova HTTP local; isto não configura o navegador para enviar
 cookies host-only a outra origem. O corte operacional continua pendente, com
-origens/edge já definidos pelas ADRs. A pasta `app/` da raiz permanece
-necessária para o host legado; apenas essa pasta externa sai ao fim da migração.
-Os `src/app` internos dos hosts Next/Expo e a camada FSD `frontend/src/app`
+origens/edge já definidos pelas ADRs. O antigo `app/` da raiz ainda era
+necessário naquele corte; foi aposentado no clone pós-F. A remoção é da pasta
+externa do repositório, preservando as convenções internas dos hosts. Os
+`src/app` internos dos hosts Next/Expo e a camada FSD `frontend/src/app`
 permanecem no desenho final.
 
 Provas, arquivos, limitações e próximo corte: seção "Corte 9" da
@@ -535,13 +565,14 @@ aceitar o novo adapter. Provas: corte 16 de
 O corte 17 move o store limitado, factories, janelas e resposta 429 para
 `packages/backend/src/http/memory-rate-limit.ts`. `createMemoryRateLimiters`
 recebe o leitor confiável de IP; cada composição/processo mantém seus próprios
-contadores. `lib/rate-limit.ts` conserva as assinaturas NextRequest dos
-limitadores administrativo/estrito e do check, além dos limitadores persistentes
-de identidade. Seis exports internos sem consumidores de produção foram
-retirados da fachada; a implementação e seus testes permanecem no backend. A
-baseline de higiene perde a entrada obsoleta de consumeRateLimit, sem exceção
-nova. O serviço liga a mesma factory ao mesmo leitor, sem importar o legado e
-sem trocar o armazenamento por Redis/banco.
+contadores. A antiga `lib/rate-limit.ts` conservava as assinaturas NextRequest
+nesse corte e foi aposentada no clone pós-F; o adapter atual é
+`apps/services/api/src/host/rate-limit.ts`. As políticas persistentes continuam
+em identity/rate-limit. Seis exports sem consumidores foram retirados da fachada
+naquela onda; implementação e testes permanecem no backend. A baseline de
+higiene perde a entrada obsoleta de consumeRateLimit, sem exceção nova. O
+serviço liga a mesma factory ao mesmo leitor, sem importar o legado e sem trocar
+o armazenamento por Redis/banco.
 
 `GET /api/admin/equipments` reutiliza listEquipments, catalog/transação e
 EQUIPMENTS/READ. Preserva filtros, paginação, DTO privado, contagens e erros. O
@@ -645,49 +676,53 @@ notifications, sem INSERT ou bypass; triggers de falha pós-write são removidas
 após cada caso. Sem novo entrypoint, dependência, migration ou baseline. Ver
 corte 22 de [API compartilhada](../features/shared-api-host.md).
 
-## Inventário observado antes do piloto
+## Inventário histórico observado antes do piloto
 
-A análise estática contou exports declarados
+A análise anterior ao piloto contou exports declarados
 GET/POST/PUT/PATCH/DELETE/HEAD/OPTIONS, incluindo aliases, respostas 410 e o
-catch-all JSON. Não conta HEAD/OPTIONS implícitos do framework e não certifica
-autorização pela presença de uma rota.
+catch-all JSON. As contagens abaixo pertencem a esse inventário histórico, não
+ao clone pós-F. Não contam HEAD/OPTIONS implícitos nem certificam autorização
+pela presença de uma rota.
 
-| Superfície                 | Arquivos de rota | Métodos declarados |
-| -------------------------- | ---------------: | -----------------: |
-| `app/api` raiz             |              144 |                188 |
-| `apps/clients/web/src/app` |                0 |                  0 |
-| Subconjunto admin          |               77 |                102 |
-| Subconjunto auth           |                8 |                 12 |
-| Subconjunto client         |               10 |                 12 |
-| Subconjunto cron           |                9 |                  9 |
-| Subconjunto payments       |                9 |                  9 |
+| Superfície                                       | Arquivos de rota | Métodos declarados |
+| ------------------------------------------------ | ---------------: | -----------------: |
+| antigo `app/api` raiz, aposentado no clone pós-F |              144 |                188 |
+| `apps/clients/web/src/app`                       |                0 |                  0 |
+| Subconjunto admin                                |               77 |                102 |
+| Subconjunto auth                                 |                8 |                 12 |
+| Subconjunto client                               |               10 |                 12 |
+| Subconjunto cron                                 |                9 |                  9 |
+| Subconjunto payments                             |                9 |                  9 |
 
 Os subconjuntos são parte da raiz, não linhas adicionais ao total. O pacote
 backend tinha 18 arquivos TypeScript e quatro APIs públicas: identity, outbox,
 billing e documents. O piloto adicionou dois arquivos e a API customers.
 
-O fechamento de imports locais estáticos e `import()` com literal, a partir das
-rotas e de `proxy.ts`, alcançou 233 arquivos locais: 85 arquivos de `lib`,
-aproximadamente 14.496 linhas, mais rotas, `middlewares/require-admin.ts` e
-`schemas/settings.schema.ts`. `app/api/admin/settings/actions.ts` é código
-adicional ao conjunto de route.ts. Esse fechamento não segue dependências
-externas/workspace nem imports computados. A contagem física de 2.914 arquivos
-de `lib` contém 2.798 sob `lib/validations`, majoritariamente gerados; não
-representa milhares de módulos de negócio a transferir.
+O fechamento histórico de imports estáticos e `import()` com literal alcançou
+233 arquivos locais: 85 arquivos da antiga `lib/`, aproximadamente 14.496
+linhas, mais rotas, o antigo `proxy.ts`, `middlewares/require-admin.ts` e
+`schemas/settings.schema.ts`. Esses artefatos da raiz foram aposentados no clone
+pós-F. O antigo `app/api/admin/settings/actions.ts`, também aposentado, era
+adicional ao conjunto route.ts. O fechamento não seguia dependências
+externas/workspace nem imports computados. A contagem física da antiga `lib/`
+era 2.914 arquivos, dos quais 2.798 em `lib/validations`, majoritariamente
+gerados; a árvore aposentada não representava milhares de módulos de negócio.
 
-Há 22 arquivos de teste com imports de handlers antigos e 34 com imports de
-libs, com sobreposição. Reexportar nomes preserva caminhos, mas não garante que
-um `vi.mock('@/lib/...')` intercepte um import novo dentro do pacote. Os testes
-de integração devem continuar injetando as mesmas dependências pelo ponto de
-composição ou ser movidos explicitamente para o contrato público correspondente.
+Naquele levantamento, 22 testes importavam handlers antigos e 34 importavam
+libs, com sobreposição. Reexports preservavam caminhos, mas
+`vi.mock('@/lib/...')` não garantia interceptação no pacote novo. O antigo alias
+`@/lib` foi aposentado no clone pós-F. A caracterização deve injetar as mesmas
+dependências na composição real ou importar o módulo dono, sem ressuscitar
+aliases para a raiz.
 
-Reprodução do inventário de rotas, sem escrever arquivo:
+Reprodução do inventário atual de API e web, sem escrever arquivo; não reproduz
+as contagens históricas da raiz aposentada:
 
 ```powershell
 $inventoryText = node tools/modernization-inventory.mjs
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 $inventory = $inventoryText | ConvertFrom-Json
-@('legacy', 'web') | ForEach-Object {
+@('api', 'web') | ForEach-Object {
   $surface = $inventory.surfaces.$_
   [pscustomobject]@{
     Surface = $_
@@ -697,7 +732,7 @@ $inventory = $inventoryText | ConvertFrom-Json
 }
 ```
 
-## Piloto implementado: customers/addresses
+## Registro do piloto: customers/addresses
 
 - `packages/backend/src/modules/customers/addresses.ts`:
   `createAddressService(prisma)` contém listagem, criação, edição e exclusão.
@@ -705,18 +740,21 @@ $inventory = $inventoryText | ConvertFrom-Json
   local.
 - `packages/backend/src/modules/customers/index.ts`: exports explícitos da
   factory, do erro `AddressNotFound` e do tipo `AddressService`.
-- `lib/customer-addresses.ts`: liga o Prisma da composição atual à factory e
-  preserva os imports antigos.
-- `app/api/addresses/route.ts` e `app/api/addresses/[id]/route.ts`: continuam
-  adaptadores HTTP, resolvendo o principal e validando entrada pelos contratos
-  públicos.
+- A antiga `lib/customer-addresses.ts` preservava os imports do piloto e foi
+  aposentada no clone pós-F; a composição atual está em
+  `apps/services/api/src/host/customers.ts`.
+- Os antigos `app/api/addresses/route.ts` e `app/api/addresses/[id]/route.ts`
+  foram aposentados com a raiz. Os adapters ativos são
+  `apps/services/api/src/app/api/addresses/route.ts` e
+  `apps/services/api/src/app/api/addresses/[id]/route.ts`, com principal e
+  validação pelos contratos públicos.
 
 Tenant e usuário continuam vindo do principal. O lock por locadora/usuário, a
 promoção do endereço mais antigo, a proteção do índice parcial e os
 códigos/envelopes HTTP foram preservados. Não há Prisma singleton, leitura de
 ambiente, dependência Next ou import da raiz dentro do novo módulo.
 
-## Sequência executável para os próximos lotes
+## Sequência histórica da extração incremental
 
 1. Manter o piloto como padrão de composição: factory com dependências
    explícitas, transação tenant, facade sem regras e handlers HTTP com contratos
@@ -755,50 +793,50 @@ quotations, rentals, operations (logística/manutenção), billing, documents,
 communications e entrega durável (outbox/inbox). Settings e auditoria mantêm
 APIs estreitas; evitar um novo diretório genérico que acumule todo `lib`.
 
-## Dependências que impedem apenas mover os arquivos
+## Fronteiras de runtime preservadas no clone pós-F
 
-- `lib/application-session.ts` lê `next/headers` e carrega opções NextAuth;
-  `lib/tenant.ts` depende dessa sessão implícita. O domínio recebe um principal
-  validado, e a composição HTTP fornece o leitor de sessão. O modo Better Auth
-  nunca pode fazer fallback para JWT legado.
-- `lib/prisma.ts` inicializa pool/singleton a partir do ambiente ao importar.
-  Não copiar esse módulo para cada serviço; injetar uma única instância pela
-  composição do runtime e impedir leituras de ambiente em contratos/universal.
-- `app/api/admin/settings/actions.ts` chama `revalidatePath`. O resultado da
-  aplicação deve informar sucesso para o adapter invalidar cache; invalidar o
-  cache do runtime raiz não invalida automaticamente outro host.
-- O callback Zoho é fixo no host app com a plataforma configurada; o fallback
-  legado usa ZOHO_REDIRECT_URI ou NEXTAUTH_URL. Better Auth usa BETTER_AUTH_URL
-  e origens confiáveis; configurações públicas de cliente têm modo próprio. A
-  mudança de host precisa comprovar cookies, URL canônica, CSRF/origin, callback
-  OAuth e native. Não desligar essas verificações para acomodar proxy.
-- No inventário, o host web não declarava backend nem next-auth diretamente
-  apesar de importar next-auth no adapter cliente. Dependências utilizadas devem
-  constar no pacote responsável; `transpilePackages`/tracing e
-  `serverExternalPackages` precisam contemplar os pacotes de servidor, PDF,
-  Prisma e binários efetivamente utilizados.
-- `proxy.ts`, `vercel.json` e `tests/global-setup.ts` ainda selecionam o runtime
-  raiz. A suite HTTP iniciar a raiz não demonstra que o host destino atende
-  APIs. A migração do scheduler deve preservar exclusividade e os limites de
-  execução, incluindo `maxDuration = 300` dos jobs longos; a plataforma precisa
-  suportá-los.
-- As libs de resposta HTTP e consumidores de webhook ainda usam `NextResponse`.
-  Trocar por Request/Response padrão ou resultado de aplicação é uma extração
-  separada, preservando corpo, status, headers e tratamento de falhas pelo
-  worker.
+- As antigas `lib/application-session.ts` e `lib/tenant.ts` foram aposentadas.
+  `apps/services/api/src/host/session.ts` lê os headers do Next e compõe os
+  motores; `private-identity.ts` resolve o principal. O backend recebe o
+  principal validado; Better Auth nunca faz fallback para JWT legado.
+- A antiga `lib/prisma.ts` foi aposentada. O pool/Prisma vem de
+  `packages/backend/src/runtime/database.ts` pela composição lazy do serviço;
+  contratos e código universal não leem ambiente nem importam banco.
+- O antigo `app/api/admin/settings/actions.ts` foi aposentado. A API usa
+  `apps/services/api/src/app/api/admin/settings/route.ts`, com no-store. O
+  handler interno de revalidação do web é plano do Lote 9 e não existe no clone;
+  invalidar outro runtime nunca é efeito automático da escrita de settings.
+- Callback Zoho continua fixo no host app com a plataforma configurada;
+  compatibilidade de ZOHO_REDIRECT_URI/NEXTAUTH_URL e origens Better Auth são
+  decisões operacionais próprias. Cookies, origem/CSRF, URL canônica, OAuth e
+  native devem ser comprovados sem relaxar guards para acomodar o proxy.
+- Dependências pertencem ao pacote que as usa; tracing/transpilePackages e
+  serverExternalPackages são dos configs `apps/services/api/next.config.mjs` e
+  `apps/clients/web/next.config.mjs`. Não há segundo runtime de aplicação na
+  raiz do clone.
+- Os antigos `proxy.ts` e `vercel.json` da raiz foram aposentados.
+  Proxies/configs pertencem aos hosts; scheduler/callbacks precisam de uma única
+  autoridade explícita. O serviço conserva limites como maxDuration=300 nos jobs
+  longos, sem ativação de agenda externa por esta retirada.
+- Request/Response padrão e resultados de aplicação ficam nas fronteiras
+  adequadas; eventual tipo Next de adapter não autoriza vazamento para domínio
+  ou cliente universal. Corpo, status, headers e falhas dos workers continuam
+  parte da caracterização.
 
-## Rewrite transitório e precedência
+## Transporte entre hosts e precedência
 
-Enquanto não houver composição completa no destino, `WEB_API_ORIGIN` pode
-encaminhar APIs ao servidor atual. É transporte temporário; não transfere
-implementação nem prova paridade.
+Durante a extração, WEB_API_ORIGIN podia encaminhar rotas ainda não compostas ao
+servidor antigo. O rewrite de fallback era transporte temporário, sem provar
+paridade: arrays simples/afterFiles antecediam rotas dinâmicas e um catch-all
+prematuro capturaria a requisição. O antigo `app/api/[...rest]` da raiz foi
+aposentado com a árvore, não copiado para sustentar fallback.
 
-Ao adicionar rotas dinâmicas locais, usar rewrite de **fallback** para as rotas
-restantes. Conforme os guias locais desta versão Next, arrays simples/afterFiles
-são avaliados antes de rotas dinâmicas e podem encaminhar uma rota já migrada ao
-legado. Não adicionar o catch-all `app/api/[...rest]` no destino antes do fim:
-ele captura a requisição e impede o fallback. Preservar a resposta JSON 404 ao
-aposentar o transporte.
+No clone pós-F, `apps/clients/web/src/proxy.ts` encaminha /api com borda para a
+origem explícita do serviço; `apps/clients/web/next.config.mjs` tem fallback
+vazio. O serviço usa o catch-all neutro
+`apps/services/api/src/app/api/[...rest]/route.ts` para JSON 404 de endpoints
+desconhecidos, sem identidade nem acesso a dados. O config do serviço não tem
+rewrite para a raiz aposentada.
 
 Validar origem de destino explícita, sem usuário/senha/query e sem apontar para
 o próprio host. Exercitar através do proxy: cookie HttpOnly de
@@ -807,7 +845,7 @@ de assinatura, upload privado, PDF binário e erros. A comparação
 Origin/request.url de settings é um caso concreto que precisa passar sem relaxar
 CSRF. Não publicar respostas tenant em cache compartilhado.
 
-## Gates e evidência
+## Evidência histórica do piloto
 
 Piloto: 4 testes PostgreSQL existentes e 13 testes HTTP novos passaram (17/17,
 exit 0). O banco utilizado foi somente o PostgreSQL local descartável
@@ -832,12 +870,13 @@ tráfego externo ou execução no host destino neste lote.
 
 `@gb-locacoes/backend/operations` publica `createDriverService(prisma)`,
 `DriverService` e `DriverInput`. O módulo usa a API identity para transações
-RLS; `lib/drivers.ts` liga a instância Prisma existente. GET/POST admin/drivers
-mantêm resolução de principal, membership ADMIN, validação e envelope no adapter
-HTTP. Não foram criados métodos novos, alteradas regras de domínio ou instaladas
-APIs no host destino. A rodada passou 58 testes HTTP mockados e 9 testes
-PostgreSQL reais do conjunto operacional. O bloqueio real Merchant está
-registrado separadamente, sem ampliar o negócio para vendas.
+RLS; a antiga `lib/drivers.ts` ligava Prisma e foi aposentada no clone pós-F. A
+composição atual fica em `apps/services/api/src/host/operations.ts`. GET/POST
+admin/drivers mantêm resolução de principal, membership ADMIN, validação e
+envelope no adapter HTTP. Não foram criados métodos novos, alteradas regras de
+domínio ou instaladas APIs no host destino. A rodada passou 58 testes HTTP
+mockados e 9 testes PostgreSQL reais do conjunto operacional. O bloqueio real
+Merchant está registrado separadamente, sem ampliar o negócio para vendas.
 
 ## Lote da onda 1: catálogo e clientes (commit `0cff7b65`)
 
@@ -847,11 +886,13 @@ registrado separadamente, sem ampliar o negócio para vendas.
   `createClientDocumentService({ withTenantTransaction, storage })` e
   `loadFinancialCustomers(context, tx)`.
 - Leituras públicas (categorias, equipamentos, busca, settings) usam
-  `withTenantTransaction` de identity; a administração de categorias,
-  equipamentos e unidades usa o lock injetado de `lib/rental-transaction`, com a
-  ordem de locks inalterada.
-- Perfil e documentos recebem o executor de `lib/tenant` pela composição, para
-  que os testes que simulam `@/lib/tenant` continuem valendo.
+  `withTenantTransaction` de identity; o lock injetado vinha da antiga
+  `lib/rental-transaction`, aposentada no clone pós-F. O módulo atual é
+  `packages/backend/src/modules/rentals/transaction.ts`, composto em
+  `apps/services/api/src/host/catalog.ts`, mantendo ordem de locks.
+- Perfil e documentos recebiam o executor da antiga `lib/tenant` e mocks
+  `@/lib/tenant`; ambos caminhos foram aposentados no clone pós-F. A composição
+  atual está no host customers/client-documents, com dependências explícitas.
 - Padrão `DeferredInput`: o serviço lê o corpo depois da checagem de posse,
   mantendo 404 antes de 400/500 em `PUT` de categoria e `PATCH` de unidade.
 - Erros de regra viraram exceções dentro da transação (rollback) em vez de
@@ -881,7 +922,8 @@ registrado separadamente, sem ampliar o negócio para vendas.
 - Factories com dependências explícitas: a transação tenant chega como runner
   (`TenantTransactionRunner`, `RentalTransaction`) ligado pela composição à API
   de identity, no padrão de customers. Nenhum módulo importa Prisma singleton,
-  `process.env`, `next/*`, `@/lib`, `decimal.js` ou `date-fns`.
+  `process.env`, `next/*`, o antigo alias `@/lib` (aposentado no clone pós-F),
+  `decimal.js` ou `date-fns`.
 - Dinheiro com `Prisma.Decimal` (o decimal.js embutido, com a mesma
   configuração), porque `decimal.js` não está declarado em
   `packages/backend/package.json`.
@@ -892,8 +934,9 @@ registrado separadamente, sem ampliar o negócio para vendas.
 - `QuoteUpdateRejected` no lugar de `throw NextResponse`;
   `autoGenerateBoletoOnApproval` injetado; `getCurrentTaxSettings(db, tenantId)`
   e `loadReservations(db, context, …)` exigem `db` e `tenantId`.
-- `lib/quote-request.ts` concentra a composição de quotations; os demais
-  arquivos de `lib` do lote viraram fachadas sem regra.
+- A antiga `lib/quote-request.ts` concentrava a composição; ela e as demais
+  fachadas `lib/` desse lote foram aposentadas no clone pós-F. A composição
+  ativa de quotations está em `apps/services/api/src/host/quotations.ts`.
 - Rotas adaptadoras: `admin/quotes` (lista, `[id]` GET/PATCH/DELETE,
   `convert-to-rental`, `send-adjusted-quote`, `send-boleto`,
   `calculate-late-fee`, `adjustments` e `adjustments/[adjustmentId]`),
@@ -907,16 +950,19 @@ registrado separadamente, sem ampliar o negócio para vendas.
 - Mudanças deliberadas: `checkAndExpireQuotes` e o auto-convert filtram
   `tenantId` explicitamente; a quitação passou a ser `isObligationSettled` (ver
   `docs/features/quote-system.md`, 7.4.1).
-- Atualização onda 37: ofícios e downloads de orçamento extraídos para
-  backend/documents; lib/pdf conserva fachadas. Continua pendente
-  `admin/rentals/[id]/client-documents` (documentos privados e storage) ainda
-  leem o banco direto e devem ir com o lote de documents. Na onda 39,
-  `PaymentRequestError` passou para billing/payment-errors, com a mesma classe
-  reexportada por `lib/payment-obligation` e injetada como `obligationError`;
-  remover as fachadas depende dos passos 6 e 7. Decisões abertas: declarar
-  `decimal.js` no backend, corrigir o 500 do `extend` administrativo e a
-  acentuação corrompida de mensagens do PATCH (mudam o contrato HTTP) e passar a
-  Decimal os valores monetários ainda em float.
+- Atualização histórica da onda 37: ofícios e downloads foram extraídos para
+  backend/documents; as antigas fachadas `lib/pdf` foram aposentadas no clone
+  pós-F, com composição atual em `apps/services/api/src/host/documents.ts`. O
+  transporte de documentos privados então registrado como pendente passou a ter
+  owner próprio no serviço, sem conceder acesso cruzado.
+- Na onda 39, PaymentRequestError passou para billing/payment-errors e era
+  reexportado pela antiga `lib/payment-obligation`, aposentada no clone pós-F. O
+  módulo atual é `packages/backend/src/modules/billing/payment-errors.ts`; o
+  host payments injeta o mesmo erro como obligationError.
+- Decisões registradas naquele corte: declarar decimal.js no backend, corrigir o
+  500 do extend administrativo e acentuação de mensagens PATCH, e passar a
+  Decimal valores ainda float. Este registro não certifica a resolução dessas
+  mudanças de contrato por causa da retirada estrutural.
 
 ## Borda de host e diretório (onda 2, sem commit)
 
@@ -925,32 +971,37 @@ registrado separadamente, sem ampliar o negócio para vendas.
 - `@gb-locacoes/backend/directory` (`card.ts`, `index.ts`) publica
   `readPublicTenantCard`; a saída passa pelo schema estrito de
   `@gb-locacoes/contracts/directory`.
-- `resolvePublicTenant`/`resolvePublicRequestTenant` continuam em
-  `lib/tenant.ts`. Detalhes: `docs/features/tenant-request-resolution.md`.
+- A antiga `lib/tenant.ts` hospedava resolvePublicTenant e
+  resolvePublicRequestTenant; foi aposentada no clone pós-F. Os resolvers ficam
+  em `packages/backend/src/modules/identity/public-tenant.ts`, compostos por
+  `apps/services/api/src/host/runtime.ts`. Detalhes:
+  `docs/features/tenant-request-resolution.md`.
 
-## Estado dos módulos (2026-09-26)
+## Estado histórico dos módulos (2026-09-26)
 
-Contagem de arquivos `.ts` em `packages/backend/src/modules/<módulo>`. Os
-exports de `packages/backend/package.json` no commit `0cff7b65` eram `identity`,
-`outbox`, `billing`, `documents`, `customers`, `catalog` e `operations`; a
-árvore acrescenta `directory`, `quotations` e `rentals`.
+Contagem de arquivos .ts no levantamento da época. Os exports de
+`packages/backend/package.json` no commit 0cff7b65 eram identity, outbox,
+billing, documents, customers, catalog e operations; a árvore daquele corte
+acrescentava directory, quotations e rentals. A tabela preserva essas contagens
+e pendências da época, não a medição atual do clone pós-F.
 
-| Módulo       | Arquivos | Conteúdo                                                                                                            | Pendências                                                                                          |
-| ------------ | -------: | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `identity`   |        8 | Configuração/factory Better Auth, credenciais legadas, migração e preflight de identidade, principal, borda de host | Identidade multi-host (Lote 6); sessão ainda lida por `lib/application-session`                     |
-| `outbox`     |        4 | Contratos, dispatch e adapters                                                                                      | Composição dos handlers, autenticação de webhook e inbox (passo 4)                                  |
-| `billing`    |        5 | Emissão, cancelamento de tentativa e eventos Asaas                                                                  | Adapters Prisma/gateway ainda em `lib`; `PaymentRequestError` em `lib/payment-obligation` (passo 3) |
-| `documents`  |        3 | PDFs de orçamento e de reajuste                                                                                     | Documentos privados do cliente, storage e contratos (passo 3)                                       |
-| `customers`  |        8 | Endereços, carrinho, perfil comercial, documentos do cliente, clientes financeiros                                  | Schemas zod nos adaptadores; fachada de perfil ainda na rota                                        |
-| `operations` |        2 | Motoristas                                                                                                          | Logística e manutenção                                                                              |
-| `catalog`    |        9 | Categorias, equipamentos, unidades, busca e settings públicos                                                       | Resolução pública por slug ainda em `lib/tenant.ts`                                                 |
-| `quotations` |       13 | Código, pedido, expiração, multa, impostos, reajuste, boleto, portal do cliente, administração, listagem e update   | Ver "Terceiro lote"                                                                                 |
-| `rentals`    |       10 | Transação, disponibilidade, ciclo de vida, conversão, pedidos e portal do cliente, administração                    | Ver "Terceiro lote"                                                                                 |
-| `directory`  |        2 | Cartão público da locadora                                                                                          | Busca e rate limit persistente (Lote 7a da ADR de hosts)                                            |
+| Módulo       | Arquivos | Conteúdo                                                                                                            | Pendências                                                                                                                            |
+| ------------ | -------: | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `identity`   |        8 | Configuração/factory Better Auth, credenciais legadas, migração e preflight de identidade, principal, borda de host | Identidade multi-host (Lote 6); sessão então lida pela antiga `lib/application-session`, aposentada no clone pós-F                    |
+| `outbox`     |        4 | Contratos, dispatch e adapters                                                                                      | Composição dos handlers, autenticação de webhook e inbox (passo 4)                                                                    |
+| `billing`    |        5 | Emissão, cancelamento de tentativa e eventos Asaas                                                                  | Adapters Prisma/gateway ainda em `lib`; `PaymentRequestError` na antiga `lib/payment-obligation` (passo 3), aposentada no clone pós-F |
+| `documents`  |        3 | PDFs de orçamento e de reajuste                                                                                     | Documentos privados do cliente, storage e contratos (passo 3)                                                                         |
+| `customers`  |        8 | Endereços, carrinho, perfil comercial, documentos do cliente, clientes financeiros                                  | Schemas zod nos adaptadores; fachada de perfil ainda na rota                                                                          |
+| `operations` |        2 | Motoristas                                                                                                          | Logística e manutenção                                                                                                                |
+| `catalog`    |        9 | Categorias, equipamentos, unidades, busca e settings públicos                                                       | Resolução então na antiga `lib/tenant.ts`, aposentada no clone pós-F                                                                  |
+| `quotations` |       13 | Código, pedido, expiração, multa, impostos, reajuste, boleto, portal do cliente, administração, listagem e update   | Ver "Terceiro lote"                                                                                                                   |
+| `rentals`    |       10 | Transação, disponibilidade, ciclo de vida, conversão, pedidos e portal do cliente, administração                    | Ver "Terceiro lote"                                                                                                                   |
+| `directory`  |        2 | Cartão público da locadora                                                                                          | Busca e rate limit persistente (Lote 7a da ADR de hosts)                                                                              |
 
-Ainda sem módulo: comunicações (notificações, WhatsApp, Zoho), settings e
-auditoria. Nenhuma rota foi instalada em `apps/clients/web/src/app/api`; o host
-web continua encaminhando `/api/*` ao legado pelo proxy com contexto de borda.
+Nesse corte ainda faltavam módulos de comunicações, settings e auditoria, e o
+web encaminhava APIs ao legado. No clone pós-F, a antiga raiz `app/` foi
+aposentada e a composição HTTP pertence a `apps/services/api`, não às rotas do
+cliente web. A validação final dessa árvore permanece pendente.
 
 ## Atualização da extração — onda 40 (2026-10-02, sem commit)
 
@@ -1205,10 +1256,11 @@ da fixture, sem tocar a classificação ou segurança do produto. Ver a
 [onda 59](../features/shared-api-host.md) e o
 [roteiro de aceite](../guides/shared-api-acceptance.md).
 
-O legado permanece 149/193 com 46 páginas e a única agenda configurada. Ainda
-faltam dispositivos, fluxos interativos, callbacks externos e operação no
-ambiente, além do restante SaaS/mobile. As provas locais não autorizam retirar
-app/, transferir o scheduler ou publicar.
+Nesse checkpoint, o legado tinha 149/193, 46 páginas e a agenda configurada;
+faltavam dispositivos, fluxos interativos, callbacks externos e restante SaaS.
+Essas provas não autorizavam então remover a raiz. O antigo `app/` foi
+aposentado depois, no clone pós-F autorizado; não houve transferência de
+scheduler, publicação de produção ou homologação externa por esse ato.
 
 ## Incremento da onda 60 (2026-10-03, sem commit)
 

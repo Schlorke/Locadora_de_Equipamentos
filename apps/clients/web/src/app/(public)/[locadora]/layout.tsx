@@ -26,13 +26,13 @@ async function medicaoDoSite(slug: string) {
  * (D4). O cartão é o do escopo da área do cliente (S13; B.5, linha "Área do cliente final"), que continua com o site
  * em pausa ou desligado por falta de publicação. Slug inválido ou reservado, locadora inexistente, com bloqueio
  * administrativo ou sem área do cliente (SETUP ou ARCHIVED com a fiscalização `on`): o mesmo `notFound()` neutro (D10),
- * resolvido pelo app/not-found.tsx antes de qualquer conteúdo da locadora. A vitrine desligada é o 404 do layout
+ * resolvido por apps/clients/web/src/app/not-found.tsx antes de qualquer conteúdo da locadora. A vitrine desligada é o 404 do layout
  * `(vitrine)` (e do proxy); o site em pausa ou ainda não indexável: `noindex` em toda a árvore; a página de pausa com
  * 503 vem do proxy.
  *
  * Onda 135 (A11): as metas de verificação do Google Search Console e do domínio no Facebook/Meta, quando a locadora as
  * informou, e a tag do Google (GA4 e Google Ads) com os IDs dela. Só identificadores validados, num modelo fixo; a CSP
- * do host de locadora (next.config.mjs) só admite as origens do Google na lista.
+ * do host de locadora (apps/clients/web/next.config.mjs) só admite as origens do Google na lista.
  */
 export async function generateMetadata({
   params,
@@ -76,7 +76,12 @@ export default async function TenantSiteLayout({
   ])
   if (!site) notFound()
   // Identidade da própria locadora (cartão): a vitrine nunca completa nome, cidade ou logo com dado de outra (T12).
-  const identity = { name: site.name, city: site.city, state: site.state, logoUrl: site.logoUrl }
+  const identity = {
+    name: site.name,
+    city: site.city,
+    state: site.state,
+    logoUrl: site.logoUrl,
+  }
   const providers = (
     <TenantSiteProviders
       tenantSlug={site.slug}

@@ -1,11 +1,18 @@
 import {
+  identityRateLimitSecret,
   platformRateLimitDigest,
-  rateLimitKeyPrefix,
-} from '../../packages/backend/src/modules/directory/rate-limit'
+  prismaRateLimitCounter,
+} from '@gb-locacoes/backend/directory'
+import {
+  clientIpFromHeaders,
+  createIdentityLimiters,
+  createIdentityRuntime,
+} from '@gb-locacoes/backend/identity'
+import type { LegacySignInGuard } from '../../packages/backend/src/modules/identity/legacy-credentials'
 // Login do Better Auth na coexistência (AUTH_MODE=legacy + AUTH_V2_ENABLED=true, /api/auth/v2) contra o
 // PostgreSQL descartável. Ele confere a senha legada pelo MESMO caminho do login do NextAuth
 // (`verifyLegacyCredential`): igualdade exata do e-mail normalizado (`_` e `%` nunca são curinga de ILIKE),
-// tentativa contada antes da busca nas MESMAS janelas persistentes de `lib/rate-limit.ts` e bcrypt fictício
+// tentativa contada antes da busca nas MESMAS janelas persistentes de backend/identity e bcrypt fictício
 // quando não há conta. Achado 17 da revisão da onda 3.
 import { randomUUID } from 'node:crypto'
 import {
@@ -18,14 +25,60 @@ import {
   vi,
 } from 'vitest'
 
-vi.hoisted(() => {
-  // lib/auth lê o segredo quando o módulo é avaliado.
-  process.env.NEXTAUTH_SECRET = 'fixture-legacy-credentials-v2-nextauth-secret'
+// Public runtime/identity entrypoints and the service's real NextAuth provider.
+// The database boundary points to an owned disposable Prisma client; no auth
+// factory, credentials verifier, limiter or provider is mocked.
+const fixtureState = vi.hoisted(() => {
+  const environment: Record<string, string> = {
+    NODE_ENV: 'test',
+    AUTH_MODE: 'legacy',
+    AUTH_V2_ENABLED: 'true',
+    AUTH_CREDENTIAL_WRITES_PAUSED: 'false',
+    BETTER_AUTH_URL: 'https://app.credentials-fixture.test',
+    BETTER_AUTH_SECRET: 'fixture-legacy-credential-secret-more-than-32',
+    NEXTAUTH_URL: 'https://app.credentials-fixture.test',
+    NEXTAUTH_URL_INTERNAL: 'https://app.credentials-fixture.test',
+    NEXTAUTH_SECRET: 'fixture-legacy-credentials-v2-nextauth-secret',
+    NEXTAUTH_DEBUG: 'false',
+    TRUSTED_PROXY_HOPS: '1',
+    VERCEL: '',
+    PLATFORM_ENV: 'production',
+    PLATFORM_ROOT_DOMAIN: 'credentials-fixture.test',
+    PLATFORM_EDGE_SECRET: 'fixture-credentials-edge-secret-more-than-32',
+    PLATFORM_EDGE_SECRET_PREVIOUS: '',
+    PLATFORM_RATE_LIMIT_SECRET:
+      'fixture-credentials-rate-limit-secret-more-than-32',
+    PLATFORM_SUBSCRIPTION_ENFORCEMENT: 'off',
+    WEB_API_ORIGIN: 'https://api.credentials-fixture.test',
+    WEB_PUBLIC_ORIGIN: 'https://app.credentials-fixture.test',
+    AUTH_TRUSTED_ORIGINS: '',
+    BETTER_AUTH_TRUSTED_ORIGINS: '',
+    GOOGLE_CLIENT_ID: '',
+    GOOGLE_CLIENT_SECRET: '',
+    FACEBOOK_CLIENT_ID: '',
+    FACEBOOK_CLIENT_SECRET: '',
+    RESEND_API_KEY: '',
+    FROM_EMAIL: 'identity@credentials-fixture.test',
+    VERCEL_ENV: '',
+  }
+  const previous = Object.fromEntries(
+    Object.keys(environment).map((key) => [key, process.env[key]])
+  )
+  Object.assign(process.env, environment)
+  return {
+    environment,
+    previous,
+    database: null as null | {
+      prisma: import('@prisma/client').PrismaClient
+      pool: import('pg').Pool
+    },
+  }
 })
-vi.mock('@/lib/prisma', async () => {
+
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()
   const { requireTestDatabase } = await import('../helpers/test-database')
-  if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
-    throw new Error('Disposable database opt-in required')
   const { Pool } = await import('pg')
   const { PrismaPg } = await import('@prisma/adapter-pg')
   const { PrismaClient } = await import('@prisma/client')
@@ -33,21 +86,46 @@ vi.mock('@/lib/prisma', async () => {
     connectionString: requireTestDatabase(process.env),
     max: 4,
   })
-  return {
-    prisma: new PrismaClient({ adapter: new PrismaPg(pool) }),
-    testPool: pool,
-  }
+  const prisma = new PrismaClient({ adapter: new PrismaPg(pool) })
+  fixtureState.database = { prisma, pool }
+  return { ...actual, getDatabaseRuntime: () => ({ prisma, pool }) }
 })
 
 import bcrypt from 'bcryptjs'
 import type { CredentialsConfig } from 'next-auth/providers/credentials'
+import { authOptions } from '../../apps/services/api/src/host/session'
 
-import { platformRateLimitSecret } from '../../packages/backend/src/modules/directory/rate-limit'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { legacySignInGuard } from '@/lib/rate-limit'
-import { createIdentity } from '../../packages/backend/src/modules/identity/factory'
-import { identityConfiguration } from '../../packages/backend/src/modules/identity/configuration'
+const { prisma, pool } = fixtureState.database!
+const limits = createIdentityLimiters({
+  loadCounter: async () => prismaRateLimitCounter(prisma),
+  secret: () => identityRateLimitSecret(process.env),
+  clientIp: clientIpFromHeaders,
+})
+const legacySignInGuard = () => limits.legacySignInGuard()
+const config = {
+  baseURL: fixtureState.environment.BETTER_AUTH_URL!,
+  basePath: '/api/auth/v2',
+}
+async function createFixtureIdentity(signInGuard?: LegacySignInGuard) {
+  const runtime = createIdentityRuntime({
+    environment: () => fixtureState.environment,
+    loadDependencies: async () => ({
+      database: prisma,
+      send: async () => undefined,
+      verificationResendAllowed: async () => true,
+      // O caso negativo omite o guard de propósito; o motor real deve recusar
+      // ao ser materializado. Não se altera o contrato da factory de produto.
+      signInGuard: signInGuard as LegacySignInGuard,
+    }),
+  })
+  return runtime.getIdentity()
+}
+function restoreEnvironment() {
+  for (const [key, value] of Object.entries(fixtureState.previous)) {
+    if (value === undefined) delete process.env[key]
+    else process.env[key] = value
+  }
+}
 
 const fixture = randomUUID()
 const victim = `victim-${fixture}@example.test`
@@ -71,15 +149,7 @@ const newClient = () => {
   return ip
 }
 
-const mail = { sendPasswordReset: vi.fn(), sendEmailVerification: vi.fn() }
-const config = identityConfiguration({
-  AUTH_MODE: 'legacy',
-  AUTH_V2_ENABLED: 'true',
-  BETTER_AUTH_URL: 'http://localhost:3000',
-  BETTER_AUTH_SECRET: 'fixture-legacy-credential-secret-more-than-32',
-})
-// O mesmo limitador que lib/identity.ts entrega em produção (janelas do login legado).
-const auth = createIdentity(prisma, config, mail, legacySignInGuard())
+let auth: Awaited<ReturnType<typeof createFixtureIdentity>>
 
 /** POST /api/auth/v2/sign-in/email pelo handler do Better Auth. */
 const signInV2 = (email: string, password: string, ip: string) => {
@@ -125,6 +195,7 @@ const credentialOf = (userId: string) =>
   })
 
 beforeAll(async () => {
+  auth = await createFixtureIdentity(legacySignInGuard())
   for (const [email, password] of [
     [victim, victimPassword],
     [lookAlike, lookAlikePassword],
@@ -145,50 +216,48 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 afterAll(async () => {
-  await prisma.user.deleteMany({ where: { email: { in: emails } } })
-  await prisma.authRateLimit.deleteMany({
-    where: { key: { contains: `2001:db8:${fixture.slice(0, 4)}:` } },
-  })
-  // Janelas do login legado gravadas por estes casos (chave de processo fora de produção).
-  const secret = platformRateLimitSecret(process.env)
-  const prefixes = [
-    ...[...usedAccounts].flatMap((account) =>
-      ['account', 'account-ip'].map((kind) =>
-        rateLimitKeyPrefix([
-          'auth',
-          'sign-in',
-          kind,
-          platformRateLimitDigest(secret, 'account', account),
-        ])
-      )
-    ),
-    ...usedIps.map((ip) =>
-      rateLimitKeyPrefix([
-        'auth',
-        'sign-in',
-        'ip',
-        // Mesma forma canônica de lib/rate-limit (/64 do IPv6).
-        platformRateLimitDigest(
-          secret,
-          'ip',
-          `${ip
-            .split(':')
-            .slice(0, 4)
-            .map((group) => Number.parseInt(group, 16).toString(16))
-            .join(':')}::/64`
-        ),
-      ])
-    ),
-  ]
-  for (const prefix of prefixes)
-    await prisma.platformRateLimit.deleteMany({
-      where: { key: { startsWith: prefix } },
+  try {
+    await prisma.user.deleteMany({ where: { email: { in: emails } } })
+    await prisma.authRateLimit.deleteMany({
+      where: { key: { contains: `2001:db8:${fixture.slice(0, 4)}:` } },
     })
-  await prisma.$disconnect()
-  const { testPool } = (await import('@/lib/prisma')) as unknown as {
-    testPool: { end(): Promise<void> }
+    // Janelas persistentes destes casos; segredo sintético comum aos dois caminhos.
+    const secret = identityRateLimitSecret(process.env)
+    const ownedDigests = [...usedAccounts].map((account) =>
+      platformRateLimitDigest(secret, 'account', account)
+    )
+    for (const ip of usedIps) {
+      const subnet =
+        ip
+          .split(':')
+          .slice(0, 4)
+          .map((group) => Number.parseInt(group, 16).toString(16))
+          .join(':') + '::/64'
+      ownedDigests.push(platformRateLimitDigest(secret, 'ip', subnet))
+    }
+    await prisma.platformRateLimit.deleteMany({
+      where: {
+        AND: [
+          { key: { startsWith: 'auth:sign-in:' } },
+          {
+            OR: ownedDigests.map((digest) => ({
+              key: { contains: ':' + digest + ':' },
+            })),
+          },
+        ],
+      },
+    })
+  } finally {
+    try {
+      await prisma.$disconnect()
+    } finally {
+      try {
+        await pool.end()
+      } finally {
+        restoreEnvironment()
+      }
+    }
   }
-  await testPool.end()
 })
 
 describe('senha legada no login v2: igualdade exata do e-mail', () => {
@@ -289,8 +358,8 @@ describe('login v2 com o limitador e o custo do login legado', () => {
       expect(bcrypt.getRounds(hash as string)).toBe(12)
   })
 
-  it('na coexistência, criar a identidade sem o limitador falha na hora', () => {
-    expect(() => createIdentity(prisma, config, mail)).toThrow(/attempt guard/)
+  it('na coexistência, criar a identidade sem o limitador falha na hora', async () => {
+    await expect(createFixtureIdentity()).rejects.toThrow(/attempt guard/)
   })
 
   it('limitador que não conta (banco fora ou sem segredo em produção): 503 com Retry-After, nunca 500 nem 429, sem a mensagem', async () => {
@@ -318,7 +387,7 @@ describe('login v2 com o limitador e o custo do login legado', () => {
       },
     ]
     for (const consume of failures) {
-      const down = createIdentity(prisma, config, mail, {
+      const down = await createFixtureIdentity({
         ...legacySignInGuard(),
         consume,
       })

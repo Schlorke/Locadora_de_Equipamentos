@@ -8,22 +8,17 @@
         "name": "next"
       }
     ],
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "paths": {
-      "@gb-locacoes/ui": [
-        "../../../packages/ui/src/index.web.ts"
-      ]
+      "@gb-locacoes/ui": ["../../../packages/ui/src/index.web.ts"]
     }
   },
+  // O antigo next-env.d.ts da raiz foi retirado em F; este include resolve o gerado do proprio host.
   "include": [
     "next-env.d.ts",
     "src",
     ".next/types/**/*.ts",
     "../../../types/next-auth.d.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

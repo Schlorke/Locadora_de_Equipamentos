@@ -196,9 +196,9 @@ web/Android/iOS.
   seção "CSS da modernização" na onda 4).
 - **Nomes de teste**: todo teste colocado aninha sob o arquivo que testa
   (`pnpm check:test-names`); por exemplo, os 23 `contrato.migracao.test.ts`
-  viraram `index.contract.test.ts` e os testes de `app/providers` passaram a
-  `RuntimeBootstrap.*`, `SessionProviderWrapper.web` e
-  `public-tenant-routing.host-mode.web`.
+  viraram `index.contract.test.ts` e os testes de
+  `packages/frontend/src/app/providers` passaram a `RuntimeBootstrap.*`,
+  `SessionProviderWrapper.web` e `public-tenant-routing.host-mode.web`.
 
 ## 16. Onda 4 (2026-09-26, commit `4b02f52f`)
 
@@ -236,9 +236,9 @@ web/Android/iOS.
   197 de `docs/issues/known-issues.md`).
 - **"Entrar" com retorno**: o `PrivateAreaGate` leva a `/login` com
   `callbackUrl` = caminho visível (`refreshKey`) + query da URL no web (variante
-  `app/providers/current-query.ts`/`.web.ts`/`.native.ts`), só se o
-  `safeInternalCallback` a devolver sem mudar. O "Solicitar Orçamento" usa
-  `signInHref` de `features/entrar`, com a mesma regra (entrada 198).
+  `packages/frontend/src/app/providers/current-query.ts`/`.web.ts`/`.native.ts`),
+  só se o `safeInternalCallback` a devolver sem mudar. O "Solicitar Orçamento"
+  usa `signInHref` de `features/entrar`, com a mesma regra (entrada 198).
 - **Páginas de conta com `shell`**: `LoginPage` (e `LoginPageFallback`),
   `RecuperarSenhaPage` e `ResetPasswordPage` recebem `shell` (`storefront`, o
   padrão, ou `platform`) no mesmo contrato web e native; o `ClientLayoutShell`

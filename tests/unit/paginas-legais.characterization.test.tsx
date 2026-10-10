@@ -51,11 +51,12 @@ describe('páginas legais web com o documento da GB (igual ao B0)', () => {
         })
       )
       expect(html + '\n', name).toBe(
+        // Git stores the reference as LF; normalize only checkout CRLF before the exact markup comparison.
         // Approved class spelling; the historical HTML and every other byte stay fixed.
-        fs.readFileSync(path.join(FIXTURES, name + '.web.html'), 'utf8').replaceAll(
-          'flex-shrink-0',
-          'shrink-0'
-        )
+        fs
+          .readFileSync(path.join(FIXTURES, name + '.web.html'), 'utf8')
+          .replace(/\r\n/g, '\n')
+          .replaceAll('flex-shrink-0', 'shrink-0')
       )
     }
     // Prazo medido: 2,9 s sozinho (o primeiro import das três páginas compila framer-motion e os ícones); passou dos

@@ -1,3 +1,29 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return (legacyPrisma.module = (await (async () => {
+    const { createPlatformRateLimitTable } =
+      await import('../helpers/platform-rate-limit-table')
+    const table = createPlatformRateLimitTable()
+    return {
+      rateLimitTable: table,
+      prisma: {
+        platformRateLimit: table.platformRateLimit,
+        user: {
+          findMany: record('prisma.user.findMany', []),
+          findUnique: record('prisma.user.findUnique', null),
+        },
+        verificationToken: {
+          findUnique: record('prisma.verificationToken.findUnique', null),
+        },
+        $transaction: record('prisma.$transaction', { email: 'x' }),
+      },
+    }
+  })()) as { prisma: unknown })
+}
 /**
  * Fluxos anônimos de conta liberados no host de locadora
  * (`/api/auth/register`, `forgot-password`, `reset-password`), nos dois modos
@@ -41,61 +67,11 @@ const { state, record } = vi.hoisted(() => {
   return { state, record }
 })
 
-// O módulo `@/lib/prisma` que a fábrica abaixo monta: o serviço lê o mesmo cliente (real ou simulado) pelo runtime.
+// A fábrica abaixo monta o cliente (real ou simulado) que o serviço lê pelo runtime do backend.
 const legacyPrisma = vi.hoisted(() => ({
   module: undefined as undefined | { prisma: unknown },
 }))
-vi.mock(
-  '@/lib/prisma',
-  async () =>
-    (legacyPrisma.module = (await (async () => {
-      const { createPlatformRateLimitTable } =
-        await import('../helpers/platform-rate-limit-table')
-      const table = createPlatformRateLimitTable()
-      return {
-        rateLimitTable: table,
-        prisma: {
-          platformRateLimit: table.platformRateLimit,
-          user: {
-            findMany: record('prisma.user.findMany', []),
-            findUnique: record('prisma.user.findUnique', null),
-          },
-          verificationToken: {
-            findUnique: record('prisma.verificationToken.findUnique', null),
-          },
-          $transaction: record('prisma.$transaction', { email: 'x' }),
-        },
-      }
-    })()) as { prisma: unknown })
-)
-vi.mock('@/lib/resend', () => ({ default: () => null }))
-vi.mock('@/lib/identity', async () => {
-  const config =
-    await import('../../packages/backend/src/modules/identity/configuration')
-  const ok = () => new Response(JSON.stringify({ ok: true }), { status: 200 })
-  const api = {
-    signUpEmail: async () => {
-      state.effects.push('auth.api.signUpEmail')
-      return ok()
-    },
-    requestPasswordReset: async () => {
-      state.effects.push('auth.api.requestPasswordReset')
-      return ok()
-    },
-    resetPassword: async () => {
-      state.effects.push('auth.api.resetPassword')
-      return ok()
-    },
-  }
-  return {
-    ...config,
-    getIdentity: async () => ({ api }),
-    handleIdentityRequest: async () => {
-      state.effects.push('auth.handler')
-      return ok()
-    },
-  }
-})
+
 vi.mock('next/server', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next/server')>()),
   // Fora de uma requisição do Next: as rotas executam a tarefa na hora.
@@ -112,18 +88,30 @@ vi.mock('bcryptjs', async (importOriginal) => {
   }
 })
 
-import * as applicationPrisma from '@/lib/prisma'
+const applicationPrisma = fPreparedDatabase.value!
 import type { createPlatformRateLimitTable } from '../helpers/platform-rate-limit-table'
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
-// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: legacyPrisma.module?.prisma }),
-  ...(await (async () => {
-    const F = await (() => ({ default: () => null }))()
-    return { createResendClient: () => F.default() }
-  })()),
-}))
+// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade da raiz foi retirada no bloco F.
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({ prisma: legacyPrisma.module?.prisma }),
+    ...(await (async () => {
+      const F = await (() => ({ default: () => null }))()
+      return { createResendClient: () => F.default() }
+    })()),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 vi.mock('@gb-locacoes/backend/identity', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@gb-locacoes/backend/identity')>()),
   ...(await (async () => {
@@ -163,22 +151,14 @@ vi.mock('@gb-locacoes/backend/identity', async (importOriginal) => ({
     }
   })()),
 }))
-import * as legacyRoute0 from '@/app/api/auth/register/route'
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/auth/register/route'
-import * as legacyRoute1 from '@/app/api/auth/forgot-password/route'
+
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/auth/forgot-password/route'
-import * as legacyRoute2 from '@/app/api/auth/reset-password/route'
+
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/auth/reset-password/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      register: legacyRoute0.POST,
-      forgotPassword: legacyRoute1.POST,
-      resetPassword: legacyRoute2.POST,
-    },
-  ],
   [
     'service',
     {

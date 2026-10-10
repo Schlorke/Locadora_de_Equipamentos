@@ -8,45 +8,12 @@
     "web": "apps/clients/web",
     "mobile": "apps/clients/mobile"
   },
-  "clientEntrypoints": [
-    "app",
-    "pages/*",
-    "app/styles.css"
-  ],
+  "$comment": "clientEntrypoints are @gb-locacoes/frontend package exports; app/styles.css is that public CSS contract, while the former root app/ was retired in F.",
+  "clientEntrypoints": ["app", "pages/*", "app/styles.css"],
   "serverOnlyPackages": [],
-  "universalSourceRoots": [
-    "packages/frontend/src"
-  ],
+  "universalSourceRoots": ["packages/frontend/src"],
   "ratchetBaseline": "tools/arch-baseline.json",
   "legacyRoots": [
-    {
-      "path": "app",
-      "runtime": "web-host"
-    },
-    {
-      "path": "lib",
-      "runtime": "server-and-shared"
-    },
-    {
-      "path": "middlewares",
-      "runtime": "server"
-    },
-    {
-      "path": "schemas",
-      "runtime": "shared"
-    },
-    {
-      "path": "types/global.d.ts",
-      "runtime": "types"
-    },
-    {
-      "path": "types/google-maps-ecl.d.ts",
-      "runtime": "types"
-    },
-    {
-      "path": "proxy.ts",
-      "runtime": "server"
-    },
     {
       "path": "public",
       "runtime": "browser-assets"

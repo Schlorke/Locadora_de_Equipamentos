@@ -1,7 +1,8 @@
 const basePath = '/admin/email'
 
 /**
- * O redirect URI do Zoho é fixo no host `app` (lib/zoho-mail/client.ts). A
+ * Com plataforma multi-host válida, o redirect URI do Zoho é fixo no host `app`
+ * (modules/communications/zoho-client.ts); a antiga lib/zoho-mail/client.ts foi retirada em F. A
  * volta ao painel é relativa: o navegador a resolve contra o host que recebeu
  * este callback, nunca contra uma origem configurada à parte (`NEXTAUTH_URL`).
  */

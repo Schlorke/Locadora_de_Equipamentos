@@ -46,30 +46,20 @@ async function publicTenant() {
       }
     : { ok: true, context: { tenantId: 'tenant' }, edge: {} }
 }
-vi.mock('@/lib/tenant', () => ({
-  resolveTenantPrincipal: resolve,
-  resolvePublicRequestTenant: publicTenant,
-}))
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: resolve,
 }))
 vi.mock('../../apps/services/api/src/host/runtime', () => ({
   resolvePublicRequestTenant: publicTenant,
 }))
-vi.mock('@/lib/tenant-permissions', () => ({
-  requireTenantPermission: resolve,
-}))
 vi.mock('../../apps/services/api/src/host/permissions', () => ({
   requireTenantPermission: resolve,
 }))
-vi.mock('@/lib/quote-request', () => ({ ...state.calls, QuoteUpdateRejected }))
 vi.mock('../../apps/services/api/src/host/quotations', () => ({
   ...state.calls,
   QuoteUpdateRejected,
 }))
 vi.mock('../../apps/services/api/src/host/portal', () => state.calls)
-vi.mock('@/lib/rental-converter', () => state.calls)
-vi.mock('@/lib/late-fee-calculator', () => state.calls)
 function limit() {
   return state.limited
     ? {
@@ -78,18 +68,10 @@ function limit() {
       }
     : { allowed: true }
 }
-vi.mock('@/lib/rate-limit', () => ({
-  checkRateLimit: limit,
-  adminApiRateLimit: {},
-  strictRateLimit: {},
-}))
 vi.mock('../../apps/services/api/src/host/rate-limit', () => ({
   checkRateLimit: limit,
   adminApiRateLimit: {},
   strictRateLimit: {},
-}))
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => ({ user: { id: 'user' } }),
 }))
 vi.mock('../../apps/services/api/src/host/session', () => ({
   getServerSession: async () => ({ user: { id: 'user' } }),
@@ -104,57 +86,44 @@ vi.mock('@gb-locacoes/backend/identity', async (importActual) => ({
 }))
 
 import {
-  PATCH as oldPatch,
-  DELETE as oldDelete,
-} from '@/app/api/admin/quotes/[id]/route'
-import {
   PATCH as newPatch,
   DELETE as newDelete,
 } from '../../apps/services/api/src/app/api/admin/quotes/[id]/route'
 import {
-  GET as oldList,
-  POST as oldAdjust,
-} from '@/app/api/admin/quotes/[id]/adjustments/route'
-import {
   GET as newList,
   POST as newAdjust,
 } from '../../apps/services/api/src/app/api/admin/quotes/[id]/adjustments/route'
-import { DELETE as oldHistory } from '@/app/api/admin/quotes/[id]/adjustments/[adjustmentId]/route'
 import { DELETE as newHistory } from '../../apps/services/api/src/app/api/admin/quotes/[id]/adjustments/[adjustmentId]/route'
-import { POST as oldFee } from '@/app/api/admin/quotes/[id]/calculate-late-fee/route'
 import { POST as newFee } from '../../apps/services/api/src/app/api/admin/quotes/[id]/calculate-late-fee/route'
-import { POST as oldConvert } from '@/app/api/admin/quotes/[id]/convert-to-rental/route'
 import { POST as newConvert } from '../../apps/services/api/src/app/api/admin/quotes/[id]/convert-to-rental/route'
-import { POST as oldSend } from '@/app/api/admin/quotes/[id]/send-adjusted-quote/route'
 import { POST as newSend } from '../../apps/services/api/src/app/api/admin/quotes/[id]/send-adjusted-quote/route'
-import { POST as oldCreate } from '@/app/api/quotes/route'
 import { POST as newCreate } from '../../apps/services/api/src/app/api/quotes/route'
 
 const cases = [
   {
     name: 'patch',
-    handlers: [oldPatch, newPatch],
+    handlers: [newPatch],
     use: 'updateQuote',
     body: { name: 'updated', extra: true },
     status: 200,
   },
   {
     name: 'delete',
-    handlers: [oldDelete, newDelete],
+    handlers: [newDelete],
     use: 'deleteQuote',
     body: {},
     status: 200,
   },
   {
     name: 'adjustment list',
-    handlers: [oldList, newList],
+    handlers: [newList],
     use: 'listQuoteAdjustments',
     body: {},
     status: 200,
   },
   {
     name: 'adjustment create',
-    handlers: [oldAdjust, newAdjust],
+    handlers: [newAdjust],
     use: 'createQuoteAdjustment',
     body: {
       category: 'OTHER',
@@ -166,14 +135,14 @@ const cases = [
   },
   {
     name: 'immutable history',
-    handlers: [oldHistory, newHistory],
+    handlers: [newHistory],
     use: 'hasQuoteAdjustment',
     body: {},
     status: 409,
   },
   {
     name: 'late fee',
-    handlers: [oldFee, newFee],
+    handlers: [newFee],
     use: 'calculateQuoteLateFee',
     body: {
       currentDate: '2033-03-12T00:00:00Z',
@@ -184,14 +153,14 @@ const cases = [
   },
   {
     name: 'conversion',
-    handlers: [oldConvert, newConvert],
+    handlers: [newConvert],
     use: 'convertQuoteToRental',
     body: { generateBoleto: true, boletoDueDate: '2033-03-14', extra: true },
     status: 201,
   },
   {
     name: 'adjusted send',
-    handlers: [oldSend, newSend],
+    handlers: [newSend],
     use: 'requestAdjustedQuoteDelivery',
     body: {},
     status: 202,
@@ -288,8 +257,8 @@ describe.each(cases)('$name preserves the quote HTTP contract', (testCase) => {
       responses.push(await result.json())
       calls.push(state.calls[testCase.use]!.mock.calls)
     }
-    expect(responses[1]).toEqual(responses[0])
-    expect(calls[1]).toEqual(calls[0])
+    expect(responses[0]).toEqual(expectedQuoteResponses[testCase.name])
+    expect(state.calls[testCase.use]).toHaveBeenCalledTimes(1)
     expect(calls[0]![0]!.slice(0, 2)).toEqual([principal, 'quote'])
     if (testCase.name === 'adjustment create')
       expect(calls[0]![0]![2]).toEqual({
@@ -330,7 +299,7 @@ it('keeps distinct admin/operator/financial roles before malformed payload', asy
 })
 it('preserves rate limiting before parsing', async () => {
   state.limited = true
-  for (const handler of [oldPatch, newPatch, oldCreate, newCreate])
+  for (const handler of [newPatch, newCreate])
     expect((await handler(request({}, true), params))!.status).toBe(429)
   expect(state.calls.updateQuote).not.toHaveBeenCalled()
   expect(state.calls.createQuoteRequest).not.toHaveBeenCalled()
@@ -339,7 +308,7 @@ it('maps QuoteUpdateRejected and reconciliation without changing their bodies', 
   state.calls.updateQuote!.mockRejectedValue(
     new QuoteUpdateRejected(400, { error: 'Campo não editável no orçamento' })
   )
-  for (const handler of [oldPatch, newPatch]) {
+  for (const handler of [newPatch]) {
     const result = await handler(request({}), params)
     if (!result) throw new Error('Handler did not return a Response')
     expect(result.status).toBe(400)
@@ -354,7 +323,7 @@ it('maps QuoteUpdateRejected and reconciliation without changing their bodies', 
       'PAYMENT_ADJUSTMENT_REQUIRES_RECONCILIATION'
     )
   )
-  for (const handler of [oldAdjust, newAdjust])
+  for (const handler of [newAdjust])
     expect(
       await (await handler(request(cases[3].body), params)).json()
     ).toEqual({
@@ -366,7 +335,7 @@ it('does not expose unexpected deletion causes', async () => {
   state.calls.deleteQuote!.mockRejectedValue(
     new Error('fixture-private-database-failure')
   )
-  for (const handler of [oldDelete, newDelete]) {
+  for (const handler of [newDelete]) {
     const response = await handler(request({}), params)
     if (!response) throw new Error('Handler did not return a Response')
     expect(response.status).toBe(500)
@@ -378,7 +347,7 @@ it.each([
   ['missing_end_date', 400, 'Orçamento não possui data de término definida'],
 ] as const)('retains late-fee outcome %s', async (outcome, status, error) => {
   state.calls.calculateQuoteLateFee!.mockResolvedValue({ outcome })
-  for (const handler of [oldFee, newFee]) {
+  for (const handler of [newFee]) {
     const response = await handler(request({}), params)
     if (!response) throw new Error('Handler did not return a Response')
     expect(response.status).toBe(status)
@@ -409,7 +378,7 @@ it.each([402, 403, 503])(
         policy
       )
     )
-    for (const handler of [oldCreate, newCreate]) {
+    for (const handler of [newCreate]) {
       const response = await handler(request(publicBody))
       expect(response.status).toBe(status)
       expect(await response.json()).toEqual(policy)
@@ -419,7 +388,7 @@ it.each([402, 403, 503])(
   }
 )
 it('preserves public creation schema and optional session identity', async () => {
-  for (const handler of [oldCreate, newCreate]) {
+  for (const handler of [newCreate]) {
     const response = await handler(request(publicBody))
     if (!response) throw new Error('Handler did not return a Response')
     expect(response.status).toBe(201)
@@ -437,7 +406,7 @@ it('preserves public creation schema and optional session identity', async () =>
 })
 it('public creation rejects origin before malformed JSON', async () => {
   state.crossOrigin = true
-  for (const handler of [oldCreate, newCreate])
+  for (const handler of [newCreate])
     expect((await handler(request({}, true)))!.status).toBe(403)
   expect(state.calls.createQuoteRequest).not.toHaveBeenCalled()
 })
@@ -445,8 +414,31 @@ it.each([400, 404, 409])(
   'public tenant rejection %i precedes input validation',
   async (code) => {
     state.denied = code
-    for (const handler of [oldCreate, newCreate])
+    for (const handler of [newCreate])
       expect((await handler(request({})))!.status).toBe(code)
     expect(state.calls.createQuoteRequest).not.toHaveBeenCalled()
   }
 )
+
+const expectedQuoteResponses = {
+  patch: { id: 'quote' },
+  delete: { message: 'Quote deleted successfully' },
+  'adjustment list': { adjustments: [{ id: 'adjustment', amount: 1.01 }] },
+  'adjustment create': { id: 'quote' },
+  'immutable history': {
+    error:
+      'O histórico de reajustes deve ser preservado. Registre uma revisão financeira para corrigir valores.',
+    code: 'ADJUSTMENT_HISTORY_PRESERVED',
+  },
+  'late fee': {
+    lateFee: 2,
+    daysLate: 1,
+    calculationMethod: 'fixed',
+    config: { fixedAmount: 2 },
+    baseValue: 100,
+    endDate: '2033-03-11',
+    calculationDate: '2033-03-12',
+  },
+  conversion: { id: 'quote' },
+  'adjusted send': { success: true, emailStatus: 'queued' },
+} as const

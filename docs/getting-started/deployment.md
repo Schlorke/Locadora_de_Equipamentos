@@ -1,17 +1,25 @@
-# 🚀 Deploy e Produção - GB Locações
+# 🚀 Preparação de Deploy e Produção
 
-> **Guia completo para deploy e configuração de produção do projeto
-> GB-Locações**
+> **Escopo**: configuração dos hosts e pré-condições de uma futura implantação.
+> Publicação Git e ensaios locais não criam hospedagem, banco cloud ou cron.
 
-Este guia descreve o host legado. A migração para os três hosts está em
-[aceite da API compartilhada](../guides/shared-api-acceptance.md); o ensaio
-local não autoriza implantação ou outra agenda. O destino Git autorizado é
-Schlorke/Locadora_de_Equipamentos; o repositório GB-Locações permanece
-referência legada e não deve receber publicação deste projeto. O corte de
-produção para os hosts novos (projetos API, web e `fallback-raiz`, agendas e
-variáveis) está no
-[runbook do corte](../operations/runbook-corte-raiz-legada.md), com o
-[manifesto de variáveis](../operations/manifesto-variaveis.md).
+O web está em `apps/clients/web`, a API em `apps/services/api` e o cliente Expo
+em `apps/clients/mobile`. A implementação compartilhada permanece nos packages;
+não existe um novo deploy do Next da raiz após sua aposentadoria.
+
+O origin deste produto é `Schlorke/Locadora_de_Equipamentos`. O repositório,
+projetos, domínios, credenciais e dados de produção da GB-Locações são
+referências preservadas e não devem receber publicação ou configuração deste
+checkout. A primeira publicação limpa não tornou os pais antigos parte do novo
+histórico.
+
+A escolha de hospedagem, banco hospedado, serviços e domínios fica para etapa
+posterior. Este guia não autoriza criar recursos ou acionar integrações. Para o
+eventual corte externo, use o
+[runbook do corte](../operations/runbook-corte-raiz-legada.md) e o
+[manifesto de variáveis](../operations/manifesto-variaveis.md). O fallback é o
+artefato fixado da tag de pré-exclusão, não o checkout posterior ao Bloco F nem
+um `main` antigo escolhido implicitamente.
 
 ## 📋 Índice
 
@@ -27,10 +35,10 @@ variáveis) está no
 
 ## 🎯 Visão Geral
 
-Este guia fornece instruções completas para deploy e configuração de produção do
-projeto GB-Locações.
+Este guia identifica os artefatos atuais e o que precisa ser decidido antes de
+uma implantação autorizada. Não certifica infraestrutura em produção.
 
-### 🎯 Objetivos
+### 🎯 Objetivos de uma futura implantação
 
 - **Deploy Automatizado** - CI/CD pipeline completo
 - **Performance Otimizada** - Core Web Vitals excelentes
@@ -42,180 +50,83 @@ projeto GB-Locações.
 
 ## ☁️ Deploy na Vercel
 
-### 🚀 Deploy Automático (Recomendado)
+### Artefatos reais dos hosts
 
-#### **1. Conectar Repositório**
+| Host | Root Directory a revisar no projeto futuro | Configuração versionada                                               | Build existente                        |
+| ---- | ------------------------------------------ | --------------------------------------------------------------------- | -------------------------------------- |
+| Web  | `apps/clients/web`                         | `apps/clients/web/vercel.json` e `apps/clients/web/next.config.mjs`   | `pnpm --filter @gb-locacoes/web build` |
+| API  | `apps/services/api`                        | `apps/services/api/vercel.json` e `apps/services/api/next.config.mjs` | `pnpm --filter @gb-locacoes/api build` |
 
-1. Acesse [vercel.com](https://vercel.com)
-2. Faça login com GitHub
-3. Clique em **"New Project"**
-4. Selecione o repositório `Schlorke/Locadora_de_Equipamentos`
-5. Configure as variáveis de ambiente
+O install e a resolução de workspace precisam preservar `pnpm-lock.yaml`, Node
+`>=24.21.0 <25` e pnpm `10.27.0`. Não conecte um projeto Vercel existente da GB
+nem copie seu identificador CLI para este checkout. Os arquivos acima são a
+fonte dos comandos; não adicione um segundo modelo JSON para a raiz.
 
-#### **2. Configuração do Projeto**
+### Ambiente e autenticação
 
-O projeto já está configurado com `vercel.json` otimizado:
+Use os modelos `apps/clients/web/.env.example` e
+`apps/services/api/.env.example` com o
+[manifesto de variáveis](../operations/manifesto-variaveis.md). Banco,
+credenciais de integração e segredos de sessão ficam no servidor. O web usa
+origem da API e contexto de borda; somente as variáveis públicas previstas podem
+chegar ao cliente. Uma chave de serviço nunca vira `NEXT_PUBLIC_*`.
 
-```json
-{
-  "buildCommand": "pnpm run build",
-  "installCommand": "pnpm install --frozen-lockfile=false",
-  "framework": "nextjs",
-  "images": {
-    "formats": ["image/avif", "image/webp"],
-    "sizes": [16, 32, 48, 64, 96, 128, 256, 384, 512, 1024, 2048]
-  }
-}
-```
+`NEXT_PUBLIC_AUTH_MODE` é parte do build web: mudar só o ambiente de um processo
+não altera o cliente já compilado. API e web também precisam de origens, domínio
+e segredos coerentes no modo selecionado. A configuração isolada de NextAuth não
+pode definir `NEXTAUTH_URL_INTERNAL` como string vazia; quando configurada, essa
+URL interna deve ser uma URL válida do runtime correspondente.
 
-#### **3. Variáveis de Ambiente de Produção**
+### Agendas e publicação
 
-Configure as seguintes variáveis no painel da Vercel:
+`apps/clients/web/vercel.json` não declara crons. O arquivo da API declara
+late-fees, expire-quotes e outbox. Essa declaração não é evidência de agenda
+ativa e não autoriza habilitá-la. O despacho adicional de GitHub está em
+`.github/workflows/cron-dispatch.yml`, protegido pelo repositório exato e
+`CRON_DISPATCH_ENABLED == 'true'`. Não habilite ambas as agendas para o mesmo
+job nem acrescente Merchant para eliminar a quarentena.
 
-```bash
-# =================================================================
-# 🗄️ DATABASE (PRODUÇÃO)
-# =================================================================
-DATABASE_URL="postgresql://user:pass@host:port/db?schema=public"
-DIRECT_URL="postgresql://user:pass@host:port/db?schema=public"
+Publicar uma branch/tag no GitHub não é `vercel --prod`. Importar projetos,
+definir variáveis e ligar agenda exigem a etapa de infraestrutura autorizada,
+com destino conferido e rollback do runbook. Não use `git push origin main` como
+receita de deploy: o `main` local antigo pode ser só referência preservada.
 
-# =================================================================
-# ☁️ SUPABASE (PRODUÇÃO)
-# =================================================================
-NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
-SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+### Registro da configuração anterior da GB (aposentada)
 
-# =================================================================
-# 🔑 NEXTAUTH (PRODUÇÃO)
-# =================================================================
-NEXTAUTH_URL="https://locacoesgb.com.br"
-NEXTAUTH_SECRET="your-production-secret-256-bits"
-
-# =================================================================
-# 💳 PAGAMENTOS (PRODUÇÃO)
-# =================================================================
-STRIPE_SECRET_KEY="sk_live_..."
-STRIPE_PUBLISHABLE_KEY="pk_live_..."
-MERCADO_PAGO_TOKEN="your-production-token"
-
-# =================================================================
-# 📧 EMAIL (PRODUÇÃO)
-# =================================================================
-RESEND_API_KEY="your-production-resend-key"
-SENDGRID_API_KEY="your-production-sendgrid-key"
-
-# =================================================================
-# 📄 CONTRATOS & 🚚 LOGÍSTICA
-# =================================================================
-ZAPSIGN_TOKEN="your-production-zapsign-token"
-MELHOR_ENVIO_TOKEN="your-production-melhor-envio-token"
-
-# =================================================================
-# 🔍 LOGS & MONITORING
-# =================================================================
-LOG_LEVEL="info"
-NODE_ENV="production"
-```
-
-#### **4. Deploy**
-
-```bash
-# Automático via Git
-git push origin main
-# Deploy é executado automaticamente
-
-# Manual via CLI (opcional)
-npx vercel --prod
-```
-
-### 🔧 **Configurações Específicas da Vercel**
-
-#### **Build & Output Settings**
-
-```bash
-# Framework Preset: Next.js
-# Build Command: pnpm run build
-# Output Directory: .next
-# Install Command: pnpm install
-# Development Command: pnpm dev
-```
-
-#### **Function Configuration**
-
-```json
-// vercel.json (funções)
-{
-  "functions": {
-    "app/api/**/*.js": {
-      "maxDuration": 30
-    }
-  }
-}
-```
+O `vercel.json` da raiz e o glob `app/api/**/*.js` sugeridos no guia de dezembro
+de 2024 foram aposentados como instruções deste produto, junto à receita de
+install sem frozen lockfile e build de um único Next; não são substitutos dos
+arquivos dos hosts. A configuração e o runtime antigos só podem ser consultados
+no arquivo local preservado ou no fallback fixado da tag adequada, sem publicar
+pais antigos ou alterar o projeto GB.
 
 ---
 
 ## 🐳 Deploy com Docker
 
-### **Docker Compose (Recomendado)**
+O Dockerfile versionado do serviço é `apps/services/api/Dockerfile`, com
+contexto na raiz do workspace. Ele usa Node 24.21, gera o Prisma Client, compila
+`@gb-locacoes/api` e inicia `apps/services/api/server.js` da saída standalone na
+porta 3002, como usuário `node`. O healthcheck consulta `/api/health`. Não há
+Dockerfile próprio do web; não invente um caminho ou trate esse artefato API
+como imagem dos dois hosts.
 
-```yaml
-# docker-compose.prod.yml
-version: "3.8"
+O `docker-compose.yml` preparado para a casa pós-retirada é um ambiente local
+isolado da nova Locadora, com serviço API e PostgreSQL 18 em volume novo. Seu
+nome de projeto é `locadora-equipamentos-saas` e o volume é
+`locadora-equipamentos-saas-pg18`. A configuração não deve reaproveitar volumes
+PostgreSQL 15, `.env.docker`, dados ou credenciais da GB. Ela não constitui um
+plano de produção, migração de volume ou banco hospedado já contratado.
 
-services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - DATABASE_URL=${DATABASE_URL}
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-    depends_on:
-      - postgres
+Antes de qualquer ensaio, confira a versão efetivamente aplicada do Compose, as
+portas e volumes exclusivos, o ambiente sintético e as migrations do banco
+próprio. Não inicialize containers ou um banco de produção apenas por seguir
+este documento. A execução e seu cleanup precisam de evidência independente.
 
-  postgres:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: gblocacoes
-      POSTGRES_USER: gblocacoes
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./ssl:/etc/nginx/ssl
-    depends_on:
-      - app
-
-volumes:
-  postgres_data:
-```
-
-### **Deploy Docker**
-
-```bash
-# Build e deploy
-docker-compose -f docker-compose.prod.yml up --build -d
-
-# Verificar status
-docker-compose ps
-
-# Logs
-docker-compose logs -f app
-```
+**Registro histórico:** o exemplo `docker-compose.prod.yml` com serviço `app`,
+`Dockerfile` da raiz, PostgreSQL 16 e nginx era uma proposta do guia antigo. A
+raiz e sua receita foram aposentadas; aquele exemplo não é um arquivo atual de
+deploy e não deve ser recriado ou usado contra volumes existentes.
 
 ---
 
@@ -223,113 +134,51 @@ docker-compose logs -f app
 
 ### **1. Banco de Dados**
 
-#### **Supabase (Recomendado)**
+#### Banco e migrations: decisão posterior
 
-> **⚠️ CRÍTICO**: Para aplicações serverless (Vercel), use **Transaction Pooler
-> (porta 6543)** conforme recomendação oficial do Supabase e Prisma.
+Nenhuma conta PostgreSQL cloud é presumida por este guia. A escolha de provedor,
+rede, backup e credenciais ocorre na etapa de infraestrutura. Uma futura
+implantação deve distinguir o papel de migrations do papel runtime, preservar as
+policies/RLS/triggers versionadas e validar o runtime por locadora.
 
-```bash
-# 1. Criar projeto no Supabase
-# 2. Configurar variáveis (ver abaixo)
-# 3. Executar migrations (RLS, grants e triggers vivem nelas; nunca db push)
-pnpm exec prisma migrate deploy
-pnpm db:seed
-```
+O datasource de `prisma.config.ts` lê `DATABASE_URL`. Não presuma que configurar
+`DIRECT_URL` sozinho troca o destino usado pela CLI. Confirme explicitamente o
+banco próprio autorizado antes de qualquer comando. A aplicação recebe seu
+runtime por `getDatabaseRuntime`, de `@gb-locacoes/backend/runtime`, que usa
+`@prisma/adapter-pg`; não restaure `lib/prisma.ts` na raiz aposentada.
 
-#### **Configuração de Connection Strings (Supabase + Prisma)**
+`pnpm db:generate` gera somente o client e não migra o banco. As migrations
+moram em `prisma/migrations` e são aplicadas por `prisma migrate deploy` ao alvo
+autorizado; nunca use `db push` ou scripts avulsos de FORCE/fix RLS.
+`pnpm db:seed` altera dados e também exige alvo explícito, não é uma etapa
+incondicional de deploy. Veja o manifesto e o runbook antes de operar.
 
-**✅ PRODUÇÃO (Serverless - Vercel):**
-
-```bash
-# ✅ Transaction Pooler (porta 6543) - RECOMENDADO oficialmente
-DATABASE_URL="postgresql://postgres.PROJECT_REF:PASSWORD@aws-1-sa-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connect_timeout=15"
-
-# ✅ Direct Connection (porta 5432) - Para migrations
-DIRECT_URL="postgresql://postgres:PASSWORD@db.PROJECT_REF.supabase.co:5432/postgres"
-```
-
-**✅ DESENVOLVIMENTO LOCAL:**
-
-```bash
-# ✅ Direct Connection (mais rápido para desenvolvimento)
-DATABASE_URL="postgresql://postgres:PASSWORD@db.PROJECT_REF.supabase.co:5432/postgres"
-DIRECT_URL="postgresql://postgres:PASSWORD@db.PROJECT_REF.supabase.co:5432/postgres"
-```
-
-**📚 Referências Oficiais:**
+**Registro histórico:** as receitas de Supabase/pooler e os parâmetros de
+PostgreSQL do guia anterior não escolhem o provedor desta plataforma. Não
+reutilize strings de conexão, grants ou volumes da GB. As referências originais
+são preservadas para consulta, sem certificar a configuração atual:
 
 - [Supabase: Connection Pooling](https://supabase.com/docs/guides/database/connecting-to-postgres#connection-pooler)
 - [Prisma: Supabase Integration](https://www.prisma.io/docs/orm/overview/databases/supabase)
 - [Supabase: Prisma Guide](https://supabase.com/docs/guides/database/prisma)
 
-#### **PostgreSQL Self-hosted**
-
-```bash
-# Configuração de produção
-# postgresql.conf
-max_connections = 100
-shared_buffers = 256MB
-effective_cache_size = 1GB
-wal_buffers = 16MB
-checkpoint_completion_target = 0.9
-```
-
 ### **2. Otimizações de Performance**
 
 #### **Next.js Config**
 
-```javascript
-// next.config.mjs
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  // Otimizações de produção
-  compress: true,
-  poweredByHeader: false,
-
-  // Otimização de imagens
-  images: {
-    formats: ["image/avif", "image/webp"],
-    minimumCacheTTL: 31536000 // 1 ano
-  },
-
-  // Headers de segurança
-  async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff"
-          },
-          {
-            key: "X-Frame-Options",
-            value: "DENY"
-          },
-          {
-            key: "X-XSS-Protection",
-            value: "1; mode=block"
-          }
-        ]
-      }
-    ]
-  }
-}
-
-export default nextConfig
-```
+O web usa `apps/clients/web/next.config.mjs` e a API usa
+`apps/services/api/next.config.mjs`. A API declara saída standalone e tracing na
+raiz do workspace. O web transpila os packages compartilhados, tem CSP por host
+de locadora, `noindex` no host `app` e fora de produção, e imagens
+`unoptimized: true` com remotePatterns conferidos. Não copie o antigo exemplo
+genérico de headers/otimizações para sobrescrever esses contratos.
 
 ### **3. Caching Strategy**
 
-```typescript
-// Cache headers por tipo de conteúdo
-const cacheHeaders = {
-  "text/html": "public, max-age=0, must-revalidate",
-  "text/css": "public, max-age=31536000, immutable",
-  "application/javascript": "public, max-age=31536000, immutable",
-  "image/*": "public, max-age=31536000, immutable"
-}
-```
+A autorização, o tenant e a resposta de cada handler determinam os headers. Não
+aplique indiscriminadamente cache público a HTML privado, dados de sessão ou
+respostas de outra locadora. O objeto `cacheHeaders` genérico do guia antigo era
+ilustrativo; não implementava uma política atual do serviço.
 
 ---
 
@@ -337,76 +186,31 @@ const cacheHeaders = {
 
 ### **1. Vercel Analytics**
 
-```typescript
-// app/layout.tsx
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/next'
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="pt-BR">
-      <body>
-        {children}
-        <Analytics />
-        <SpeedInsights />
-      </body>
-    </html>
-  )
-}
-```
+A composição está em `apps/clients/web/src/app/layout.tsx`: carregamento sob
+demanda de Analytics e Speed Insights. A medição da plataforma é distinta dos
+IDs GA4/Ads por locadora no layout público. Não recrie `app/layout.tsx` na raiz
+aposentada nem copie IDs fixos da GB. Presença do componente não prova dados
+recebidos ou métricas do provedor em produção.
 
 ### **2. Logging Estruturado**
 
-```typescript
-// lib/logger.ts (produção)
-import pino from "pino"
-
-export const logger = pino({
-  level: process.env.LOG_LEVEL || "info",
-  transport:
-    process.env.NODE_ENV === "production"
-      ? undefined
-      : { target: "pino-pretty" }
-})
-
-// Uso em APIs
-logger.info("User authenticated", {
-  userId: user.id,
-  email: user.email,
-  timestamp: new Date().toISOString()
-})
-```
+O logger do servidor é `createApplicationLogger`, em
+`packages/backend/src/runtime/logger.ts`, exportado por
+`@gb-locacoes/backend/runtime`. Ele usa `LOG_LEVEL` e a política de redação de
+campos de segredo. Não restaure a antiga fachada `lib/logger.ts`, acrescente
+emails/tokens ao log por exemplo de documentação ou declare segurança universal
+por causa da existência da política.
 
 ### **3. Health Checks**
 
-```typescript
-// app/api/health/route.ts
-import { NextResponse } from "next/server"
-
-export async function GET() {
-  try {
-    const { prisma } = await import("@/lib/prisma")
-
-    // Verificar banco
-    await prisma.$queryRaw`SELECT 1`
-
-    return NextResponse.json({
-      status: "healthy",
-      timestamp: new Date().toISOString(),
-      version: process.env.npm_package_version
-    })
-  } catch (error) {
-    return NextResponse.json(
-      { status: "unhealthy", error: error.message },
-      { status: 503 }
-    )
-  }
-}
-```
+A rota `apps/services/api/src/app/api/health/route.ts` exporta o handler
+composto por `src/host/runtime.ts` sobre `createHealthHandler`, de
+`packages/backend/src/http/health.ts`. A composição consulta `SELECT 1` pelo
+runtime de banco. Sucesso responde 200 com `status: healthy` e
+`database: connected`; falha responde 503 com erro público genérico. Esse
+readiness não aprova regras de negócio, sessão, integrações, jobs, produção ou
+os demais endpoints. Não introduza o singleton `@/lib/prisma` do exemplo antigo,
+aposentado, nem exponha a mensagem interna do banco no DTO.
 
 ---
 
@@ -414,57 +218,21 @@ export async function GET() {
 
 ### **1. Headers de Segurança**
 
-```typescript
-// proxy.ts
-import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
+A borda web está em `apps/clients/web/src/proxy.ts` e sua composição em
+`src/host/routing/platform-proxy.ts`. CSP/noindex por host também estão no
+`apps/clients/web/next.config.mjs`. A API usa `apps/services/api/src/proxy.ts` e
+os handlers autorizam identidade/tenant no servidor. Não restaure `proxy.ts` da
+raiz aposentada nem cole o CSP genérico permissivo deste guia antigo.
 
-export function proxy(request: NextRequest) {
-  const response = NextResponse.next()
+### **2. Rate Limiting e Autorização**
 
-  // Security headers
-  response.headers.set("X-Content-Type-Options", "nosniff")
-  response.headers.set("X-Frame-Options", "DENY")
-  response.headers.set("X-XSS-Protection", "1; mode=block")
-  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin")
-
-  // CSP
-  response.headers.set(
-    "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
-  )
-
-  return response
-}
-```
-
-### **2. Rate Limiting**
-
-```typescript
-// lib/rate-limit.ts
-import { NextRequest } from "next/server"
-
-const rateLimitMap = new Map()
-
-export function rateLimit(request: NextRequest, limit = 100) {
-  const ip = request.ip ?? "127.0.0.1"
-  const key = `${ip}:${Date.now()}`
-
-  const requests = rateLimitMap.get(ip) || []
-  const now = Date.now()
-  const windowStart = now - 60 * 1000 // 1 minute window
-
-  const requestsInWindow = requests.filter((time) => time > windowStart)
-
-  if (requestsInWindow.length >= limit) {
-    return false
-  }
-
-  requestsInWindow.push(now)
-  rateLimitMap.set(ip, requestsInWindow)
-  return true
-}
-```
+Confira o handler exercitado e as políticas de `@gb-locacoes/backend/identity`,
+com composição em `apps/services/api/src/host/private-identity.ts` e
+`src/host/session.ts`. O principal é resolvido por vínculo com a locadora; o
+papel global do usuário não substitui essa fronteira. O Map em memória de
+`lib/rate-limit.ts` apresentado no guia antigo foi aposentado como receita; não
+é um limiter distribuído e não deve ser reintroduzido ou desabilitado para
+facilitar uma prova. As permissões por módulo continuam específicas do handler.
 
 ### **3. Validação de Entrada**
 
@@ -487,70 +255,32 @@ const apiSchema = z
 
 ### **GitHub Actions**
 
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy to Production
+Os workflows versionados são `.github/workflows/ci.yml`, `api-container.yml` e
+`cron-dispatch.yml`. O CI valida arquitetura/testes/builds; o job de container
+valida a API. Eles não contêm o deploy Vercel de exemplo `deploy.yml` mostrado
+no guia antigo. O dispatch de jobs exige o repositório exato, opt-in
+`CRON_DISPATCH_ENABLED == 'true'` e evento compatível.
 
-on:
-  push:
-    branches: [main]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run tests
-        run: pnpm test
-
-      - name: Type check
-        run: pnpm type-check
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Build
-        run: pnpm build
-
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v4
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.ORG_ID }}
-          vercel-project-id: ${{ secrets.PROJECT_ID }}
-          vercel-args: "--prod"
-```
+Não crie um workflow de deploy por copiar a antiga receita Node 20 ou fornecer
+segredos `VERCEL_TOKEN`/IDs de outro projeto. Um futuro CD precisa de projeto,
+ambiente, branch/ref e credenciais aprovados para esta plataforma. O `main` GB e
+a tag de pré-exclusão são referências distintas; o fallback depende do artefato
+fixado, não de um pull de histórico antigo.
 
 ### **Deploy Checklist**
 
-```bash
-# ✅ Pré-deploy checklist
-pnpm test                    # Testes passando
-pnpm type-check              # TypeScript OK
-pnpm lint                    # Linting OK
-pnpm build                   # Build sucesso
-pnpm type-check             # Tipos TypeScript OK
+Somente depois de aprovar o alvo de infraestrutura:
 
-# ✅ Pós-deploy checklist
-curl https://your-domain.com/api/health  # Health check
-# Verificar métricas no Vercel
-# Testar funcionalidades críticas
-```
+- conferir repositório/branch/ref, host e configuração aplicados;
+- revisar modelos de ambiente por host, banco próprio, papéis, migrations e
+  serviços mantidos desligados até autorização;
+- consolidar os gates/testes/builds previstos em
+  [testing](../guides/testing.md), sem tratar `pnpm test` como toda a matriz;
+- revisar agenda única, health/readiness, fluxos críticos e rollback depois da
+  implantação autorizada, com prova real e sem expor segredos.
+
+Este checklist não agenda outra implantação nem exige repetir provas aceitas sem
+mudanças que justifiquem a reexecução.
 
 ---
 
@@ -560,44 +290,33 @@ curl https://your-domain.com/api/health  # Health check
 
 #### **1. Build Timeout na Vercel**
 
-```bash
-# Solução: Otimizar build
-# package.json
-{
-  "scripts": {
-    "build": "next build",
-    "postbuild": "node scripts/patch-prisma.js"
-  }
-}
-```
+Confira o log e o script do host afetado, incluindo o prebuild web que
+sincroniza `public` por `tools/sync-web-public.mjs`. Não acrescente
+`scripts/patch-prisma.js`: o patch/postbuild da raiz foi aposentado. A geração
+atual é `tools/generate-prisma-client.mjs`, somente para o client.
 
 #### **2. Memory Limit Exceeded**
 
-```bash
-# Solução: Aumentar limit Node.js
-NODE_OPTIONS="--max-old-space-size=4096" pnpm build
-```
+Verifique o limite e a fase concreta do build antes de alterar recursos. O
+comando genérico `NODE_OPTIONS=... pnpm build` do guia anterior não identifica o
+host ou a causa e não é uma configuração aprovada de hospedagem.
 
 #### **3. Prisma Connection Issues**
 
-```typescript
-// lib/prisma.ts (produção)
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
-}
-
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log: process.env.NODE_ENV === "development" ? ["query"] : ["error"]
-  })
-
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma
-```
+Confira as variáveis do processo API e os erros sanitizados, sem imprimir URL,
+senha ou tokens. A implementação atual é
+`packages/backend/src/runtime/database.ts`, com pool/PrismaPg por processo e
+conexão adiada até seu uso. O singleton da fachada `lib/prisma.ts` foi
+aposentado. Não o recrie, troque o banco, execute seed ou aplique scripts RLS
+como tentativa automática de recuperar uma conexão.
 
 ---
 
 ## 📈 Performance Checklist
+
+Metas ilustrativas preservadas do guia de dezembro de 2024, não resultados de
+produção atual nem instruções para alterar UI/CSS. O aceite visual e as provas
+de host/runtime precisam de evidência própria.
 
 ### **Core Web Vitals**
 
@@ -616,7 +335,8 @@ if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma
 
 ---
 
-_Última atualização: dezembro 2024_
+_Guia original: dezembro de 2024. Revisão operacional preparada em 2026-10-09;
+infraestrutura e corte externos continuam sujeitos à etapa autorizada._
 
 ---
 

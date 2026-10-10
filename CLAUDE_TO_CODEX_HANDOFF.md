@@ -1,53 +1,102 @@
 # CLAUDE → CODEX — recuperação de contexto e handoff
 
-**Referência atual:** 09/10/2026, America/Sao_Paulo. **Projeto:**
-`C:\Projetos\Locadora_Equipamentos`.
+**Fechamento atual do clone — 2026-10-10:** a nova unit passou 4.104/4.104 em
+179 arquivos, sem skips, exit 0, em 406,99 s. O fechamento 1003 passou nos três
+passos: 12 gates, 324 regressões em 14 arquivos e 13 casos OpenAPI. Recibos e
+hashes atuais estão no [guia F](docs/guides/wave135-retirement-validation.md) e
+seu ledger; os checkpoints RED/pending e de 2026-10-09 abaixo são históricos.
 
-## Checkpoint atual — 2026-10-09
+O código do clone fechou no escopo declarado. Aplicação, formatação e gates
+afetados deste complemento ainda exigem recibo posterior. Validação no diretório
+original, publicação F e CI F serão registradas em recibos externos; nenhum SHA
+F ou evento futuro é antecipado.
+
+**Referência atual:** 2026-10-09, checkpoint pré-publicação, America/Sao_Paulo.
+**Projeto:** `C:\Projetos\Locadora_Equipamentos`.
+
+**Alcance histórico para este arquivo:** `app/` e `lib/` da raiz foram
+aposentados no Bloco F; os trechos preservados descrevem a estrutura antiga C.
+
+**Checkpoint posterior — 2026-10-10:** o gate real `check:tokens` passou após a
+correção do leitor. A full unit posterior encerrou RED, 4.103 passes/uma falha
+em 179 arquivos, em 391,15 s e exit 1, por quatro menções históricas sem legenda
+eficaz. Esta introdução esclarece o alcance histórico sem reescrever as tabelas
+antigas. Nova full unit e fechamento global continuam pendentes; o
+[guia F](docs/guides/wave135-retirement-validation.md) e seu ledger registram os
+eventos separados. O resultado 4.104/4.104 abaixo pertence ao checkpoint
+histórico de 2026-10-09.
+
+## Checkpoint vigente da base preparada — 2026-10-09, checkpoint pré-publicação
+
+**Resultado local:** base preparada no clone; unit, P2, B11 e visual fechados no
+escopo declarado. Unit 4.104/4.104 sem skips, P2 v6 e B11 v3 no escopo declarado
+e visual F 80/536/31.065 sem pendências têm recibos próprios. Gates documentais
+executarão após aplicação. Dispositivos, Slow 3G completo e foundations
+NOT_PROVEN continuam separados. O
+[guia F](docs/guides/wave135-retirement-validation.md) e seu
+[ledger](docs/guides/wave135-retirement-validation.ledger.json) registram o
+resultado atual por fonte/build, os recibos e as falhas históricas separadas.
 
 O dono confirmou o aceite da interface e autorizou a revisão dos testes, a
 validação até o verde e o commit/push da primeira etapa. O destino autorizado é
-o novo repositório público vazio `Schlorke/Locadora_de_Equipamentos`; a
-publicação usa história inicial limpa, sem pais do histórico antigo. O histórico
-anterior e suas referências ficam preservados localmente, sem publicação de
-commits, tags ou ramos antigos que transportem segredos. Não alterar nem revogar
-credenciais reais, pois elas podem ser compartilhadas com a GB.
+o novo repositório público `Schlorke/Locadora_de_Equipamentos`, inicialmente
+vazio. A etapa C foi publicada no commit
+`978ceb9244c81c7cb2888b798fad8ce90edad25e` e na tag
+`checkpoint/onda-135-pre-exclusao`, com história inicial limpa, sem pais do
+histórico antigo. O histórico anterior e suas referências ficam preservados
+localmente, sem publicação de commits, tags ou ramos antigos que transportem
+segredos. Não alterar nem revogar credenciais reais, pois elas podem ser
+compartilhadas com a GB.
 
-O backend desta etapa usa PostgreSQL local descartável. Infraestrutura,
-provedores e operação de produção serão tratados depois; essa decisão não
-autoriza reset de banco real, mudança de DNS/TLS ou ativação de flags reais. A
-continuação autorizada inclui a aposentadoria do app antigo pelo plano P0/P1/P2
-e F. Preservar o estado com raiz, fixar a referência imutável de pré-exclusão e
-aplicar F primeiro em clone independente, com as provas exigidas, antes de
-importar e revalidar. Não apagar a raiz deste checkout antes do clone.
+O backend desta etapa usa PostgreSQL local descartável. Infraestrutura
+hospedada, banco de produção e provedores serão escolhidos depois conforme o
+usuário. Migrations locais não criam nem homologam conta, banco ou provedores de
+produção. A etapa não autoriza reset de banco real, mudança de DNS/TLS ou
+ativação de flags reais.
 
-A fronteira do frontend foi explicitada por variantes web e contratos puros,
-preservando a lógica e o visual. `arch.log` registra zero `UNIVERSAL-DOM-JSX` e
-zero `UNIVERSAL-WEB-LIB`; restam 43 ocorrências em 16 arquivos, todas legadas.
-Esse resultado não declara P0/P1/P2/F concluídos nem cobre produção, Docker ou
-limites de dispositivo/rede ainda sem prova própria. As novas suítes estão em
-validação serial; não há declaração de verde geral neste checkpoint.
+A continuação autorizada inclui a aposentadoria pelo plano P0/P1/P2 e F. A
+retirada foi aplicada primeiro no clone independente `FINISH/p2/aposentar-raiz`.
+As antigas raízes `app/`, `lib/`, `middlewares`, `schemas`, `types/global.d.ts`,
+`types/google-maps-ecl.d.ts` e `proxy.ts` foram retiradas nesse clone.
+Hosts/pacotes, `public` como browser-assets, `design-tokens` como
+compatibilidade gerada e o shim só de tipos `types/next-auth.d.ts` permanecem.
+Estado salvo antes da publicação: F está no clone independente;
+transferência/revalidação, commit/push e CI final F são passos posteriores com
+recibos externos. Nenhum SHA futuro é antecipado. O fallback usa o clone
+completo da tag de pré-exclusão, não uma fachada recriada na árvore sem raiz.
 
-Evidências correntes em
+A fronteira frontend foi explicitada por variantes web e contratos puros,
+preservando lógica e visual. O `arch.log` anterior à retirada (zero
+`UNIVERSAL-DOM-JSX`, zero `UNIVERSAL-WEB-LIB`, 43 ocorrências em 16 arquivos
+legados) é histórico e não a medição final F. As primeiras rodadas unit 245/2,
+identidade 796/1 e security 921/31 + 18 skips também são históricas; ajustes e
+resultados posteriores estão no ledger, não em uma consolidação ainda aberta por
+causa desses números antigos. As 173 entradas aceitas de hygiene são dívida
+declarada, não prova de zero código morto.
+
+Evidências em
 `C:\Users\harry\AppData\Local\Temp\locadora-wave135-finish-20261009` (`FINISH`):
 
-- `visual-human-acceptance.json`: registro do aceite humano da interface atual.
-- `arch.log`: fronteiras universais e saldo de legado descritos acima.
+- `p2-validation/`: recibos e logs da fonte F, com builds/resultados finais
+  vinculados pelo guia e ledger; aplicações de patch não são resultados verdes.
+- `visual-human-acceptance.json`: aceite humano da interface C, datado.
+- `arch.log`: snapshot anterior à retirada, sem se tornar medição final F.
+- `test-identity.log.previous-20261009T2221293031979Z` (796/1) e
+  `test-security.log.previous-20261009T2220259834759Z` (921/31, 18 skips), em
+  `p2-validation/`: tentativas arquivadas; unit 245/2 também é anterior.
 - `history-before-clean-publication.bundle` e `history-bundle-verification.log`:
-  preservação local do histórico anterior; não são conteúdo para o novo remoto.
-- `history-secrets-result.json`: a varredura do histórico alcançável registrou
-  exit 1; não publicar os pais antigos nem tratar a história antiga como limpa.
-- `reviews/tests-frontend-workflow.md` e `reviews/tests-backend.md`: revisão da
-  utilidade, sensibilidade e custo dos testes.
-- `reviews/frontend-web-boundary-final-mapping.json`: movimentos de variantes
-  web e extração de contratos; `reviews/retirement-plan.md` mantém a sequência
-  de P0/P1/P2/F, sujeita à decisão vigente de história inicial limpa.
+  preservação local do histórico anterior, fora do novo remoto.
+- `history-secrets-result.json`: o histórico antigo alcançável teve exit 1; não
+  publicar seus pais nem tratá-lo como história limpa.
+- `reviews/tests-frontend-workflow.md`, `reviews/tests-backend.md` e
+  `reviews/frontend-web-boundary-final-mapping.json`: revisões de utilidade,
+  custo e fronteiras. `reviews/retirement-plan.md` conserva a sequência, sujeita
+  à decisão vigente de história inicial limpa.
 
-Os resultados novos pertencem aos logs e à consolidação de FINISH. Os blocos de
-2026-10-08 abaixo conservam a cronologia, os hashes e as provas da fonte de
-então; não são resultados da fonte atual. A antiga proibição de commit/push e o
-aceite visual então aberto foram substituídos pela decisão humana de 2026-10-09.
-Pendências técnicas não se encerram apenas por essa autorização.
+Os blocos de 2026-10-08 abaixo conservam cronologia, hashes e provas da fonte de
+então. As antigas proibições de commit/push e o aceite visual aberto foram
+substituídos pela decisão de 2026-10-09; pendências técnicas e operação externa
+não se encerram apenas por essa autorização.
 
 ## Checkpoint histórico — 2026-10-08
 
@@ -74,12 +123,14 @@ continua aberto. A triagem atribuiu 16.260 registros às oito telas antigas
 nova aprovação. A baseline tem 528 estados; os oito adicionais são estados de
 Configurações já documentados. Nenhuma baseline foi regravada.
 
-P0 formal e P1 continuam parciais; P2 e F não foram realizados. A10 passou no
-escopo local normal com GPU real; Slow 3G ficou inconclusivo aos 150s. Docker
-está indisponível. Commit/tag de pré-exclusão, clone/F/M7 formal e corte real
-continuam abertos, sob a proibição atual de commit/push/produção. As árvores
-legadas permanecem no disco. A tag com-raiz histórica existe e não substitui a
-tag de pré-exclusão da versão atual.
+Na fotografia de 2026-10-08, P0 formal e P1 continuavam parciais; P2 e F não
+haviam sido realizados. A10 passou no escopo local normal com GPU real; Slow 3G
+ficou inconclusivo aos 150s. Docker está indisponível. Commit/tag de
+pré-exclusão, clone/F/M7 formal e corte real continuavam abertos, sob a
+proibição então vigente de commit/push/produção. As antigas árvores `app/` e
+`lib/` permaneciam no disco nessa coleta, antes de sua retirada no clone F. A
+tag com-raiz histórica não substituía a tag de pré-exclusão, fixada depois para
+a publicação C de 2026-10-09.
 
 A auditoria executada antes deste fechamento documental,
 `final-audit-before-checkpoint/audit.json`, terminou exit 0: as 478 entradas
@@ -97,10 +148,10 @@ tipagem ampla (14 tarefas) terminaram exit 0.
 
 ## Continuidade autorizada — 2026-10-08
 
-Cronologia da retomada: resultados e pendências de cada etapa conservam sua
-proveniência; o checkpoint acima é o estado corrente. A auditoria original
-limitava-se a investigar, reconstruir, conferir e documentar; depois houve a
-autorização de implementação local descrita a seguir.
+Cronologia histórica da retomada de 2026-10-08: resultados e pendências de cada
+etapa conservam sua proveniência; o checkpoint de 2026-10-09 é o estado
+corrente. A auditoria original limitava-se a investigar, reconstruir, conferir e
+documentar; depois houve a autorização de implementação local descrita a seguir.
 
 Após este checkpoint, o dono pediu: "pode prosseguir de onde ele parou, por
 favor?". A implementação local da onda 135 foi retomada: reconciliar as seis
@@ -373,7 +424,7 @@ Evidências locais desta retomada: `%TEMP%/locadora-wave135-resume-20261008/`. O
 achados e contagens da auditoria nas seções seguintes permanecem como fotografia
 anterior à implementação.
 
-## 1. Resumo executivo
+## 1. Resumo da recuperação inicial — fotografia de 2026-10-08
 
 O Claude preparava a **Wave 135: fechar as lacunas antes de aposentar a raiz
 legada**. “Wave 135 lots A (web product)” é parte de um workflow com três lotes:
@@ -390,12 +441,14 @@ inspeções/mutações antes da interrupção. O rótulo `completed` do workflow
 significa que a orquestração terminou, com erros de quota; não significa aceite
 técnico.
 
-O checkpoint local real é **`873d8fbc74e423d4bf2152cb8c8e64b1be297810`**,
-preservado pela tag **`checkpoint/onda-135-com-raiz`**. Na fotografia inicial,
-depois dele havia **478 caminhos dirty**: 382 modificados, 2 removidos e 94
-arquivos novos, contando `git status -uall`. Nada estava staged. A raiz continua
-presente. A tag de pré-exclusão não existe nesta coleta; a tag com-raiz não deve
-ser confundida com ela.
+O checkpoint local na recuperação inicial era
+**`873d8fbc74e423d4bf2152cb8c8e64b1be297810`**, preservado pela tag
+**`checkpoint/onda-135-com-raiz`**. Na fotografia inicial, depois dele havia
+**478 caminhos dirty**: 382 modificados, 2 removidos e 94 arquivos novos,
+contando `git status -uall`. Nada estava staged. As antigas `app/` e `lib/`
+ainda estavam presentes nessa coleta; foram retiradas depois somente no clone F.
+A tag de pré-exclusão ainda não existia naquela fotografia; a tag com-raiz não
+deve ser confundida com o checkpoint C publicado depois.
 
 A Wave 135 **não estava concluída nessa fotografia inicial**. Havia código,
 testes e provas locais substanciais, mas o consolidado estava aberto:
@@ -475,26 +528,27 @@ relatório. A memória anterior serviu somente de orientação de
 continuidade/segurança; o faturamento exato foi decidido e implementado depois
 da nota antiga da onda 129, portanto não é decisão a reabrir.
 
-## 3. Estado atual do projeto
+## 3. Estado do projeto na coleta inicial de 2026-10-08
 
-| Verificação atual         | Resultado                                                                                                                  |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Branch / HEAD             | `modernizacao/multiempresa` / `873d8fbc…`                                                                                  |
-| Último commit             | 08/10/2026 05:48:37 BRT, checkpoint das ondas 10–134                                                                       |
-| Tag com-raiz              | Resolve para o mesmo commit; contém 34 migrations                                                                          |
-| Migrations no disco       | 35; a adicional `202610080101_settings_seo_title_neutral_default` está sem commit e não foi aplicada nesta auditoria       |
-| Upstream                  | Ausente nesta branch                                                                                                       |
-| `origin`                  | Repositório `Schlorke/Locadora_de_Equipamentos`                                                                            |
-| Remoto legado             | `gb-locacoes-legado`, push URL bloqueada; não foi usado para publicação                                                    |
-| Inventário estático atual | Legacy e API: 173 rotas/221 métodos cada; web: 57 páginas; mobile: 45 arquivos de página segundo o inventariador existente |
-| Diff rastreado            | 384 arquivos, 161.252 inserções/94.921 remoções; `public/openapi.json` domina o volume. Volume não mede progresso          |
-| Integridade da coleta     | SHA-256 dos 478 caminhos dirty permaneceu igual durante a investigação, antes da documentação desta entrega                |
+| Verificação na coleta inicial | Resultado                                                                                                                  |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Branch / HEAD                 | `modernizacao/multiempresa` / `873d8fbc…`                                                                                  |
+| Último commit                 | 08/10/2026 05:48:37 BRT, checkpoint das ondas 10–134                                                                       |
+| Tag com-raiz                  | Resolve para o mesmo commit; contém 34 migrations                                                                          |
+| Migrations no disco           | 35; a adicional `202610080101_settings_seo_title_neutral_default` está sem commit e não foi aplicada nesta auditoria       |
+| Upstream                      | Ausente nesta branch                                                                                                       |
+| `origin`                      | Repositório `Schlorke/Locadora_de_Equipamentos`                                                                            |
+| Remoto legado                 | `gb-locacoes-legado`, push URL bloqueada; não foi usado para publicação                                                    |
+| Inventário estático atual     | Legacy e API: 173 rotas/221 métodos cada; web: 57 páginas; mobile: 45 arquivos de página segundo o inventariador existente |
+| Diff rastreado                | 384 arquivos, 161.252 inserções/94.921 remoções; `public/openapi.json` domina o volume. Volume não mede progresso          |
+| Integridade da coleta         | SHA-256 dos 478 caminhos dirty permaneceu igual durante a investigação, antes da documentação desta entrega                |
 
-A topologia é `apps/clients/web` e `apps/clients/mobile` sobre
-`packages/frontend` (FSD), `ui`, `design-tokens`; `apps/services/api` consome o
-monólito modular `packages/backend`, domínio e contratos. `app/`, `lib/` e
-fachadas legadas permanecem. Isso é a fase de expansão antes de contração, não
-motivo para removê-los agora.
+A topologia registrada nessa coleta era `apps/clients/web` e
+`apps/clients/mobile` sobre `packages/frontend` (FSD), `ui`, `design-tokens`;
+`apps/services/api` consome o monólito modular `packages/backend`, domínio e
+contratos. As antigas `app/`, `lib/` e fachadas legadas permaneciam na fase de
+expansão. Foram retiradas posteriormente no clone F, com prova própria; este
+inventário inicial não autorizava a contração por si só.
 
 O Node padrão do terminal é 25.2.1, fora do `engines` do projeto. Para evidência
 compatível, os seis gates foram repetidos **em série com Node 24.21.0** do
@@ -592,7 +646,12 @@ locadora, documentos/recuperação e operações de recebimentos, backoffice/saq
 aparelhos, homologação e piloto. A aposentadoria técnica da raiz não encerra
 esse escopo.
 
-## 7. Problemas identificados e dependências bloqueantes
+## 7. Problemas da coleta inicial — diagnóstico histórico
+
+I01–I10 abaixo preservam os achados e probes de 2026-10-08, antes das correções
+da continuidade e do aceite humano/publicação C de 2026-10-09. Não são uma lista
+de falhas atuais do clone F. Os resultados finais do clone dependem dos logs P2;
+Docker/dispositivos/provedores/corte continuam com provas próprias.
 
 | ID  | Constatação                                              | Evidência / implicação                                                                                                                                                                                                                                                                      |
 | --- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -608,22 +667,40 @@ esse escopo.
 | I10 | Revisão/integrador interrompidos                         | Quatro resultados, oito erros de quota; todos `verdicts=[]`, `repair=null`. Textos prontos em docNotes não chegaram ao registro integrado de modernization/shared-api-host/CHANGELOG                                                                                                        |
 | I11 | Docker/dispositivos/provedores/corte sem prova atual     | Configuração CI não é execução; testes sintéticos não homologam Asaas/BaaS/KMS nem Android/iOS. Condições humanas/externas para operação continuam separadas                                                                                                                                |
 
-As causas de todas as 412/413 falhas não foram diagnosticadas caso a caso nesta
-missão. Não atribuir esse total automaticamente a defeitos do produto: o
-harness, comparações, fixtures, timeouts e geração de metadados mudaram
-simultaneamente.
+As causas de todas as 412/413 falhas não foram diagnosticadas caso a caso na
+coleta inicial. Não atribuir esse total histórico automaticamente a defeitos do
+produto: o harness, comparações, fixtures, timeouts e geração de metadados
+mudaram simultaneamente.
 
 ## 8. Backlog: checkpoint atual e matriz histórica
 
-### Matriz corrente de aceites — após as provas fechadas
+### Estado vigente de C e F — 2026-10-09, checkpoint pré-publicação
 
-O saldo abaixo usa o plano SP §§5.2/5.3/5.4/6.5/12. A auditoria de critérios em
-scratch foi feita antes dos resultados finais de navegador/3D: seus limites
-formais continuam válidos; seus estados antigos de jornadas/T5/A10 foram
+C permanece publicado em `978ceb9244c81c7cb2888b798fad8ce90edad25e`, tag
+`checkpoint/onda-135-pre-exclusao`, com aceite humano C registrado. O
+[checkpoint da base preparada F](docs/guides/wave135-retirement-validation.md) e
+seu ledger são a referência atual: **base preparada no clone; unit, P2, B11 e
+visual fechados no escopo declarado**. Unit 4.104/4.104 sem skips, P2 v6 e B11
+v3 no escopo declarado e visual F 80/536/31.065 sem pendências têm recibos
+próprios. Gates documentais executarão após aplicação. Dispositivos, Slow 3G
+completo e foundations NOT_PROVEN continuam separados. Estado salvo antes da
+publicação: F está no clone independente; transferência/revalidação, commit/push
+e CI final F são passos posteriores com recibos externos. Nenhum SHA futuro é
+antecipado. As raízes antigas foram retiradas no clone; o fallback completo
+continua a tag de pré-exclusão. A matriz de 2026-10-08 abaixo é histórica e não
+reabre resultados finais sem alteração de fonte/critério relevante.
+Infraestrutura hospedada, DB produção e provedores serão escolhidos depois;
+migrations locais não certificam produção.
+
+### Matriz histórica de aceites — fechamento técnico de 2026-10-08
+
+O saldo histórico abaixo usava o plano SP §§5.2/5.3/5.4/6.5/12. A auditoria de
+critérios em scratch foi feita antes dos resultados finais de navegador/3D: seus
+limites formais continuam válidos; seus estados antigos de jornadas/T5/A10 foram
 superados pelas provas desta continuidade. Não há contagem atual de “35 itens a
 terminar” nem necessidade de reabrir uma prova fechada sem mudança relevante.
 
-| Marco/IDs                                         | Estado atual no escopo registrado                       | Prioridade        | Evidência/dependência e próximo trabalho                                                                                                                                                                                                                                                                                                                                           |
+| Marco/IDs                                         | Estado na etapa histórica registrada                    | Prioridade        | Evidência/dependência e próximo trabalho naquela etapa                                                                                                                                                                                                                                                                                                                             |
 | ------------------------------------------------- | ------------------------------------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | A0/A4; B1/B2/B3/B11                               | CONCLUÍDA E VALIDADA, nas provas locais descritas acima | —                 | Frozen offline; SEO/mutações; HTTP v2 quatro perfis, cobertura com exceções e B11 sem violações. Não incluem F nem clone.                                                                                                                                                                                                                                                          |
 | B7: jornadas J1–J7 e T5/T6                        | CONCLUÍDA E VALIDADA, com skips contratuais explícitos  | —                 | Legacy 7+2 e BA 8+1 na mesma fonte final; T5/T6 original 7/7 em cada motor, limpeza certificada. Não reservar repetição geral neste saldo.                                                                                                                                                                                                                                         |
@@ -669,7 +746,7 @@ para evitar somar baterias repetidas.
 | A8  | Expandir 21 testes de rota para host web                 | IMPLEMENTADA SEM VALIDAÇÃO | Exemplos: AreaClientePage.web.test.tsx:47-52; CategoriasPage.web.test.tsx:41-66; Detalhe.web.test.tsx:226-238; WhatsAppAdminPage.web.test.tsx:60-70. As asserções da raiz ainda presentes são intencionais até F                                                                                       | A5/A6                       | P1         | 1–3 h                          |
 | A9  | Cenários visuais faltantes                               | PARCIALMENTE IMPLEMENTADA  | 38 baselines novos (19 cenários × 2 viewports); tests/visual/README.md:43,65-82. 42 antigos não regravados; painel antigo mantém 16.281 diferenças da moldura, Sobre fora do harness. Não satisfaz critério final sem diferença não aprovada                                                           | A5/A6                       | P0         | 4–12 h                         |
 | A10 | Primeiro modelo sem zoom em GPU real/Slow3G              | IMPLEMENTADA SEM VALIDAÇÃO | docs/features/equipment-3d-carousel.md:401-434 narra Chrome/GPU, controles positivos e capturas externas. Sem zoom animado no primeiro; Slow3G só desenhou compressor na 3ª volta (~71s), demais modelos não desenhados na janela 6s. Preservou contrato; aceitação final/carrossel no clone pendentes | A9/P2                       | P1         | 1–4 h                          |
-| A11 | GA4/Ads/verificação/CSP/Analytics                        | IMPLEMENTADA SEM VALIDAÇÃO | medicao.ts:16-54; [locadora]/layout.tsx:37-99; next.config.mjs:94-127,163-174; app/layout.tsx:10-20; formulário web/nativo e migration neutral seo existem. Doc seo-e-medicao-da-vitrine.md:138-157 lista provas e limite JIT Zod                                                                      | A4                          | P0         | 2–6 h                          |
+| A11 | GA4/Ads/verificação/CSP/Analytics                        | IMPLEMENTADA SEM VALIDAÇÃO | medicao.ts:16-54; [locadora]/layout.tsx:37-99; apps/clients/web/next.config.mjs:94-127,163-174; app/layout.tsx:10-20; formulário web/nativo e migration neutral seo existem. Doc seo-e-medicao-da-vitrine.md:138-157 lista provas e limite JIT Zod                                                     | A4                          | P0         | 2–6 h                          |
 | B1  | Harness absent, targets, sessão/API, outbox API→API      | PARCIALMENTE IMPLEMENTADA  | targets.ts:20-21; global-setup.ts:143-151,999,1051-1052,1221-1228. Rodada absent anterior com 1.189 falhas, incluindo undefined/api/admin/permissions; últimas capturas completas presentes ainda com 412/413 falhas; não apto P1                                                                      | A0                          | P0         | 4–10 h                         |
 | B2  | Expectativas explícitas e evitar prova vazia             | PARCIALMENTE IMPLEMENTADA  | api-host-parity-scan.test.ts:2-7,29; targets.ts:52-59; dezenas de arquivos convertidos. P0 histórico ainda vermelho; mutações P2 pendentes                                                                                                                                                             | B1/A4                       | P0         | 4–12 h                         |
 | B3  | Registro cobertura sucesso 173 rotas/221 métodos         | PARCIALMENTE IMPLEMENTADA  | parity-report.mjs:12-17,265-268; global-setup.ts:189-201. Fonte existe; nenhuma cobertura integral aceita confirmada nesta auditoria                                                                                                                                                                   | B1/B2                       | P0         | 2–6 h                          |
@@ -714,15 +791,17 @@ para evitar somar baterias repetidas.
 
 ## 9. Estimativa de conclusão
 
-### Saldo atual — horas ativas, sem percentual de conclusão
+### Saldo estimado em 2026-10-08 — histórico, sem percentual de conclusão
 
-Estimativa do trabalho **conhecido** a partir da matriz corrente, sem incluir
-espera por execução/ambiente/autorização. Implementação inclui ajustes de
-harness/documentação; teste é produção e análise das provas, não só duração da
-suíte. A captura/composição/comparação visual já executadas não recebem horas
-novas; A9 agora cobre a triagem/inspeção/aceite. Os intervalos não são prazo
-prometido. Reparos de regressões ainda não diagnosticadas exigem estimativa
-própria após a triagem.
+Estimativa histórica do trabalho **conhecido** a partir da matriz daquela etapa,
+sem incluir espera por execução/ambiente/autorização. Implementação inclui
+ajustes de harness/documentação; teste é produção e análise das provas, não só
+duração da suíte. A captura/composição/comparação visual já executadas não
+recebem horas novas; A9 agora cobre a triagem/inspeção/aceite. Os intervalos não
+são prazo prometido. Reparos de regressões ainda não diagnosticadas exigem
+estimativa própria após a triagem. Os intervalos abaixo não foram reestimados
+após o aceite humano, a publicação C e a aplicação F no clone; não são o saldo
+atual.
 
 | Grupo restante                                                                           | Implementação/correção | Testes/provas | Revisão/validação |         Total | Confiança                                   |
 | ---------------------------------------------------------------------------------------- | ---------------------: | ------------: | ----------------: | ------------: | ------------------------------------------- |
@@ -784,19 +863,20 @@ documentado exige **14 dias de observação**, além de trabalho ativo.
 Não existe denominador confiável para percentual geral de conclusão. Os “~60%”
 antigos da documentação não foram adotados como estado atual.
 
-## 10. Próxima etapa recomendada
+## Próxima etapa da base preparada
 
-1. Revisar as oito telas antigas da entrada 295, os doze gradientes candidatos à
-   equivalência e a prova de visibilidade Dialog/open 390px. Preservar os 372
-   registros já aprovados e os artefatos da composição; decidir diferenças por
-   fonte/cenário, sem alterar oracle/baseline automaticamente. Captura e
-   comparação já concluídas não entram como nova recaptura geral.
-2. Manter A10 Slow 3G, Docker e os marcos Git/P2/F explícitos; renovar só provas
-   afetadas por alterações posteriores, sem reabrir HTTP/jornadas/T5 fechados.
-3. Concluir documentação/proveniência e renovar a atestação após os Markdown. A
-   auditoria pré-checkpoint já passou: preservação contabilizada e cleanup
-   próprio completo. P0/P1 formais continuam parciais; commit/tag, P2/F e
-   produção dependem das pré-condições e da autoridade já descritas.
+1. Consultar o [guia F](docs/guides/wave135-retirement-validation.md) e seu
+   ledger antes de repetir provas: eles distinguem o resultado atual de falhas
+   históricas, skips, cotas aceitas e limites de runtime/dispositivo.
+2. Aplicar a coorte documental guardada e executar seus gates/focos afetados.
+   Depois seguir os passos autorizados de transferência, revalidação e
+   publicação com recibos próprios; infraestrutura hospedada/DB
+   produção/provedores serão escolhidos posteriormente. Preservar tenant/RLS, os
+   dois motores de auth, dinheiro/outbox, oracles e o fallback completo da tag
+   de pré-exclusão.
+3. Hospedagem, DB produção e provedores serão escolhidos depois conforme o
+   usuário, com critérios e autorização próprios. Não publicar pais antigos,
+   recriar fachadas ou tratar migrations locais como conta/banco de produção.
 
 ### Recomendação original — histórica, já superada pela continuidade
 
@@ -825,11 +905,14 @@ Após autorização, iniciar um bloco de **estabilização da integração da Wa
    demonstrem sensibilidade. Registrar cada exit/cobertura; não confiar no exit
    do agregador.
 6. Apresentar o aceite antes de F e das ações de produção. A missão atual
-   termina no diagnóstico; nenhuma implementação foi iniciada por este handoff.
+   terminava no diagnóstico naquela coleta inicial; a implementação foi
+   autorizada posteriormente e está registrada nos checkpoints acima.
 
 **Próxima tarefa concreta:** recuperar e estabilizar o bloco B2/B11 sobre um
 grafo de dependências reproduzível; seu primeiro pré-requisito é fechar o
-lockfile I01. A raiz permanece como oráculo até as provas finais.
+lockfile I01. Esta era a próxima tarefa da auditoria inicial; a antiga `app/`
+foi retirada depois no clone F. O fallback atual usa a tag completa, sem
+restaurar esse oracle na árvore sem raiz.
 
 ## 11. Evidências, fontes consultadas e limites
 
@@ -890,6 +973,8 @@ estimativas de esforço. **Lacunas:** validade final da árvore atual, todas as
 causas das falhas, P0/P1/P2 integral, Docker real, produção, provedores e matriz
 completa de aparelhos.
 
-As únicas alterações intencionais desta entrega são este documento e o registro
-de auditoria no CHANGELOG. Sem commit, push, deploy, banco/flags de produção,
-exclusão do legado ou implementação de funcionalidades.
+Na entrega da auditoria inicial, as únicas alterações intencionais eram este
+documento e o registro de auditoria no CHANGELOG; não houve commit, push,
+deploy, banco/flags de produção ou exclusão do legado naquela tarefa. A
+continuidade, publicação C e retirada F local posteriores estão registradas no
+checkpoint vigente, sem certificar operação externa.

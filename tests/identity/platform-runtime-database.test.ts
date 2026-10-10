@@ -18,7 +18,6 @@ import {
 import { dispatchOutbox } from '../../packages/backend/src/modules/outbox/dispatch'
 import { getPlatformDatabaseRuntime } from '../../packages/backend/src/runtime/platform-database'
 import { runConfiguredPlatformJobs } from '@gb-locacoes/backend/runtime'
-import { GET as legacyCron } from '../../app/api/cron/platform/route'
 import { GET as apiCron } from '../../apps/services/api/src/app/api/cron/platform/route'
 
 describe.skipIf(!process.env.TEST_DATABASE_URL)(
@@ -458,8 +457,9 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
           { key: 'recent', count: 9 },
         ])
         vi.stubEnv('CRON_SECRET', 'local-platform-cron-fixture')
-        for (const get of [legacyCron, apiCron]) {
-          const response = await get(
+        // Repeated API invocations retain the maintenance dedupe/window contract.
+        for (let invocation = 0; invocation < 2; invocation++) {
+          const response = await apiCron(
             new Request('http://localhost/api/cron/platform', {
               headers: { authorization: 'Bearer local-platform-cron-fixture' },
             })

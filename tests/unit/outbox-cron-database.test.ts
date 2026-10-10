@@ -1,3 +1,8 @@
+import { withTenantTransaction } from '../../apps/services/api/src/host/tenant-transaction'
+import { createRentalTransaction } from '@gb-locacoes/backend/rentals'
+import { createPaymentIssuance } from '@gb-locacoes/backend/billing'
+import { createIntegrationCredentialResolver } from '@gb-locacoes/backend/runtime'
+import { getDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 /**
  * Cron da outbox (`GET /api/cron/outbox`) sobre o PostgreSQL descartável e o dublê de contrato do
  * Asaas: a mesma passada que entrega a outbox agenda a conciliação das emissões UNKNOWN além da
@@ -19,9 +24,25 @@ const fixture = vi.hoisted(() => ({
   tenantId: 'outbox-cron-' + crypto.randomUUID(),
   apiKey: 'fixture-api-key',
 }))
-const fixtureDatabase = vi.hoisted(() => ({ prisma: undefined as unknown }))
-vi.mock('@/lib/prisma', async () => {
-  if (!process.env.TEST_DATABASE_URL) return { prisma: undefined }
+const fixtureDatabase = vi.hoisted(() => ({
+  prisma: undefined as unknown,
+  pool: undefined as import('pg').Pool | undefined,
+}))
+// A limpeza global de platform_rate_limits não é assunto deste teste e mexeria nas linhas de outros.
+vi.mock('@gb-locacoes/backend/directory', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@gb-locacoes/backend/directory')>()),
+  purgeExpiredPlatformRateLimits: async () => 0,
+}))
+import { createAsaasHttpClient } from '@gb-locacoes/backend/billing'
+import { UNKNOWN_ISSUANCE_SETTLE_MS } from '../../packages/backend/src/modules/billing/issue-payment'
+import { createFakeAsaas, type FakeAsaas } from '../helpers/fake-asaas'
+// Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
+// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()
+  if (!process.env.TEST_DATABASE_URL)
+    return { ...actual, getDatabaseRuntime: () => ({ prisma: undefined }) }
   const { requireTestDatabase } = await import('../helpers/test-database')
   if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
     throw new Error('Disposable opt-in required')
@@ -55,33 +76,18 @@ vi.mock('@/lib/prisma', async () => {
     },
   })
   // O serviço lê o mesmo cliente restrito pelo runtime do backend (onda 135, B5).
-  return { prisma: (fixtureDatabase.prisma = prisma), testPool: pool }
+  fixtureDatabase.pool = pool
+  const fixturePrisma = (fixtureDatabase.prisma = prisma)
+  fixtureDatabase.prisma = fixturePrisma
+  return {
+    ...actual,
+    getDatabaseRuntime: () => ({ prisma: fixturePrisma }),
+    createIntegrationCredentialResolver: () => async () => ({
+      apiKey: fixture.apiKey,
+      environment: 'sandbox',
+    }),
+  }
 })
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => null,
-}))
-vi.mock('@/lib/security/tenant-webhook', () => ({
-  resolveIntegrationCredential: async () => ({
-    apiKey: fixture.apiKey,
-    environment: 'sandbox',
-  }),
-}))
-// A limpeza global de platform_rate_limits não é assunto deste teste e mexeria nas linhas de outros.
-vi.mock('@gb-locacoes/backend/directory', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/directory')>()),
-  purgeExpiredPlatformRateLimits: async () => 0,
-}))
-import { prisma } from '@/lib/prisma'
-import { issueTenantPayment } from '@/lib/payment-issuance'
-import { createAsaasHttpClient } from '@gb-locacoes/backend/billing'
-import { UNKNOWN_ISSUANCE_SETTLE_MS } from '../../packages/backend/src/modules/billing/issue-payment'
-import { createFakeAsaas, type FakeAsaas } from '../helpers/fake-asaas'
-// Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
-// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
-}))
 vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
   ...(await importOriginal<
     typeof import('../../apps/services/api/src/host/session')
@@ -104,16 +110,9 @@ vi.mock(
     }))()),
   })
 )
-import * as legacyRoute0 from '@/app/api/cron/outbox/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/cron/outbox/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      outboxCron: legacyRoute0.GET,
-    },
-  ],
   [
     'service',
     {
@@ -222,9 +221,7 @@ describe.each(HOSTS)('%s', (_host, { outboxCron }) => {
         return { payment, attempt }
       }
       async function age(attemptId: string, ms: number) {
-        const { testPool } = (await import('@/lib/prisma')) as unknown as {
-          testPool: import('pg').Pool
-        }
+        const { testPool } = { testPool: requireFixturePool() }
         await testPool.query(
           `UPDATE payment_attempts SET "updatedAt" = "updatedAt" - ($2::int * interval '1 millisecond') WHERE id = $1`,
           [attemptId, ms]
@@ -467,9 +464,7 @@ describe.each(HOSTS)('%s', (_host, { outboxCron }) => {
           })
           expect(fake.countRequests('POST', '/payments')).toBe(1)
           // Uma semana depois (eventos e tentativa envelhecem juntos): nenhuma passada agenda nem entrega nada.
-          const { testPool } = (await import('@/lib/prisma')) as unknown as {
-            testPool: import('pg').Pool
-          }
+          const { testPool } = { testPool: requireFixturePool() }
           await testPool.query(
             `UPDATE outbox_events SET "createdAt" = "createdAt" - interval '7 days' WHERE "tenantId" = $1`,
             [tenantId]
@@ -538,9 +533,7 @@ describe.each(HOSTS)('%s', (_host, { outboxCron }) => {
             issuanceReconciliations: 0,
             completed: 0,
           })
-          const { testPool } = (await import('@/lib/prisma')) as unknown as {
-            testPool: import('pg').Pool
-          }
+          const { testPool } = { testPool: requireFixturePool() }
           await testPool.query(
             `UPDATE outbox_events SET "createdAt" = "createdAt" - ($2::int * interval '1 millisecond') WHERE "tenantId" = $1`,
             [tenantId, UNKNOWN_ISSUANCE_SETTLE_MS]
@@ -580,10 +573,24 @@ describe.each(HOSTS)('%s', (_host, { outboxCron }) => {
 // O cliente e o pool do banco descartável são da fábrica deste arquivo: fecham uma vez, depois dos dois hosts.
 afterAll(async () => {
   if (!process.env.TEST_DATABASE_URL) return
-  const database = (await import('@/lib/prisma')) as unknown as {
-    prisma: { $disconnect(): Promise<void> }
-    testPool: { end(): Promise<void> }
-  }
+  const database = { prisma, testPool: requireFixturePool() }
   await database.prisma.$disconnect()
   await database.testPool.end()
+})
+
+const prisma = getDatabaseRuntime().prisma
+function requireFixturePool() {
+  const pool = fixtureDatabase.pool
+  if (!pool) throw new Error('Owned fixture pool was not initialized')
+  return pool
+}
+
+const { withRentalTransaction } = createRentalTransaction({
+  withTenantTransaction,
+})
+const resolveIntegrationCredential = createIntegrationCredentialResolver()
+const { issueTenantPayment } = createPaymentIssuance({
+  withRentalTransaction,
+  withTenantTransaction,
+  resolveIntegrationCredential,
 })

@@ -7,18 +7,9 @@ const state = vi.hoisted(() => ({
   generate: vi.fn(),
   sign: vi.fn(),
 }))
-vi.mock('@/lib/tenant', () => ({ resolveTenantPrincipal: state.gate }))
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: state.gate,
 }))
-vi.mock('@/lib/contracts/service', async () => {
-  const { ContractAccessError } = await import('@gb-locacoes/backend/documents')
-  return {
-    ContractAccessError,
-    generateRentalContract: state.generate,
-    requestContractSignature: state.sign,
-  }
-})
 vi.mock('../../apps/services/api/src/host/contracts', () => ({
   generateRentalContract: state.generate,
   requestContractSignature: state.sign,
@@ -27,8 +18,6 @@ vi.mock('@gb-locacoes/backend/identity', async (actual) => ({
   ...(await actual<typeof import('@gb-locacoes/backend/identity')>()),
   rejectCrossOriginMutation: () => null,
 }))
-import { POST as legacyGenerate } from '@/app/api/contracts/generate/route'
-import { POST as legacySign } from '@/app/api/contracts/sign/route'
 import { POST as apiGenerate } from '../../apps/services/api/src/app/api/contracts/generate/route'
 import { POST as apiSign } from '../../apps/services/api/src/app/api/contracts/sign/route'
 
@@ -57,14 +46,14 @@ beforeEach(() => {
 describe.each([
   {
     name: 'generate',
-    handlers: [legacyGenerate, apiGenerate],
+    handlers: [apiGenerate],
     call: state.generate,
     body: { rentalId: id },
     status: 200,
   },
   {
     name: 'sign',
-    handlers: [legacySign, apiSign],
+    handlers: [apiSign],
     call: state.sign,
     body: { contractId: id },
     status: 202,
@@ -96,7 +85,11 @@ describe.each([
       expect(response.status).toBe(status)
       responses.push(await response.json())
     }
-    expect(responses[0]).toEqual(responses[1])
+    expect(responses[0]).toEqual(
+      body.rentalId
+        ? { contract: { id: 'contract', status: 'DRAFT' } }
+        : { contract: { id: 'contract' }, queued: true, requestId: 'event' }
+    )
     expect(call).toHaveBeenCalledWith(principal, id)
   })
   it.each([403, 404, 409, 503])(

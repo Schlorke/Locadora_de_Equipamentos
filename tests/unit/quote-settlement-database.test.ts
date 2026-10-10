@@ -1,3 +1,48 @@
+import { withTenantTransaction } from '../../apps/services/api/src/host/tenant-transaction'
+import { createRentalTransaction } from '@gb-locacoes/backend/rentals'
+import { createPaymentProcessor } from '@gb-locacoes/backend/billing'
+import {
+  requestPayment,
+  ensureQuoteBoletoPayment,
+} from '../../apps/services/api/src/host/payments'
+import {
+  convertQuoteToRental,
+  convertPaidQuotePayment,
+  createQuoteRequest,
+} from '../../apps/services/api/src/host/quotations'
+import { checkoutRental } from '../../apps/services/api/src/host/rentals'
+import { createRentalAvailability } from '@gb-locacoes/backend/rentals'
+import { PaymentRequestError } from '@gb-locacoes/backend/billing'
+import { getDatabaseRuntime } from '@gb-locacoes/backend/runtime'
+const fixtureDatabase = vi.hoisted(() => ({
+  prisma: undefined as unknown,
+  pool: undefined as import('pg').Pool | undefined,
+}))
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()
+  if (!process.env.TEST_DATABASE_URL)
+    return { ...actual, getDatabaseRuntime: () => ({ prisma: undefined }) }
+  const { requireTestDatabase } = await import('../helpers/test-database')
+  const connectionString = requireTestDatabase(process.env)
+  if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
+    throw new Error('Explicit disposable database opt-in required')
+  const { Pool } = await import('pg')
+  const { PrismaPg } = await import('@prisma/adapter-pg')
+  const { PrismaClient } = await import('@prisma/client')
+  const pool = new Pool({ connectionString, max: 8 })
+  fixtureDatabase.pool = pool
+  const fixturePrisma = new PrismaClient({ adapter: new PrismaPg(pool) })
+  fixtureDatabase.prisma = fixturePrisma
+  return {
+    ...actual,
+    getDatabaseRuntime: () => ({ prisma: fixturePrisma }),
+    createIntegrationCredentialResolver: () => async () => ({
+      apiKey: 'fixture-api-key',
+      environment: 'sandbox',
+    }),
+  }
+})
 import type { TenantContext } from '@gb-locacoes/domain/tenancy'
 import { randomUUID } from 'node:crypto'
 import {
@@ -10,44 +55,7 @@ import {
   vi,
 } from 'vitest'
 
-vi.mock('@/lib/prisma', async () => {
-  if (!process.env.TEST_DATABASE_URL) return { prisma: undefined }
-  const { requireTestDatabase } = await import('../helpers/test-database')
-  const connectionString = requireTestDatabase(process.env)
-  if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
-    throw new Error('Explicit disposable database opt-in required')
-  const { Pool } = await import('pg')
-  const { PrismaPg } = await import('@prisma/adapter-pg')
-  const { PrismaClient } = await import('@prisma/client')
-  const pool = new Pool({ connectionString, max: 8 })
-  return {
-    prisma: new PrismaClient({ adapter: new PrismaPg(pool) }),
-    testPool: pool,
-  }
-})
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => null,
-}))
 // Credencial fictícia da integração Asaas da locadora (requestPayment só enfileira a emissão).
-vi.mock('@/lib/security/tenant-webhook', () => ({
-  resolveIntegrationCredential: async () => ({
-    apiKey: 'fixture-api-key',
-    environment: 'sandbox',
-  }),
-}))
-
-import { prisma } from '@/lib/prisma'
-import { convertQuoteToRental } from '@/lib/rental-converter'
-import { convertPaidQuotePayment } from '@/lib/quote-payment-conversion'
-import { checkoutRental } from '@/lib/rental-lifecycle'
-import { calculateEquipmentAvailability } from '@/lib/equipment-availability'
-import { ensureQuoteBoletoPayment } from '@/lib/quote-boleto'
-import { requestPayment } from '@/lib/payment-request'
-import { processPayment } from '@/lib/payment-processor'
-import { createQuoteRequest } from '@/lib/quote-request'
-import { PaymentRequestError } from '@/lib/payment-obligation'
-import { withTenantTransaction } from '@/lib/tenant'
-import { withRentalTransaction } from '@/lib/rental-transaction'
 import { createQuoteBoletos } from '@gb-locacoes/backend/quotations'
 import { createAsaasGateway } from '../../packages/backend/src/modules/billing/asaas'
 import {
@@ -317,9 +325,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
         })
       }
       await prisma.$disconnect()
-      const db = (await import('@/lib/prisma')) as unknown as {
-        testPool: { end(): Promise<void> }
-      }
+      const db = { testPool: requireFixturePool() }
       await db.testPool.end()
     })
 
@@ -940,3 +946,18 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
     })
   }
 )
+
+const prisma = getDatabaseRuntime().prisma
+function requireFixturePool() {
+  const pool = fixtureDatabase.pool
+  if (!pool) throw new Error('Owned fixture pool was not initialized')
+  return pool
+}
+
+const { withRentalTransaction } = createRentalTransaction({
+  withTenantTransaction,
+})
+const { processPayment } = createPaymentProcessor({ withRentalTransaction })
+const { calculateEquipmentAvailability } = createRentalAvailability({
+  withTenantTransaction,
+})

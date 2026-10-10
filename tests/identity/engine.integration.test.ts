@@ -7,7 +7,16 @@ import { createIdentity } from '../../packages/backend/src/modules/identity/fact
 import { identityConfiguration } from '../../packages/backend/src/modules/identity/configuration'
 import { PLATFORM } from '@gb-locacoes/contracts/platform'
 import { prismaRateLimitCounter } from '@gb-locacoes/backend/directory'
-import { legacySignInGuard } from '@/lib/rate-limit'
+import {
+  createIdentityLimiters,
+  clientIpFromHeaders,
+} from '@gb-locacoes/backend/identity'
+import { identityRateLimitSecret } from '@gb-locacoes/backend/directory'
+const { legacySignInGuard } = createIdentityLimiters({
+  loadCounter: async () => prismaRateLimitCounter(prisma),
+  secret: identityRateLimitSecret,
+  clientIp: clientIpFromHeaders,
+})
 
 import { requireTestDatabase } from '../helpers/test-database'
 if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')

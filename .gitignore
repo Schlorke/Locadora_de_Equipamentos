@@ -21,6 +21,7 @@ pnpm-debug.log*
 
 # 🧬 TypeScript
 *.tsbuildinfo
+# O next-env.d.ts antigo da raiz saiu em F; este basename também é gerado pelos hosts Next e continua ignorado.
 next-env.d.ts
 
 # 🗂️ Cache do Node.js

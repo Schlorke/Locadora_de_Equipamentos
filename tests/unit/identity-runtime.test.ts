@@ -22,21 +22,6 @@ vi.mock(
     createIdentity: state.create,
   })
 )
-vi.mock('@/lib/prisma', () => ({
-  get prisma() {
-    state.readDatabase()
-    if (state.storageFailure) throw state.storageFailure
-    return state.database
-  },
-}))
-vi.mock('@/lib/resend', () => ({
-  default: () =>
-    state.mailAvailable ? { emails: { send: state.send } } : null,
-}))
-vi.mock('@/lib/rate-limit', () => ({
-  consumeVerificationResend: state.resend,
-  legacySignInGuard: state.guardFactory,
-}))
 // Contraparte na API compartilhada (onda 135, B5): `host/session.ts` compõe o mesmo runtime de identidade com o banco
 // de getDatabaseRuntime(), o cliente Resend do backend e os limitadores do backend (só o guarda e o orçamento de reenvio
 // viram dublês, o resto dos limitadores é o real).
@@ -70,7 +55,6 @@ type IdentityHost = {
   handleIdentityRequest(_request: Request): Promise<Response>
 }
 const HOSTS: ReadonlyArray<[string, () => Promise<IdentityHost>]> = [
-  ['legacy root', () => import('@/lib/identity')],
   ['service', () => import('../../apps/services/api/src/host/session')],
 ]
 

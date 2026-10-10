@@ -39,28 +39,14 @@ async function transaction<T>(
     $executeRaw: async () => 1,
   } as unknown as Prisma.TransactionClient)
 }
-vi.mock('@/lib/tenant', () => ({ withTenantTransaction: transaction }))
-vi.mock('@/lib/security/tenant-webhook', () => ({
-  resolveIntegrationCredential: async () => null,
-}))
-vi.mock('@/lib/rental-transaction', () => ({
-  withRentalTransaction: transaction,
-}))
 vi.mock('../../apps/services/api/src/host/tenant-transaction', () => ({
   withTenantTransaction: transaction,
-}))
-vi.mock('@/lib/tenant-permissions', () => ({
-  requireTenantPermission: state.permission,
 }))
 vi.mock('../../apps/services/api/src/host/permissions', () => ({
   requireTenantPermission: state.permission,
 }))
 // Shared rental factory's active-company check remains real; the transaction double supplies it.
 
-import { PATCH as ls } from '@/app/api/admin/financial/settings/route'
-import { PATCH as lp } from '@/app/api/admin/financial/entries/[id]/status/route'
-import { PATCH as ld } from '@/app/api/admin/financial/entries/[id]/due-date/route'
-import { DELETE as lx } from '@/app/api/admin/financial/entries/[id]/route'
 import { PATCH as ss } from '../../apps/services/api/src/app/api/admin/financial/settings/route'
 import { PATCH as sp } from '../../apps/services/api/src/app/api/admin/financial/entries/[id]/status/route'
 import { PATCH as sd } from '../../apps/services/api/src/app/api/admin/financial/entries/[id]/due-date/route'
@@ -120,7 +106,6 @@ beforeEach(() => {
   vi.spyOn(console, 'error').mockImplementation(() => {})
 })
 for (const [name, settings, status, dueDate, deletion] of [
-  ['legacy', ls, lp, ld, lx],
   ['service', ss, sp, sd, sx],
 ] as const)
   describe(name, () => {

@@ -1,3 +1,11 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return { prisma: database }
+}
 /**
  * Achado 149 (onda 133): leituras de conta fora do principal privado recusam `Origin` explícito de outra origem em
  * GET/HEAD, como as leituras privadas da onda 132 (`rejectExplicitCrossOrigin`), nas rotas REAIS dos dois hosts.
@@ -31,10 +39,7 @@ const database = vi.hoisted(() => ({
   user: { findUnique: state.user },
   $transaction: state.transaction,
 }))
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: state.session,
-}))
-vi.mock('@/lib/prisma', () => ({ prisma: database }))
+
 vi.mock('../../apps/services/api/src/host/session', () => ({
   getServerSession: state.session,
   getIdentity: vi.fn(),
@@ -44,27 +49,35 @@ vi.mock('../../apps/services/api/src/host/session', () => ({
   resetAuthAccountAttempts: vi.fn(),
   refuseAuthAttempt: vi.fn(),
 }))
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: database }),
-  createResendClient: () => null,
-}))
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({ prisma: database }),
+    createResendClient: () => null,
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 
-import { GET as legacyList } from '@/app/api/auth/organizations/route'
 import { GET as serviceList } from '../../apps/services/api/src/app/api/auth/organizations/route'
-import { GET as legacyCurrent } from '@/app/api/auth/organizations/current/route'
+
 import { GET as serviceCurrent } from '../../apps/services/api/src/app/api/auth/organizations/current/route'
-import {
-  GET as legacySelection,
-  POST as legacySelect,
-} from '@/app/api/auth/organizations/selection/route'
+
 import {
   GET as serviceSelection,
   POST as serviceSelect,
 } from '../../apps/services/api/src/app/api/auth/organizations/selection/route'
-import { GET as legacyOwner } from '@/app/api/auth/owner-account/route'
+
 import { GET as serviceOwner } from '../../apps/services/api/src/app/api/auth/owner-account/route'
-import { GET as legacySlug } from '@/app/api/onboarding/slug-availability/route'
+
 import { GET as serviceSlug } from '../../apps/services/api/src/app/api/onboarding/slug-availability/route'
 
 const SECRET = 'account-read-origin-edge-secret-0123456789'
@@ -194,162 +207,163 @@ beforeEach(() => {
 })
 afterAll(() => vi.unstubAllEnvs())
 
-describe.each([
-  ['legacy', legacyList],
-  ['service', serviceList],
-] as const)('%s GET /api/auth/organizations', (_host, GET) => {
-  const path = '/api/auth/organizations'
-  it.each(FOREIGN_ON_APP)(
-    'refuses %s after the session and before listing the memberships',
-    async (_name, origin) => {
-      for (const method of ['GET', 'HEAD'])
-        await assertDenial(
-          await GET(request(path, { ...appEdge, ...origin }, method))
-        )
-      expect(state.session).toHaveBeenCalledTimes(2)
-      expect(state.memberships).not.toHaveBeenCalled()
-    }
-  )
-  it('refuses a sibling Origin without the platform edge (configured public origin)', async () => {
-    vi.stubEnv('WEB_PUBLIC_ORIGIN', 'https://legacy.example.test')
-    await assertDenial(await GET(request(path, { Origin: BRAVO })))
-    expect(state.memberships).not.toHaveBeenCalled()
-    const own = await GET(
-      request(path, { Origin: 'https://legacy.example.test' })
-    )
-    expect(own.status).toBe(200)
-  })
-  it.each(ALLOWED(APP))('keeps the list for %s', async (_name, origin) => {
-    const response = await GET(request(path, { ...appEdge, ...origin }))
-    expect(response.status).toBe(200)
-    expect(await response.json()).toEqual({
-      memberships: [{ membershipId: row.id, role: row.role, tenant }],
-    })
-    expect(response.headers.get('cache-control')).toBe('no-store')
-    expect(response.headers.get('vary')).toBe('Cookie')
-  })
-  it('keeps the 401 without a session ahead of the origin refusal', async () => {
-    state.session.mockResolvedValue(null)
-    const response = await GET(request(path, { ...appEdge, Origin: BRAVO }))
-    expect(response.status).toBe(401)
-    expect(await response.json()).toEqual({ error: 'Authentication required' })
-    expect(state.memberships).not.toHaveBeenCalled()
-  })
-})
-
-describe.each([
-  ['legacy', legacyCurrent],
-  ['service', serviceCurrent],
-] as const)('%s GET /api/auth/organizations/current', (_host, GET) => {
-  const path = '/api/auth/organizations/current'
-  it.each(FOREIGN_ON_TENANT)(
-    'refuses %s after the host and the session, before reading the membership',
-    async (_name, origin) => {
-      for (const method of ['GET', 'HEAD'])
-        await assertDenial(
-          await GET(request(path, { ...tenantEdge, ...origin }, method))
-        )
-      expect(state.organization).toHaveBeenCalledTimes(2)
-      expect(state.session).toHaveBeenCalledTimes(2)
-      expect(state.transaction).not.toHaveBeenCalled()
-      expect(state.membershipUnique).not.toHaveBeenCalled()
-    }
-  )
-  it.each(ALLOWED(ALFA))(
-    'keeps the host membership for %s',
-    async (_name, origin) => {
-      const response = await GET(request(path, { ...tenantEdge, ...origin }))
-      expect(response.status).toBe(200)
-      expect(await response.json()).toEqual({
-        membership: { membershipId: row.id, role: row.role, tenant },
-      })
-      expect(response.headers.get('cache-control')).toBe('private, no-store')
-    }
-  )
-  it('keeps the host refusals and the 401 ahead of the origin refusal', async () => {
-    const outside = await GET(request(path, { ...appEdge, Origin: BRAVO }))
-    expect(outside.status).toBe(409)
-    expect(await outside.json()).toEqual({
-      error: 'Disponível somente no endereço da locadora',
-      code: 'TENANT_REQUIRED',
-    })
-    state.organization.mockResolvedValueOnce(null)
-    const unknown = await GET(request(path, { ...tenantEdge, Origin: BRAVO }))
-    expect(unknown.status).toBe(404)
-    expect(await unknown.json()).toEqual({ error: 'Locadora não encontrada' })
-    state.session.mockResolvedValueOnce(null)
-    const anonymous = await GET(request(path, { ...tenantEdge, Origin: BRAVO }))
-    expect(anonymous.status).toBe(401)
-    expect(await anonymous.json()).toEqual({
-      error: 'Authentication required',
-    })
-    expect(state.membershipUnique).not.toHaveBeenCalled()
-  })
-})
-
-describe.each([
-  ['legacy', legacySelection, legacySelect],
-  ['service', serviceSelection, serviceSelect],
-] as const)('%s GET /api/auth/organizations/selection', (_host, GET, POST) => {
-  const path = '/api/auth/organizations/selection'
-  const preference = { cookie: `selected-tenant-id=${tenant.id}` }
-  it.each(FOREIGN_ON_APP)(
-    'refuses %s after the session, before revalidating or clearing the preference',
-    async (_name, origin) => {
-      for (const method of ['GET', 'HEAD'])
-        await assertDenial(
-          await GET(
-            request(path, { ...appEdge, ...preference, ...origin }, method)
+describe.each([['service', serviceList]] as const)(
+  '%s GET /api/auth/organizations',
+  (_host, GET) => {
+    const path = '/api/auth/organizations'
+    it.each(FOREIGN_ON_APP)(
+      'refuses %s after the session and before listing the memberships',
+      async (_name, origin) => {
+        for (const method of ['GET', 'HEAD'])
+          await assertDenial(
+            await GET(request(path, { ...appEdge, ...origin }, method))
           )
-        )
-      expect(state.session).toHaveBeenCalledTimes(2)
-      expect(state.membership).not.toHaveBeenCalled()
-    }
-  )
-  it.each(ALLOWED(APP))(
-    'keeps the revalidated selection for %s',
-    async (_name, origin) => {
-      const response = await GET(
-        request(path, { ...appEdge, ...preference, ...origin })
+        expect(state.session).toHaveBeenCalledTimes(2)
+        expect(state.memberships).not.toHaveBeenCalled()
+      }
+    )
+    it('refuses a sibling Origin without the platform edge (configured public origin)', async () => {
+      vi.stubEnv('WEB_PUBLIC_ORIGIN', 'https://legacy.example.test')
+      await assertDenial(await GET(request(path, { Origin: BRAVO })))
+      expect(state.memberships).not.toHaveBeenCalled()
+      const own = await GET(
+        request(path, { Origin: 'https://legacy.example.test' })
       )
+      expect(own.status).toBe(200)
+    })
+    it.each(ALLOWED(APP))('keeps the list for %s', async (_name, origin) => {
+      const response = await GET(request(path, { ...appEdge, ...origin }))
       expect(response.status).toBe(200)
       expect(await response.json()).toEqual({
-        selection: { membershipId: row.id, role: row.role, tenant },
+        memberships: [{ membershipId: row.id, role: row.role, tenant }],
       })
-      expect(response.headers.get('set-cookie')).toBeNull()
-    }
-  )
-  it('keeps the 401 (and its clearing cookie) ahead of the origin refusal', async () => {
-    state.session.mockResolvedValue(null)
-    const response = await GET(
-      request(path, { ...appEdge, ...preference, Origin: BRAVO })
-    )
-    expect(response.status).toBe(401)
-    expect(response.headers.get('set-cookie')).toContain('Max-Age=0')
-    expect(state.membership).not.toHaveBeenCalled()
-  })
-  it('keeps the selection mutation refusal unchanged', async () => {
-    const response = await POST(
-      new Request(`${BACKEND}${path}`, {
-        method: 'POST',
-        headers: {
-          ...appEdge,
-          Origin: BRAVO,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ tenantId: tenant.id }),
+      expect(response.headers.get('cache-control')).toBe('no-store')
+      expect(response.headers.get('vary')).toBe('Cookie')
+    })
+    it('keeps the 401 without a session ahead of the origin refusal', async () => {
+      state.session.mockResolvedValue(null)
+      const response = await GET(request(path, { ...appEdge, Origin: BRAVO }))
+      expect(response.status).toBe(401)
+      expect(await response.json()).toEqual({
+        error: 'Authentication required',
       })
-    )
-    expect(response.status).toBe(403)
-    expect(await response.json()).toEqual({ error: 'Origin not allowed' })
-    expect(state.membership).not.toHaveBeenCalled()
-  })
-})
+      expect(state.memberships).not.toHaveBeenCalled()
+    })
+  }
+)
 
-describe.each([
-  ['legacy', legacyOwner, legacySlug],
-  ['service', serviceOwner, serviceSlug],
-] as const)(
+describe.each([['service', serviceCurrent]] as const)(
+  '%s GET /api/auth/organizations/current',
+  (_host, GET) => {
+    const path = '/api/auth/organizations/current'
+    it.each(FOREIGN_ON_TENANT)(
+      'refuses %s after the host and the session, before reading the membership',
+      async (_name, origin) => {
+        for (const method of ['GET', 'HEAD'])
+          await assertDenial(
+            await GET(request(path, { ...tenantEdge, ...origin }, method))
+          )
+        expect(state.organization).toHaveBeenCalledTimes(2)
+        expect(state.session).toHaveBeenCalledTimes(2)
+        expect(state.transaction).not.toHaveBeenCalled()
+        expect(state.membershipUnique).not.toHaveBeenCalled()
+      }
+    )
+    it.each(ALLOWED(ALFA))(
+      'keeps the host membership for %s',
+      async (_name, origin) => {
+        const response = await GET(request(path, { ...tenantEdge, ...origin }))
+        expect(response.status).toBe(200)
+        expect(await response.json()).toEqual({
+          membership: { membershipId: row.id, role: row.role, tenant },
+        })
+        expect(response.headers.get('cache-control')).toBe('private, no-store')
+      }
+    )
+    it('keeps the host refusals and the 401 ahead of the origin refusal', async () => {
+      const outside = await GET(request(path, { ...appEdge, Origin: BRAVO }))
+      expect(outside.status).toBe(409)
+      expect(await outside.json()).toEqual({
+        error: 'Disponível somente no endereço da locadora',
+        code: 'TENANT_REQUIRED',
+      })
+      state.organization.mockResolvedValueOnce(null)
+      const unknown = await GET(request(path, { ...tenantEdge, Origin: BRAVO }))
+      expect(unknown.status).toBe(404)
+      expect(await unknown.json()).toEqual({ error: 'Locadora não encontrada' })
+      state.session.mockResolvedValueOnce(null)
+      const anonymous = await GET(
+        request(path, { ...tenantEdge, Origin: BRAVO })
+      )
+      expect(anonymous.status).toBe(401)
+      expect(await anonymous.json()).toEqual({
+        error: 'Authentication required',
+      })
+      expect(state.membershipUnique).not.toHaveBeenCalled()
+    })
+  }
+)
+
+describe.each([['service', serviceSelection, serviceSelect]] as const)(
+  '%s GET /api/auth/organizations/selection',
+  (_host, GET, POST) => {
+    const path = '/api/auth/organizations/selection'
+    const preference = { cookie: `selected-tenant-id=${tenant.id}` }
+    it.each(FOREIGN_ON_APP)(
+      'refuses %s after the session, before revalidating or clearing the preference',
+      async (_name, origin) => {
+        for (const method of ['GET', 'HEAD'])
+          await assertDenial(
+            await GET(
+              request(path, { ...appEdge, ...preference, ...origin }, method)
+            )
+          )
+        expect(state.session).toHaveBeenCalledTimes(2)
+        expect(state.membership).not.toHaveBeenCalled()
+      }
+    )
+    it.each(ALLOWED(APP))(
+      'keeps the revalidated selection for %s',
+      async (_name, origin) => {
+        const response = await GET(
+          request(path, { ...appEdge, ...preference, ...origin })
+        )
+        expect(response.status).toBe(200)
+        expect(await response.json()).toEqual({
+          selection: { membershipId: row.id, role: row.role, tenant },
+        })
+        expect(response.headers.get('set-cookie')).toBeNull()
+      }
+    )
+    it('keeps the 401 (and its clearing cookie) ahead of the origin refusal', async () => {
+      state.session.mockResolvedValue(null)
+      const response = await GET(
+        request(path, { ...appEdge, ...preference, Origin: BRAVO })
+      )
+      expect(response.status).toBe(401)
+      expect(response.headers.get('set-cookie')).toContain('Max-Age=0')
+      expect(state.membership).not.toHaveBeenCalled()
+    })
+    it('keeps the selection mutation refusal unchanged', async () => {
+      const response = await POST(
+        new Request(`${BACKEND}${path}`, {
+          method: 'POST',
+          headers: {
+            ...appEdge,
+            Origin: BRAVO,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ tenantId: tenant.id }),
+        })
+      )
+      expect(response.status).toBe(403)
+      expect(await response.json()).toEqual({ error: 'Origin not allowed' })
+      expect(state.membership).not.toHaveBeenCalled()
+    })
+  }
+)
+
+describe.each([['service', serviceOwner, serviceSlug]] as const)(
   '%s owner account and slug reads (already refused by onboardingAppOrigin)',
   (_host, owner, slug) => {
     const reads = [

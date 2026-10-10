@@ -18,7 +18,9 @@ panels and lists, with optional horizontal scrolling.
 - Vertical and optional horizontal scrollbars
 - **Setas de rolagem** (igual à sidebar admin): triângulos laranja (#ea580c /
   hover #c2410c) nas extremidades, reutilizando o visual de `.admin-sidebar-nav`
-  via classes `.scroll-area-arrow-*` em `app/globals.css`
+  via classes `.scroll-area-arrow-*` em
+  `packages/frontend/src/app/styles/scrollbars.web.css` (cores `--brand` e
+  `--brand-hover`, sem duplicar o estilo no host).
 
 **Out of scope**
 
@@ -40,7 +42,8 @@ panels and lists, with optional horizontal scrolling.
    arrow buttons).
 4. Radix computes thumb length; thickness is explicitly defined per orientation.
 5. Arrow buttons scroll the viewport by a fixed step (40px) on click; styling
-   matches sidebar scrollbar arrows in `app/globals.css`.
+   matches sidebar scrollbar arrows in
+   `packages/frontend/src/app/styles/scrollbars.web.css`.
 
 ## 5. Components and Files
 
@@ -61,7 +64,10 @@ panels and lists, with optional horizontal scrolling.
   explicitly to keep both orientations visually identical.
 - Set thumb thickness via `style` (`width` for vertical, `height` for
   horizontal) because Radix uses inline styles that override Tailwind classes.
-- Keep thickness at 8px, with `rounded-full` and orange hover colors preserved.
+- The current `ScrollArea.web.tsx` sets `thumbThickness` to `6px` for both
+  orientations, with `rounded-full` and orange hover colors. The earlier 8px
+  instruction does not describe this source; this documentation change does not
+  change the component or approve a visual difference.
 - Avoid changing surrounding layout or spacing without explicit request.
 
 ## 8. Error Handling
@@ -89,8 +95,9 @@ panels and lists, with optional horizontal scrolling.
 ## 12. Change Log
 
 - 2026-02-01: Setas de rolagem (igual à sidebar) em vertical e horizontal;
-  classes reutilizáveis em `app/globals.css` (`.scroll-area-arrow-*`); context
-  do viewport para scroll programático.
+  classes reutilizáveis no arquivo antigo `app/globals.css`
+  (`.scroll-area-arrow-*`, retirado em F); context do viewport para scroll
+  programático. Hoje essas regras pertencem a `scrollbars.web.css` do frontend.
 - 2026-02-01: Explicit thumb thickness per orientation with fixed sizing.
 
 ---

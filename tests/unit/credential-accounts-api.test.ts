@@ -30,26 +30,6 @@ const { state, database } = vi.hoisted(() => {
   }
   return { state, database }
 })
-vi.mock('@/lib/prisma', () => ({ prisma: database }))
-vi.mock('@/lib/auth', () => ({ findAccountsByEmail: state.find }))
-vi.mock('@/lib/identity', () => ({
-  getIdentity: async () => ({
-    api: {
-      signUpEmail: state.signup,
-      requestPasswordReset: state.requestReset,
-      resetPassword: state.reset,
-    },
-  }),
-  handleIdentityRequest: state.identityHandler,
-}))
-vi.mock('@/lib/resend', () => ({
-  default: () => ({ emails: { send: state.send } }),
-}))
-vi.mock('@/lib/rate-limit', () => ({
-  refuseAuthAttempt: state.count,
-  consumeAccountNotice: state.notice,
-  resetAuthAccountAttempts: state.clear,
-}))
 vi.mock('../../apps/services/api/src/host/session', () => ({
   getIdentity: async () => ({
     api: {
@@ -83,10 +63,6 @@ vi.mock('next/server', async (original) => ({
 }))
 vi.mock('bcryptjs', () => ({ default: { hash: state.hash } }))
 
-import { POST as rootRegister } from '@/app/api/auth/register/route'
-import { POST as rootForgot } from '@/app/api/auth/forgot-password/route'
-import { POST as rootReset } from '@/app/api/auth/reset-password/route'
-import { GET as rootVerify } from '@/app/api/auth/verify-email/route'
 import { POST as apiRegister } from '../../apps/services/api/src/app/api/auth/register/route'
 import { POST as apiForgot } from '../../apps/services/api/src/app/api/auth/forgot-password/route'
 import { POST as apiReset } from '../../apps/services/api/src/app/api/auth/reset-password/route'
@@ -183,7 +159,6 @@ afterEach(() => {
 })
 
 describe.each([
-  ['legacy host', rootRegister, rootForgot, rootReset, rootVerify],
   ['service host', apiRegister, apiForgot, apiReset, apiVerify],
 ] as const)(
   '%s credential contracts',

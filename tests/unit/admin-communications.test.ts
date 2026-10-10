@@ -1,3 +1,5 @@
+import { createAdminNotificationService } from '../../packages/backend/src/modules/communications/admin-notifications'
+import { withTenantTransaction } from '../../apps/services/api/src/host/tenant-transaction'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
@@ -15,24 +17,6 @@ const mocks = vi.hoisted(() => ({
   account: vi.fn(),
   mail: vi.fn(),
 }))
-vi.mock('@/lib/tenant', () => ({
-  withTenantTransaction: async (
-    _context: unknown,
-    operation: (_tx: unknown) => Promise<unknown>
-  ) => operation(mocks.tx),
-}))
-vi.mock('@/middlewares/require-admin', () => ({
-  requireAdmin: mocks.gate,
-  requireAdminOrOperator: mocks.gate,
-}))
-vi.mock('@/lib/zoho-mail', () => ({
-  isZohoOAuthConfigured: mocks.configured,
-  getZohoAccessToken: mocks.token,
-  getZohoAccountId: mocks.account,
-  makeZohoMailRequest: mocks.mail,
-}))
-
-import { createAdminNotifications } from '@/lib/notification-service'
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
 vi.mock(
@@ -43,9 +27,7 @@ vi.mock(
       requireAdminOrOperator: mocks.gate,
     }))()) as Record<
       string,
-      (
-        request?: unknown
-      ) => Promise<{
+      (request?: unknown) => Promise<{
         success: boolean
         principal?: unknown
         error?: string
@@ -82,9 +64,7 @@ vi.mock(
       requireAdminOrOperator: mocks.gate,
     }))()) as Record<
       string,
-      (
-        request?: unknown
-      ) => Promise<{
+      (request?: unknown) => Promise<{
         success: boolean
         principal?: unknown
         error?: string
@@ -141,19 +121,10 @@ vi.mock(
     }))()),
   })
 )
-import * as legacyRoute0 from '@/app/api/admin/badges/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/admin/badges/route'
-import * as legacyRoute1 from '@/app/api/admin/notifications/sync/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/admin/notifications/sync/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      GET: legacyRoute0.GET,
-      POST: legacyRoute1.POST,
-    },
-  ],
   [
     'service',
     {
@@ -458,4 +429,8 @@ describe.each(HOSTS)('%s', (_host, { GET, POST }) => {
       ])
     })
   })
+})
+
+const { createAdminNotifications } = createAdminNotificationService({
+  withTenantTransaction,
 })

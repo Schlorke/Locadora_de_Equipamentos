@@ -23,36 +23,6 @@ const mocks = vi.hoisted(() => ({
   error: vi.fn(),
   transaction: vi.fn(),
 }))
-vi.mock('@/middlewares/require-admin', () => ({
-  requireAdminOrOperator: mocks.gate,
-}))
-vi.mock('@/lib/zoho-mail/get-access-token', () => ({
-  getZohoAccountId: mocks.account,
-}))
-vi.mock('@/lib/zoho-mail', async () => ({
-  getZohoAccessToken: mocks.token,
-  getZohoAccountId: mocks.account,
-  makeZohoMailRequest: mocks.mail,
-  uploadZohoMailAttachments: mocks.upload,
-}))
-vi.mock('@/lib/rate-limit', () => ({
-  checkRateLimit: mocks.limit,
-  strictRateLimit: 'strict',
-  adminApiRateLimit: 'admin',
-}))
-vi.mock('@/lib/idempotency', () => ({
-  checkIdempotency: mocks.cache,
-  storeIdempotency: mocks.store,
-}))
-vi.mock('@/lib/logger', () => ({
-  logger: { info: mocks.info, error: mocks.error },
-}))
-vi.mock('@/lib/tenant', () => ({
-  withTenantTransaction: async (
-    _context: unknown,
-    fn: (_tx: unknown) => Promise<unknown>
-  ) => mocks.transaction(fn),
-}))
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
 vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
@@ -76,9 +46,7 @@ vi.mock(
       requireAdminOrOperator: mocks.gate,
     }))()) as Record<
       string,
-      (
-        request?: unknown
-      ) => Promise<{
+      (request?: unknown) => Promise<{
         success: boolean
         principal?: unknown
         error?: string
@@ -115,9 +83,7 @@ vi.mock(
       requireAdminOrOperator: mocks.gate,
     }))()) as Record<
       string,
-      (
-        request?: unknown
-      ) => Promise<{
+      (request?: unknown) => Promise<{
         success: boolean
         principal?: unknown
         error?: string
@@ -209,31 +175,14 @@ vi.mock(
     }))()),
   })
 )
-import * as legacyRoute0 from '@/app/api/admin/zoho-mail/messages/send/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/admin/zoho-mail/messages/send/route'
-import * as legacyRoute1 from '@/app/api/admin/zoho-mail/messages/[messageId]/reply/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/admin/zoho-mail/messages/[messageId]/reply/route'
-import * as legacyRoute2 from '@/app/api/admin/zoho-mail/messages/drafts/route'
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/admin/zoho-mail/messages/drafts/route'
-import * as legacyRoute3 from '@/app/api/admin/zoho-mail/messages/update/route'
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/admin/zoho-mail/messages/update/route'
-import * as legacyRoute4 from '@/app/api/admin/zoho-mail/messages/[messageId]/delete/route'
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/admin/zoho-mail/messages/[messageId]/delete/route'
-import * as legacyRoute5 from '@/app/api/admin/zoho-mail/attachments/upload/route'
 import * as serviceRoute5 from '../../apps/services/api/src/app/api/admin/zoho-mail/attachments/upload/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      send: legacyRoute0.POST,
-      reply: legacyRoute1.POST,
-      draft: legacyRoute2.POST,
-      update: legacyRoute3.PUT,
-      remove: legacyRoute4.DELETE,
-      upload: legacyRoute5.POST,
-    },
-  ],
   [
     'service',
     {
@@ -489,16 +438,7 @@ describe.each(HOSTS)(
       )
       // Só o contrato do require-admin da raiz admite "sucesso sem usuário"; o principal do serviço
       // (resolveTenantPrincipal) sempre traz o userId, então o caso não existe nele.
-      it.runIf(host === 'legacy root').each(cases)(
-        '$name preserves missing user',
-        async ({ run }) => {
-          mocks.gate.mockResolvedValue({ success: true, principal, user: {} })
-          const r = await run()
-          expect(r.status).toBe(401)
-          expect(await r.json()).toEqual({ error: 'Usuário não identificado' })
-          expect(mocks.token).not.toHaveBeenCalled()
-        }
-      )
+      // F: the deleted root require-admin success-without-user state is outside the service principal contract.
       it.each(cases.filter((c) => c.limited))(
         '$name keeps rate refusal ahead of cache and token',
         async ({ run }) => {
@@ -553,6 +493,7 @@ describe.each(HOSTS)(
             request({}, 'POST', '', { 'x-idempotency-key': 'retry' })
           )
           expect(await r.json()).toEqual({ success: true, cached: 'fixture' })
+          // Chave de compatibilidade do idempotency cache: a antiga app/api/admin/zoho-mail foi retirada em F, mas o namespace literal persistido permanece para retry.
           expect(mocks.cache).toHaveBeenCalledWith(
             `alfa:operator:app/api/admin/zoho-mail/messages/${name === 'send' ? 'send' : '[messageId]/reply'}/route.ts:retry`
           )
@@ -619,6 +560,7 @@ describe.each(HOSTS)(
         )
         expect(r.status).toBe(500)
         expect(await r.json()).toEqual({ error: 'local audit failed' })
+        // A antiga app/api/admin/zoho-mail foi retirada em F; a chave literal persistida continua sendo a mesma para registrar o retry.
         expect(mocks.store).toHaveBeenCalledWith(
           'alfa:operator:app/api/admin/zoho-mail/messages/send/route.ts:retry',
           { success: true }

@@ -27,7 +27,6 @@ import {
   type ScheduledJobResult,
 } from '@gb-locacoes/backend/runtime'
 import type { AsaasPlatformInvoice } from '@gb-locacoes/backend/billing'
-import { GET as legacyCron } from '../../app/api/cron/platform/route'
 import { GET as apiCron } from '../../apps/services/api/src/app/api/cron/platform/route'
 
 describe.skipIf(!process.env.TEST_DATABASE_URL)(
@@ -701,7 +700,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
         ).topic
       ).toBe('subscriptions.event.webhook')
     })
-    it('the actual runtime and both cron adapters confirm invoices using only the root credential', async () => {
+    it('the configured runtime and successive API cron receipts confirm invoices using only the root credential', async () => {
       // Drain pending earlier fixtures through the fake reader before testing real composition.
       const worker = consumer()
       await worker.enqueue()
@@ -775,11 +774,12 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
       await receipt()
       expect((await runConfiguredPlatformJobs()).status).toBe(200)
       vi.stubEnv('CRON_SECRET', 'synthetic-invoice-cron')
-      for (const handler of [legacyCron, apiCron]) {
+      // Distinct event IDs repeat confirmation of the same persisted invoice.
+      for (let invocation = 0; invocation < 2; invocation++) {
         await receipt()
         expect(
           (
-            await handler(
+            await apiCron(
               new Request('http://localhost/api/cron/platform', {
                 headers: { authorization: 'Bearer synthetic-invoice-cron' },
               })

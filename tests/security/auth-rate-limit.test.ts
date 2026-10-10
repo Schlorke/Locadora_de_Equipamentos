@@ -1,9 +1,21 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  const { createPlatformRateLimitTable } =
+    await import('../helpers/platform-rate-limit-table')
+  const table = createPlatformRateLimitTable()
+  return { prisma: table.database, applicationTable: table }
+}
+import { getDatabaseRuntime as getFPreparedDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 import {
   platformRateLimitDigest,
   type RateLimitCounter,
 } from '../../packages/backend/src/modules/directory/rate-limit'
 /**
- * Identity limiters (lib/rate-limit.ts). Policy tests run against an
+ * Backend identity limiters. Policy tests run against an
  * in-memory stand-in of `platform_rate_limits` through the real Prisma
  * adapter; with a disposable TEST_DATABASE_URL, the last block proves the
  * windows persist across instances (two Prisma clients, two pools), that
@@ -21,29 +33,47 @@ import {
   vi,
 } from 'vitest'
 
-// The application client (lib/prisma) as seen by the limiters' default store.
-vi.mock('@/lib/prisma', async () => {
-  const { createPlatformRateLimitTable } =
-    await import('../helpers/platform-rate-limit-table')
-  const table = createPlatformRateLimitTable()
-  return { prisma: table.database, applicationTable: table }
+// The backend runtime client as seen by the limiters' default store.
+
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
 })
 
 import type { PrismaClient } from '@prisma/client'
 import { NextRequest } from 'next/server'
 import { prismaRateLimitCounter } from '@gb-locacoes/backend/directory'
 import {
-  adminApiRateLimit,
-  clearAuthAccountAttempts,
   clientIpFromHeaders,
-  consumeAccountNotice,
+  createIdentityLimiters,
+} from '@gb-locacoes/backend/identity'
+import { identityRateLimitSecret } from '@gb-locacoes/backend/directory'
+const {
   consumeAuthAttempt,
-  consumeVerificationResend,
-  identityRateLimitSecret,
-  legacySignInGuard,
+  clearAuthAccountAttempts,
   resetAuthAccountAttempts,
-  strictRateLimit,
-} from '@/lib/rate-limit'
+  consumeAccountNotice,
+  consumeVerificationResend,
+  legacySignInGuard,
+} = createIdentityLimiters({
+  loadCounter: async () =>
+    prismaRateLimitCounter(getFPreparedDatabaseRuntime().prisma),
+  secret: identityRateLimitSecret,
+  clientIp: clientIpFromHeaders,
+})
+const { adminApiRateLimit, strictRateLimit } =
+  createMemoryRateLimiters<NextRequest>({ clientIp: clientIpFromHeaders })
 import { createMemoryRateLimiters } from '@gb-locacoes/backend/http'
 import {
   MAX_RATE_LIMIT_ENTRIES,
@@ -53,7 +83,7 @@ const { apiRateLimit, rateLimit } = createMemoryRateLimiters<NextRequest>({
   clientIp: clientIpFromHeaders,
 })
 import { isPlatformProduction } from '../../packages/backend/src/modules/directory/security-env'
-import * as applicationPrisma from '@/lib/prisma'
+const applicationPrisma = fPreparedDatabase.value!
 import { createPlatformRateLimitTable } from '../helpers/platform-rate-limit-table'
 import { requireTestDatabase } from '../helpers/test-database'
 

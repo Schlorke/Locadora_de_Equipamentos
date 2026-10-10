@@ -1,3 +1,4 @@
+import { getDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 import { randomUUID } from 'node:crypto'
 import {
   afterAll,
@@ -8,9 +9,23 @@ import {
   it,
   vi,
 } from 'vitest'
-const fixtureDatabase = vi.hoisted(() => ({ prisma: undefined as unknown }))
-vi.mock('@/lib/prisma', async () => {
-  if (!process.env.TEST_DATABASE_URL) return { prisma: undefined }
+const fixtureDatabase = vi.hoisted(() => ({
+  prisma: undefined as unknown,
+  pool: undefined as import('pg').Pool | undefined,
+}))
+const render = vi.hoisted(() => ({
+  pdf: vi.fn(async (_data: unknown) => Buffer.from('fixture-pdf')),
+}))
+import { NextRequest } from 'next/server'
+import { publishTestOrganizations } from '../helpers/public-site'
+let currentUserId: string
+// Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
+// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()
+  if (!process.env.TEST_DATABASE_URL)
+    return { ...actual, getDatabaseRuntime: () => ({ prisma: undefined }) }
   const { requireTestDatabase } = await import('../helpers/test-database')
   const connectionString = requireTestDatabase(process.env)
   if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
@@ -19,30 +34,13 @@ vi.mock('@/lib/prisma', async () => {
   const { PrismaPg } = await import('@prisma/adapter-pg')
   const { PrismaClient } = await import('@prisma/client')
   const pool = new Pool({ connectionString, max: 8 })
-  return {
-    prisma: (fixtureDatabase.prisma = new PrismaClient({
-      adapter: new PrismaPg(pool),
-    })),
-    testPool: pool,
-  }
+  fixtureDatabase.pool = pool
+  const fixturePrisma = (fixtureDatabase.prisma = new PrismaClient({
+    adapter: new PrismaPg(pool),
+  }))
+  fixtureDatabase.prisma = fixturePrisma
+  return { ...actual, getDatabaseRuntime: () => ({ prisma: fixturePrisma }) }
 })
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => ({ user: { id: currentUserId } }),
-}))
-const render = vi.hoisted(() => ({
-  pdf: vi.fn(async (_data: unknown) => Buffer.from('fixture-pdf')),
-}))
-vi.mock('@/lib/pdf/oficio-generator', () => ({ generateOficioPdf: render.pdf }))
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { publishTestOrganizations } from '../helpers/public-site'
-let currentUserId: string
-// Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
-// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
-}))
 vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
   ...(await importOriginal<
     typeof import('../../apps/services/api/src/host/session')
@@ -55,56 +53,22 @@ vi.mock('@gb-locacoes/backend/documents', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@gb-locacoes/backend/documents')>()),
   ...(await (() => ({ generateOficioPdf: render.pdf }))()),
 }))
-import * as legacyRoute0 from '@/app/api/admin/financial/entries/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/admin/financial/entries/route'
-import * as legacyRoute1 from '@/app/api/admin/financial/calendar/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/admin/financial/calendar/route'
-import * as legacyRoute2 from '@/app/api/admin/financial/aging/route'
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/admin/financial/aging/route'
-import * as legacyRoute3 from '@/app/api/admin/financial/revenue/route'
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/admin/financial/revenue/route'
-import * as legacyRoute4 from '@/app/api/admin/financial/export/route'
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/admin/financial/export/route'
-import * as legacyRoute5 from '@/app/api/admin/financial/entries/[id]/status/route'
 import * as serviceRoute5 from '../../apps/services/api/src/app/api/admin/financial/entries/[id]/status/route'
-import * as legacyRoute6 from '@/app/api/admin/financial/entries/[id]/due-date/route'
 import * as serviceRoute6 from '../../apps/services/api/src/app/api/admin/financial/entries/[id]/due-date/route'
-import * as legacyRoute7 from '@/app/api/admin/financial/entries/[id]/route'
 import * as serviceRoute7 from '../../apps/services/api/src/app/api/admin/financial/entries/[id]/route'
-import * as legacyRoute8 from '@/app/api/admin/financial/entries/[id]/pdf-oficio/route'
 import * as serviceRoute8 from '../../apps/services/api/src/app/api/admin/financial/entries/[id]/pdf-oficio/route'
-import * as legacyRoute9 from '@/app/api/admin/financial/settings/route'
 import * as serviceRoute9 from '../../apps/services/api/src/app/api/admin/financial/settings/route'
-import * as legacyRoute10 from '@/app/api/settings/public/route'
 import * as serviceRoute10 from '../../apps/services/api/src/app/api/settings/public/route'
-import * as legacyRoute11 from '@/app/api/admin/dashboard/route'
 import * as serviceRoute11 from '../../apps/services/api/src/app/api/admin/dashboard/route'
-import * as legacyRoute12 from '@/app/api/admin/kpis/route'
 import * as serviceRoute12 from '../../apps/services/api/src/app/api/admin/kpis/route'
-import * as legacyRoute13 from '@/app/api/admin/quotes/[id]/adjustments/[adjustmentId]/route'
 import * as serviceRoute13 from '../../apps/services/api/src/app/api/admin/quotes/[id]/adjustments/[adjustmentId]/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      entries: legacyRoute0.GET,
-      calendar: legacyRoute1.GET,
-      aging: legacyRoute2.GET,
-      revenue: legacyRoute3.GET,
-      exportFinancial: legacyRoute4.GET,
-      setStatus: legacyRoute5.PATCH,
-      setDueDate: legacyRoute6.PATCH,
-      deleteEntry: legacyRoute7.DELETE,
-      pdf: legacyRoute8.GET,
-      settings: legacyRoute9.GET,
-      setSettings: legacyRoute9.PATCH,
-      publicSettings: legacyRoute10.GET,
-      dashboard: legacyRoute11.GET,
-      kpis: legacyRoute12.GET,
-      deleteAdjustment: legacyRoute13.DELETE,
-    },
-  ],
   [
     'service',
     {
@@ -643,10 +607,14 @@ describe.each(HOSTS)(
 // O cliente e o pool do banco descartável são da fábrica deste arquivo: fecham uma vez, depois dos dois hosts.
 afterAll(async () => {
   if (!process.env.TEST_DATABASE_URL) return
-  const database = (await import('@/lib/prisma')) as unknown as {
-    prisma: { $disconnect(): Promise<void> }
-    testPool: { end(): Promise<void> }
-  }
+  const database = { prisma, testPool: requireFixturePool() }
   await database.prisma.$disconnect()
   await database.testPool.end()
 })
+
+const prisma = getDatabaseRuntime().prisma
+function requireFixturePool() {
+  const pool = fixtureDatabase.pool
+  if (!pool) throw new Error('Owned fixture pool was not initialized')
+  return pool
+}

@@ -18,18 +18,7 @@ describe('Detalhe do histórico', () => {
     )
     expect(source).toContain('Por favor, insira um número válido entre 1 e 30')
     expect(source).not.toContain('await fetch(')
-    const route = readFileSync(
-      new URL(
-        '../../../../../../app/area-cliente/historico/[id]/page.tsx',
-        import.meta.url
-      ),
-      'utf8'
-    )
-    expect(route).toContain(
-      "from '@gb-locacoes/frontend/pages/historico-detalhe'"
-    )
-    expect(route).toContain('return <RentalDetailsPage />')
-    // Onda 135 (A8): a mesma página no host web; a asserção sobre a raiz sai no bloco F.
+    // A rota do host web mantém a composição compartilhada.
     const webRoute = readFileSync(
       new URL(
         '../../../../../../apps/clients/web/src/app/(public)/[locadora]/(account)/area-cliente/historico/[id]/page.tsx',

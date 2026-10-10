@@ -1,21 +1,25 @@
 # ✅ Sistema de Templates de Email - CONFIGURAÇÃO COMPLETA
 
-> **Status**: 🎉 **100% IMPLEMENTADO E TESTADO** **Data**: Dezembro 2024
-> **Versão**: 2.0.0 - Máxima Compatibilidade
+> **Registro histórico**: conclusão declarada em Dezembro 2024. **Versão da
+> época**: 2.0.0 - Máxima Compatibilidade. As declarações de teste daquele
+> registro não certificam provedores ou clientes de email na retomada.
 
 ---
 
 ## 🎯 Resumo da Implementação
 
-O sistema de templates de email foi completamente implementado e otimizado para
-**máxima compatibilidade** com todos os clientes de email (Outlook, Gmail, Zoho,
-Apple Mail, Yahoo, ProtonMail, etc.).
+O registro de Dezembro 2024 descreveu o sistema como implementado e otimizado
+para **máxima compatibilidade** com todos os clientes de email (Outlook, Gmail,
+Zoho, Apple Mail, Yahoo, ProtonMail, etc.).
 
 ---
 
 ## ✅ O Que Foi Implementado
 
-### **1. Templates de Email (lib/email-templates.ts)**
+### **1. Templates de Email (arquivo antigo `lib/email-templates.ts`, retirado em F)**
+
+O dono atual é `packages/backend/src/modules/communications/email-templates.ts`.
+Marca e URL vêm da locadora; não há fallback para a empresa de origem.
 
 - ✅ **generateContactEmailHTML()** - Formulário de contato simples
 - ✅ **generateQuoteEmailHTML()** - Orçamentos completos com equipamentos
@@ -90,7 +94,10 @@ Card Shadow: 0 4px 12px rgba(0, 0, 0, 0.05)
 
 ---
 
-## 📊 Compatibilidade Testada
+## 📊 Compatibilidade declarada no registro de Dezembro 2024
+
+A tabela preserva o relato original; não houve nova entrega real a esses
+clientes de email nesta revisão documental.
 
 | Cliente           | Status  | Notas                        |
 | ----------------- | ------- | ---------------------------- |
@@ -108,24 +115,28 @@ Card Shadow: 0 4px 12px rgba(0, 0, 0, 0.05)
 ### **Código de Exemplo**
 
 ```typescript
-// Contato simples
-import { generateContactEmailHTML } from "@/lib/email-templates"
+// Exemplo interno de communications: loadTenantBranding e context são injetados.
+import { generateContactEmailHTML } from "./email-templates"
 
-const html = generateContactEmailHTML({
-  name: "João Silva",
-  email: "joao@exemplo.com",
-  phone: "51999887766",
-  message: "Preciso de orçamento",
-  company: "Construtora ABC", // opcional
-  equipment: "Andaime", // opcional
-  cpf: "123.456.789-00", // opcional
-  cnpj: "12.345.678/0001-90" // opcional
-})
+const branding = await loadTenantBranding(context)
+const contactHtml = generateContactEmailHTML(
+  branding,
+  {
+    name: "João Silva",
+    email: "joao@exemplo.com",
+    phone: "51999887766",
+    message: "Preciso de orçamento",
+    company: "Construtora ABC", // opcional
+    equipment: "Andaime", // opcional
+    cnpj: "12.345.678/0001-90" // dado fictício para renderização
+  },
+  "contact-id-exemplo"
+)
 
-// Orçamento completo
-import { generateQuoteEmailHTML } from "@/lib/email-templates"
+import { generateQuoteEmailHTML } from "./email-templates"
 
-const html = generateQuoteEmailHTML(
+const quoteHtml = generateQuoteEmailHTML(
+  branding,
   {
     customerName: "João Silva",
     customerEmail: "joao@exemplo.com",
@@ -142,31 +153,37 @@ const html = generateQuoteEmailHTML(
     }
   ],
   3600,
-  "quote123"
+  "quote-id-exemplo"
 )
 ```
+
+Esses exemplos só geram HTML no módulo backend; não enviam email nem importam
+servidor no frontend. Os renderizadores não fazem parte da API pública de
+communications. O host compõe `createQuoteCreatedEffects` pela entrada
+`@gb-locacoes/backend/communications`; o worker usa a marca e o pedido da
+locadora persistidos, com destinatários e idempotência próprios.
 
 ---
 
 ## 📁 Arquivos Criados/Modificados
 
-### **Novos Arquivos**
+### **Novos Arquivos no registro original**
 
 ```
-lib/email-templates.ts                                  ⭐ Principal
+lib/email-templates.ts                                  # antigo; retirado em F; dono atual backend/communications
 docs/features/email-templates.md                        📚 Doc completa
 docs/features/email-templates-quick-reference.md        📖 Ref rápida
 docs/features/EMAIL_TEMPLATES_SETUP_COMPLETE.md         ✅ Este arquivo
 public/email-templates/quote-template.html              🎨 Template visual
-scripts/update-email-templates.cjs                      🔧 Helper
+scripts/update-email-templates.cjs                      # helper antigo de previews; não instala renderizadores
 ```
 
-### **Arquivos Modificados**
+### **Arquivos Modificados no registro original**
 
 ```
-app/api/contact/route.ts          ✅ Email integrado
-app/api/orcamentos/route.ts       ✅ Email integrado
-app/api/quotes/route.ts           ✅ Email integrado
+app/api/contact/route.ts          # antigo; retirado em F; atual apps/services/api/src/app/api/contact/route.ts
+app/api/orcamentos/route.ts       # antigo; retirado em F; atual apps/services/api/src/app/api/orcamentos/route.ts
+app/api/quotes/route.ts           # antigo; retirado em F; atual apps/services/api/src/app/api/quotes/route.ts
 packages/frontend/src/widgets/contato-home/ui/ContatoHome.web.tsx    🔒 URL cleaning
 CHANGELOG.md                      📝 Documentado
 docs/README.md                    📚 Índice atualizado
@@ -231,7 +248,7 @@ docs/README.md                    📚 Índice atualizado
 
 ---
 
-## ✅ Checklist Final de Validação
+## ✅ Checklist declarado na conclusão de Dezembro 2024
 
 - [x] ✅ Templates criados e funcionando
 - [x] ✅ APIs integradas com Resend
@@ -252,11 +269,11 @@ docs/README.md                    📚 Índice atualizado
 
 ## 🎉 Conclusão
 
-O sistema de templates de email está **100% implementado, testado e
-documentado** como padrão do projeto GB Locações.
+A conclusão de Dezembro 2024 declarou o sistema **100% implementado, testado e
+documentado** como padrão do projeto GB Locações. Esse é o registro da época,
+não um novo resultado de validação após a extração.
 
-**Todos os formulários de contato e orçamento agora enviam emails profissionais
-com:**
+**Características relatadas para os formulários naquele registro:**
 
 - ✨ Design moderno e limpo
 - 📧 100% de compatibilidade
@@ -269,4 +286,11 @@ com:**
 **Data de Conclusão**: Dezembro 2024 **Versão**: 2.0.0 **Status**: ✅
 **PRODUÇÃO - PADRÃO ESTABELECIDO**
 
-🎯 **Sistema pronto para uso e manutenção de longo prazo!**
+Na arquitetura atual, contato responde 202 com `deliveryStatus: queued`;
+orcamentos/quotes respondem 201 após persistência e agendamento da notificação.
+O processamento ocorre pela outbox e por
+`apps/services/api/src/host/notification-effects.ts`; a resposta HTTP não
+confirma entrega. O helper antigo de previews grava arquivos em
+`public/email-templates/generated` e orienta copiar HTML para APIs; essa
+orientação não se aplica ao backend extraído nem autoriza arquivos gerados no
+repo.

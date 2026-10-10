@@ -406,6 +406,7 @@ describe('integration global setup wiring', () => {
       DATABASE_URL: disposable,
       DIRECT_URL: disposable,
     })
+    // A .next antiga da raiz foi retirada em F; esta expectativa monta a saída apps/services/api/.next do host API.
     const standalone = path.join(
       dir,
       'apps',

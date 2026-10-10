@@ -31,37 +31,25 @@ async function resolve() {
       }
     : { ok: true, principal: { ...principal, role: state.role } }
 }
-vi.mock('@/lib/tenant', () => ({ resolveTenantPrincipal: resolve }))
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: resolve,
 }))
-vi.mock('@/lib/rental-lifecycle', () => state.calls)
 vi.mock('../../apps/services/api/src/host/rentals', () => state.calls)
-import { POST as oldCreate } from '@/app/api/admin/rentals/route'
 import { POST as newCreate } from '../../apps/services/api/src/app/api/admin/rentals/route'
-import {
-  PATCH as oldPatch,
-  DELETE as oldCancel,
-} from '@/app/api/admin/rentals/[id]/route'
 import {
   PATCH as newPatch,
   DELETE as newCancel,
 } from '../../apps/services/api/src/app/api/admin/rentals/[id]/route'
-import { POST as oldOut } from '@/app/api/admin/rentals/[id]/checkout/route'
 import { POST as newOut } from '../../apps/services/api/src/app/api/admin/rentals/[id]/checkout/route'
-import { POST as oldIn } from '@/app/api/admin/rentals/[id]/checkin/route'
 import { POST as newIn } from '../../apps/services/api/src/app/api/admin/rentals/[id]/checkin/route'
-import { POST as oldExtend } from '@/app/api/admin/rentals/[id]/extend/route'
 import { POST as newExtend } from '../../apps/services/api/src/app/api/admin/rentals/[id]/extend/route'
-import { POST as oldClientExtend } from '@/app/api/client/rentals/[id]/extend/route'
 import { POST as newClientExtend } from '../../apps/services/api/src/app/api/client/rentals/[id]/extend/route'
-import { POST as oldFee } from '@/app/api/admin/rentals/[id]/calculate-late-fee/route'
 import { POST as newFee } from '../../apps/services/api/src/app/api/admin/rentals/[id]/calculate-late-fee/route'
 
 const cases = [
   {
     name: 'create',
-    methods: [oldCreate, newCreate],
+    methods: [newCreate],
     use: 'createAdminRental',
     body: {
       userId: 'customer',
@@ -81,49 +69,49 @@ const cases = [
   },
   {
     name: 'patch',
-    methods: [oldPatch, newPatch],
+    methods: [newPatch],
     use: 'updateRental',
     body: { lateFee: '1.005', notes: '', extra: true },
     code: 200,
   },
   {
     name: 'cancel',
-    methods: [oldCancel, newCancel],
+    methods: [newCancel],
     use: 'updateRental',
     body: {},
     code: 200,
   },
   {
     name: 'checkout',
-    methods: [oldOut, newOut],
+    methods: [newOut],
     use: 'checkoutRental',
     body: {},
     code: 200,
   },
   {
     name: 'checkin',
-    methods: [oldIn, newIn],
+    methods: [newIn],
     use: 'checkinRental',
     body: { damageFee: 1.005, notes: '', extra: true },
     code: 200,
   },
   {
     name: 'admin extend',
-    methods: [oldExtend, newExtend],
+    methods: [newExtend],
     use: 'extendRental',
     body: { additionalDays: 2 },
     code: 202,
   },
   {
     name: 'client extend',
-    methods: [oldClientExtend, newClientExtend],
+    methods: [newClientExtend],
     use: 'extendRental',
     body: { extensionDays: 2, extra: true },
     code: 200,
   },
   {
     name: 'late fee',
-    methods: [oldFee, newFee],
+    methods: [newFee],
     use: 'applyRentalLateFee',
     body: {},
     code: 200,
@@ -180,8 +168,8 @@ describe.each(cases)(
         output.push(await response.json())
         calls.push(state.calls[testCase.use]!.mock.calls)
       }
-      expect(output[1]).toEqual(output[0])
-      expect(calls[1]).toEqual(calls[0])
+      expect(output[0]).toEqual(expectedRentalResponses[testCase.name])
+      expect(state.calls[testCase.use]).toHaveBeenCalledTimes(1)
       const args = calls[0]![0]!
       expect(args[0]).toEqual(principal)
       if (testCase.name === 'create') {
@@ -248,3 +236,22 @@ describe.each(cases)(
     )
   }
 )
+
+const rentalFixture = {
+  id: 'rental',
+  paymentId: 'payment',
+  outcome: 'not_overdue',
+}
+const expectedRentalResponses = {
+  create: { rental: rentalFixture },
+  patch: { rental: rentalFixture },
+  cancel: { message: 'Rental cancelled successfully' },
+  checkout: { rental: rentalFixture },
+  checkin: rentalFixture,
+  'admin extend': { ...rentalFixture, boletoPending: true },
+  'client extend': {
+    ...rentalFixture,
+    message: 'Prorrogação solicitada com sucesso',
+  },
+  'late fee': { lateFee: 0, daysOverdue: 0, message: 'Rental is not overdue' },
+} as const

@@ -10,15 +10,18 @@ Pagamento e assinatura são fatos distintos. Esta extração conserva o
 comportamento existente, inclusive texto, valores, datas, estados e respostas
 HTTP.
 
-Geração, leitura, pedido de assinatura, download e recepção ZapSign estão
-montados nos dois hosts. A execução de assinatura, reconciliação e arquivamento
-permanece no scheduler legado. Esta implementação não certifica ZapSign ou
-Supabase reais nem autoriza trocar a origem dos clientes ou remover a API
-legada.
+Geração, leitura, pedido de assinatura, download e recepção ZapSign pertencem ao
+host API sobre backend/documents. A montagem nos dois hosts nas ondas 42–43 é o
+registro histórico da extração. A assinatura e o arquivo são efeitos da outbox
+composta em `apps/services/api/src/host/outbox.ts`, acionada pelo GET
+autenticado /api/cron/outbox. A composição não habilita agenda nem certifica
+ZapSign/Supabase reais ou autoriza operação externa.
 
 ## 2. Entradas e contratos HTTP
 
-As URLs abaixo existem em app/api e apps/services/api/src/app/api.
+As URLs abaixo são adapters em `apps/services/api/src/app/api`. A árvore
+`app/api` da raiz era o host de referência histórico e foi aposentada em F; não
+é um segundo destino operacional no clone pós-F.
 
 | Método e URL                                        | Acesso e comportamento preservados                                                                  |
 | --------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
@@ -53,14 +56,17 @@ ADMIN/OPERATOR, e FINANCIAL não recebe esse acesso.
 4. ContractSignatureAttempt e outbox contract.signature.request são gravadas
    atomicamente. Tentativa QUEUED reaproveita requestId; outra tentativa ou
    estado não elegível responde 409. O pedido HTTP não chama ZapSign.
-5. O worker legado executa assinatura e reconciliação. O callback autenticado
-   resolve o contrato pelo registro de recurso da integração, tenant e
-   zapSignId. SIGNED atualiza apenas DRAFT/SENT e enfileira
+5. O efeito de assinatura, composto pelo host API/outbox, emite pelo provedor
+   injetado e conserva os estados da tentativa. A factory também oferece
+   reconciliação UNKNOWN; isso não implica job consumidor automático. O callback
+   autenticado resolve o contrato pelo registro de recurso da integração, tenant
+   e zapSignId. SIGNED atualiza apenas DRAFT/SENT e enfileira
    contract.signed.archive na mesma transação; a deduplicação conserva uma
    solicitação de arquivo.
-6. O worker legado arquiva o PDF no storage privado. O download assinado só usa
-   ClientDocument correspondente ao contrato e caminho pertencente ao
-   tenant/cliente; não segue uma pdfUrl externa recebida no callback.
+6. O efeito contract.signed.archive, composto na mesma outbox, arquiva o PDF no
+   storage privado. O download assinado só usa ClientDocument correspondente ao
+   contrato e caminho pertencente ao tenant/cliente; não segue uma pdfUrl
+   externa recebida no callback.
 
 ## 4. Arquivos e responsabilidades
 
@@ -77,17 +83,23 @@ ADMIN/OPERATOR, e FINANCIAL não recebe esse acesso.
 - packages/backend/src/runtime/document-storage.ts: SDK Supabase server-side,
   env e cliente lazy; autoRefreshToken e persistSession continuam false.
 - apps/services/api/src/host/contracts.ts: composição e adapters HTTP finos.
-- lib/contracts/service.ts, lib/security/private-documents.ts,
-  lib/security/webhook-consumers/zapsign.ts e lib/supabase-admin.ts: fachadas e
-  composição legadas. O renderer antigo sem consumidor produtivo foi retirado;
-  todas as rotas legadas continuam presentes.
+- `apps/services/api/src/host/document-storage.ts` e
+  `webhook-authentication.ts`: runtime lazy de storage e resolução das
+  credenciais/recursos. As antigas fachadas lib/contracts/service,
+  lib/security/private-documents, lib/security/webhook-consumers/zapsign e
+  lib/supabase-admin foram aposentadas em F; o renderer sem consumidor já tinha
+  sido retirado no checkpoint da extração.
 - packages/backend/src/modules/documents/contract-signature-effects.ts: emissão,
   reconciliação e arquivamento por factory com transação, credenciais, provedor
   e storage injetados (onda 43).
 - packages/backend/src/modules/documents/zapsign.ts: adapter HTTP do provedor,
   com a autenticação, referência, timeout e classificação de falhas existentes.
-- lib/contract-signature-effects.ts e lib/zapsign.ts: fachadas de composição.
-  app/api/cron continua o único executor operacional; nenhum scheduler novo.
+- `apps/services/api/src/host/contracts.ts` injeta transação, credenciais,
+  provider e storage nos efeitos; `host/outbox.ts` registra os efeitos e
+  `apps/services/api/src/app/api/cron/outbox/route.ts` exige autorização antes
+  de despachar. As fachadas lib/contract-signature-effects e lib/zapsign
+  pertencem ao histórico da raiz aposentada. Um único scheduler por job é
+  requisito de operação futura, não um serviço ligado por F.
 
 ## 5. Dados, segurança e erros
 
@@ -110,6 +122,10 @@ revisão no bloco SaaS; esta onda não a altera.
 
 ## 6. Validação
 
+Contagens abaixo são as caracterizações registradas nas ondas 42–43 e 65–72; não
+são reexecução no clone pós-F. O fechamento desse clone exige suas próprias
+provas e hashes no ledger.
+
 - tests/api-host/rental-contracts.http.test.ts: 53 casos em cada motor real
   (Better Auth e NextAuth), builds locais de produção, SQL/FORCE RLS, CSRF,
   roles, ownership, imutabilidade, dedupe, concorrência e rollback.
@@ -117,8 +133,9 @@ revisão no bloco SaaS; esta onda não a altera.
   confere bucket privado, path, TTL e attachment, sem chamar storage externo.
 - tests/security/documents-contracts.test.ts e external-endpoints.test.ts:
   proteções existentes sobre documentos, renderer e endpoints.
-- tests/security/route-auth-inventory.test.ts: segue o predicado real nos dois
-  hosts; substituições sintéticas por true ou CLIENT devem reprovar.
+- tests/security/route-auth-inventory.test.ts: na caracterização dos dois hosts
+  seguiu o predicado real; no clone pós-F cobre o host API e rotas web;
+  substituições sintéticas por true ou CLIENT devem reprovar.
 - tests/identity/contracts-database.test.ts: 10 invariantes de banco
   preservadas.
 - tests/unit/outbox-cron-database.test.ts: 6 provas do fluxo/efeitos legados.
@@ -136,7 +153,7 @@ imutabilidade/RLS. Evidências consolidadas, gates e limites na onda 42 de
 ## 7. Próximo incremento
 
 A extração dos efeitos, adapter e uploads foi implementada na onda 43.
-Reconciliação UNKNOWN continua disponível na factory e fachada, mas ainda não
+Reconciliação UNKNOWN continua disponível na factory do backend, mas ainda não
 possui rota/job consumidor: ligar esse fluxo requer seu próprio desenho de
 recuperação, não uma repetição automática da emissão. Migrar os demais endpoints
 e integrações em blocos próprios. Manter um único scheduler e exigir paridade

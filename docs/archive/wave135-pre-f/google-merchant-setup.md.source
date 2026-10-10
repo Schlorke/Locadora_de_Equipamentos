@@ -1,0 +1,328 @@
+# Arquivo historico anterior ao corte F da onda 135
+
+Origem: `docs/google-merchant-setup.md`. Texto e receitas anteriores preservados integralmente abaixo; nao sao procedimentos atuais. Consulte o guia ativo no caminho de origem e a base validada.
+
+---
+
+# Configuração do Google Merchant Center
+
+Este guia conserva o roteiro da integração global anterior da GB-Locações.
+A oferta de feed e adapter Merchant por locadora ainda não foi aprovada para
+esta plataforma SaaS.
+
+## Estado operacional atual
+
+O código sobrevive em `scripts/ops/google-merchant/` como quarentena COD-04.
+A fábrica `createGoogleMerchantClient` recusa com
+`GOOGLE_MERCHANT_LEGACY_DISABLED`. Os handlers administrativos do host API
+resolvem o principal da locadora e exigem ADMIN antes de devolver 503 com
+`TENANT_MERCHANT_ADAPTER_UNAVAILABLE`; o cron autorizado também devolve 503.
+Isso não é falta de uma chave que deva ser suprida pelo roteiro abaixo.
+
+Este fechamento não cria contas Google, cadastra credenciais, reivindica o
+site GB, publica deploy, sincroniza catálogo ou liga cron. Infraestrutura e
+serviços externos ficam para a etapa posterior explicitamente autorizada.
+A composição e os limites estão no
+[README da quarentena](../scripts/ops/google-merchant/README.md).
+
+## 📋 Pré-requisitos históricos da integração global
+
+- Conta Google Business
+- Site verificado no Google Search Console
+- Acesso ao Google Cloud Console
+- Acesso ao painel de administração da GB Locações
+
+## 🚀 Roteiro global anterior (histórico; não executar)
+
+As identidades GB, telas externas e exemplos a seguir são registros do
+procedimento aposentado, não instruções atuais de configuração da plataforma.
+
+### 1. Criar/Configurar Conta no Google Merchant Center
+
+1. Acesse [Google Merchant Center](https://merchants.google.com)
+2. Faça login com sua conta Google Business
+3. Clique em **"Começar"** ou selecione uma conta existente
+4. Preencha as informações da empresa:
+   - Nome da empresa: **GB Locações**
+   - País: **Brasil**
+   - Fuso horário: **Brasília (GMT-3)**
+
+5. Verifique e reivindique seu site:
+   - URL do site: `https://locacoesgb.com.br`
+   - Escolha o método de verificação (recomendado: Google Search Console)
+
+6. Configure informações de envio e impostos conforme necessário
+
+7. **Anote o Merchant ID** (número de 10 dígitos visível no canto superior
+   direito)
+
+### 2. Criar Service Account no Google Cloud
+
+1. Acesse [Google Cloud Console](https://console.cloud.google.com)
+
+2. Crie um novo projeto ou selecione um existente:
+   - Nome sugerido: `GB Locacoes Merchant`
+
+3. Ative a **Content API for Shopping**:
+   - Menu > **APIs e serviços** > **Biblioteca**
+   - Busque por "Content API for Shopping"
+   - Clique em **Ativar**
+
+4. Crie um Service Account:
+   - Menu > **APIs e serviços** > **Credenciais**
+   - Clique em **Criar credenciais** > **Conta de serviço**
+   - Nome: `merchant-api-service`
+   - Descrição: `Service account para sincronizar produtos com Google Merchant`
+   - Clique em **Criar e continuar**
+
+5. Conceda permissões (opcional, pode pular)
+
+6. Crie uma chave JSON:
+   - Na lista de contas de serviço, clique na conta criada
+   - Aba **Chaves** > **Adicionar chave** > **Criar nova chave**
+   - Tipo: **JSON**
+   - Clique em **Criar** (o arquivo será baixado automaticamente)
+
+### 3. Vincular Service Account ao Merchant Center
+
+1. Volte ao [Google Merchant Center](https://merchants.google.com)
+
+2. Vá em **Configurações** (ícone de engrenagem) > **Acesso de usuários**
+
+3. Clique em **Adicionar usuário**
+
+4. Cole o email do Service Account (formato:
+   `nome@projeto-id.iam.gserviceaccount.com`)
+   - Você encontra esse email no arquivo JSON baixado no campo `client_email`
+
+5. Selecione a função: **Administrador**
+
+6. Clique em **Adicionar**
+
+### 4. Adicionar Fonte de Dados (Feed API)
+
+**Este é o passo da tela que você compartilhou!**
+
+1. No Merchant Center, vá em **Produtos** > **Feeds**
+
+2. Clique em **Adicionar produtos**
+
+3. Selecione **Adicionar produtos usando a API** (terceira opção)
+
+4. No campo **"Nome da fonte de dados da API"**, digite:
+
+   ```
+   GB Locações - API Feed
+   ```
+
+5. Clique em **Continuar**
+
+6. Configure:
+   - **País de venda**: Brasil
+   - **Idioma**: Português (pt)
+   - **Destinos**: Marque **Shopping** e **Performance Max**
+
+7. Clique em **Criar feed**
+
+### 5. Variáveis globais do serviço anterior (aposentado)
+
+Este bloco é um exemplo histórico com placeholders. Não transfira as chaves
+para o web ou para um host novo: a integração atual recusa antes de usar a
+configuração global, e os modelos por host são `.env.example`.
+
+1. Abra o arquivo JSON da chave do Service Account baixado anteriormente
+
+2. Adicione ao seu arquivo `.env.local`:
+
+```bash
+# Google Merchant Center
+GOOGLE_MERCHANT_ID="1234567890"  # Seu Merchant ID (10 dígitos)
+GOOGLE_MERCHANT_SERVICE_ACCOUNT_EMAIL="merchant-api-service@gb-locacoes-merchant.iam.gserviceaccount.com"
+GOOGLE_MERCHANT_SERVICE_ACCOUNT_KEY="-----BEGIN PRIVATE KEY-----\nSUA_CHAVE_PRIVADA_AQUI\n-----END PRIVATE KEY-----\n"
+```
+
+**Importante:**
+
+- `GOOGLE_MERCHANT_ID`: Merchant ID visível no Merchant Center
+- `GOOGLE_MERCHANT_SERVICE_ACCOUNT_EMAIL`: Campo `client_email` do JSON
+- `GOOGLE_MERCHANT_SERVICE_ACCOUNT_KEY`: Campo `private_key` do JSON (cole a
+  chave completa, incluindo `-----BEGIN PRIVATE KEY-----` e
+  `-----END PRIVATE KEY-----`)
+
+### 6. Comandos de deploy anteriores (histórico; não executar)
+
+A publicação Git no origin deste produto não autorizou Vercel nem mudanças nos
+projetos da GB. Os comandos abaixo conservam o roteiro antigo, sem equivalência
+com infraestrutura atual.
+
+```bash
+# Adicionar variáveis ao Vercel (se usar Vercel)
+vercel env add GOOGLE_MERCHANT_ID
+vercel env add GOOGLE_MERCHANT_SERVICE_ACCOUNT_EMAIL
+vercel env add GOOGLE_MERCHANT_SERVICE_ACCOUNT_KEY
+
+# Ou adicione manualmente no painel do Vercel:
+# Settings > Environment Variables
+```
+
+### 7. Verificação do painel global anterior (histórico)
+
+A URL GB e as telas abaixo pertencem ao serviço anterior. Não acessá-las para
+validar o clone local nem considerar que a quarentena possui botão funcional
+de sincronização.
+
+1. Acesse o painel admin: `https://locacoesgb.com.br/admin`
+
+2. Navegue até **Integrações** > **Google Merchant**
+
+3. Verifique o status da conexão
+
+4. Clique em **Sincronizar Agora** para fazer a primeira sincronização
+
+### 8. Agenda global anterior da raiz aposentada
+
+O JSON e os comandos abaixo são exemplos do guia antigo, não a configuração
+versionada dos hosts atuais. Não crie `vercel.json` na raiz, não acrescente
+sync-google-merchant e não faça deploy para executar esse roteiro.
+`apps/clients/web/vercel.json` não declara crons; o arquivo de
+`apps/services/api` tem somente late-fees, expire-quotes e outbox.
+
+Exemplo histórico de Cron Job no Vercel:
+
+1. Crie o arquivo `vercel.json` na raiz do projeto (se não existir):
+
+```json
+{
+  "crons": [
+    {
+      "path": "/api/cron/sync-google-merchant",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}
+```
+
+**Opções de agendamento:**
+
+- `0 2 * * *` - Diariamente às 2h da manhã (recomendado)
+- `0 */6 * * *` - A cada 6 horas
+- `0 * * * *` - A cada hora
+
+2. Faça deploy:
+
+```bash
+git add vercel.json
+git commit -m "chore: configure Google Merchant sync cron"
+git push
+```
+
+## 🎯 Contrato atual dos endpoints em quarentena
+
+As rotas estão em `apps/services/api/src/app/api/`. As administrativas resolvem
+`resolveTenantPrincipal` em `src/host/private-identity.ts`, devolvem sua recusa
+se necessário e exigem ADMIN. Após essas verificações, retornam o
+`merchantUnavailableResponse` de `packages/backend/src/http/merchant.ts`:
+503, `success: false`, `configured: false` e
+`code: TENANT_MERCHANT_ADAPTER_UNAVAILABLE`. Não sincronizam nem removem produtos.
+
+| Método | Endpoint | Resultado após autorização |
+| --- | --- | --- |
+| GET | `/api/admin/google-merchant/status` | 503, adapter indisponível |
+| POST | `/api/admin/google-merchant/sync` | 503, adapter indisponível |
+| POST | `/api/admin/google-merchant/products/[id]` | 503, adapter indisponível |
+| DELETE | `/api/admin/google-merchant/products/[id]` | 503, adapter indisponível |
+| GET | `/api/cron/sync-google-merchant` | 503, após autorização do cron |
+
+As descrições de envio/remoção e o Bearer genérico do roteiro anterior eram
+históricos; não definem uma forma de login atual. Não habilite um scheduler ou
+invente um adapter para converter esses status em 200.
+
+## 📊 Mapeamento histórico do serviço global (inativo)
+
+A lista descreve o mapper da integração anterior em quarentena; nenhum envio é
+realizado pelas rotas atuais.
+
+Para cada equipamento disponível, são enviados:
+
+- **Título**: Nome do equipamento (máx. 150 caracteres)
+- **Descrição**: Descrição + especificações (máx. 5000 caracteres)
+- **Imagem**: Primeira imagem como principal + até 10 adicionais
+- **Preço**: Valor da diária em BRL
+- **Disponibilidade**: "in stock" ou "out of stock"
+- **Categoria**: Categoria do equipamento
+- **Link**: URL da página do equipamento
+- **Custom Labels**: Categoria, período popular, status
+
+## 🔍 Monitoramento do serviço anterior (histórico)
+
+As telas e URLs seguintes eram do serviço global da GB. O diagnóstico local
+atual é a recusa dos handlers acima; não implica produtos aprovados no Google
+nem a existência de uma tela nova de Merchant por locadora.
+
+### No Google Merchant Center
+
+1. Acesse **Produtos** > **Diagnóstico**
+2. Verifique:
+   - Produtos aprovados
+   - Produtos com problemas
+   - Produtos pendentes
+
+### No Painel Admin da GB Locações
+
+Acesse `/admin/integrações/google-merchant` para ver:
+
+- Status da conexão
+- Última sincronização
+- Equipamentos sincronizados
+- Logs de erros
+
+## ❌ Diagnóstico atual e soluções anteriores
+
+A recusa 503 atual é deliberada e não se resolve com redeploy, chave global ou
+cron. Preserve a quarentena e consulte seu README. Os incidentes e remédios
+abaixo pertencem ao serviço anterior, agora aposentado como receita operacional.
+
+### Erro: "Merchant ID não configurado"
+
+- Verifique se `GOOGLE_MERCHANT_ID` está no `.env.local`
+- Faça redeploy com a variável configurada
+
+### Erro: "Invalid credentials"
+
+- Verifique se o email do Service Account está correto
+- Confirme que a chave privada está completa (com quebras de linha `\n`)
+- Verifique se o Service Account foi adicionado ao Merchant Center
+
+### Produtos não aparecem no Google Shopping
+
+- Aguarde até 24h para aprovação inicial
+- Verifique o **Diagnóstico de Produtos** no Merchant Center
+- Certifique-se de que as imagens são válidas (HTTPS, formato correto)
+- Confirme que o site está verificado
+
+### Sincronização falha
+
+- Verifique os logs no console do Vercel
+- Teste manualmente via endpoint `/api/admin/google-merchant/status`
+- Confirme que a Content API está ativada no Google Cloud
+
+## 📚 Recursos Adicionais
+
+- [Google Merchant Center Help](https://support.google.com/merchants)
+- [Content API for Shopping Documentation](https://developers.google.com/shopping-content)
+- [Product Data Specification](https://support.google.com/merchants/answer/7052112)
+- [Google Product Taxonomy](https://www.google.com/basepages/producttype/taxonomy-with-ids.pt-BR.txt)
+
+## 🔐 Segurança
+
+**NUNCA** commite as chaves privadas no Git:
+
+- Use `.env.local` apenas localmente
+- Configure variáveis de ambiente no Vercel/provider de hospedagem
+- Rotacione chaves periodicamente
+- Use Service Accounts com permissões mínimas necessárias
+
+---
+
+**Suporte**: Em caso de dúvidas, consulte a documentação do Google ou entre em
+contato com o time de desenvolvimento.

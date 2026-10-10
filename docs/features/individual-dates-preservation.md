@@ -58,7 +58,7 @@ model rental_items {
 **Solução:** Mudança para `select` explícito
 
 ```typescript
-// lib/rental-converter.ts (linhas 48-71)
+// Código histórico de 2026-02-14: arquivo antigo lib/rental-converter.ts, retirado em F (linhas 48-71).
 items: {
   select: {
     id: true,
@@ -85,7 +85,7 @@ items: {
 #### 2.2. Preservação de Datas na Criação dos rental_items
 
 ```typescript
-// lib/rental-converter.ts (linhas 106-144)
+// Código histórico de 2026-02-14: arquivo antigo lib/rental-converter.ts, retirado em F (linhas 106-144).
 rental_items: {
   create: quote.items.map((item) => ({
     id: `rental_item_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
@@ -108,7 +108,7 @@ rental_items: {
 As datas globais do rental são calculadas como MIN/MAX das datas dos itens:
 
 ```typescript
-// lib/rental-converter.ts (linhas 94-103)
+// Código histórico de 2026-02-14: arquivo antigo lib/rental-converter.ts, retirado em F (linhas 94-103).
 const itemStartDates = quote.items
   .map((i) => i.startDate || quote.startDate)
   .filter((d): d is Date => d !== null)
@@ -126,7 +126,15 @@ const globalEndDate = itemEndDates.length
   : new Date()
 ```
 
-**Arquivo:** `lib/rental-converter.ts`
+**Owner atual:** `packages/backend/src/modules/rentals/conversion.ts`, composto
+por `apps/services/api/src/host/rentals.ts` com `createQuoteConversion`. Os três
+exemplos acima preservam o snapshot de 2026-02-14, inclusive seus ids e
+fallbacks; não são receitas para reinstalar o arquivo antigo. Hoje a query
+inclui os itens da locadora; a conversão resolve cada data com `??` para a data
+do Quote e recusa item sem início/fim, antes da disponibilidade. Copia as datas
+resolvidas e `includeWeekends` ao `rental_items` e calcula MIN/MAX sobre esses
+itens. Contexto/lock/idempotência/valores em centavos continuam no backend;
+nenhum fallback para o relógio atual substitui datas ausentes.
 
 ---
 

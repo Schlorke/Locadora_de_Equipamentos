@@ -1,3 +1,22 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return {
+    prisma: {
+      $transaction: async (operation: (_tx: unknown) => unknown) =>
+        operation({
+          ...mocks.tx,
+          $queryRaw: async (_sql: TemplateStringsArray, tenantId: string) => {
+            mocks.scope({ tenantId })
+            return []
+          },
+        }),
+    },
+  }
+}
 import { NextRequest } from 'next/server'
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
 const mocks = vi.hoisted(() => {
@@ -32,60 +51,36 @@ const mocks = vi.hoisted(() => {
     },
   }
 })
-vi.mock('@/lib/tenant', () => ({
-  resolveTenantPrincipal: async () =>
-    mocks.denied
-      ? { ok: false, response: Response.json({}, { status: mocks.denied }) }
-      : {
-          ok: true,
-          principal: {
-            tenantId: 'tenant-A',
-            userId: 'admin-A',
-            membershipId: 'member-A',
-            role: mocks.role,
-          },
-        },
-  withTenantTransaction: async (
-    context: unknown,
-    operation: (_tx: unknown) => unknown
-  ) => {
-    mocks.scope(context)
-    return operation(mocks.tx)
-  },
-}))
-vi.mock('@/lib/prisma', () => ({
-  prisma: {
-    $transaction: async (operation: (_tx: unknown) => unknown) =>
-      operation({
-        ...mocks.tx,
-        $queryRaw: async (_sql: TemplateStringsArray, tenantId: string) => {
-          mocks.scope({ tenantId })
-          return []
-        },
-      }),
-  },
-}))
-vi.mock('@/lib/meta-whatsapp', () => ({ sendTextMessage: mocks.send }))
-vi.mock('@/lib/security/tenant-webhook', () => ({
-  resolveIntegrationCredential: mocks.credential,
-}))
+
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({
-    prisma: {
-      $transaction: async (operation: (_tx: unknown) => unknown) =>
-        operation({
-          ...mocks.tx,
-          $queryRaw: async (_sql: TemplateStringsArray, tenantId: string) => {
-            mocks.scope({ tenantId })
-            return []
-          },
-        }),
-    },
-  }),
-}))
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({
+      prisma: {
+        $transaction: async (operation: (_tx: unknown) => unknown) =>
+          operation({
+            ...mocks.tx,
+            $queryRaw: async (_sql: TemplateStringsArray, tenantId: string) => {
+              mocks.scope({ tenantId })
+              return []
+            },
+          }),
+      },
+    }),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 vi.mock('@gb-locacoes/backend/communications', async (importOriginal) => ({
   ...(await importOriginal<
     typeof import('@gb-locacoes/backend/communications')
@@ -164,59 +159,36 @@ vi.mock(
     }))()),
   })
 )
-import * as legacyRoute0 from '@/app/api/admin/drivers/route'
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/admin/drivers/route'
-import * as legacyRoute1 from '@/app/api/admin/logistics/route'
+
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/admin/logistics/route'
-import * as legacyRoute2 from '@/app/api/admin/logistics/[id]/route'
+
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/admin/logistics/[id]/route'
-import * as legacyRoute3 from '@/app/api/admin/maintenance/route'
+
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/admin/maintenance/route'
-import * as legacyRoute4 from '@/app/api/admin/maintenance/[id]/route'
+
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/admin/maintenance/[id]/route'
-import * as legacyRoute5 from '@/app/api/admin/maintenance/[id]/complete/route'
+
 import * as serviceRoute5 from '../../apps/services/api/src/app/api/admin/maintenance/[id]/complete/route'
-import * as legacyRoute6 from '@/app/api/admin/maintenance/scheduled/route'
+
 import * as serviceRoute6 from '../../apps/services/api/src/app/api/admin/maintenance/scheduled/route'
-import * as legacyRoute7 from '@/app/api/admin/maintenance/preventive-schedule/route'
+
 import * as serviceRoute7 from '../../apps/services/api/src/app/api/admin/maintenance/preventive-schedule/route'
-import * as legacyRoute8 from '@/app/api/admin/audit-logs/route'
+
 import * as serviceRoute8 from '../../apps/services/api/src/app/api/admin/audit-logs/route'
-import * as legacyRoute9 from '@/app/api/integrations/whatsapp/send/route'
+
 import * as serviceRoute9 from '../../apps/services/api/src/app/api/integrations/whatsapp/send/route'
-import * as legacyRoute10 from '@/app/api/integrations/melhor-envio/calculate/route'
+
 import * as serviceRoute10 from '../../apps/services/api/src/app/api/integrations/melhor-envio/calculate/route'
-import * as legacyRoute11 from '@/app/api/admin/google-merchant/status/route'
+
 import * as serviceRoute11 from '../../apps/services/api/src/app/api/admin/google-merchant/status/route'
-import * as legacyRoute12 from '@/app/api/admin/google-merchant/sync/route'
+
 import * as serviceRoute12 from '../../apps/services/api/src/app/api/admin/google-merchant/sync/route'
-import * as legacyRoute13 from '@/app/api/admin/google-merchant/products/[id]/route'
+
 import * as serviceRoute13 from '../../apps/services/api/src/app/api/admin/google-merchant/products/[id]/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      drivers: legacyRoute0.GET,
-      addDriver: legacyRoute0.POST,
-      logistics: legacyRoute1.GET,
-      addDelivery: legacyRoute1.POST,
-      updateDelivery: legacyRoute2.PATCH,
-      maintenances: legacyRoute3.GET,
-      addMaintenance: legacyRoute3.POST,
-      updateMaintenance: legacyRoute4.PATCH,
-      completeMaintenance: legacyRoute5.POST,
-      scheduled: legacyRoute6.GET,
-      preventive: legacyRoute7.POST,
-      audit: legacyRoute8.GET,
-      whatsapp: legacyRoute9.POST,
-      shipping: legacyRoute10.POST,
-      merchantStatus: legacyRoute11.GET,
-      merchantSync: legacyRoute12.POST,
-      merchantProduct: legacyRoute13.POST,
-      merchantDelete: legacyRoute13.DELETE,
-    },
-  ],
   [
     'service',
     {

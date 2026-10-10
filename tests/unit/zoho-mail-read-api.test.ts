@@ -9,20 +9,6 @@ const mocks = vi.hoisted(() => ({
   mail: vi.fn(),
   fetch: vi.fn(),
 }))
-vi.mock('@/middlewares/require-admin', () => ({
-  requireAdminOrOperator: mocks.gate,
-}))
-vi.mock('@/lib/zoho-mail/get-access-token', () => ({
-  getZohoAccountId: mocks.account,
-}))
-vi.mock('@/lib/zoho-mail', async () => {
-  return {
-    getZohoAccessToken: mocks.token,
-    makeZohoMailRequest: mocks.mail,
-    getZohoMailBaseUrl: () => 'https://mail.zoho.com/api',
-    ZOHO_MAIL_API_BASE: 'https://mail.zoho.com/api',
-  }
-})
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
 vi.mock(
@@ -32,9 +18,7 @@ vi.mock(
       requireAdminOrOperator: mocks.gate,
     }))()) as Record<
       string,
-      (
-        request?: unknown
-      ) => Promise<{
+      (request?: unknown) => Promise<{
         success: boolean
         principal?: unknown
         error?: string
@@ -71,9 +55,7 @@ vi.mock(
       requireAdminOrOperator: mocks.gate,
     }))()) as Record<
       string,
-      (
-        request?: unknown
-      ) => Promise<{
+      (request?: unknown) => Promise<{
         success: boolean
         principal?: unknown
         error?: string
@@ -134,31 +116,14 @@ vi.mock('@gb-locacoes/backend/communications', async (importOriginal) => {
     })()),
   }
 })
-import * as legacyRoute0 from '@/app/api/admin/zoho-mail/accounts/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/admin/zoho-mail/accounts/route'
-import * as legacyRoute1 from '@/app/api/admin/zoho-mail/folders/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/admin/zoho-mail/folders/route'
-import * as legacyRoute2 from '@/app/api/admin/zoho-mail/messages/route'
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/admin/zoho-mail/messages/route'
-import * as legacyRoute3 from '@/app/api/admin/zoho-mail/messages/[messageId]/route'
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/admin/zoho-mail/messages/[messageId]/route'
-import * as legacyRoute4 from '@/app/api/admin/zoho-mail/messages/[messageId]/attachments/[attachmentId]/route'
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/admin/zoho-mail/messages/[messageId]/attachments/[attachmentId]/route'
-import * as legacyRoute5 from '@/app/api/admin/zoho-mail/messages/[messageId]/inline/route'
 import * as serviceRoute5 from '../../apps/services/api/src/app/api/admin/zoho-mail/messages/[messageId]/inline/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      accounts: legacyRoute0.GET,
-      folders: legacyRoute1.GET,
-      messages: legacyRoute2.GET,
-      detail: legacyRoute3.GET,
-      attachment: legacyRoute4.GET,
-      inline: legacyRoute5.GET,
-    },
-  ],
   [
     'service',
     {
@@ -292,20 +257,7 @@ describe.each(HOSTS)(
       )
       // Só o contrato do require-admin da raiz admite "sucesso sem usuário"; o principal do serviço
       // (resolveTenantPrincipal) sempre traz o userId, então o caso não existe nele.
-      it.runIf(host === 'legacy root').each(cases)(
-        '$name keeps missing-user refusal before transport',
-        async ({ run }) => {
-          mocks.gate.mockResolvedValue({
-            success: true,
-            principal: context,
-            user: {},
-          })
-          const r = await run()
-          expect(r.status).toBe(401)
-          expect(await r.json()).toEqual({ error: 'Usuário não identificado' })
-          expect(mocks.token).not.toHaveBeenCalled()
-        }
-      )
+      // F: the deleted root require-admin success-without-user state is outside the service principal contract.
       it.each(cases.filter((c) => c.needsAccount))(
         '$name rejects missing params before ownership lookup',
         async ({ run }) => {

@@ -8,139 +8,9 @@
   "entries": [
     {
       "type": "duplicates",
-      "path": "lib/resend.ts",
-      "names": ["getResend|default"],
-      "reason": "COD-27 (corrigir, pendente): o mesmo valor exportado com nome e como default; unificar os importadores é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "duplicates",
-      "path": "lib/supabase-admin.ts",
-      "names": ["supabaseAdmin|default"],
-      "reason": "COD-27 (corrigir, pendente): o mesmo valor exportado com nome e como default; unificar os importadores é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "duplicates",
       "path": "packages/ui/src/native/DropdownMenu.native.tsx",
       "names": ["DropdownMenuContent|DropdownMenuSubContent"],
       "reason": "COD-27 (corrigir, pendente): o mesmo valor exportado com nome e como default; unificar os importadores é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "duplicates",
-      "path": "tools/eslint-runtime-rewrite.mjs",
-      "names": ["plugin|default"],
-      "reason": "Plugin local do ESLint (tools/eslint-runtime-rewrite.mjs, de outro lote): exporta o objeto com nome e como default; unificar é mudança do dono do plugin."
-    },
-    {
-      "type": "exports",
-      "path": "lib/audit-log.ts",
-      "names": ["logAuditAction"],
-      "reason": "COD-05 (decidir): dois auxiliares de auditoria e nenhum usado nas 8 gravações escritas à mão; escolher um (de preferência em packages/backend) ou apagar os dois."
-    },
-    {
-      "type": "exports",
-      "path": "lib/audit-logger.ts",
-      "names": ["withAuditLog"],
-      "reason": "COD-05 (decidir): dois auxiliares de auditoria e nenhum usado nas 8 gravações escritas à mão; escolher um (de preferência em packages/backend) ou apagar os dois."
-    },
-    {
-      "type": "exports",
-      "path": "lib/category-design.tsx",
-      "names": [
-        "DEFAULT_DESIGN",
-        "CATEGORY_PREVIEW_TABS",
-        "cloneDesign",
-        "sanitizeSvg",
-        "svgToDataUrl",
-        "isValidSvgFile",
-        "isValidSvgUrl"
-      ],
-      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
-    },
-    {
-      "type": "exports",
-      "path": "lib/constants/all-icons.tsx",
-      "names": ["ALL_AVAILABLE_ICONS", "CUSTOM_ICONS_CATEGORY"],
-      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
-    },
-    {
-      "type": "exports",
-      "path": "lib/constants/lucide-icons.ts",
-      "names": ["TOTAL_CATEGORY_ICONS", "ICONS_BY_CATEGORY"],
-      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
-    },
-    {
-      "type": "exports",
-      "path": "lib/icon-utils.ts",
-      "names": ["buildIconSearchIndex"],
-      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
-    },
-    {
-      "type": "exports",
-      "path": "lib/quote-validity.ts",
-      "names": ["isQuoteValid"],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "exports",
-      "path": "lib/rental-lifecycle.ts",
-      "names": ["rentalResponseInclude", "rentalStatusFilter"],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "exports",
-      "path": "lib/rental-transaction.ts",
-      "names": ["assertTenantCustomer"],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "exports",
-      "path": "lib/supabase-admin.ts",
-      "names": ["default"],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "exports",
-      "path": "lib/utils.ts",
-      "names": [
-        "formatCurrency",
-        "formatDate",
-        "formatAdjustmentReason",
-        "parseAdjustmentBlocks",
-        "ADJUSTMENT_CATEGORY_LABELS",
-        "debounce",
-        "throttle"
-      ],
-      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
-    },
-    {
-      "type": "exports",
-      "path": "lib/utils/category-helpers.tsx",
-      "names": [
-        "renderCategoryIcon",
-        "DEFAULT_CATEGORY_SETTINGS",
-        "POPULAR_CATEGORY_COLORS",
-        "isValidLucideIcon",
-        "filterIconsBySearch"
-      ],
-      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
-    },
-    {
-      "type": "exports",
-      "path": "lib/zoho-mail/index.ts",
-      "names": [
-        "refreshAccessToken",
-        "ZOHO_MAIL_SCOPES",
-        "ZOHO_ACCOUNTS_BASE",
-        "getZohoAuthUrl",
-        "getZohoTokenUrl"
-      ],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "exports",
-      "path": "middlewares/require-admin.ts",
-      "names": ["requirePermission", "requireFinancialAccess"],
-      "reason": "Mantido pelo gate de segurança: requirePermission e requireFinancialAccess estão em GUARDS de tests/security/route-auth-inventory.test.ts (autoverificação por mutação); sair exige mudar esse gate."
     },
     {
       "type": "exports",
@@ -190,12 +60,6 @@
       "type": "exports",
       "path": "packages/backend/src/modules/identity/migration.ts",
       "names": ["migrateLegacyIdentities"],
-      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
-    },
-    {
-      "type": "exports",
-      "path": "packages/backend/src/modules/rentals/index.ts",
-      "names": ["rentalResponseInclude", "rentalStatusFilter"],
       "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
     },
     {
@@ -277,24 +141,6 @@
     },
     {
       "type": "exports",
-      "path": "packages/domain/src/orcamento/index.ts",
-      "names": ["formatCPF", "formatCNPJ", "isQuoteValid"],
-      "reason": "COD-27 (corrigir, pendente): export da API pública do pacote (ponto de entrada em \"exports\") sem consumidor; apareceu quando o gate passou a cobrar a entrada dos pacotes (includeEntryExports, lote limpeza-reparo). Enxugar a API (e os testes de contrato) ou ligar o consumidor é mudança do dono do pacote."
-    },
-    {
-      "type": "exports",
-      "path": "packages/frontend/src/app/index.ts",
-      "names": [
-        "SEOSchemas",
-        "defaultFAQItems",
-        "createHttpClient",
-        "TenantProvider",
-        "useTenantContext"
-      ],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "exports",
       "path": "packages/frontend/src/entities/equipamento/index.ts",
       "names": [
         "buildEquipmentCanonicalUrl",
@@ -312,17 +158,9 @@
         "isDocumentValueNew",
         "formatPhoneForWhatsApp",
         "formatWhatsAppMessage",
-        "generateWhatsAppURL",
-        "formatCNPJ",
-        "formatCPF"
+        "generateWhatsAppURL"
       ],
       "reason": "COD-28 (decidir): cálculo de frete da Melhor Envio que nenhuma tela chama; ligar na tela de orçamento ou aposentar junto com a rota /api/integrations/melhor-envio/calculate. | COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "exports",
-      "path": "packages/frontend/src/entities/orcamento/model/documento.ts",
-      "names": ["formatCPF", "formatCNPJ"],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
     },
     {
       "type": "exports",
@@ -495,23 +333,6 @@
     },
     {
       "type": "exports",
-      "path": "packages/ui/src/icons/custom.tsx",
-      "names": [
-        "CustomIcon2",
-        "AndaimeTubular",
-        "Transporte",
-        "Terraplenagem",
-        "Rompedor",
-        "Compressor",
-        "CadeiraEletrica",
-        "Betoneira",
-        "TrabalhoEmAltura",
-        "Lavagem"
-      ],
-      "reason": "COD-11 (opcional): casca universal dos ícones que só o teste icons/custom.test.tsx importa; o índice web usa icons/custom.web."
-    },
-    {
-      "type": "exports",
       "path": "packages/ui/src/index.web.ts",
       "names": [
         "C.AlertDialogOverlay",
@@ -564,53 +385,18 @@
     },
     {
       "type": "files",
-      "path": "lib/google-merchant/index.ts",
-      "reason": "COD-04/DC-103 (decidir): integração Google Merchant global em quarentena (rotas 503, cron da Vercel); reescrever por locadora ou aposentar lib, rotas, cron, scripts e a dependência googleapis é decisão de produto."
-    },
-    {
-      "type": "files",
-      "path": "lib/google-merchant/mapper.ts",
-      "reason": "COD-04/DC-103 (decidir): integração Google Merchant global em quarentena (rotas 503, cron da Vercel); reescrever por locadora ou aposentar lib, rotas, cron, scripts e a dependência googleapis é decisão de produto."
-    },
-    {
-      "type": "files",
-      "path": "lib/google-merchant/sync-service.ts",
-      "reason": "COD-04/DC-103 (decidir): integração Google Merchant global em quarentena (rotas 503, cron da Vercel); reescrever por locadora ou aposentar lib, rotas, cron, scripts e a dependência googleapis é decisão de produto."
-    },
-    {
-      "type": "files",
-      "path": "lib/storage-utils.ts",
-      "reason": "COD-03 (decidir): só existe para os scripts avulsos de imagens do Supabase (cleanup-orphaned-images e optimize-existing-images); sai com eles ou os scripts entram no package.json."
-    },
-    {
-      "type": "files",
       "path": "scripts/check-all-product-statuses.ts",
-      "reason": "COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
-    },
-    {
-      "type": "files",
-      "path": "scripts/check-andaime-pricing.cjs",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
-    },
-    {
-      "type": "files",
-      "path": "scripts/check-duplicate-categories.cjs",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
-    },
-    {
-      "type": "files",
-      "path": "scripts/check-policies.js",
-      "reason": "DC-42 (decidir): ferramenta de RLS do Supabase Auth anterior à multiempresa (SQL cru fora das migrations); o dono confirma que não há banco Supabase legado antes de aposentar."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
     },
     {
       "type": "files",
       "path": "scripts/check-rejections.ts",
-      "reason": "COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
     },
     {
       "type": "files",
       "path": "scripts/check-rental-dates.ts",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou em apps/services/api/Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
     },
     {
       "type": "files",
@@ -619,73 +405,38 @@
     },
     {
       "type": "files",
-      "path": "scripts/create-missing-categories.mjs",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
-    },
-    {
-      "type": "files",
-      "path": "scripts/create-missing-index.js",
-      "reason": "DC-42 (decidir): ferramenta de RLS do Supabase Auth anterior à multiempresa (SQL cru fora das migrations); o dono confirma que não há banco Supabase legado antes de aposentar."
-    },
-    {
-      "type": "files",
       "path": "scripts/create-test-quote-at-end.ts",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
-    },
-    {
-      "type": "files",
-      "path": "scripts/debug-persistent-warnings.js",
-      "reason": "DC-42 (decidir): ferramenta de RLS do Supabase Auth anterior à multiempresa (SQL cru fora das migrations); o dono confirma que não há banco Supabase legado antes de aposentar."
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou em apps/services/api/Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
     },
     {
       "type": "files",
       "path": "scripts/fix-hero-carousel-urls.ts",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
-    },
-    {
-      "type": "files",
-      "path": "scripts/fix-insert-policies.js",
-      "reason": "DC-42 (decidir): ferramenta de RLS do Supabase Auth anterior à multiempresa (SQL cru fora das migrations); o dono confirma que não há banco Supabase legado antes de aposentar."
-    },
-    {
-      "type": "files",
-      "path": "scripts/fix-new-policies.js",
-      "reason": "DC-42 (decidir): ferramenta de RLS do Supabase Auth anterior à multiempresa (SQL cru fora das migrations); o dono confirma que não há banco Supabase legado antes de aposentar."
-    },
-    {
-      "type": "files",
-      "path": "scripts/fix-persistent-policies.js",
-      "reason": "DC-42 (decidir): ferramenta de RLS do Supabase Auth anterior à multiempresa (SQL cru fora das migrations); o dono confirma que não há banco Supabase legado antes de aposentar."
-    },
-    {
-      "type": "files",
-      "path": "scripts/fix-prisma-imports.js",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou em apps/services/api/Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
     },
     {
       "type": "files",
       "path": "scripts/generate-stories.cjs",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou em apps/services/api/Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
     },
     {
       "type": "files",
       "path": "scripts/import-financial-january-2026.ts",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou em apps/services/api/Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
     },
     {
       "type": "files",
       "path": "scripts/migrate-passwords.ts",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou em apps/services/api/Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
     },
     {
       "type": "files",
       "path": "scripts/migrate-storage.js",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou em apps/services/api/Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
     },
     {
       "type": "files",
       "path": "scripts/optimize-cta-background.js",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou em apps/services/api/Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
     },
     {
       "type": "files",
@@ -694,23 +445,13 @@
     },
     {
       "type": "files",
-      "path": "scripts/prisma-client.cjs",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
-    },
-    {
-      "type": "files",
       "path": "scripts/resync-products.ts",
-      "reason": "COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
     },
     {
       "type": "files",
       "path": "scripts/run-sync.ts",
-      "reason": "COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
-    },
-    {
-      "type": "files",
-      "path": "scripts/safe-postinstall.js",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
     },
     {
       "type": "files",
@@ -720,59 +461,42 @@
     {
       "type": "files",
       "path": "scripts/seed-about-us-text.ts",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou em apps/services/api/Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
     },
     {
       "type": "files",
       "path": "scripts/seed-company-default-data.ts",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou em apps/services/api/Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
     },
     {
       "type": "files",
       "path": "scripts/setup-merchant-policies.ts",
-      "reason": "COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
     },
     {
       "type": "files",
       "path": "scripts/test-boleto-automatico.js",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
-    },
-    {
-      "type": "files",
-      "path": "scripts/test-commit.js",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou em apps/services/api/Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
     },
     {
       "type": "files",
       "path": "scripts/test-merchant-api.ts",
-      "reason": "COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: COD-04 (decidir): script da integração Google Merchant em quarentena; sai junto com lib/google-merchant."
     },
     {
       "type": "files",
       "path": "scripts/test-quote-system.ts",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou em apps/services/api/Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
     },
     {
       "type": "files",
       "path": "scripts/update-email-templates.cjs",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou em apps/services/api/Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
     },
     {
       "type": "files",
       "path": "scripts/verify-quote-conversion.ts",
-      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou no Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
-    },
-    {
-      "type": "test-only-export",
-      "path": "lib/client-documents.ts",
-      "names": ["REQUIRED_CLIENT_DOCUMENT_TYPES"],
-      "reason": "Só teste consome (raiz legada): export que só um teste importa; apagar com o teste ou ligar ao produto quando a raiz for aposentada."
-    },
-    {
-      "type": "test-only-export",
-      "path": "lib/resend.ts",
-      "names": ["getResend"],
-      "reason": "Só teste consome (raiz legada): export que só um teste importa; apagar com o teste ou ligar ao produto quando a raiz for aposentada."
+      "reason": "COD-25/DC-49 (decidir): script avulso sem entrada no package.json, na CI ou em apps/services/api/Dockerfile (correção de dados pontual, seed ou teste manual); o dono diz se ainda roda (vai para o package.json ou scripts/ops) ou se sai."
     },
     {
       "type": "test-only-export",
@@ -931,13 +655,7 @@
       "type": "test-only-export",
       "path": "packages/domain/src/orcamento/documento.ts",
       "names": ["formatCPF", "formatCNPJ"],
-      "reason": "Só teste consome: função exportada do domínio que o produto não chama (o teste colocado a cobre); ligar no fluxo ou apagar com o teste é decisão do dono do domínio."
-    },
-    {
-      "type": "test-only-export",
-      "path": "packages/domain/src/orcamento/validade.ts",
-      "names": ["isQuoteValid"],
-      "reason": "Só teste consome: função exportada do domínio que o produto não chama (o teste colocado a cobre); ligar no fluxo ou apagar com o teste é decisão do dono do domínio."
+      "reason": "Contrato puro de compatibilidade dos documentos do orçamento preservado no M7: delega CPF/CNPJ ao domínio canônico, mantém a entrada inválida e aceita CNPJ alfanumérico. Os testes locais exercem esse contrato; reexports públicos excedentes foram retirados, sem nova tolerância."
     },
     {
       "type": "test-only-export",
@@ -1011,12 +729,6 @@
     },
     {
       "type": "test-only-export",
-      "path": "packages/frontend/src/widgets/por-que-escolher/ui/ScrollStackBenefitCard.web.tsx",
-      "names": ["default"],
-      "reason": "Só teste consome: export que só o teste colocado da fatia usa; apagar com o teste ou ligar ao produto é mudança do dono da fatia (FSD) ou do design system."
-    },
-    {
-      "type": "test-only-export",
       "path": "packages/ui/src/web/Chart.web.tsx",
       "names": ["ChartConfig"],
       "reason": "Só teste consome: export que só o teste colocado da fatia usa; apagar com o teste ou ligar ao produto é mudança do dono da fatia (FSD) ou do design system."
@@ -1041,168 +753,14 @@
     },
     {
       "type": "test-only-export",
-      "path": "tools/eslint-runtime-rewrite.mjs",
-      "names": ["plugin"],
-      "reason": "Só teste consome: a ferramenta usa o valor por dentro e o teste do gate o importa pelo nome; tirar o export exige reescrever o teste pela interface pública da ferramenta."
-    },
-    {
-      "type": "test-only-export",
       "path": "tools/visual-baseline/format.mjs",
       "names": ["writeCaptureFile"],
       "reason": "Só teste consome: a ferramenta usa o valor por dentro e o teste do gate o importa pelo nome; tirar o export exige reescrever o teste pela interface pública da ferramenta."
     },
     {
-      "type": "test-only-file",
-      "path": "lib/audit-logger.ts",
-      "reason": "COD-05 (decidir): auxiliar de auditoria que só tests/unit/audit-logger.test.ts importa; escolher um dos dois auxiliares (de preferência em packages/backend) ou apagar este com o teste."
-    },
-    {
-      "type": "test-only-file",
-      "path": "lib/google-merchant/client.ts",
-      "reason": "COD-04/DC-103 (decidir): integração Google Merchant em quarentena; só testes e scripts avulsos a alcançam. Reescrever por locadora ou aposentar lib, rotas, cron, scripts e googleapis."
-    },
-    {
-      "type": "test-only-file",
-      "path": "lib/google-merchant/types.ts",
-      "reason": "COD-04/DC-103 (decidir): integração Google Merchant em quarentena; só testes e scripts avulsos a alcançam. Reescrever por locadora ou aposentar lib, rotas, cron, scripts e googleapis."
-    },
-    {
-      "type": "test-only-file",
-      "path": "packages/frontend/src/app/index.ts",
-      "reason": "Decidir (dono do packages/frontend): entrada universal de app/ que o \"exports\" do pacote não publica (./app aponta para index.web.ts e index.native.ts); só os testes a importam. Publicar como condição default ou apagar e apontar os testes para as variantes."
-    },
-    {
-      "type": "test-only-file",
-      "path": "packages/ui/src/icons/custom.tsx",
-      "reason": "Decidir (dono do packages/ui): entrada universal dos ícones que só custom.test.tsx importa; os index web e native importam custom.web e custom.native direto. Apagar e apontar o teste para custom.web, ou publicar a entrada universal."
-    },
-    {
       "type": "types",
       "path": "apps/clients/web/src/host/routing/route-table.ts",
       "names": ["BetterAuthBasePath"],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "types",
-      "path": "lib/catalog.ts",
-      "names": [
-        "CategoryInput",
-        "EquipmentBody",
-        "UnitCreateInput",
-        "UnitPatch"
-      ],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "types",
-      "path": "lib/category-design.tsx",
-      "names": ["CategoryDialogMode", "CategoryDetails"],
-      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
-    },
-    {
-      "type": "types",
-      "path": "lib/client-documents.ts",
-      "names": ["RequiredClientDocumentType"],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "types",
-      "path": "lib/constants/lucide-icons.ts",
-      "names": ["CategoryIcon"],
-      "reason": "COD-13 (corrigir, pendente): cópia antiga viva só pela página de equipamentos da raiz legada (getCategoryBadgePreview); sai inteira quando a raiz usar CategoryBadge como o host web já usa."
-    },
-    {
-      "type": "types",
-      "path": "lib/equipment-availability.ts",
-      "names": [
-        "AvailabilityOptions",
-        "AvailabilityResult",
-        "RentalAvailabilityItem"
-      ],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "types",
-      "path": "lib/google-merchant/types.ts",
-      "names": ["SyncResult"],
-      "reason": "COD-04/DC-103 (decidir): integração Google Merchant global em quarentena (rotas 503, cron da Vercel); reescrever por locadora ou aposentar lib, rotas, cron, scripts e a dependência googleapis é decisão de produto."
-    },
-    {
-      "type": "types",
-      "path": "lib/quote-boleto.ts",
-      "names": ["QuoteBoletoInfo"],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "types",
-      "path": "lib/quote-request.ts",
-      "names": [
-        "AdminQuoteFilters",
-        "QuoteAdjustmentInput",
-        "QuoteRequestInput",
-        "QuoteUpdateBody"
-      ],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "types",
-      "path": "lib/rental-converter.ts",
-      "names": ["ConvertQuoteToRentalResult"],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "types",
-      "path": "lib/rental-lifecycle.ts",
-      "names": [
-        "AdminRentalFilters",
-        "ManualRentalInput",
-        "RentalExtensionInput",
-        "RentalLateFeeOutcome",
-        "RentalUpdateInput"
-      ],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "types",
-      "path": "lib/validations/index.ts",
-      "names": [
-        "EquipmentPublic",
-        "CategoryPublic",
-        "ContactRequest",
-        "QuoteRequest",
-        "ApiError",
-        "ApiSuccess",
-        "Pagination",
-        "PaginatedEquipments",
-        "PaginatedCategories"
-      ],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "types",
-      "path": "lib/zoho-mail/index.ts",
-      "names": [
-        "ZohoMailAccount",
-        "ZohoMailFolder",
-        "ZohoMailMessage",
-        "ZohoMailMessageSummary",
-        "ZohoMailAttachment",
-        "ZohoMailUploadedAttachment",
-        "ZohoMailAddress",
-        "ZohoMailApiError"
-      ],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "types",
-      "path": "lib/zoho-mail/types.ts",
-      "names": [
-        "ZohoMailAccount",
-        "ZohoMailFolder",
-        "ZohoMailMessage",
-        "ZohoMailUploadedAttachment",
-        "ZohoMailApiError"
-      ],
       "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
     },
     {
@@ -1585,19 +1143,6 @@
     },
     {
       "type": "types",
-      "path": "packages/frontend/src/app/index.ts",
-      "names": [
-        "PublicTenantRouting",
-        "PublicTenantRoutingOptions",
-        "TenantSummary",
-        "MembershipRole",
-        "DeviceActions",
-        "PickedTextFile"
-      ],
-      "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
-    },
-    {
-      "type": "types",
       "path": "packages/frontend/src/entities/equipamento/index.ts",
       "names": ["EquipmentListItem"],
       "reason": "COD-27 (corrigir, pendente): export sem consumidor em API pública de fatia ou em módulo vivo; enxugar a API (e os testes de contrato da fatia) é mudança de código fora do lote de configuração."
@@ -1967,45 +1512,40 @@
       "reason": "DC-26 (decidir; entrada 226; onda 135, A0): three e @react-three/* são declarados por packages/frontend, dono do carrossel 3D, e ficam também na raiz só para o pnpm manter a variante do react-native 0.86.3 do packages/ui (sondagem --lockfile-only de 2026-10-08: sem eles na raiz, a variante perde o peer @react-native/metro-config, a divisão da entrada 226). Saem da raiz quando o grafo 0.86/0.87 colapsar (pnpm dedupe do dono) ou no bloco F, com a prova do clone limpo (P2)."
     },
     {
-      "type": "files",
-      "path": "lib/quote-code.ts",
-      "reason": "Onda 135, C6 (E16): fachada da raiz legada sem consumidor desde que scripts/backfill-quote-codes.ts (db:backfill:quote-codes) passou a importar @gb-locacoes/backend/quotations; nada da raiz é apagado antes da prova sem a raiz (plano, seção 4.1), e o arquivo sai com lib/ no bloco F."
-    },
-    {
       "type": "test-only-file",
       "path": "scripts/ops/google-merchant/client.ts",
-      "reason": "COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
     },
     {
       "type": "test-only-file",
       "path": "scripts/ops/google-merchant/index.ts",
-      "reason": "COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
     },
     {
       "type": "test-only-file",
       "path": "scripts/ops/google-merchant/mapper.ts",
-      "reason": "COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
     },
     {
       "type": "test-only-file",
       "path": "scripts/ops/google-merchant/sync-service.ts",
-      "reason": "COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
     },
     {
       "type": "test-only-file",
       "path": "scripts/ops/google-merchant/types.ts",
-      "reason": "COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
     },
     {
       "type": "exports",
       "path": "scripts/ops/google-merchant/mapper.ts",
       "names": ["equipmentsToGoogleProducts"],
-      "reason": "COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: COD-04/DC-103 (decidir; onda 135, D9 = portar): integração Google Merchant global em quarentena, portada de lib/google-merchant para scripts/ops/google-merchant para sobreviver à exclusão da raiz legada; a fábrica recusa com GOOGLE_MERCHANT_LEGACY_DISABLED (tests/unit/merchant-retirement.test.ts) e só scripts/run-sync.ts e scripts/resync-products.ts, também em quarentena, a importam. Reescrever por locadora (Merchant API) ou aposentar com aceite escrito segue decisão de produto."
     },
     {
       "type": "test-only-file",
       "path": "scripts/ops/storage-utils.ts",
-      "reason": "COD-03 (decidir; onda 135, D9 = portar): utilitários do bucket de imagens portados de lib/storage-utils.ts para scripts/ops para sobreviver à exclusão da raiz legada; só scripts/cleanup-orphaned-images.ts (avulso em quarentena, docs/features/storage-image-cleanup.md) e o teste do porte os alcançam. Sai com o script ou entra no package.json com ele."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: COD-03 (decidir; onda 135, D9 = portar): utilitários do bucket de imagens portados de lib/storage-utils.ts para scripts/ops para sobreviver à exclusão da raiz legada; só scripts/cleanup-orphaned-images.ts (avulso em quarentena, docs/features/storage-image-cleanup.md) e o teste do porte os alcançam. Sai com o script ou entra no package.json com ele."
     }
   ]
 }

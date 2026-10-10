@@ -27,7 +27,7 @@
     }
   }
 
-  /* Revelação por rolagem: sobe 60px, como o slideInUp da produção (main, app/globals.css). */
+  /* Revelação por rolagem: sobe 60px, como o slideInUp da produção histórica (main, antiga app/globals.css retirada em F). */
   @keyframes slide-in-up {
     0% {
       opacity: 0;

@@ -1,5 +1,6 @@
 // Onda 135 (A5; E13 do plano de aposentadoria da raiz): a área do cliente no host da locadora monta a moldura da área
-// do cliente (AccountLayoutShell, camada app do frontend), como o app/area-cliente/layout.tsx da raiz montava. Em
+// do cliente (AccountLayoutShell, camada app do frontend), preservando a composição do antigo app/area-cliente/layout.tsx,
+// retirado com a raiz em F. Em
 // `legacy` (NextAuth) a área continua oculta (desenho 4.6).
 import { afterEach, describe, expect, it, vi } from 'vitest'
 

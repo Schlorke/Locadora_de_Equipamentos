@@ -68,6 +68,10 @@ com o projeto.
 - **[wave135-base-validation.md](./guides/wave135-base-validation.md)** —
   Resultados e limites da validação local da primeira etapa.
 
+- **[wave135-retirement-validation.md](./guides/wave135-retirement-validation.md)**
+  — Checkpoint da base preparada após F, com provas e limites locais; C fica
+  separado.
+
 - **[shared-api-acceptance.md](./guides/shared-api-acceptance.md)** — Provas
   operacionais locais, retorno ao legado e critérios para retirada da raiz.
 

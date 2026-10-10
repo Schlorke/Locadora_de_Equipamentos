@@ -1,0 +1,21 @@
+// postcss.config.cjs
+// Converted from ESM to CJS for compatibility with Next.js PostCSS
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {
+      flexbox: 'no-2009',
+      // Modern browsers only - matches .browserslistrc
+      // This reduces CSS prefixes and improves performance
+      overrideBrowserslist: [
+        'Chrome >= 92',
+        'ChromeAndroid >= 92',
+        'Edge >= 92',
+        'Firefox >= 90',
+        'Safari >= 15.4',
+        'iOS >= 15.4',
+        'Samsung >= 16.0',
+      ],
+    },
+  },
+}

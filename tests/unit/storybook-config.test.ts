@@ -6,8 +6,8 @@ import { createNextConfig } from '../../apps/clients/web/next.config.mjs'
 
 /**
  * Storybook sem a raiz legada (onda 135, A2; E10 do plano de aposentadoria da raiz). O preview importava o CSS por
- * `../app/globals.css` (um arquivo da raiz que só reimporta o CSS do frontend) e o framework, sem `nextConfigPath`,
- * carregava o `next.config.mjs` da raiz pelo diretório de trabalho (`vite-plugin-storybook-nextjs`: `dir =
+ * antiga `../app/globals.css`, retirada em F (reimportava o CSS do frontend), e o framework, sem `nextConfigPath`,
+ * carregava o antigo `next.config.mjs` da raiz, retirado em F, pelo diretório de trabalho (`vite-plugin-storybook-nextjs`: `dir =
  * process.cwd()`). Com a raiz apagada, o build quebraria nos dois pontos. Agora o CSS vem da entrada pública do
  * frontend e a configuração do Next é a do host web.
  */
@@ -21,6 +21,7 @@ const importsOf = (source: string) =>
   ].map((match) => match[1])
 
 describe('Storybook sem a raiz legada', () => {
+  // A antiga app/ da raiz foi retirada em F; este oracle recusa que o preview volte a importar seu CSS/fachada.
   it('o preview carrega o CSS pela entrada pública do frontend e nada da raiz app/', () => {
     const specifiers = importsOf(read('.storybook/preview.tsx'))
     expect(specifiers).toContain('@gb-locacoes/frontend/app/styles.css')

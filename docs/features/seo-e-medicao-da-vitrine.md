@@ -1,6 +1,6 @@
 # SEO, medição e verificação da vitrine por locadora
 
-> **Status**: Critical **Last updated**: 2026-10-08
+> **Status**: Critical **Last updated**: 2026-10-09
 
 ---
 
@@ -9,14 +9,18 @@
 Cada vitrine (`{slug}.<raiz>`) leva o SEO, a medição e a verificação da própria
 locadora, nunca os da GB nem os de outra locadora (T12 da ADR
 `docs/architecture/adr-tenant-hosts.md`). A raiz legada fazia isso só para a GB:
-título, descrição, canonical e Open Graph fixos em `app/layout.tsx` e em oito
-`metadata.ts`, a tag do Google (GA4 `G-…` e Google Ads `AW-…`) com os IDs da GB
-no código e as metas de verificação do Search Console e da Meta pelo ambiente.
+título, descrição, canonical e Open Graph fixos no antigo `app/layout.tsx`
+(retirado em F) e em oito `metadata.ts`, a tag do Google (GA4 `G-…` e Google Ads
+`AW-…`) com os IDs da GB no código e as metas de verificação do Search Console e
+da Meta pelo ambiente.
 
 Onda 135 (lote A; E12 e C14 do plano de aposentadoria da raiz; decisão do dono
 D4 de 2026-10-08): o host web monta tudo isso por locadora, com os dados dela,
 antes de a raiz sair. O Vercel Analytics e o Speed Insights são da plataforma
-(por projeto, sem dado de locadora) e voltam no layout raiz do host web.
+(por projeto, sem dado de locadora), no layout raiz do host web. Após a
+publicação da primeira etapa `978ceb`, F retirou o host legado somente no clone;
+web e API workspace permanecem. A validação final dessa árvore continua separada
+do resultado da primeira etapa.
 
 ## 2. Scope
 
@@ -26,8 +30,11 @@ antes de a raiz sair. O Vercel Analytics e o Speed Insights são da plataforma
   contato, orçamento, termos, privacidade, cookies e política de devolução (o
   detalhe do equipamento já tinha o dele).
 - Título e descrição SEO do painel (`seoTitle`/`seoDescription`) na leitura
-  pública `GET /api/settings/public`, aditivos, pela mesma fábrica nos dois
-  hosts (`createPublicCatalog().getPublicSettings`).
+  pública `GET /api/settings/public`, aditivos. A fábrica
+  `createPublicCatalog().getPublicSettings` pertence ao backend e é composta
+  pela API workspace; o gateway server-only do web consome a resposta. Os dois
+  adapters de backend da prova inicial eram API workspace e raiz legada, cujo
+  adapter antigo saiu em F.
 - Medição e verificação por locadora no `siteContent`: `googleAnalyticsId`,
   `googleAdsId`, `googleSiteVerification` e `facebookDomainVerification`,
   editados na seção "SEO & Meta Tags" do painel (web e app).
@@ -60,7 +67,10 @@ antes de a raiz sair. O Vercel Analytics e o Speed Insights são da plataforma
   `packages/frontend/src/entities/configuracao/model/seo-da-vitrine.ts` e
   `medicao.ts` (pela entrada `@gb-locacoes/frontend/app`); painel em
   `pages/configuracoes/ui/MedicaoEVerificacao.{web,native}.tsx`.
-- API: `GET /api/settings/public` (os dois hosts).
+- API: `apps/services/api/src/app/api/settings/public/route.ts` delega a
+  `publicSettings` de `apps/services/api/src/host/runtime.ts`; o gateway
+  `apps/clients/web/src/host/server/public-api.ts` lê a API por
+  `WEB_API_ORIGIN`. O adapter antigo dessa rota na raiz foi retirado em F.
 
 ## 4. Core Flow
 
@@ -77,8 +87,8 @@ antes de a raiz sair. O Vercel Analytics e o Speed Insights são da plataforma
    verificação no `generateMetadata` e, com GA4 ou Google Ads, a tag do Google
    (`tagDoGoogle`: gtag.js com o `AW-` na URL, como a raiz, e um `config` por
    ID).
-5. O `next.config.mjs` responde a CSP no host de locadora (`app.`, `www.` e o
-   apex ficam sem ela).
+5. `apps/clients/web/next.config.mjs` responde a CSP no host de locadora
+   (`app.`, `www.` e o apex ficam sem ela).
 
 ## 5. Components and Files
 
@@ -91,8 +101,11 @@ antes de a raiz sair. O Vercel Analytics e o Speed Insights são da plataforma
   para vazio.
 - `apps/clients/web/src/host/server/public-api.ts` (`PublicSettings.seoTitle`/
   `seoDescription`).
-- `tools/gb-site-content.mjs`: GA4 e Google Ads da GB (código da produção
-  `eb4c0098`, `app/layout.tsx:191,193`).
+- `tools/gb-site-content.mjs`: conserva os dados autorizados da GB, com
+  proveniência do código de produção `eb4c0098` (antigo
+  `app/layout.tsx:191,193`, removido em F). O script contém o payload fixado;
+  essa referência histórica não é instrução de `git show` no histórico limpo nem
+  autorização de aplicá-lo a outra locadora.
 
 ## 6. Data and State
 
@@ -116,9 +129,11 @@ antes de a raiz sair. O Vercel Analytics e o Speed Insights são da plataforma
   origens do Google (tag, Ads, mapa, selos); `worker-src 'self' blob:`;
   `object-src 'none'`; `base-uri 'self'`. Em desenvolvimento, mais
   `'unsafe-eval'` e `https://va.vercel-scripts.com`.
-- Linha criada antes da migration com o título padrão antigo: só a da GB (a
-  produção é de uma locadora). Em ambiente de ensaio com locadoras provisionadas
-  antes da migration, conferir `settings."seoTitle"` dessas linhas.
+- Na fotografia de produção usada na decisão de 2026-10-08, a linha com o título
+  padrão anterior à migration era a da GB. Isso não descreve o banco do novo
+  projeto nem autoriza alteração de produção. Em banco de ensaio com locadoras
+  provisionadas antes da migration, conferir `settings."seoTitle"` dessas
+  linhas.
 
 ## 8. Error Handling
 
@@ -143,10 +158,12 @@ antes de a raiz sair. O Vercel Analytics e o Speed Insights são da plataforma
 - Frontend: `entities/configuracao/model/seo-da-vitrine.test.ts`,
   `medicao.test.ts`, `pages/configuracoes/model/conteudo-do-site.test.ts`,
   `use-settings-data.api.web.test.tsx`, `ConfiguracoesPage.native.test.tsx`.
-- Host web: `(vitrine)/seo.test.ts`, `(vitrine)/page.test.tsx`,
-  `[locadora]/layout.test.tsx`, `app/layout.test.tsx`,
-  `host/routing/next-config.test.ts` (CSP e imagens),
-  `host/server/public-api.test.ts`.
+- Host web:
+  `apps/clients/web/src/app/(public)/[locadora]/(vitrine)/seo.test.ts`,
+  `(vitrine)/page.test.tsx` e `[locadora]/layout.test.tsx` da mesma árvore,
+  `apps/clients/web/src/app/layout.test.tsx`,
+  `apps/clients/web/src/host/routing/next-config.test.ts` (CSP e imagens) e
+  `apps/clients/web/src/host/server/public-api.test.ts`.
 - Continuidade A4 (2026-10-08): `seo.test.ts` chama os exports reais
   `generateMetadata` das nove páginas, com `params` assíncronos e duas locadoras
   em paralelo. Confere título, descrição, canonical, Open Graph, Twitter e logo;
@@ -156,12 +173,18 @@ antes de a raiz sair. O Vercel Analytics e o Speed Insights são da plataforma
   bytes/hash. Essa prova exercita o contrato de função; não substitui SSR,
   navegador nem os gates consolidados da onda.
 - GB: `tests/unit/gb-site-settings.test.ts`, `gb-site-content.test.ts`.
-- Navegador (`next start`, backend simulado, Google bloqueado; o decodificador
-  Draco servido do `three` local): metas, tag com os IDs da locadora e a mesma
-  página com e sem a CSP na home (carrossel 3D com Draco em worker `blob:` e
-  WebAssembly), sobre, catálogo e detalhe. A única violação registrada é a sonda
-  de JIT do Zod 4 (`Function("")`, `script-src eval`), que cai no modo sem JIT
-  sem efeito na página; `z.config({ jitless: true })` no cliente a removeria.
+- Registro de navegador da montagem A11 em 2026-10-08 (`next start`, backend
+  simulado, Google bloqueado; o decodificador Draco servido do `three` local):
+  metas, tag com os IDs da locadora e a mesma página com e sem a CSP na home
+  (carrossel 3D com Draco em worker `blob:` e WebAssembly), sobre, catálogo e
+  detalhe. A única violação registrada é a sonda de JIT do Zod 4
+  (`Function("")`, `script-src eval`), que cai no modo sem JIT sem efeito na
+  página; `z.config({ jitless: true })` no cliente a removeria.
+
+A referência aceita e as provas da primeira etapa publicada em `978ceb` estão em
+`docs/guides/wave135-base-validation.md`. Esta correção de referências no clone
+pós-F não executou SSR, CSP, navegador ou nova comparação visual, nem comprova
+medição entregue ao Google ou produção no projeto novo.
 
 ## 11. Related Docs
 

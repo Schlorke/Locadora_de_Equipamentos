@@ -2,9 +2,10 @@
 
 ## Status Atual
 
-> **Nov 2025**: O sandbox `/test-components` foi removido. Os testes visuais do
-> `CategoryShowcase` agora acontecem diretamente em `app/playground/page.tsx`,
-> que reutiliza o mesmo dataset e animações da homepage.
+> **Nov 2025 — histórico**: O sandbox `/test-components` foi removido. Naquele
+> corte, o `CategoryShowcase` era exercitado no arquivo antigo
+> `app/playground/page.tsx`, retirado em F. Isso não descreve o conteúdo da rota
+> `/playground` atual, que monta `PlaygroundPage` com `ScrollStack`.
 
 - **Nov 2025**: O preview dentro do fluxo "Criar/Editar Categoria" passou a
   instanciar o `CategoryShowcase` real (com o dataset oficial) em vez do
@@ -52,9 +53,12 @@ fluxo atual continua em `CategoryShowcase` e no grid público, preservados. O
 teste do primeiro quadro de ScrollReveal continua cobrindo as quatro seções
 usadas nas telas; a seção sem uso saiu junto do componente antigo.
 
-- Página playground oficial: `/playground`, em
-  `apps/clients/web/src/app/(labs)/playground/page.tsx`
-- Componentização central:
+- Página playground atual: `/playground`, em
+  `apps/clients/web/src/app/(labs)/playground/page.tsx`, consumindo
+  `packages/frontend/src/pages/playground/ui/PlaygroundPage.web.tsx`. Esse
+  laboratório demonstra os benefícios com `ScrollStack`, sem montar o
+  `CategoryShowcase`.
+- Componentização central das abas/categorias:
   `packages/frontend/src/features/abas-categoria/ui/Abas.web.tsx`
 
 Para ajustes locais, trabalhe diretamente com esses arquivos. Caso um sandbox

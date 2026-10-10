@@ -32,11 +32,8 @@ import { describe, expect, it } from 'vitest'
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 /** Superfície versionada da API compartilhada (E26 da onda 135): método e caminho de cada endpoint. */
 const API_SURFACE_FIXTURE = 'tests/security/fixtures/api-surface.json'
-const ROUTE_ROOTS = [
-  'app',
-  'apps/clients/web/src/app',
-  'apps/services/api/src/app',
-]
+const ROUTE_ROOTS = ['apps/clients/web/src/app', 'apps/services/api/src/app']
+// Build-directory basenames include .next under the live hosts; the former root .next was retired in F.
 const SKIP_DIRS = new Set(['node_modules', '.next', '.turbo', 'dist', 'build'])
 const ROUTE_FILE = /^route\.(?:[cm]?[jt]sx?)$/
 const METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']
@@ -105,10 +102,6 @@ type ResultShape =
   /** Unknown: only returning it as is counts. */
   | { type: 'opaque' }
 const OK_RESULT: ResultShape = { type: 'discriminated', property: 'ok' }
-const SUCCESS_RESULT: ResultShape = {
-  type: 'discriminated',
-  property: 'success',
-}
 const DENIAL_RESULT: ResultShape = { type: 'denial' }
 const NULLABLE_RESULT: ResultShape = { type: 'nullable' }
 const RESPONSE_RESULT: ResultShape = { type: 'response' }
@@ -128,6 +121,8 @@ type Guard = {
   result: ResultShape
   /** Arguments the helper only runs once it has authorized the request (a job): not INERT. */
   callbacks?: number[]
+  /** This service guard must receive the handler's original request at this position. */
+  requestArgument?: number
 }
 
 /** Approved helpers, keyed by canonical module id (repo path without extension). */
@@ -139,18 +134,7 @@ const GUARDS: Guard[] = [
     scope:
       /^apps\/services\/api\/src\/app\/api\/(?:admin\/|payments\/boleto\/(?:\[id\]\/regenerate|verify)\/route\.ts$)/,
     result: OK_RESULT,
-  },
-  {
-    module: 'lib/tenant-permissions',
-    name: 'requireTenantPermission',
-    kind: 'tenant-permission',
-    result: OK_RESULT,
-  },
-  {
-    module: 'lib/tenant',
-    name: 'resolveTenantPrincipal',
-    kind: 'tenant-principal',
-    result: OK_RESULT,
+    requestArgument: 0,
   },
   {
     module: 'apps/services/api/src/host/private-identity',
@@ -158,36 +142,7 @@ const GUARDS: Guard[] = [
     kind: 'tenant-principal',
     scope: /^apps\/services\/api\/src\/app\/api\//,
     result: OK_RESULT,
-  },
-  {
-    module: 'middlewares/require-admin',
-    name: 'requireAdmin',
-    kind: 'role',
-    result: SUCCESS_RESULT,
-  },
-  {
-    module: 'middlewares/require-admin',
-    name: 'requireAdminOrOperator',
-    kind: 'role',
-    result: SUCCESS_RESULT,
-  },
-  {
-    module: 'middlewares/require-admin',
-    name: 'requireRoles',
-    kind: 'role',
-    result: SUCCESS_RESULT,
-  },
-  {
-    module: 'middlewares/require-admin',
-    name: 'requireFinancialAccess',
-    kind: 'role',
-    result: SUCCESS_RESULT,
-  },
-  {
-    module: 'middlewares/require-admin',
-    name: 'requirePermission',
-    kind: 'role',
-    result: SUCCESS_RESULT,
+    requestArgument: 0,
   },
   {
     module: '@gb-locacoes/backend/identity',
@@ -199,26 +154,12 @@ const GUARDS: Guard[] = [
     result: OK_RESULT,
   },
   {
-    module: 'lib/security/tenant-webhook',
-    name: 'authenticateTenantWebhook',
-    kind: 'webhook',
-    scope: WEBHOOK,
-    result: OK_RESULT,
-  },
-  {
     module: 'apps/services/api/src/host/webhook-authentication',
     name: 'authenticateTenantWebhook',
     kind: 'webhook',
     scope:
       /^apps\/services\/api\/src\/app\/api\/(?:payments\/(?:pix|boleto)\/webhook|contracts\/zapsign-webhook|webhooks\/(?:whatsapp|asaas))\/\[integrationId\]\/route\.ts$/,
     result: OK_RESULT,
-  },
-  {
-    module: 'lib/security/external-request-auth',
-    name: 'requireCronAuthorization',
-    kind: 'cron',
-    scope: CRON,
-    result: DENIAL_RESULT,
   },
   {
     module: 'packages/backend/src/http/cron-authorization',
@@ -228,14 +169,6 @@ const GUARDS: Guard[] = [
     result: DENIAL_RESULT,
   },
   {
-    module: 'lib/security/tenant-cron',
-    name: 'runTenantCron',
-    kind: 'cron',
-    scope: CRON,
-    result: RESPONSE_RESULT,
-    callbacks: [1],
-  },
-  {
     module: 'apps/services/api/src/host/tenant-cron',
     name: 'requireCronAuthorization',
     kind: 'cron',
@@ -250,20 +183,12 @@ const GUARDS: Guard[] = [
     result: RESPONSE_RESULT,
     callbacks: [1],
   },
-  // Public tenant resolution only authorizes the methods in PUBLIC_TENANT_SURFACE.
   {
-    module: 'lib/tenant',
+    module: 'apps/services/api/src/host/runtime',
     name: 'resolvePublicTenant',
     kind: 'public-tenant',
     excluded: ADMIN,
     result: NULLABLE_RESULT,
-  },
-  {
-    module: 'lib/tenant',
-    name: 'resolvePublicRequestTenant',
-    kind: 'public-tenant',
-    excluded: ADMIN,
-    result: OK_RESULT,
   },
   {
     module: 'apps/services/api/src/host/runtime',
@@ -271,13 +196,7 @@ const GUARDS: Guard[] = [
     kind: 'public-tenant',
     excluded: ADMIN,
     result: OK_RESULT,
-  },
-  {
-    module: 'lib/application-session',
-    name: 'getServerSession',
-    kind: 'identity',
-    scope: ACCOUNT_SESSION_ROUTES,
-    result: NULLABLE_RESULT,
+    requestArgument: 0,
   },
   {
     module: 'apps/services/api/src/host/session',
@@ -285,13 +204,6 @@ const GUARDS: Guard[] = [
     kind: 'identity',
     scope: ACCOUNT_SESSION_ROUTES,
     result: NULLABLE_RESULT,
-  },
-  {
-    module: 'lib/identity',
-    name: 'handleIdentityRequest',
-    kind: 'identity',
-    scope: AUTH,
-    result: RESPONSE_RESULT,
   },
   {
     module: 'apps/services/api/src/host/session',
@@ -311,7 +223,6 @@ const GUARDS: Guard[] = [
 
 /** Host preparation for /current only; it never counts as an authorization gate. */
 const CURRENT_HOST_RESOLVERS = [
-  { module: 'lib/tenant', name: 'resolveCurrentOrganizationTenant' },
   {
     module: 'apps/services/api/src/host/runtime',
     name: 'resolveCurrentOrganizationTenant',
@@ -338,7 +249,6 @@ const IDENTITY_MODULE = '@gb-locacoes/backend/identity'
  * the same-origin guard may follow these helpers at once.
  */
 const CSRF_INERT: Array<{ module: string; names: string[] }> = [
-  { module: 'lib/application-session', names: ['getServerSession'] },
   { module: 'apps/services/api/src/host/session', names: ['getServerSession'] },
   { module: 'next/headers', names: ['headers'] },
 ]
@@ -348,16 +258,6 @@ const CSRF_INERT: Array<{ module: string; names: string[] }> = [
  */
 const OWN_CSRF_DEFENCE: Record<string, { methods: string[]; reason: string }> =
   {
-    'app/api/auth/[...nextauth]/route.ts': {
-      methods: ['POST'],
-      reason:
-        'NextAuth checks its double-submit csrfToken on every POST action; in better-auth mode Better Auth checks Origin against trustedOriginsFor (only the exact origin of the host).',
-    },
-    'app/api/auth/v2/[...all]/route.ts': {
-      methods: ['POST'],
-      reason:
-        'Better Auth (disableCSRFCheck false) checks Origin against trustedOriginsFor: the static origins plus only the exact origin of the host, never a sibling tenant.',
-    },
     'apps/services/api/src/app/api/auth/[...nextauth]/route.ts': {
       methods: ['POST'],
       reason:
@@ -385,16 +285,6 @@ const CSRF_PENDING: Record<string, { methods: string[]; reason: string }> = {}
 const HANDSHAKES = [
   {
     lookup: {
-      module: 'lib/security/tenant-webhook',
-      name: 'resolveWebhookIntegration',
-    },
-    verify: {
-      module: 'lib/security/external-request-auth',
-      name: 'secretsMatch',
-    },
-  },
-  {
-    lookup: {
       module: 'apps/services/api/src/host/webhook-authentication',
       name: 'resolveWebhookIntegration',
     },
@@ -416,12 +306,6 @@ const OWNER_SCOPED: Array<{
   source: string
 }> = [
   {
-    module: 'lib/client-documents',
-    name: 'listClientDocuments',
-    owner: 1,
-    source: 'packages/backend/src/modules/customers/client-documents.ts',
-  },
-  {
     module: 'apps/services/api/src/host/client-documents',
     name: 'listClientDocuments',
     owner: 1,
@@ -429,7 +313,12 @@ const OWNER_SCOPED: Array<{
   },
 ]
 /** Calls that hand their callback the data client: the queries inside are the accesses, not the call. */
-const DATA_SCOPES = [{ module: 'lib/tenant', name: 'withTenantTransaction' }]
+const DATA_SCOPES = [
+  {
+    module: 'apps/services/api/src/host/tenant-transaction',
+    name: 'withTenantTransaction',
+  },
+]
 /** Query operators that create records from `data` (every other one is scoped by its `where`). */
 const CREATE_OPERATIONS = new Set([
   'create',
@@ -537,21 +426,12 @@ const INERT_IMPORTS: Array<{ module: string; names: string[] }> = [
     names: ['selectedTenantPreferenceCookie'],
   },
   {
-    module: 'lib/api-response',
-    names: ['errorResponse', 'successResponse', 'notFoundResponse'],
-  },
-  { module: 'lib/identity', names: ['identityMode'] },
-  {
     module: IDENTITY_MODULE,
     names: [
       'rejectCrossOriginMutation',
       'isSameOriginMutation',
       'identityMode',
     ],
-  },
-  {
-    module: 'lib/security/mutation-origin',
-    names: ['isTrustedMutationOrigin'],
   },
   {
     module: 'apps/services/api/src/host/mutation-origin',
@@ -584,7 +464,7 @@ const INERT_CLASSES: Array<{
   { module: 'zod', name: 'ZodError' },
   { module: 'zod', name: 'z', member: 'ZodError' },
   {
-    module: 'lib/catalog',
+    module: 'packages/backend/src/modules/catalog/errors',
     name: 'CatalogError',
     source: 'packages/backend/src/modules/catalog/errors.ts',
   },
@@ -594,7 +474,7 @@ const INERT_CLASSES: Array<{
     source: 'packages/backend/src/modules/catalog/errors.ts',
   },
   {
-    module: 'lib/rental-transaction',
+    module: 'packages/backend/src/modules/rentals/errors',
     name: 'RentalMutationError',
     source: 'packages/backend/src/modules/rentals/errors.ts',
   },
@@ -604,7 +484,7 @@ const INERT_CLASSES: Array<{
     source: 'packages/backend/src/modules/rentals/errors.ts',
   },
   {
-    module: 'lib/vehicles',
+    module: 'packages/backend/src/modules/operations/vehicles',
     name: 'VehicleError',
     source: 'packages/backend/src/modules/operations/vehicles.ts',
   },
@@ -614,7 +494,7 @@ const INERT_CLASSES: Array<{
     source: 'packages/backend/src/modules/operations/vehicles.ts',
   },
   {
-    module: 'lib/quote-request',
+    module: 'packages/backend/src/modules/quotations/update',
     name: 'QuoteUpdateRejected',
     source: 'packages/backend/src/modules/quotations/update.ts',
   },
@@ -624,12 +504,7 @@ const INERT_CLASSES: Array<{
     source: 'packages/backend/src/modules/quotations/update.ts',
   },
   {
-    module: 'lib/client-documents',
-    name: 'CustomerError',
-    source: 'packages/backend/src/modules/customers/errors.ts',
-  },
-  {
-    module: 'lib/cart-service',
+    module: 'packages/backend/src/modules/customers/errors',
     name: 'CustomerError',
     source: 'packages/backend/src/modules/customers/errors.ts',
   },
@@ -644,7 +519,7 @@ const INERT_CLASSES: Array<{
     source: 'packages/backend/src/modules/customers/enroll.ts',
   },
   {
-    module: 'lib/payment-obligation',
+    module: 'packages/backend/src/modules/billing/payment-errors',
     name: 'PaymentRequestError',
     source: 'packages/backend/src/modules/billing/payment-errors.ts',
   },
@@ -654,7 +529,7 @@ const INERT_CLASSES: Array<{
     source: 'packages/backend/src/modules/billing/payment-errors.ts',
   },
   {
-    module: 'lib/email-branding',
+    module: 'packages/backend/src/modules/communications/tenant-branding',
     name: 'TenantBrandingError',
     source: 'packages/backend/src/modules/communications/tenant-branding.ts',
   },
@@ -664,7 +539,7 @@ const INERT_CLASSES: Array<{
     source: 'packages/backend/src/modules/communications/tenant-branding.ts',
   },
   {
-    module: 'lib/security/private-documents',
+    module: 'packages/backend/src/modules/documents/private-documents',
     name: 'InvalidDocumentError',
     source: 'packages/backend/src/modules/documents/private-documents.ts',
   },
@@ -674,7 +549,7 @@ const INERT_CLASSES: Array<{
     source: 'packages/backend/src/modules/documents/private-documents.ts',
   },
   {
-    module: 'lib/contracts/service',
+    module: 'packages/backend/src/modules/documents/rental-contracts',
     name: 'ContractAccessError',
     source: 'packages/backend/src/modules/documents/rental-contracts.ts',
   },
@@ -684,7 +559,7 @@ const INERT_CLASSES: Array<{
     source: 'packages/backend/src/modules/documents/rental-contracts.ts',
   },
   {
-    module: 'lib/image-upload',
+    module: 'packages/backend/src/modules/catalog/image-upload',
     name: 'InvalidImageError',
     source: 'packages/backend/src/modules/catalog/image-upload.ts',
   },
@@ -718,7 +593,8 @@ const SERVER_GLOBAL_OBJECTS: ReadonlySet<string> = new Set([
 const SEALED_CALLS: ReadonlySet<string> = new Set(['Response.json'])
 /**
  * The rate limit PROLOGUE form: `checkRateLimit(request, <limiter>)` with one of these limiters of
- * lib/rate-limit, per-instance counters in memory (no database; kept in sync with the source).
+ * the API host facade over packages/backend/src/http/memory-rate-limit.ts: per-instance counters in memory
+ * (no database; kept in sync with the source). The former lib/rate-limit facade was retired in F.
  */
 const MEMORY_LIMITERS = [
   'authRateLimit',
@@ -726,10 +602,7 @@ const MEMORY_LIMITERS = [
   'adminApiRateLimit',
   'strictRateLimit',
 ]
-const MEMORY_FACADES = [
-  'lib/rate-limit',
-  'apps/services/api/src/host/rate-limit',
-]
+const MEMORY_FACADES = ['apps/services/api/src/host/rate-limit']
 const MEMORY_SOURCE = 'packages/backend/src/http/memory-rate-limit.ts'
 /**
  * Project functions a guard may delegate to (`return downloadQuoteDocument(request, id, 'admin')`): each one
@@ -737,17 +610,14 @@ const MEMORY_SOURCE = 'packages/backend/src/http/memory-rate-limit.ts'
  * a role predicate (`return ['ADMIN', 'OPERATOR'].includes(principal.role)`).
  */
 const DELEGATES = [
-  { module: 'lib/quote-document', name: 'downloadQuoteDocument' },
   {
     module: 'apps/services/api/src/host/documents',
     name: 'downloadQuoteDocument',
   },
-  { module: 'lib/organization-selection', name: 'organizationSelection' },
   {
     module: 'apps/services/api/src/host/organization-selection',
     name: 'organizationSelection',
   },
-  { module: 'lib/contracts/service', name: 'canManageContracts' },
   {
     module: 'apps/services/api/src/host/contracts',
     name: 'canManageContracts',
@@ -775,12 +645,12 @@ const NEXTAUTH_READ_REFUSAL = {
  * source.
  */
 const HANDLER_WRAPPERS = [
-  ...['lib/auth', '@gb-locacoes/backend/http'].map((module) => ({
-    module,
+  {
+    module: '@gb-locacoes/backend/http',
     name: 'withSignInAvailability',
     source: 'packages/backend/src/http/legacy-auth-response.ts',
     refusal: NEXTAUTH_READ_REFUSAL,
-  })),
+  },
 ]
 /** Prisma delegate operations: a call named like one of these is a query. */
 const PRISMA_OPERATIONS = new Set([
@@ -846,16 +716,10 @@ const RETIRED: Invariant = { references: [], status: 410, inert: true }
  */
 const IDENTITY_FLOW: Invariant = {
   references: [
-    'lib/credential-accounts#credentialAccountHandlers',
     'apps/services/api/src/host/credential-accounts#credentialAccountHandlers',
     `${IDENTITY_MODULE}#rejectCrossOriginMutation`,
-    'lib/identity#*',
-    'lib/auth#*',
-    'lib/prisma#prisma',
+    'tests/security/fixtures/authorization-scanner-data#prisma',
     '@prisma/client#Prisma',
-    'lib/rate-limit#*',
-    'lib/email-branding#*',
-    'lib/resend#default',
     'bcryptjs#default',
     'node:crypto#*',
     'next/server#*',
@@ -865,6 +729,12 @@ const IDENTITY_FLOW: Invariant = {
 /** Explicit public surface. Anything else must pass a gate from GUARDS. */
 const API_PUBLIC_COMPOSITION: Invariant = {
   references: [
+    'apps/services/api/src/host/runtime#resolvePublicRequestTenant',
+    '@gb-locacoes/backend/identity#publicCacheHeaders',
+    '@gb-locacoes/backend/identity#publicSiteHeaders',
+    '@gb-locacoes/backend/identity#publicTenantNotFound',
+    '@gb-locacoes/backend/rentals#RentalMutationError',
+    '@gb-locacoes/contracts/storefront-legal#storefrontLegalKindFromSlug',
     '@gb-locacoes/backend/identity#createPublicTenantResolver',
     '@gb-locacoes/backend/identity#withTenantTransaction',
     '@gb-locacoes/backend/identity#clientIpFromHeaders',
@@ -1020,36 +890,11 @@ const PUBLIC_ALLOWLIST: Record<
       'Anonymous readiness probe SELECT 1 with neutral response and existing health status contract.',
     invariant: API_PUBLIC_COMPOSITION,
   },
-  'app/api/[...rest]/route.ts': {
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    reason: 'Catch-all JSON 404 for unknown API paths; touches no data.',
-    invariant: {
-      references: ['lib/api-response#notFoundResponse', 'next/server#*'],
-      inert: true,
-    },
-  },
   'apps/services/api/src/app/api/[...rest]/route.ts': {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     reason:
       'Same neutral JSON 404 contract for unknown API paths in the partial service; no identity or data access.',
     invariant: { references: [], status: 404, inert: true },
-  },
-  'app/api/health/route.ts': {
-    methods: ['GET'],
-    reason:
-      'Anonymous liveness probe (SELECT 1); generic error body, detail only in server logs.',
-    invariant: { references: ['lib/prisma#prisma', 'next/server#*'] },
-  },
-  'app/api/drei-proxy/[...path]/route.ts': {
-    methods: ['GET'],
-    reason:
-      'Public proxy for pinned static drei-assets HDR files; allowlisted paths, no CORS, no tenant data.',
-    invariant: {
-      references: [
-        '@gb-locacoes/backend/http#createDreiAssetProxy',
-        '<global>#fetch',
-      ],
-    },
   },
   'apps/services/api/src/app/api/drei-proxy/[...path]/route.ts': {
     methods: ['GET'],
@@ -1062,17 +907,6 @@ const PUBLIC_ALLOWLIST: Record<
       ],
     },
   },
-  'app/api/admin/analytics/route.ts': {
-    methods: ['GET'],
-    reason: 'Retired (410): exposed process-global, tenant-less metrics.',
-    invariant: RETIRED,
-  },
-  'app/api/admin/security/route.ts': {
-    methods: ['GET'],
-    reason:
-      'Retired (410): exposed process-global, tenant-less security events.',
-    invariant: RETIRED,
-  },
   'apps/services/api/src/app/api/admin/analytics/route.ts': {
     methods: ['GET'],
     reason:
@@ -1083,26 +917,6 @@ const PUBLIC_ALLOWLIST: Record<
     methods: ['GET'],
     reason:
       'Same retired (410) security contract in the partial service; no identity, telemetry or database lookup is permitted.',
-    invariant: RETIRED,
-  },
-  'app/api/admin/seed-admin/route.ts': {
-    methods: ['GET', 'POST'],
-    reason: 'Retired (410) operational endpoint.',
-    invariant: RETIRED,
-  },
-  'app/api/test-login/route.ts': {
-    methods: ['POST'],
-    reason: 'Retired (410) operational endpoint.',
-    invariant: RETIRED,
-  },
-  'app/api/fix-storage/route.ts': {
-    methods: ['POST'],
-    reason: 'Retired (410) operational endpoint.',
-    invariant: RETIRED,
-  },
-  'app/api/supabase-setup/route.ts': {
-    methods: ['GET', 'POST'],
-    reason: 'Retired (410) operational endpoint.',
     invariant: RETIRED,
   },
   'apps/services/api/src/app/api/admin/seed-admin/route.ts': {
@@ -1129,103 +943,11 @@ const PUBLIC_ALLOWLIST: Record<
       'Same retired (410) operational contract; no setup, storage or data effects.',
     invariant: RETIRED,
   },
-  'app/api/contracts/zapsign-webhook/route.ts': {
-    methods: ['POST'],
-    reason: 'Retired (410) global webhook; integration-specific URL required.',
-    invariant: RETIRED,
-  },
-  'app/api/payments/boleto/webhook/route.ts': {
-    methods: ['POST'],
-    reason: 'Retired (410) global webhook; integration-specific URL required.',
-    invariant: RETIRED,
-  },
-  'app/api/payments/pix/webhook/route.ts': {
-    methods: ['POST'],
-    reason: 'Retired (410) global webhook; integration-specific URL required.',
-    invariant: RETIRED,
-  },
-  'app/api/webhooks/whatsapp/route.ts': {
-    methods: ['GET', 'POST'],
-    reason: 'Retired (410) global webhook; integration-specific URL required.',
-    invariant: RETIRED,
-  },
   'apps/services/api/src/app/api/webhooks/whatsapp/route.ts': {
     methods: ['GET', 'POST'],
     reason:
       'Same retired (410) global webhook contract in the partial service; no effect or integration lookup is permitted.',
     invariant: RETIRED,
-  },
-  'app/api/auth/register/route.ts': {
-    methods: ['POST'],
-    reason:
-      'Anonymous sign-up: rate limited, neutral response for existing accounts; creates a platform user only.',
-    invariant: IDENTITY_FLOW,
-  },
-  'app/api/auth/forgot-password/route.ts': {
-    methods: ['POST'],
-    reason:
-      'Anonymous password-reset request: rate limited, neutral response; stores a hashed platform token only.',
-    invariant: IDENTITY_FLOW,
-  },
-  'app/api/auth/reset-password/route.ts': {
-    methods: ['POST'],
-    reason:
-      'Anonymous password reset authorized by the single-use hashed token it consumes.',
-    invariant: IDENTITY_FLOW,
-  },
-  'app/api/auth/verify-email/route.ts': {
-    methods: ['GET'],
-    reason:
-      'Anonymous e-mail verification authorized by the single-use token it consumes.',
-    invariant: IDENTITY_FLOW,
-  },
-  'app/api/public/tenants/route.ts': {
-    methods: ['GET'],
-    reason:
-      'Anonymous tenant directory search (ADR adr-tenant-hosts, T13): global organization fields of opted-in ACTIVE tenants only, at most 10, no tenant data; persistent per-IP rate limit.',
-    invariant: {
-      references: [
-        '@gb-locacoes/backend/directory#consumeDirectorySearchRateLimit',
-        '@gb-locacoes/backend/directory#parseDirectorySearchParams',
-        '@gb-locacoes/backend/directory#prismaRateLimitCounter',
-        '@gb-locacoes/backend/directory#searchDirectory',
-        'lib/prisma#prisma',
-        'lib/rate-limit#clientIpFromHeaders',
-        // PLATFORM_RATE_LIMIT_SECRET pelo critério de produção da plataforma (isPlatformProduction).
-        'lib/rate-limit#identityRateLimitSecret',
-        'next/server#NextResponse',
-      ],
-    },
-  },
-  'app/api/settings/public/legal-documents/[kind]/route.ts': {
-    methods: ['GET'],
-    reason:
-      'Published storefront legal text (wave 134): the same shared factory as the API host, composed in lib/catalog with the public tenant resolver (identity surface).',
-    invariant: { references: ['lib/catalog#publicStorefrontLegal'] },
-  },
-  'app/api/onboarding/options/route.ts': {
-    methods: ['GET'],
-    reason:
-      'Anonymous app-bound signup options; only hash-verified published texts and public site key, no database or mutation.',
-    invariant: {
-      references: [
-        '@gb-locacoes/backend/runtime#handleConfiguredOnboardingOptions',
-      ],
-    },
-  },
-  'app/api/auth/owner-register/route.ts': {
-    methods: ['POST'],
-    reason:
-      'Anonymous minimum owner account in a genuine app context; signup/configuration, persistent budgets, captcha and compromised-password checks precede the existing neutral identity adapter.',
-    invariant: { references: ['lib/credential-accounts#ownerAccountHandlers'] },
-  },
-  'app/api/public/plans/route.ts': {
-    methods: ['GET'],
-    reason:
-      'Published sale offers only, strict public subscription DTO, isolated platform READ ONLY transaction.',
-    invariant: {
-      references: ['@gb-locacoes/backend/runtime#readConfiguredPublicPlans'],
-    },
   },
   'apps/clients/web/src/app/(public)/[locadora]/robots.txt/route.ts': {
     methods: ['GET'],
@@ -1269,66 +991,55 @@ const PUBLIC_TENANT_SURFACE: Record<
   string,
   { methods: string[]; reason: string }
 > = {
-  'app/api/categories/route.ts': {
+  'apps/services/api/src/app/api/settings/public/legal-documents/[kind]/route.ts':
+    {
+      methods: ['GET'],
+      reason:
+        'Published storefront legal text (wave 134) of one tenant resolved on the identity surface; validated text blocks only, read in the tenant transaction.',
+    },
+  'apps/services/api/src/app/api/categories/route.ts': {
     methods: ['GET'],
     reason: 'Public category catalog of the host tenant.',
   },
-  'app/api/equipments/route.ts': {
+  'apps/services/api/src/app/api/equipments/route.ts': {
     methods: ['GET'],
     reason: 'Public equipment catalog of the host tenant.',
   },
-  'app/api/equipments/[id]/route.ts': {
+  'apps/services/api/src/app/api/equipments/[id]/route.ts': {
     methods: ['GET'],
     reason: 'Public equipment detail of the host tenant.',
   },
-  'app/api/equipments/[id]/availability/route.ts': {
+  'apps/services/api/src/app/api/equipments/[id]/availability/route.ts': {
     methods: ['GET'],
     reason: 'Public availability calendar of one equipment of the host tenant.',
   },
-  'app/api/equipamentos/search/route.ts': {
+  'apps/services/api/src/app/api/equipamentos/search/route.ts': {
     methods: ['GET'],
     reason: 'Public catalog search of the host tenant.',
   },
-  'app/api/settings/public/route.ts': {
+  'apps/services/api/src/app/api/settings/public/route.ts': {
     methods: ['GET'],
     reason:
       'Public storefront settings (branding, contacts) of the host tenant.',
   },
-  'app/api/public/tenants/[slug]/route.ts': {
+  'apps/services/api/src/app/api/public/tenants/[slug]/route.ts': {
     methods: ['GET'],
     reason: 'Public profile of one active tenant (ADR adr-tenant-hosts).',
-  },
-  'app/api/contact/route.ts': {
-    methods: ['POST'],
-    reason: 'Anonymous contact form addressed to the host tenant.',
   },
   'apps/services/api/src/app/api/contact/route.ts': {
     methods: ['POST'],
     reason:
       'Same anonymous contact request: validated tenant and origin precede the shared quote/outbox transaction.',
   },
-  'app/api/quotes/route.ts': {
-    methods: ['POST'],
-    reason: 'Anonymous quote request addressed to the host tenant.',
-  },
   'apps/services/api/src/app/api/quotes/route.ts': {
     methods: ['POST'],
     reason:
       'Same anonymous quote request: the validated host tenant precedes the shared transaction; optional session does not bypass the same-origin guard.',
   },
-  'app/api/orcamentos/route.ts': {
-    methods: ['POST'],
-    reason: 'Legacy alias of POST /api/quotes (delegates to it).',
-  },
   'apps/services/api/src/app/api/orcamentos/route.ts': {
     methods: ['POST'],
     reason:
       'Same localized alias of POST /api/quotes, preserving its tenant and same-origin guards and non-201 refusals.',
-  },
-  'app/api/client/enroll/route.ts': {
-    methods: ['POST'],
-    reason:
-      'Enrollment on the host tenant: the tenant comes from the validated edge; the handler still requires a session (getServerSession) before writing.',
   },
   'apps/services/api/src/app/api/client/enroll/route.ts': {
     methods: ['POST'],
@@ -1379,10 +1090,20 @@ const withoutExtension = (id: string) =>
   id.replace(/\.(?:[cm]?[jt]sx?)$/, '').replace(/\/index$/, '')
 
 /**
- * Files a self-check adds to the project for one analysis (an in-memory `zod.ts` or `lib/catalog/index.ts`,
- * keyed by absolute path): they resolve and parse as if they were on disk. Empty otherwise.
+ * In-memory declarations for authorization-scanner-data.ts below, plus temporary self-check shadows such as
+ * zod.ts or backend catalog errors/index.ts, keyed by absolute path. They resolve and parse as if on disk;
+ * each self-check removes its temporary entry in finally, preserving the declared fixture module.
  */
-const FIXTURE_FILES = new Map<string, string>()
+const FIXTURE_FILES = new Map<string, string>([
+  [
+    path.join(ROOT, 'tests/security/fixtures/authorization-scanner-data.ts'),
+    'export declare const prisma: import("@prisma/client").PrismaClient\n' +
+      'export declare function listPublicCategories(context: unknown): Promise<unknown>\n' +
+      'export declare function getZohoAccessToken(): Promise<unknown>\n' +
+      'export declare function makeZohoMailRequest(path: string): Promise<unknown>\n' +
+      'export declare function cancelClientRentals(principal: unknown, owner: string): Promise<unknown>\n',
+  ],
+])
 /** Whether each path is a file on disk: the tree does not change while the inventory runs. */
 const onDisk = new Map<string, boolean>()
 const isFile = (candidate: string) => {
@@ -1399,7 +1120,7 @@ const isFile = (candidate: string) => {
 class AmbiguousModule extends Error {}
 /**
  * The project file a specifier names, or undefined when none does. Throws AmbiguousModule when more than one
- * candidate of RESOLVE_SUFFIXES exists (`lib/catalog.tsx` or `lib/catalog/index.ts` beside `lib/catalog.ts`):
+ * candidate of RESOLVE_SUFFIXES exists (errors.tsx or errors/index.ts beside packages/backend/src/modules/catalog/errors.ts):
  * Turbopack, webpack and TypeScript would load different files, and the analysis would read one the server may
  * not run. moduleBinding gives such a specifier an id no list names, analyzeRouteModule fails the routes that
  * import one, and a self-check fails any such pair in the server source.
@@ -1457,8 +1178,8 @@ function packageOf(
 
 /**
  * The id of a project file (its path without extension) when that id names this file alone (findings 111, 112):
- * the id resolves back to the same file (not `lib/catalog/index.ts` or `lib/catalog.mjs` beside
- * `lib/catalog.ts`), and no installed package or Node built-in answers to it (not `zod.ts` or `next-auth.ts`
+ * the id resolves back to the same file (not errors/index.ts or errors.mjs beside the backend catalog errors.ts),
+ * and no installed package or Node built-in answers to it (not `zod.ts` or `next-auth.ts`
  * posing as the package). Otherwise undefined.
  */
 function projectId(file: string): string | undefined {
@@ -1484,7 +1205,7 @@ function projectId(file: string): string | undefined {
  * The binding `import { name } from specifier` creates in `fromFile`. Every list names a module by this id, so it
  * never stands for another module: a project specifier (`@/`, `.`) is its canonical projectId, a bare one the
  * package it resolves to. Anything else gets an id no list names: `file:<path>` (a project file another id
- * owns, such as `@/zod`, `@/lib/catalog/index`), `unresolved:<specifier>`, `ambiguous:<specifier>` (more than one
+ * owns, such as `@/zod`, `@/packages/backend/src/modules/catalog/errors/index`), `unresolved:<specifier>`, `ambiguous:<specifier>` (more than one
  * file answers to it) and `alias:<specifier>` (a bare specifier `paths` maps to project files).
  */
 function moduleBinding(
@@ -1807,11 +1528,6 @@ const SELECTION_SOURCE =
   'packages/backend/src/http/organization-selection-handler.ts'
 const SELECTION_FACADES = [
   {
-    module: 'lib/organization-selection',
-    session: 'lib/application-session',
-    origin: 'lib/security/mutation-origin',
-  },
-  {
     module: 'apps/services/api/src/host/organization-selection',
     session: 'apps/services/api/src/host/session',
     origin: 'apps/services/api/src/host/mutation-origin',
@@ -1968,7 +1684,479 @@ function selectionClosure(binding: Binding): Located | null {
   return exportedNode(closed, 'organizationSelection')
 }
 
+const PUBLIC_FACTORY_HOST = 'apps/services/api/src/host/runtime'
+const PUBLIC_FACTORY_SOURCE = `${PUBLIC_FACTORY_HOST}.ts`
+const PUBLIC_FACTORY_CLOSURES = [
+  [
+    'publicCategories',
+    'createPublicCategoriesHandler',
+    'categories',
+    'categories',
+    'listCategories',
+    1,
+    "{ tenantId: 'foreign' }",
+  ],
+  [
+    'publicEquipments',
+    'createPublicEquipmentsHandler',
+    'equipments',
+    'equipments',
+    'listEquipments',
+    1,
+    "{ tenantId: 'foreign' }",
+  ],
+  [
+    'equipmentSearch',
+    'createPublicEquipmentSearchHandler',
+    'equipment-search',
+    'equipamentos/search',
+    'searchEquipments',
+    1,
+    "{ tenantId: 'foreign' }, 'fixture'",
+  ],
+  [
+    'equipmentAvailability',
+    'createPublicEquipmentAvailabilityHandler',
+    'equipment-availability',
+    'equipments/[id]/availability',
+    'calculateAvailability',
+    1,
+    "{ tenantId: 'foreign' }, 'fixture', new Date(0), new Date(86400000)",
+  ],
+  [
+    'equipmentDetail',
+    'createPublicEquipmentDetailHandler',
+    'equipment-detail',
+    'equipments/[id]',
+    'getEquipment',
+    1,
+    "{ tenantId: 'foreign' }, 'fixture'",
+  ],
+  [
+    'publicSettings',
+    'createPublicSettingsHandler',
+    'public-settings',
+    'settings/public',
+    'getSettings',
+    2,
+    "{ tenantId: 'foreign' }",
+  ],
+  [
+    'tenantCard',
+    'createPublicTenantCardHandler',
+    'tenant-card',
+    'public/tenants/[slug]',
+    'readCard',
+    2,
+    "{ tenantId: 'foreign', slug: 'foreign' }",
+  ],
+  [
+    'publicStorefrontLegal',
+    'createPublicStorefrontLegalHandler',
+    'storefront-legal',
+    'settings/public/legal-documents/[kind]',
+    'getDocument',
+    2,
+    "{ tenantId: 'foreign' }, 'terms'",
+  ],
+] as const
+const PUBLIC_FACTORY_ANALYSIS_MODULES = new WeakSet<ModuleInfo>()
+const PUBLIC_FACTORY_COMPOSITIONS = new WeakMap<ModuleInfo, Located>()
+
+/** The sole pre-guard imported parser in these closures: pin its actual literal lookup AST. */
+function publicFactoryLegalKindSourceIsInert(): boolean {
+  const file = 'packages/contracts/src/storefront-legal.ts'
+  const manifest = JSON.parse(
+    fs.readFileSync(path.join(ROOT, 'packages/contracts/package.json'), 'utf8')
+  ) as { exports: Record<string, string> }
+  if (manifest.exports['./storefront-legal'] !== './src/storefront-legal.ts')
+    return false
+  const actual = parseModule(path.join(ROOT, file))
+  const expected = parseModule(
+    path.join(ROOT, file),
+    `
+    export const STOREFRONT_LEGAL_KINDS = ['terms', 'privacy', 'returnPolicy'] as const
+    export const STOREFRONT_LEGAL_SLUGS = Object.freeze({
+      terms: 'terms', privacy: 'privacy', returnPolicy: 'return-policy',
+    })
+    export function storefrontLegalKindFromSlug(slug: string) {
+      return (STOREFRONT_LEGAL_KINDS.find(
+        (kind) => STOREFRONT_LEGAL_SLUGS[kind] === slug
+      ) ?? null)
+    }
+  `
+  )
+  const shape = (node: ts.Node): unknown => {
+    if (ts.isTypeNode(node)) return undefined
+    const value = ts.isExpression(node) ? strip(node) : node
+    const children: unknown[] = []
+    ts.forEachChild(value, (child) => {
+      if (!ts.isTypeNode(child)) children.push(shape(child))
+    })
+    return {
+      kind: value.kind,
+      ...(ts.isIdentifier(value) ||
+      ts.isStringLiteralLike(value) ||
+      ts.isNumericLiteral(value)
+        ? { text: value.text }
+        : {}),
+      children,
+    }
+  }
+  return [
+    'STOREFRONT_LEGAL_KINDS',
+    'STOREFRONT_LEGAL_SLUGS',
+    'storefrontLegalKindFromSlug',
+  ].every((name) => {
+    const left = actual.locals.get(name)
+    const right = expected.locals.get(name)
+    return (
+      !!left &&
+      !!right &&
+      JSON.stringify(shape(left)) === JSON.stringify(shape(right))
+    )
+  })
+}
+
+/** No global INERT grant: only the projected, source-checked public factory module. */
+function publicFactoryLegalKindIsInert(
+  binding: Binding,
+  info: ModuleInfo
+): boolean {
+  return (
+    PUBLIC_FACTORY_ANALYSIS_MODULES.has(info) &&
+    sameBinding(binding, {
+      module: '@gb-locacoes/contracts/storefront-legal',
+      name: 'storefrontLegalKindFromSlug',
+    }) &&
+    publicFactoryLegalKindSourceIsInert()
+  )
+}
+
+/** Project one bounded canonical GET with the host's real deferred ports. */
+function publicFactoryClosure(binding: Binding): Located | null {
+  const entry = PUBLIC_FACTORY_CLOSURES.find(([name]) => name === binding.name)
+  if (
+    !entry ||
+    binding.module !== PUBLIC_FACTORY_HOST ||
+    !binding.file ||
+    path.resolve(binding.file) !== path.join(ROOT, PUBLIC_FACTORY_SOURCE)
+  )
+    return null
+  const [name, factory, stem, , dataPort, resolveArguments] = entry
+  const sourceFile = `packages/backend/src/http/${stem}.ts`
+  const info = parseModule(binding.file)
+  const call = info.locals.get(name)
+  if (
+    !call ||
+    !ts.isCallExpression(call) ||
+    call.arguments.length !== 1 ||
+    !sameBinding(importedCallee(call, info) ?? { module: '', name: '' }, {
+      module: '@gb-locacoes/backend/http',
+      name: factory,
+    })
+  )
+    return null
+  const declaration = call.parent
+  if (
+    !ts.isVariableDeclaration(declaration) ||
+    !ts.isIdentifier(declaration.name) ||
+    declaration.name.text !== name ||
+    declaration.initializer !== call ||
+    !ts.isVariableDeclarationList(declaration.parent) ||
+    !(declaration.parent.flags & ts.NodeFlags.Const) ||
+    declaration.parent.declarations.length !== 1 ||
+    !ts.isVariableStatement(declaration.parent.parent)
+  )
+    return null
+  const hostStatement = declaration.parent.parent
+  const input = strip(call.arguments[0]!)
+  if (
+    !ts.isObjectLiteralExpression(input) ||
+    input.properties.length !== 2 ||
+    input.properties.some((property) => !ts.isPropertyAssignment(property))
+  )
+    return null
+  const ports = new Map(
+    input.properties.map((property) => {
+      const port = property as ts.PropertyAssignment
+      return [propertyText(port.name), strip(port.initializer)] as const
+    })
+  )
+  const resolve = ports.get('resolveTenant')
+  const data = ports.get(dataPort)
+  if (
+    ports.size !== 2 ||
+    !resolve ||
+    !data ||
+    !ts.isArrowFunction(resolve) ||
+    !ts.isArrowFunction(data) ||
+    resolve.parameters.length !== resolveArguments ||
+    resolve.parameters.some(
+      (parameter) =>
+        !ts.isIdentifier(parameter.name) ||
+        !!parameter.questionToken ||
+        !!parameter.initializer ||
+        !!parameter.dotDotDotToken
+    ) ||
+    ts.isBlock(resolve.body)
+  )
+    return null
+  const tenant = info.locals.get('tenant')
+  if (
+    !tenant ||
+    !ts.isCallExpression(tenant) ||
+    tenant.arguments.length !== 1 ||
+    !ts.isArrowFunction(strip(tenant.arguments[0]!)) ||
+    !ts.isVariableDeclaration(tenant.parent) ||
+    !ts.isVariableDeclarationList(tenant.parent.parent) ||
+    !(tenant.parent.parent.flags & ts.NodeFlags.Const) ||
+    !sameBinding(importedCallee(tenant, info) ?? { module: '', name: '' }, {
+      module: '@gb-locacoes/backend/identity',
+      name: 'createPublicTenantResolver',
+    })
+  )
+    return null
+  const forwards = (
+    expression: ts.Expression,
+    parameters: readonly ts.ParameterDeclaration[]
+  ) => {
+    const value = strip(expression)
+    return (
+      ts.isCallExpression(value) &&
+      ts.isPropertyAccessExpression(value.expression) &&
+      value.expression.name.text === 'resolvePublicRequestTenant' &&
+      ts.isIdentifier(value.expression.expression) &&
+      declarationOf(value.expression.expression) === tenant.parent &&
+      value.arguments.length === parameters.length &&
+      value.arguments.every((argument, index) => {
+        const original = strip(argument)
+        return (
+          ts.isIdentifier(original) &&
+          declarationOf(original) === parameters[index]
+        )
+      })
+    )
+  }
+  if (!forwards(resolve.body, resolve.parameters)) return null
+  const wrapper = info.locals.get('resolvePublicRequestTenant')
+  if (
+    !wrapper ||
+    !ts.isFunctionDeclaration(wrapper) ||
+    !wrapper.body ||
+    wrapper.parameters.length !== 2 ||
+    !ts.isIdentifier(wrapper.parameters[0]!.name) ||
+    wrapper.parameters[0]!.questionToken ||
+    wrapper.parameters[0]!.initializer ||
+    wrapper.parameters[0]!.dotDotDotToken ||
+    !ts.isIdentifier(wrapper.parameters[1]!.name) ||
+    wrapper.parameters[1]!.questionToken ||
+    wrapper.parameters[1]!.dotDotDotToken ||
+    !wrapper.parameters[1]!.initializer ||
+    !ts.isObjectLiteralExpression(strip(wrapper.parameters[1]!.initializer)) ||
+    (strip(wrapper.parameters[1]!.initializer) as ts.ObjectLiteralExpression)
+      .properties.length !== 0 ||
+    !hasModifier(wrapper, ts.SyntaxKind.ExportKeyword)
+  )
+    return null
+  const wrapperReturn = soleReturn(wrapper.body)
+  if (
+    !wrapperReturn?.expression ||
+    !forwards(wrapperReturn.expression, wrapper.parameters)
+  )
+    return null
+  const index = moduleFile('@gb-locacoes/backend/http')
+  const exported = index && exportedNode(parseModule(index), factory)
+  if (
+    !exported ||
+    relative(exported.info.file) !== sourceFile ||
+    factoryProblems({
+      module: '@gb-locacoes/backend/http',
+      name: factory,
+      source: sourceFile,
+    }).length
+  )
+    return null
+  const source = declaredFunction(sourceFile, factory)
+  const deps = source?.node.parameters[0]
+  const returned = source?.node.body && soleReturn(source.node.body)
+  const handler = returned?.expression && strip(returned.expression)
+  if (
+    !source ||
+    source.node.parameters.length !== 1 ||
+    !deps ||
+    !ts.isIdentifier(deps.name) ||
+    !handler ||
+    !ts.isFunctionExpression(handler) ||
+    handler.name?.text !== 'GET' ||
+    !hasModifier(handler, ts.SyntaxKind.AsyncKeyword) ||
+    !handler.body ||
+    !handler.parameters[0] ||
+    !ts.isIdentifier(handler.parameters[0].name) ||
+    handler.parameters[0].questionToken ||
+    handler.parameters[0].initializer ||
+    handler.parameters[0].dotDotDotToken
+  )
+    return null
+  const guardName = '__publicFactoryResolveTenant'
+  const dataName = `__publicFactory_${name}_${dataPort}`
+  if (
+    [guardName, dataName].some(
+      (symbol) => info.bound.has(symbol) || source.info.bound.has(symbol)
+    )
+  )
+    return null
+  const edits: Array<{ start: number; end: number; value: string }> = []
+  let invalid = false
+  let guardCalls = 0
+  const visit = (node: ts.Node) => {
+    if (
+      ts.isIdentifier(node) &&
+      node.text === deps.name.getText() &&
+      declarationOf(node) === deps
+    ) {
+      const member = node.parent
+      if (
+        !ts.isPropertyAccessExpression(member) ||
+        member.expression !== node ||
+        (member.name.text !== 'resolveTenant' && member.name.text !== dataPort)
+      ) {
+        invalid = true
+      } else {
+        if (member.name.text === 'resolveTenant') {
+          const invocation = member.parent
+          const argument =
+            ts.isCallExpression(invocation) && invocation.arguments[0]
+          if (
+            !ts.isCallExpression(invocation) ||
+            invocation.expression !== member ||
+            invocation.arguments.length !== resolveArguments ||
+            !argument ||
+            !ts.isIdentifier(strip(argument)) ||
+            declarationOf(strip(argument) as ts.Identifier) !==
+              handler.parameters[0]
+          )
+            invalid = true
+          guardCalls++
+        }
+        edits.push({
+          start: member.getStart() - handler.getStart(),
+          end: member.end - handler.getStart(),
+          value: member.name.text === 'resolveTenant' ? guardName : dataName,
+        })
+      }
+    }
+    ts.forEachChild(node, visit)
+  }
+  visit(handler)
+  if (
+    invalid ||
+    guardCalls !== 1 ||
+    (stem === 'storefront-legal' && !publicFactoryLegalKindSourceIsInert())
+  )
+    return null
+  let policy = handler.getText()
+  for (const edit of edits.sort((left, right) => right.start - left.start))
+    policy = policy.slice(0, edit.start) + edit.value + policy.slice(edit.end)
+  const imports: string[] = []
+  const importNames = new Map<string, string>()
+  const printer = ts.createPrinter()
+  const addImports = (module: ModuleInfo): boolean => {
+    for (const statement of module.source.statements.filter(
+      ts.isImportDeclaration
+    )) {
+      if (!ts.isStringLiteral(statement.moduleSpecifier)) return false
+      const original = statement.moduleSpecifier.text
+      let specifier = original
+      if (original.startsWith('.')) {
+        const target = resolveModule(module.file, original)
+        if (!target) return false
+        const id = relative(target)
+        const publicModule =
+          /^packages\/backend\/src\/modules\/(identity|rentals|catalog|directory)\/index\.ts$/.exec(
+            id
+          )
+        specifier = publicModule
+          ? `@gb-locacoes/backend/${publicModule[1]}`
+          : `@/${id.replace(/\.tsx?$/, '')}`
+      }
+      let clause = statement.importClause
+      if (clause?.name) {
+        if (importNames.has(clause.name.text)) return false
+        importNames.set(clause.name.text, specifier)
+      }
+      const named = clause?.namedBindings
+      if (named && ts.isNamespaceImport(named)) {
+        if (importNames.has(named.name.text)) return false
+        importNames.set(named.name.text, specifier)
+      } else if (named && ts.isNamedImports(named)) {
+        const elements: ts.ImportSpecifier[] = []
+        for (const element of named.elements) {
+          const previous = importNames.get(element.name.text)
+          if (previous && previous !== specifier) return false
+          if (!previous) {
+            importNames.set(element.name.text, specifier)
+            elements.push(element)
+          }
+        }
+        if (!elements.length && !clause?.name) continue
+        clause = ts.factory.updateImportClause(
+          clause!,
+          clause!.isTypeOnly,
+          clause!.name,
+          ts.factory.updateNamedImports(named, elements)
+        )
+      }
+      imports.push(
+        printer.printNode(
+          ts.EmitHint.Unspecified,
+          ts.factory.updateImportDeclaration(
+            statement,
+            statement.modifiers,
+            clause,
+            ts.factory.createStringLiteral(specifier),
+            statement.attributes
+          ),
+          module.source
+        )
+      )
+    }
+    return true
+  }
+  if (!addImports(info) || !addImports(source.info)) return null
+  const sourceStatements = source.info.source.statements.filter(
+    (statement) =>
+      !ts.isImportDeclaration(statement) && statement !== source.node
+  )
+  if (sourceStatements.some((statement) => ts.isExportDeclaration(statement)))
+    return null
+  for (const symbol of source.info.locals.keys())
+    if (symbol !== factory && info.locals.has(symbol)) return null
+  const text = [
+    ...imports,
+    `import { resolvePublicRequestTenant as ${guardName} } from '@/${PUBLIC_FACTORY_HOST}'`,
+    ...info.source.statements
+      .filter(
+        (statement) =>
+          !ts.isImportDeclaration(statement) && statement !== hostStatement
+      )
+      .map((statement) => statement.getText()),
+    ...sourceStatements.map((statement) => statement.getText()),
+    `const ${dataName} = ${data.getText()}`,
+    `export const ${name} = ${policy}`,
+  ].join('\n')
+  const closed = parseModule(binding.file, text)
+  PUBLIC_FACTORY_ANALYSIS_MODULES.add(closed)
+  PUBLIC_FACTORY_COMPOSITIONS.set(closed, { info, node: call })
+  return exportedNode(closed, name)
+}
+
 function bindingNode(binding: Binding, depth = 0) {
+  if (
+    binding.module === PUBLIC_FACTORY_HOST &&
+    PUBLIC_FACTORY_CLOSURES.some(([name]) => name === binding.name)
+  )
+    return publicFactoryClosure(binding)
   if (
     SELECTION_FACADES.some((entry) => entry.module === binding.module) &&
     binding.name === 'organizationSelection'
@@ -2964,6 +3152,116 @@ function declOf(node: ts.Node | undefined): ts.Node | undefined {
 const isRequest = (node: ts.Node | undefined, env: Env) =>
   !!env.request && declOf(node) === env.request
 
+/** Only the real enrollment route may project its request to the same host, without query or body. */
+function enrollmentHostOnlyRequest(
+  node: ts.Expression | undefined,
+  env: Env
+): boolean {
+  if (
+    env.route !== 'apps/services/api/src/app/api/client/enroll/route.ts' ||
+    !node
+  )
+    return false
+  const call = strip(node)
+  if (
+    !ts.isCallExpression(call) ||
+    call.questionDotToken ||
+    call.arguments.length !== 1 ||
+    !isRequest(call.arguments[0], env) ||
+    !ts.isIdentifier(call.expression)
+  )
+    return false
+  const declaration = declarationOf(call.expression)
+  if (
+    !declaration ||
+    !ts.isVariableDeclaration(declaration) ||
+    !declaration.initializer ||
+    !ts.isIdentifier(declaration.name) ||
+    declaration.name.text !== 'hostOnly' ||
+    !ts.isVariableDeclarationList(declaration.parent) ||
+    !ts.isVariableStatement(declaration.parent.parent) ||
+    soleConst(declaration.parent.parent) !== declaration ||
+    env.info.locals.get(declaration.name.text) !== declaration.initializer ||
+    sealedProblem(declaration) !== undefined ||
+    env.info.bound.has('URL') ||
+    env.info.bound.has('Request')
+  )
+    return false
+  const helper = strip(declaration.initializer)
+  if (
+    !ts.isArrowFunction(helper) ||
+    hasModifier(helper, ts.SyntaxKind.AsyncKeyword) ||
+    helper.parameters.length !== 1 ||
+    !ts.isBlock(helper.body) ||
+    helper.body.statements.length !== 2
+  )
+    return false
+  const parameter = helper.parameters[0]!
+  if (
+    !ts.isIdentifier(parameter.name) ||
+    parameter.initializer ||
+    parameter.dotDotDotToken ||
+    parameter.questionToken
+  )
+    return false
+  const url = soleConst(helper.body.statements[0])
+  const returned = helper.body.statements[1]
+  if (
+    !url ||
+    !ts.isIdentifier(url.name) ||
+    !returned ||
+    !ts.isReturnStatement(returned) ||
+    !returned.expression
+  )
+    return false
+  const parsedUrl = strip(url.initializer)
+  const projected = strip(returned.expression)
+  if (
+    !ts.isNewExpression(parsedUrl) ||
+    !ts.isIdentifier(parsedUrl.expression) ||
+    parsedUrl.expression.text !== 'URL' ||
+    declarationOf(parsedUrl.expression) ||
+    parsedUrl.arguments?.length !== 1 ||
+    !ts.isNewExpression(projected) ||
+    !ts.isIdentifier(projected.expression) ||
+    projected.expression.text !== 'Request' ||
+    declarationOf(projected.expression) ||
+    projected.arguments?.length !== 2
+  )
+    return false
+  const memberOf = (
+    expression: ts.Expression,
+    owner: ts.Node,
+    member: string
+  ) => {
+    const value = strip(expression)
+    return (
+      ts.isPropertyAccessExpression(value) &&
+      !value.questionDotToken &&
+      value.name.text === member &&
+      declOf(value.expression) === owner
+    )
+  }
+  if (!memberOf(parsedUrl.arguments[0]!, parameter, 'url')) return false
+  const address = strip(projected.arguments[0]!)
+  const options = strip(projected.arguments[1]!)
+  if (
+    !ts.isBinaryExpression(address) ||
+    address.operatorToken.kind !== ts.SyntaxKind.PlusToken ||
+    !memberOf(address.left, url, 'origin') ||
+    !memberOf(address.right, url, 'pathname') ||
+    !ts.isObjectLiteralExpression(options) ||
+    options.properties.length !== 1
+  )
+    return false
+  const headers = options.properties[0]!
+  return (
+    ts.isPropertyAssignment(headers) &&
+    propertyText(headers.name) === 'headers' &&
+    memberOf(headers.initializer, parameter, 'headers')
+  )
+}
+
 /** The module a node belongs to (fixtures parsed from text included). */
 const moduleOf = (node: ts.Node) => modules.get(node.getSourceFile())
 
@@ -3457,7 +3755,7 @@ function inertProblem(
                 (entry) =>
                   entry.module === binding.module &&
                   entry.names.includes(binding.name)
-              ))
+              ) || publicFactoryLegalKindIsInert(binding, env.info))
         if (!allowed) problem = label
       } else if (inside(declaration)) {
         if (construct || !localFunction(declaration)) problem = label
@@ -3821,7 +4119,11 @@ function requestCall(
     isRequest(call.arguments[0], env)
   )
 }
-/** `!isTrustedMutationOrigin(request)` (or `!isSameOriginMutation(request)`). */
+/**
+ * `!isTrustedMutationOrigin(request)` (or `!isSameOriginMutation(request)`).
+ * The former lib/security/mutation-origin spelling was retired in F; its literal recognition below is preserved
+ * as historical scanner grammar. Current routes bind the API host helper or the backend identity entrypoint.
+ */
 function refusesOrigin(condition: ts.Expression, env: Env): boolean {
   const value = strip(condition)
   return (
@@ -3980,6 +4282,36 @@ function prologueStep(
         env.routeParams.add(bound)
       }
       return { next: index + 1 }
+    }
+    // Only the source-checked legal GET may parse its awaited kind and refuse it before tenant resolution.
+    const kindRefusal = statements[index + 1]
+    if (
+      PUBLIC_FACTORY_ANALYSIS_MODULES.has(env.info) &&
+      ts.isIdentifier(declaration.name) &&
+      ts.isCallExpression(value) &&
+      value.arguments.length === 1 &&
+      (() => {
+        const binding = importedCallee(value, env.info)
+        const argument = strip(value.arguments[0]!)
+        if (
+          !binding ||
+          !publicFactoryLegalKindIsInert(binding, env.info) ||
+          !ts.isPropertyAccessExpression(argument) ||
+          argument.name.text !== 'kind'
+        )
+          return false
+        const params = strip(argument.expression)
+        return (
+          ts.isAwaitExpression(params) && isParamsRef(params.expression, env)
+        )
+      })() &&
+      plainIf(kindRefusal) &&
+      testsDenied(kindRefusal.expression, declaration, NULLABLE_RESULT)
+    ) {
+      env.allowed.add(declaration)
+      return leaveProblem(kindRefusal.thenStatement, env)
+        ? undefined
+        : { next: index + 2 }
     }
     // The body: `const body = await request.json()` (optionally `.catch(() => null)`).
     if (
@@ -4235,6 +4567,19 @@ function choicesOutcome(
       const { guard } = choice
       if (!accepts(guard, env.route))
         return { problem: `${guard.name} does not authorize this namespace` }
+      if (
+        guard.requestArgument !== undefined &&
+        !isRequest(choice.call.arguments[guard.requestArgument], env) &&
+        !(
+          guard.module === PUBLIC_FACTORY_HOST &&
+          guard.name === 'resolvePublicRequestTenant' &&
+          enrollmentHostOnlyRequest(
+            choice.call.arguments[guard.requestArgument],
+            env
+          )
+        )
+      )
+        return { problem: `${guard.name} must receive the handler request` }
       // Every argument runs before the helper: INERT, except the callbacks it runs once authorized.
       for (const [position, argument] of choice.call.arguments.entries()) {
         if (guard.callbacks?.includes(position)) continue
@@ -5839,10 +6184,7 @@ function enrollmentIdentityProblem(
   node: ts.Node,
   route: string
 ): string | undefined {
-  if (
-    route !== 'app/api/client/enroll/route.ts' &&
-    route !== 'apps/services/api/src/app/api/client/enroll/route.ts'
-  )
+  if (route !== 'apps/services/api/src/app/api/client/enroll/route.ts')
     return undefined
   if (!ts.isFunctionDeclaration(node) || !node.body)
     return 'enrollment identity handler is unresolved'
@@ -5855,12 +6197,11 @@ function enrollmentIdentityProblem(
     return (
       !!call &&
       ts.isCallExpression(call) &&
-      ['lib/application-session', 'apps/services/api/src/host/session'].some(
-        (module) =>
-          sameBinding(importedCallee(call, info) ?? { module: '', name: '' }, {
-            module,
-            name: 'getServerSession',
-          })
+      ['apps/services/api/src/host/session'].some((module) =>
+        sameBinding(importedCallee(call, info) ?? { module: '', name: '' }, {
+          module,
+          name: 'getServerSession',
+        })
       )
     )
   })
@@ -5948,6 +6289,16 @@ function analyzeRouteModule(file: string, text?: string): Endpoint[] {
       continue
     }
     const facts = reach(target.info, target.node, load)
+    const publicComposition = PUBLIC_FACTORY_COMPOSITIONS.get(target.info)
+    if (publicComposition) {
+      // These facts come from the actual host factory call, not an invented reference list.
+      const original = reach(publicComposition.info, publicComposition.node)
+      for (const reference of original.references)
+        facts.references.add(reference)
+      for (const status of original.statuses) facts.statuses.add(status)
+      facts.calls.push(...original.calls)
+      facts.followed.push(...original.followed)
+    }
     for (const statement of sideEffects) {
       const module = moduleBinding(
         info.file,
@@ -6084,6 +6435,18 @@ function allowlistProblems(route: string, endpoints: Endpoint[]): string[] {
   for (const method of entry.methods) {
     const endpoint = endpoints.find((item) => item.method === method)
     if (!endpoint) continue
+    if (
+      method === 'GET' &&
+      PUBLIC_FACTORY_CLOSURES.some(
+        ([, , , pathName]) =>
+          route === `apps/services/api/src/app/api/${pathName}/route.ts`
+      ) &&
+      (!endpoint.verdict.ok ||
+        !endpoint.verdict.kinds.includes('public-tenant'))
+    )
+      problems.push(
+        `${route}#${method}: public factory has no checked tenant refusal before data`
+      )
     if (endpoint.facts.calls.length && entry.invariant === RETIRED)
       problems.push(`${route}#${method}: retired handler calls a module`)
     if (entry.invariant.inert && endpoint.inert)
@@ -6108,7 +6471,9 @@ function cookieMutation(endpoint: Endpoint): boolean {
   if (!endpoint.verdict.ok) return false
   return (
     endpoint.verdict.kinds.some((kind) => COOKIE_KINDS.has(kind)) ||
-    endpoint.facts.references.has('lib/application-session#getServerSession')
+    endpoint.facts.references.has(
+      'apps/services/api/src/host/session#getServerSession'
+    )
   )
 }
 
@@ -6188,7 +6553,7 @@ describe('route authentication inventory', () => {
     }
   })
 
-  it('evaluates the moved contract role predicate through both real facades', () => {
+  it('evaluates the moved contract role predicate through its real public facade', () => {
     const file = path.join(
       ROOT,
       'packages/backend/src/modules/documents/rental-contracts.ts'
@@ -6197,7 +6562,6 @@ describe('route authentication inventory', () => {
     const original = "return ['ADMIN', 'OPERATOR'].includes(principal.role)"
     expect(source).toContain(original)
     const routes = [
-      'app/api/admin/rentals/[id]/contract/route.ts',
       'apps/services/api/src/app/api/admin/rentals/[id]/contract/route.ts',
     ]
     for (const mutation of [
@@ -6236,36 +6600,68 @@ describe('route authentication inventory', () => {
 
   it('classifies representative routes by the helper they actually use', () => {
     const expectations: Array<[string, string, Kind]> = [
-      ['app/api/cron/outbox/route.ts', 'GET', 'cron'],
-      ['app/api/cron/late-fees/route.ts', 'GET', 'cron'],
-      ['app/api/admin/categories/route.ts', 'POST', 'tenant-permission'],
-      ['app/api/admin/rentals/route.ts', 'GET', 'tenant-principal'],
+      ['apps/services/api/src/app/api/cron/outbox/route.ts', 'GET', 'cron'],
+      ['apps/services/api/src/app/api/cron/late-fees/route.ts', 'GET', 'cron'],
       [
-        'app/api/admin/rentals/[id]/contract/route.ts',
+        'apps/services/api/src/app/api/admin/categories/route.ts',
+        'POST',
+        'tenant-permission',
+      ],
+      [
+        'apps/services/api/src/app/api/admin/rentals/route.ts',
+        'GET',
+        'tenant-principal',
+      ],
+      [
+        'apps/services/api/src/app/api/admin/rentals/[id]/contract/route.ts',
         'POST',
         'tenant-principal',
       ],
-      ['app/api/admin/badges/route.ts', 'GET', 'role'],
       [
-        'app/api/admin/quotes/[id]/download/route.ts',
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        'GET',
+        'tenant-principal',
+      ],
+      [
+        'apps/services/api/src/app/api/admin/quotes/[id]/download/route.ts',
         'GET',
         'tenant-permission',
       ],
-      ['app/api/quotes/[id]/download/route.ts', 'GET', 'tenant-principal'],
-      ['app/api/orcamentos/route.ts', 'POST', 'public-tenant'],
       [
-        'app/api/payments/pix/webhook/[integrationId]/route.ts',
+        'apps/services/api/src/app/api/quotes/[id]/download/route.ts',
+        'GET',
+        'tenant-principal',
+      ],
+      [
+        'apps/services/api/src/app/api/orcamentos/route.ts',
+        'POST',
+        'public-tenant',
+      ],
+      [
+        'apps/services/api/src/app/api/payments/pix/webhook/[integrationId]/route.ts',
         'POST',
         'webhook',
       ],
       [
-        'app/api/webhooks/whatsapp/[integrationId]/route.ts',
+        'apps/services/api/src/app/api/webhooks/whatsapp/[integrationId]/route.ts',
         'GET',
         'webhook-handshake',
       ],
-      ['app/api/auth/[...nextauth]/route.ts', 'POST', 'identity'],
-      ['app/api/auth/organizations/selection/route.ts', 'POST', 'identity'],
-      ['app/api/equipments/route.ts', 'GET', 'public-tenant'],
+      [
+        'apps/services/api/src/app/api/auth/[...nextauth]/route.ts',
+        'POST',
+        'identity',
+      ],
+      [
+        'apps/services/api/src/app/api/auth/organizations/selection/route.ts',
+        'POST',
+        'identity',
+      ],
+      [
+        'apps/services/api/src/app/api/equipments/route.ts',
+        'GET',
+        'public-tenant',
+      ],
     ]
     for (const [route, method, kind] of expectations) {
       const endpoint = find(route, method)
@@ -6278,8 +6674,7 @@ describe('route authentication inventory', () => {
     }
   })
 
-  // Contraparte da API compartilhada (onda 135, E6): as mesmas rotas representativas, pelo helper que o serviço usa
-  // de fato. Sobrevive à saída da raiz legada, quando o caso de cima sai junto com ela (bloco F).
+  // O serviço preserva a classificação por helper; o caso público também caracteriza sua composição explícita.
   it('classifies the representative routes of the shared API by the helper they actually use', () => {
     const api = (route: string) =>
       `apps/services/api/src/app/api/${route}/route.ts`
@@ -6413,7 +6808,7 @@ function ownerScopedProblems(
   return problems
 }
 
-/** The file of a module id: a project module (`lib/catalog`) or an export of @gb-locacoes/backend (its package.json). */
+/** The file of a module id: a project module (backend catalog errors) or a backend export in its package.json. */
 function moduleFile(module: string): string | undefined {
   if (module === '@gb-locacoes/contracts') {
     const manifest = JSON.parse(
@@ -6953,11 +7348,7 @@ function wrapperRefusalProblems(
 
 /** Parses `file` (optionally with in-memory `text`) and finds the function `name` it declares. */
 
-const CRON_FACADE_FILES = [
-  'lib/security/external-request-auth.ts',
-  'lib/security/tenant-cron.ts',
-  'apps/services/api/src/host/tenant-cron.ts',
-] as const
+const CRON_FACADE_FILES = ['apps/services/api/src/host/tenant-cron.ts'] as const
 function cronFacadeProblem(file: string, source?: string): string | undefined {
   const actual = source ?? fs.readFileSync(path.join(ROOT, file), 'utf8')
   const service = file.startsWith('apps/')
@@ -6968,7 +7359,7 @@ function cronFacadeProblem(file: string, source?: string): string | undefined {
       "} from '@gb-locacoes/backend/http'\n" +
       (service
         ? "import {getDatabaseRuntime} from '@gb-locacoes/backend/runtime'\nimport {withTenantTransaction} from './tenant-transaction'"
-        : "import {prisma} from '@/lib/prisma'\nimport {withTenantTransaction} from '@/lib/tenant'") +
+        : "import {prisma} from '@/tests/security/fixtures/authorization-scanner-data'\nimport { withTenantTransaction } from '@/apps/services/api/src/host/tenant-transaction'") +
       "\nexport type {CronBudget} from '@gb-locacoes/backend/http'\nconst runner = createTenantCron({getDatabase: () => " +
       (service ? 'getDatabaseRuntime().prisma' : 'prisma') +
       ',withTenantTransaction})\nexport function runTenantCron(request: Request, job: Parameters<typeof runner.runTenantCron>[1], options: Parameters<typeof runner.runTenantCron>[2]): Promise<Response> {return runner.runTenantCron(request,job,options)}\n' +
@@ -7031,22 +7422,18 @@ function helperFunction(
  * requireAdmin middleware goes through (checked below).
  */
 const CENTRAL_HELPERS: Array<{ file: string; name: string }> = [
-  { file: 'lib/tenant.ts', name: 'resolveTenantPrincipal' },
   {
     file: 'apps/services/api/src/host/private-identity.ts',
     name: 'resolveTenantPrincipal',
   },
-  { file: 'lib/tenant-permissions.ts', name: 'requireTenantPermission' },
   {
     file: 'apps/services/api/src/host/permissions.ts',
     name: 'requireTenantPermission',
   },
-  { file: 'middlewares/require-admin.ts', name: 'principal' },
 ]
 const PRINCIPAL_SOURCE =
   'packages/backend/src/modules/identity/tenant-request-principal.ts'
 const PRINCIPAL_FACADES = [
-  { file: 'lib/tenant.ts', session: 'lib/application-session' },
   {
     file: 'apps/services/api/src/host/private-identity.ts',
     session: 'apps/services/api/src/host/session',
@@ -7055,7 +7442,6 @@ const PRINCIPAL_FACADES = [
 const PERMISSION_SOURCE =
   'packages/backend/src/modules/identity/tenant-permission.ts'
 const PERMISSION_FACADES = [
-  { file: 'lib/tenant-permissions.ts', principal: 'lib/tenant' },
   {
     file: 'apps/services/api/src/host/permissions.ts',
     principal: 'apps/services/api/src/host/private-identity',
@@ -7065,7 +7451,6 @@ const PERMISSION_FACADES = [
 const WEBHOOK_AUTH_SOURCE =
   'packages/backend/src/modules/identity/tenant-webhook.ts'
 const WEBHOOK_AUTH_FACADES = [
-  'lib/security/tenant-webhook.ts',
   'apps/services/api/src/host/webhook-authentication.ts',
 ] as const
 
@@ -7137,8 +7522,16 @@ function webhookAuthFacadeProblem(
   )
     return 'does not lazily supply its real database'
   const body = strip(database.body)
+  // Historical branch for retired lib/security/tenant-webhook.ts; WEBHOOK_AUTH_FACADES now names only the API host.
   if (file === 'lib/security/tenant-webhook.ts') {
-    if (!importNamed(body, found.info, 'lib/prisma', ['prisma']))
+    if (
+      !importNamed(
+        body,
+        found.info,
+        'tests/security/fixtures/authorization-scanner-data',
+        ['prisma']
+      )
+    )
       return 'wrong legacy database'
   } else {
     const getter =
@@ -7271,8 +7664,16 @@ function principalFacadeProblem(
   )
     return 'does not lazily supply its real database'
   const body = strip(database.body)
+  // Historical branch for retired lib/tenant.ts; PRINCIPAL_FACADES now names only the API host's private identity.
   if (file === 'lib/tenant.ts') {
-    if (!importNamed(body, found.info, 'lib/prisma', ['prisma']))
+    if (
+      !importNamed(
+        body,
+        found.info,
+        'tests/security/fixtures/authorization-scanner-data',
+        ['prisma']
+      )
+    )
       return 'wrong legacy database'
   } else {
     const binding =
@@ -7295,6 +7696,7 @@ function principalFacadeProblem(
   const publicTenant = props.get('resolvePublicTenant')
   if (!publicTenant || !ts.isShorthandPropertyAssignment(publicTenant))
     return 'wrong public tenant resolver'
+  // Retired lib/tenant.ts keeps its historical spelling here; the live facade's public resolver is in API host/runtime.
   const publicFile =
     file === 'lib/tenant.ts' ? file : 'apps/services/api/src/host/runtime.ts'
   if (
@@ -7574,7 +7976,7 @@ function memorySourceProblem(text?: string): string | undefined {
   return undefined
 }
 
-/** Both approved facades expose the same factory instance and the real trusted IP reader. */
+/** The approved API host facade exposes one factory instance and the real trusted IP reader. */
 function memoryFacadeProblem(
   module: string,
   texts: Partial<Record<string, string>> = {}
@@ -7582,6 +7984,7 @@ function memoryFacadeProblem(
   if (!MEMORY_FACADES.includes(module)) return 'unknown memory facade'
   const file = `${module}.ts`
   const info = parseModule(path.join(ROOT, file), texts[file])
+  // The former lib/rate-limit branch is retired; MEMORY_FACADES above accepts only the API host module.
   const names =
     module === 'lib/rate-limit'
       ? ['adminApiRateLimit', 'strictRateLimit', 'checkRateLimit']
@@ -7727,8 +8130,16 @@ function permissionFacadeProblem(
   )
     return 'does not lazily supply the permission database'
   const body = strip(database.body)
+  // Historical branch for retired lib/tenant-permissions.ts; PERMISSION_FACADES names the API host permission facade.
   if (file === 'lib/tenant-permissions.ts') {
-    if (!importNamed(body, found.info, 'lib/prisma', ['prisma']))
+    if (
+      !importNamed(
+        body,
+        found.info,
+        'tests/security/fixtures/authorization-scanner-data',
+        ['prisma']
+      )
+    )
       return 'wrong legacy permission database'
   } else {
     const getter =
@@ -7783,10 +8194,6 @@ function permissionFacadeProblem(
     return 'shared permissions do not start with the current principal and its unchanged denial'
   return principalFacadeProblem(`${facade.principal}.ts`, texts)
 }
-/** The middlewares approved by the authorization pass (GUARDS). */
-const MIDDLEWARES = GUARDS.filter(
-  (guard) => guard.module === 'middlewares/require-admin'
-).map((guard) => guard.name)
 
 /**
  * Why a central helper does not start with the same-origin guard: its first statement (after reading the
@@ -7863,11 +8270,7 @@ function carriesOrigin(
   return inner && `${next.name}: ${inner}`
 }
 
-/**
- * The same-origin guard is the first thing resolveTenantPrincipal does, and
- * HTTP middlewares preserve the original request; headers-only fallback has
- * method/url null (a synthetic GET would let a mutation pass as a read).
- */
+/** The service wrappers require and forward the original request before any work. */
 function centralGuardProblems(
   texts: Partial<Record<string, string>> = {}
 ): string[] {
@@ -7876,122 +8279,60 @@ function centralGuardProblems(
     const problem = carriesOrigin(file, name, texts)
     if (problem) problems.push(`${file}#${name}: ${problem}`)
   }
-  const middleware = parseModule(
-    path.join(ROOT, 'middlewares/require-admin.ts'),
-    texts['middlewares/require-admin.ts']
-  )
-  const calls: ts.CallExpression[] = []
-  const visit = (node: ts.Node) => {
+  const wrappers = [
+    {
+      file: 'apps/services/api/src/host/private-identity.ts',
+      name: 'resolveTenantPrincipal',
+      delegate: 'privatePrincipal',
+    },
+    {
+      file: 'apps/services/api/src/host/permissions.ts',
+      name: 'requireTenantPermission',
+      delegate: 'tenantPermission',
+    },
+  ] as const
+  for (const { file, name, delegate } of wrappers) {
+    const located = helperFunction(file, name, texts[file])
+    const parameters = located.node.parameters
+    const request = parameters[0]
     if (
-      ts.isCallExpression(node) &&
-      ts.isIdentifier(node.expression) &&
-      node.expression.text === 'resolveTenantPrincipal'
+      !request ||
+      !ts.isIdentifier(request.name) ||
+      request.questionToken ||
+      request.initializer
     )
-      calls.push(node)
-    ts.forEachChild(node, visit)
-  }
-  for (const node of middleware.locals.values()) visit(node)
-  if (!calls.length)
-    problems.push(
-      'middlewares/require-admin.ts: no resolveTenantPrincipal call'
-    )
-  // Every approved middleware starts by calling principal() or another of them.
-  for (const name of MIDDLEWARES) {
-    const node = middleware.locals.get(name)
-    const body =
-      node && isFunctionLike(node) && node.body && ts.isBlock(node.body)
-        ? node.body
+      problems.push(`${file}#${name}: requires its original request`)
+    const body = located.node.body
+    const statements = body && ts.isBlock(body) ? body.statements : undefined
+    const statement = statements?.[0]
+    const returned =
+      statement && ts.isReturnStatement(statement) && statement.expression
+        ? unwrap(statement.expression)
         : undefined
-    const first = body?.statements[0]?.getText() ?? ''
-    if (!new RegExp(`\\b(?:principal|${MIDDLEWARES.join('|')})\\(`).test(first))
+    const call =
+      returned && ts.isCallExpression(returned) ? returned : undefined
+    if (
+      !statements ||
+      statements.length !== 1 ||
+      !call ||
+      !ts.isIdentifier(call.expression) ||
+      call.expression.text !== delegate
+    ) {
       problems.push(
-        `middlewares/require-admin.ts#${name}: does not start with principal()`
+        `${file}#${name}: must start and end with its central delegate`
       )
-    if (node && isFunctionLike(node) && body) {
-      const request = node.parameters.find(
-        (parameter) => parameter.name.getText() === 'request'
-      )
-      const declaration = soleConst(body.statements[0])
-      const returned =
-        body.statements[0] && ts.isReturnStatement(body.statements[0])
-          ? body.statements[0].expression
-          : undefined
-      const call =
-        (declaration?.initializer ?? returned) &&
-        awaited((declaration?.initializer ?? returned)!)
-      if (
-        !request ||
-        !call ||
-        !ts.isCallExpression(call) ||
-        !call.arguments.length ||
-        declarationOf(call.arguments.at(-1)!) !== request
-      )
-        problems.push(
-          `middlewares/require-admin.ts#${name}: does not forward its original request`
-        )
+      continue
     }
-  }
-  for (const call of calls) {
-    const argument = call.arguments[0] && unwrap(call.arguments[0])
-    const owner = helperFunction(
-      'middlewares/require-admin.ts',
-      'principal',
-      texts['middlewares/require-admin.ts']
+    if (
+      call.arguments.length !== parameters.length ||
+      call.arguments.some((argument, index) => {
+        const value = unwrap(argument)
+        return (
+          !ts.isIdentifier(value) || declarationOf(value) !== parameters[index]
+        )
+      })
     )
-    const original =
-      argument &&
-      ts.isBinaryExpression(argument) &&
-      argument.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken
-    const fallback = original ? unwrap(argument.right) : undefined
-    if (!original || declarationOf(argument.left) !== owner.node.parameters[0])
-      problems.push(
-        'middlewares/require-admin.ts: resolveTenantPrincipal must receive the original request'
-      )
-    const method =
-      fallback && ts.isObjectLiteralExpression(fallback)
-        ? fallback.properties.find(
-            (property): property is ts.PropertyAssignment =>
-              ts.isPropertyAssignment(property) &&
-              propertyText(property.name) === 'method'
-          )
-        : undefined
-    if (method?.initializer.kind !== ts.SyntaxKind.NullKeyword)
-      problems.push(
-        'middlewares/require-admin.ts: fallback must receive `method: null` (headers only)'
-      )
-    if (fallback && ts.isObjectLiteralExpression(fallback)) {
-      const url = fallback.properties.find(
-        (property) =>
-          ts.isPropertyAssignment(property) &&
-          propertyText(property.name) === 'url'
-      )
-      const headers = fallback.properties.find(
-        (property) =>
-          ts.isPropertyAssignment(property) &&
-          propertyText(property.name) === 'headers'
-      )
-      const source =
-        headers &&
-        ts.isPropertyAssignment(headers) &&
-        declarationOf(headers.initializer)
-      const read =
-        source &&
-        ts.isVariableDeclaration(source) &&
-        source.initializer &&
-        awaited(source.initializer)
-      if (
-        fallback.properties.length !== 3 ||
-        !url ||
-        !ts.isPropertyAssignment(url) ||
-        url.initializer.kind !== ts.SyntaxKind.NullKeyword ||
-        !read ||
-        !ts.isCallExpression(read) ||
-        importedCallee(read, owner.info)?.module !== 'next/headers'
-      )
-        problems.push(
-          'middlewares/require-admin.ts: fallback must preserve only real headers and null URL'
-        )
-    }
+      problems.push(`${file}#${name}: does not forward its original arguments`)
   }
   return problems
 }
@@ -8149,7 +8490,7 @@ describe('route authentication inventory: same-origin guard (CSRF)', () => {
       )
     expect(unguarded).toEqual([])
     // The anonymous account flows open on the tenant host are covered too (item 2).
-    for (const prefix of ['app', 'apps/services/api/src/app'])
+    for (const prefix of ['apps/services/api/src/app'])
       for (const flow of ['register', 'forgot-password', 'reset-password'])
         expect(
           cookie.some(
@@ -8187,15 +8528,27 @@ describe('route authentication inventory: same-origin guard (CSRF)', () => {
 
   it('classifies the gate of representative cookie mutations', () => {
     const central: Array<[string, string]> = [
-      ['app/api/admin/categories/route.ts', 'POST'],
-      ['app/api/admin/drivers/route.ts', 'POST'],
-      ['app/api/admin/zoho-mail/oauth/disconnect/route.ts', 'DELETE'],
-      ['app/api/admin/notifications/sync/route.ts', 'POST'],
-      ['app/api/addresses/route.ts', 'POST'],
-      ['app/api/auth/organizations/selection/route.ts', 'POST'],
-      ['app/api/auth/organizations/selection/route.ts', 'DELETE'],
-      ['app/api/client/enroll/route.ts', 'POST'],
-      ['app/api/auth/register/route.ts', 'POST'],
+      ['apps/services/api/src/app/api/admin/categories/route.ts', 'POST'],
+      ['apps/services/api/src/app/api/admin/drivers/route.ts', 'POST'],
+      [
+        'apps/services/api/src/app/api/admin/zoho-mail/oauth/disconnect/route.ts',
+        'DELETE',
+      ],
+      [
+        'apps/services/api/src/app/api/admin/notifications/sync/route.ts',
+        'POST',
+      ],
+      ['apps/services/api/src/app/api/addresses/route.ts', 'POST'],
+      [
+        'apps/services/api/src/app/api/auth/organizations/selection/route.ts',
+        'POST',
+      ],
+      [
+        'apps/services/api/src/app/api/auth/organizations/selection/route.ts',
+        'DELETE',
+      ],
+      ['apps/services/api/src/app/api/client/enroll/route.ts', 'POST'],
+      ['apps/services/api/src/app/api/auth/register/route.ts', 'POST'],
     ]
     for (const [route, method] of central) {
       const endpoint = find(route, method)
@@ -8204,10 +8557,16 @@ describe('route authentication inventory: same-origin guard (CSRF)', () => {
       expect(endpoint!.csrf, `${route}#${method}`).toEqual({ ok: true })
     }
     // Safe methods are never analysed; webhooks and cron are not cookie mutations.
-    expect(find('app/api/admin/categories/route.ts', 'GET')!.csrf).toBeNull()
+    expect(
+      find('apps/services/api/src/app/api/admin/categories/route.ts', 'GET')!
+        .csrf
+    ).toBeNull()
     expect(
       cookieMutation(
-        find('app/api/payments/pix/webhook/[integrationId]/route.ts', 'POST')!
+        find(
+          'apps/services/api/src/app/api/payments/pix/webhook/[integrationId]/route.ts',
+          'POST'
+        )!
       )
     ).toBe(false)
   })
@@ -8216,35 +8575,35 @@ describe('route authentication inventory: same-origin guard (CSRF)', () => {
     const routeMutations: Array<[string, string, RegExp, string]> = [
       // The guard of an anonymous account flow removed.
       [
-        'app/api/auth/register/route.ts',
+        'apps/services/api/src/app/api/auth/register/route.ts',
         'POST',
         /const crossOrigin = rejectCrossOriginMutation\(request\)\s*if \(crossOrigin\) return crossOrigin/,
         '',
       ],
       // Moved after the account flow (a sibling would spend the budget).
       [
-        'app/api/auth/forgot-password/route.ts',
+        'apps/services/api/src/app/api/auth/forgot-password/route.ts',
         'POST',
         /const crossOrigin = rejectCrossOriginMutation\(request\)\s*if \(crossOrigin\) return crossOrigin/,
         'await credentialAccountHandlers.forgotPassword(request)\n  const crossOrigin = rejectCrossOriginMutation(request)\n  if (crossOrigin) return crossOrigin',
       ],
       // Result discarded.
       [
-        'app/api/auth/reset-password/route.ts',
+        'apps/services/api/src/app/api/auth/reset-password/route.ts',
         'POST',
         /const crossOrigin = rejectCrossOriginMutation\(request\)\s*if \(crossOrigin\) return crossOrigin/,
         'void rejectCrossOriginMutation(request)',
       ],
       // A direct boolean guard removed.
       [
-        'app/api/client/enroll/route.ts',
+        'apps/services/api/src/app/api/client/enroll/route.ts',
         'POST',
         /if \(!isTrustedMutationOrigin\(request\)\)\s*return reply\(\{ error: 'Origem não permitida' \}, 403\)/,
         '',
       ],
       // The anonymous quote request back to the origin check only with a validated edge, after the tenant lookup.
       [
-        'app/api/quotes/route.ts',
+        'apps/services/api/src/app/api/quotes/route.ts',
         'POST',
         /const crossOrigin = rejectCrossOriginMutation\(request\)\s*if \(crossOrigin\) return crossOrigin/,
         '',
@@ -8253,13 +8612,13 @@ describe('route authentication inventory: same-origin guard (CSRF)', () => {
     const accountMutations = routeMutations
       .slice(0, 3)
       .map(
-        ([route, method, pattern, replacement]) =>
-          [`apps/services/api/src/${route}`, method, pattern, replacement] as [
-            string,
-            string,
-            RegExp,
-            string,
-          ]
+        ([route, method, _pattern, _replacement]) =>
+          [
+            route,
+            method,
+            /rejectCrossOriginMutation\(request\)/,
+            'rejectCrossOriginMutation(new Request(request.url))',
+          ] as [string, string, RegExp, string]
       )
     for (const [route, method, pattern, replacement] of [
       ...routeMutations,
@@ -8280,41 +8639,53 @@ describe('route authentication inventory: same-origin guard (CSRF)', () => {
     }
 
     const helperMutations: Array<[string, RegExp, string]> = [
-      // The central guard removed from resolveTenantPrincipal.
+      // Shared CSRF refusal removed from the common principal.
       [
         PRINCIPAL_SOURCE,
         /const crossOrigin = rejectCrossOriginMutation\(request\)\s*if \(crossOrigin\)\s*return \{ ok: false, response: crossOrigin(?:, error: 'Origem não permitida')? \}/,
         '',
       ],
-      // Moved after the session and the membership lookup.
+      // Shared refusal moved after the session and membership lookup.
       [
         PRINCIPAL_SOURCE,
         /const crossOrigin = rejectCrossOriginMutation\(request\)\s*if \(crossOrigin\)\s*return \{ ok: false, response: crossOrigin(?:, error: 'Origem não permitida')? \}([\s\S]*?)( {2}if \(!result\.ok\))/,
         '$1  const crossOrigin = rejectCrossOriginMutation(request)\n  if (crossOrigin) return { ok: false, response: crossOrigin }\n$2',
       ],
-      // requireAdmin back to a synthetic GET Request: every mutation would pass as a read.
-      ['middlewares/require-admin.ts', /method: null,/, "method: 'GET',"],
+      // Former synthetic-GET fallback: the API must never rebuild a mutation as a read.
       [
-        'middlewares/require-admin.ts',
-        /resolveTenantPrincipal\(\s*request \?\?/,
-        'resolveTenantPrincipal(null ??',
+        'apps/services/api/src/host/private-identity.ts',
+        /return privatePrincipal\(request\)/,
+        "return privatePrincipal(new Request('https://fixture.test', { method: 'GET', headers: request.headers }))",
       ],
+      // Former request ?? fallback bypass: the supplied request may not be discarded for headers only.
       [
-        'middlewares/require-admin.ts',
-        /headers: current,/,
-        'headers: new Headers(),',
+        'apps/services/api/src/host/private-identity.ts',
+        /return privatePrincipal\(request\)/,
+        'return privatePrincipal({ method: null, url: null, headers: request.headers })',
       ],
-      ['middlewares/require-admin.ts', /principal\(request\)/, 'principal()'],
+      // Former current-headers replacement: preserve real headers as well as method and URL.
       [
-        'middlewares/require-admin.ts',
-        /requireRoles\(\['ADMIN'\], request\)/,
-        "requireRoles(['ADMIN'])",
+        'apps/services/api/src/host/private-identity.ts',
+        /return privatePrincipal\(request\)/,
+        'return privatePrincipal({ method: request.method, url: request.url, headers: new Headers() })',
       ],
-      // A middleware that reads the session on its own, around principal().
+      // Former principal(request) -> principal(): no optional API request channel.
       [
-        'middlewares/require-admin.ts',
-        /(export async function requirePermission\(\s*module: Module,\s*action: Action,\s*request\?: MutationRequest\s*\): Promise<AuthResult> \{)/,
-        '$1\n  await getServerSession()',
+        'apps/services/api/src/host/private-identity.ts',
+        /return privatePrincipal\(request\)/,
+        'return privatePrincipal()',
+      ],
+      // Former requireRoles(..., request) omission: permission must forward the request with module/action.
+      [
+        'apps/services/api/src/host/permissions.ts',
+        /return tenantPermission\(request, module, action\)/,
+        'return tenantPermission(undefined as never, module, action)',
+      ],
+      // Former independent session read around the gate: use the real service session port before the delegate.
+      [
+        'apps/services/api/src/host/permissions.ts',
+        /^([\s\S]*?)(export async function requireTenantPermission\([\s\S]*?\): Promise<TenantPrincipalResolution> \{)/,
+        "import { getServerSession } from './session'\n$1$2\n  await getServerSession()",
       ],
     ]
     for (const [file, pattern, replacement] of helperMutations) {
@@ -8379,14 +8750,18 @@ describe('route authentication inventory: structural rule self-checks', () => {
       endpoint.verdict.ok ? 'ok' : endpoint.verdict.reason
     )
   it('root Asaas guard is restricted to its exact route and requires its discriminated refusal', () => {
-    const route = 'app/api/webhooks/asaas/platform/route.ts'
+    const route =
+      'apps/services/api/src/app/api/webhooks/asaas/platform/route.ts'
     const original = fs.readFileSync(path.join(ROOT, route), 'utf8')
     expect(reasons(route, original)).toEqual(['ok'])
-    expect(reasons('app/api/admin/new-hook/route.ts', original)).not.toEqual([
-      'ok',
-    ])
     expect(
-      reasons('app/api/webhooks/asaas/[integrationId]/route.ts', original)
+      reasons('apps/services/api/src/app/api/admin/new-hook/route.ts', original)
+    ).not.toEqual(['ok'])
+    expect(
+      reasons(
+        'apps/services/api/src/app/api/webhooks/asaas/[integrationId]/route.ts',
+        original
+      )
     ).not.toEqual(['ok'])
     const bad = original.replace(
       'if (!authenticated.ok)',
@@ -8395,9 +8770,8 @@ describe('route authentication inventory: structural rule self-checks', () => {
     expect(bad).not.toBe(original)
     expect(reasons(route, bad)).not.toEqual(['ok'])
   })
-  it('enrollment requires identity in addition to public host resolution, with CSRF before effects in both hosts', () => {
+  it('enrollment requires identity in addition to public host resolution, with CSRF before effects in the shared service', () => {
     for (const route of [
-      'app/api/client/enroll/route.ts',
       'apps/services/api/src/app/api/client/enroll/route.ts',
     ]) {
       const original = fs.readFileSync(path.join(ROOT, route), 'utf8')
@@ -8417,6 +8791,73 @@ describe('route authentication inventory: structural rule self-checks', () => {
         expect(mutated, route).not.toBe(original)
         expect(reasons(route, mutated), route).not.toEqual(['ok'])
       }
+      // This projection is an exact AST proof, not a general allowance for reconstructed requests.
+      for (const [label, from, to] of [
+        [
+          'forged argument',
+          'hostOnly(request)',
+          'hostOnly(new Request(request.url))',
+        ],
+        ['full URL keeps query', 'url.origin + url.pathname', 'request.url'],
+        [
+          'query retained',
+          'url.origin + url.pathname',
+          'url.origin + url.pathname + url.search',
+        ],
+        [
+          'foreign origin',
+          'url.origin + url.pathname',
+          "'https://foreign.example.test' + url.pathname",
+        ],
+        [
+          'foreign headers',
+          'headers: request.headers',
+          'headers: new Headers()',
+        ],
+        [
+          'body retained',
+          '{ headers: request.headers }',
+          '{ headers: request.headers, body: request.body }',
+        ],
+        [
+          'method retained',
+          '{ headers: request.headers }',
+          '{ headers: request.headers, method: request.method }',
+        ],
+        ['reassignable helper', 'const hostOnly =', 'let hostOnly ='],
+        [
+          'parameter default',
+          'const hostOnly = (request: Request)',
+          "const hostOnly = (request: Request = new Request('https://example.test'))",
+        ],
+        [
+          'extra helper effect',
+          '  const url = new URL(request.url)',
+          "  void fetch('https://example.test')\n  const url = new URL(request.url)",
+        ],
+        [
+          'shadowed URL',
+          'const hostOnly =',
+          'const URL = globalThis.URL\nconst hostOnly =',
+        ],
+        [
+          'shadowed Request',
+          'const hostOnly =',
+          'const Request = globalThis.Request\nconst hostOnly =',
+        ],
+      ] as const) {
+        const changed = original.replace(from, to)
+        expect(changed, `${route}: ${label} applies`).not.toBe(original)
+        expect(reasons(route, changed), `${route}: ${label}`).not.toEqual([
+          'ok',
+        ])
+      }
+      expect(
+        reasons(
+          'apps/services/api/src/app/api/client/other-enrollment/route.ts',
+          original
+        )
+      ).not.toEqual(['ok'])
       const noOrigin = original.replace(
         /if \(!isTrustedMutationOrigin\(request\)\)\s*return reply\(\{ error: 'Origem não permitida' \}, 403\)/,
         ''
@@ -8439,42 +8880,44 @@ describe('route authentication inventory: structural rule self-checks', () => {
   const INERT_PROBLEM = /#[A-Z]+: not INERT \(/
   const withoutInert = (problems: string[]) =>
     problems.filter((problem) => !INERT_PROBLEM.test(problem))
-  const admin = 'app/api/admin/new-feature/route.ts'
+  const admin = 'apps/services/api/src/app/api/admin/new-feature/route.ts'
   /** A POST that runs `early` before requireAdmin. */
   const early = (code: string, prelude = '') => `
-      import { prisma } from '@/lib/prisma'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
       import { z } from 'zod'
       import { NextResponse } from 'next/server'
-      import { withTenantTransaction } from '@/lib/tenant'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { withTenantTransaction } from '@/apps/services/api/src/host/tenant-transaction'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       ${prelude}
       export async function POST(request: Request) {
         ${code}
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json({})
       }`
   /** A GET whose inert refusal (`if (<inert>) { ... }`) holds `code` before requireAdmin. */
   const refusal = (code: string, prelude = '') => `
-      import { prisma } from '@/lib/prisma'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
       import { z } from 'zod'
       import { NextResponse } from 'next/server'
-      import { withTenantTransaction } from '@/lib/tenant'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { withTenantTransaction } from '@/apps/services/api/src/host/tenant-transaction'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       ${prelude}
       export async function GET(request: Request) {
         if (request.headers.has('x-all')) {
           ${code}
         }
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json({})
       }`
-  const ownerRoute = 'app/api/admin/clients/[id]/new-feature/route.ts'
+  const ownerRoute =
+    'apps/services/api/src/app/api/admin/clients/[id]/new-feature/route.ts'
   /** A DELETE that lets a CLIENT through as the owner named by the route, then runs `data`. */
   const owned = (data: string, prelude = '') => `
-      import { resolveTenantPrincipal, withTenantTransaction } from '@/lib/tenant'
-      import { listClientDocuments } from '@/lib/client-documents'
+      import { resolveTenantPrincipal } from '@/apps/services/api/src/host/private-identity'
+import { withTenantTransaction } from '@/apps/services/api/src/host/tenant-transaction'
+      import { listClientDocuments } from '@/apps/services/api/src/host/client-documents'
       ${prelude}
       export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
         const access = await resolveTenantPrincipal(request)
@@ -8489,8 +8932,8 @@ describe('route authentication inventory: structural rule self-checks', () => {
   it('fails a new route without any helper', () => {
     expect(
       reasons(
-        'app/api/new-feature/route.ts',
-        `import { prisma } from '@/lib/prisma'
+        'apps/services/api/src/app/api/admin/new-feature/route.ts',
+        `import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
          export async function GET() { return Response.json(await prisma.user.findMany()) }`
       )
     ).toEqual([NO_GUARD])
@@ -8526,7 +8969,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
   it('ignores a same-named local function instead of the canonical helper', () => {
     expect(
       reasons(
-        'app/api/new-feature/route.ts',
+        'apps/services/api/src/app/api/admin/new-feature/route.ts',
         `async function requireTenantPermission() { return { ok: true } }
          export async function GET(request: Request) {
            const access = await requireTenantPermission(request, 'X', 'READ')
@@ -8538,30 +8981,125 @@ describe('route authentication inventory: structural rule self-checks', () => {
 
   it('does not accept a helper whose result is discarded', () => {
     for (const call of [
-      'await requireAdmin()',
-      'void requireAdmin()',
-      'void (await requireAdmin())',
+      "await requireAdmin(request, 'EQUIPMENTS', 'READ')",
+      "void requireAdmin(request, 'EQUIPMENTS', 'READ')",
+      "void (await requireAdmin(request, 'EQUIPMENTS', 'READ'))",
     ])
       expect(
         reasons(
-          'app/api/new-feature/route.ts',
-          `import { requireAdmin } from '@/middlewares/require-admin'
-           export async function DELETE() { ${call}; return Response.json({}) }`
+          'apps/services/api/src/app/api/admin/new-feature/route.ts',
+          `import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
+           export async function DELETE(request: Request) { ${call}; return Response.json({}) }`
         ),
         call
-      ).toEqual(['result of requireAdmin is discarded'])
+      ).toEqual(['result of requireTenantPermission is discarded'])
     expect(
       reasons(
-        'app/api/new-feature/route.ts',
-        `import { requireAdmin } from '@/middlewares/require-admin'
-         export async function GET() { return void (await requireAdmin()) }`
+        'apps/services/api/src/app/api/admin/new-feature/route.ts',
+        `import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
+         export async function GET(request: Request) { return void (await requireAdmin(request, 'EQUIPMENTS', 'READ')) }`
       )
-    ).toEqual(['result of requireAdmin is discarded'])
+    ).toEqual(['result of requireTenantPermission is discarded'])
+  })
+
+  it('requires the original request and the ok refusal for the service guards', () => {
+    const entries = [
+      {
+        module: 'apps/services/api/src/host/permissions',
+        name: 'requireTenantPermission',
+        route: 'apps/services/api/src/app/api/admin/new-feature/route.ts',
+        tail: ", 'EQUIPMENTS', 'READ'",
+        role: '',
+      },
+      {
+        module: 'apps/services/api/src/host/private-identity',
+        name: 'resolveTenantPrincipal',
+        route: 'apps/services/api/src/app/api/admin/new-feature/route.ts',
+        tail: '',
+        role: "if (access.principal.role !== 'ADMIN') return Response.json({}, { status: 403 })",
+      },
+      {
+        module: 'apps/services/api/src/host/runtime',
+        name: 'resolvePublicRequestTenant',
+        route: 'apps/services/api/src/app/api/categories/route.ts',
+        tail: '',
+        role: '',
+      },
+    ]
+    for (const entry of entries) {
+      const source = (
+        argument: string,
+        refusal = 'if (!access.ok) return access.response'
+      ) =>
+        `import { ${entry.name} } from '@/${entry.module}'
+         export async function GET(request: Request) {
+           const access = await ${entry.name}(${argument ? argument + entry.tail : ''})
+           ${refusal}
+           ${entry.role}
+           return Response.json({})
+         }`
+      expect(
+        reasons(entry.route, source('request')),
+        entry.name + ' baseline'
+      ).toEqual(['ok'])
+      for (const argument of [
+        '',
+        'undefined',
+        '{} as never',
+        'new Request(request.url)',
+        'request.headers as never',
+      ])
+        expect(
+          reasons(entry.route, source(argument)),
+          entry.name + ' ' + argument
+        ).toEqual([entry.name + ' must receive the handler request'])
+      for (const refusal of [
+        'if (!access) return access.response',
+        'if (access == null) return access.response',
+        'if (!access.success) return access.response',
+        'if (!access.ok) console.warn("denied")',
+      ])
+        expect(
+          reasons(entry.route, source('request', refusal)),
+          entry.name + ' ' + refusal
+        ).not.toEqual(['ok'])
+    }
+    for (const [route, name, expectedMethods] of [
+      [
+        'apps/services/api/src/app/api/admin/categories/route.ts',
+        'requireTenantPermission',
+        2,
+      ],
+      [
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        'resolveTenantPrincipal',
+        1,
+      ],
+    ] as const) {
+      const file = path.join(ROOT, route!)
+      const original = fs.readFileSync(file, 'utf8')
+      expect(reasons(route, original), route).toHaveLength(expectedMethods)
+      expect(
+        reasons(route!, original).every((reason) => reason === 'ok'),
+        route! + ' baseline'
+      ).toBe(true)
+      const pattern = new RegExp(`\\b${name}\\(\\s*request(?=\\s*[,\\)])`, 'g')
+      for (const argument of ['undefined', 'new Request(request.url)']) {
+        const mutated = original.replace(pattern, `${name}(${argument}`)
+        expect(mutated, route! + ' mutation applies').not.toBe(original)
+        expect(
+          reasons(route!, mutated).some(
+            (reason) => reason === name + ' must receive the handler request'
+          ),
+          route!
+        ).toBe(true)
+      }
+    }
   })
 
   it('requires a role check for resolveTenantPrincipal under /api/admin', () => {
     const source = (check: string) => `
-      import { resolveTenantPrincipal } from '@/lib/tenant'
+      import { resolveTenantPrincipal } from '@/apps/services/api/src/host/private-identity'
       export async function POST(request: Request) {
         const access = await resolveTenantPrincipal(request)
         if (!access.ok) return access.response
@@ -8577,44 +9115,54 @@ describe('route authentication inventory: structural rule self-checks', () => {
         )
       )
     ).toEqual(['ok'])
-    expect(reasons('app/api/client/new-feature/route.ts', source(''))).toEqual([
-      'ok',
-    ])
+    expect(
+      reasons(
+        'apps/services/api/src/app/api/client/new-feature/route.ts',
+        source('')
+      )
+    ).toEqual(['ok'])
     // Returned as is, the principal authorizes nothing under /api/admin.
     expect(
       reasons(
         admin,
-        `import { resolveTenantPrincipal } from '@/lib/tenant'
+        `import { resolveTenantPrincipal } from '@/apps/services/api/src/host/private-identity'
          export async function GET(request: Request) { return resolveTenantPrincipal(request) }`
       )
     ).toEqual([ADMIN_ROLE])
   })
 
   it('keeps cron and identity helpers inside their namespaces', () => {
-    const cron = `import { requireCronAuthorization } from '@/lib/security/external-request-auth'
+    const cron = `import { requireCronAuthorization } from '@/apps/services/api/src/host/tenant-cron'
       export function GET(request: Request) {
         const denied = requireCronAuthorization(request)
         if (denied) return denied
         return Response.json({})
       }`
-    expect(reasons('app/api/cron/new-job/route.ts', cron)).toEqual(['ok'])
-    expect(reasons('app/api/admin/new-job/route.ts', cron)).toEqual([
-      'requireCronAuthorization does not authorize this namespace',
-    ])
-    const session = `import { getServerSession } from '@/lib/application-session'
+    expect(
+      reasons('apps/services/api/src/app/api/cron/new-job/route.ts', cron)
+    ).toEqual(['ok'])
+    expect(
+      reasons('apps/services/api/src/app/api/admin/new-job/route.ts', cron)
+    ).toEqual(['requireCronAuthorization does not authorize this namespace'])
+    const session = `import { getServerSession } from '@/apps/services/api/src/host/session'
       export async function GET() {
         const session = await getServerSession()
         if (!session?.user?.id) return Response.json({}, { status: 401 })
         return Response.json(session)
       }`
-    expect(reasons('app/api/auth/new-flow/route.ts', session)).toEqual(['ok'])
+    expect(
+      reasons('apps/services/api/src/app/api/auth/new-flow/route.ts', session)
+    ).toEqual(['ok'])
     for (const endpoint of ['organizations', 'slug-availability']) {
       expect(
-        reasons(`app/api/onboarding/${endpoint}/route.ts`, session)
+        reasons(
+          `apps/services/api/src/app/api/onboarding/${endpoint}/route.ts`,
+          session
+        )
       ).toEqual(['ok'])
       const route = `apps/services/api/src/app/api/onboarding/${endpoint}/route.ts`
       const service = session.replace(
-        "'@/lib/application-session'",
+        "'@/apps/services/api/src/host/session'",
         "'../../../../host/session'"
       )
       expect(reasons(route, service)).toEqual(['ok'])
@@ -8628,15 +9176,21 @@ describe('route authentication inventory: structural rule self-checks', () => {
         )
       ).not.toEqual(['ok'])
     }
-    expect(reasons('app/api/onboarding/status/route.ts', session)).toEqual([
-      'getServerSession does not authorize this namespace',
-    ])
-    expect(reasons('app/api/onboarding/arbitrary/route.ts', session)).toEqual([
-      'getServerSession does not authorize this namespace',
-    ])
-    expect(reasons('app/api/client/new-flow/route.ts', session)).toEqual([
-      'getServerSession does not authorize this namespace',
-    ])
+    expect(
+      reasons(
+        'apps/services/api/src/app/api/onboarding/status/route.ts',
+        session
+      )
+    ).toEqual(['getServerSession does not authorize this namespace'])
+    expect(
+      reasons(
+        'apps/services/api/src/app/api/onboarding/arbitrary/route.ts',
+        session
+      )
+    ).toEqual(['getServerSession does not authorize this namespace'])
+    expect(
+      reasons('apps/services/api/src/app/api/client/new-flow/route.ts', session)
+    ).toEqual(['getServerSession does not authorize this namespace'])
     for (const [helper, check] of [
       [
         'resolvePublicTenant',
@@ -8644,30 +9198,40 @@ describe('route authentication inventory: structural rule self-checks', () => {
       ],
       ['resolvePublicRequestTenant', 'if (!tenant.ok) return tenant.response'],
     ] as const) {
-      const publicTenant = `import { ${helper} } from '@/lib/tenant'
+      const publicTenant = `import { ${helper} } from '@/apps/services/api/src/host/runtime'
         export async function GET(request: Request) {
-          const tenant = await ${helper}(new URL(request.url).searchParams.get('tenant') ?? '')
+          const tenant = await ${helper}(${helper === 'resolvePublicRequestTenant' ? 'request' : "new URL(request.url).searchParams.get('tenant') ?? ''"})
           ${check}
           return Response.json(tenant)
         }`
       expect(
-        reasons('app/api/categories/route.ts', publicTenant),
+        reasons(
+          'apps/services/api/src/app/api/categories/route.ts',
+          publicTenant
+        ),
         helper
       ).toEqual(['ok'])
       expect(
-        reasons('app/api/new-catalog/route.ts', publicTenant),
+        reasons(
+          'apps/services/api/src/app/api/new-catalog/route.ts',
+          publicTenant
+        ),
         helper
       ).toEqual([PUBLIC_TENANT_OUTSIDE_SURFACE])
       expect(
-        reasons('app/api/admin/new-catalog/route.ts', publicTenant),
+        reasons(
+          'apps/services/api/src/app/api/admin/new-catalog/route.ts',
+          publicTenant
+        ),
         helper
       ).toEqual([`${helper} does not authorize this namespace`])
     }
-    // The result shape of lib/tenant#resolvePublicRequestTenant, after the body read of the PROLOGUE.
+    // The API host runtime result shape of resolvePublicRequestTenant, after the body read of the PROLOGUE.
     const requestTenant = (check: string) => `
       import { NextResponse } from 'next/server'
-      import { listPublicCategories } from '@/lib/catalog'
-      import { publicCacheHeaders, resolvePublicRequestTenant } from '@/lib/tenant'
+      import { listPublicCategories } from '@/tests/security/fixtures/authorization-scanner-data'
+      import { publicCacheHeaders } from '@gb-locacoes/backend/identity'
+import { resolvePublicRequestTenant } from '@/apps/services/api/src/host/runtime'
       export async function POST(request: Request) {
         const body = await request.json().catch(() => null)
         const tenant = await resolvePublicRequestTenant(request, { bodySlug: body?.tenantSlug })
@@ -8678,13 +9242,16 @@ describe('route authentication inventory: structural rule self-checks', () => {
       }`
     expect(
       reasons(
-        'app/api/contact/route.ts',
+        'apps/services/api/src/app/api/contact/route.ts',
         requestTenant('if (!tenant.ok) return tenant.response')
       )
     ).toEqual(['ok'])
-    expect(reasons('app/api/contact/route.ts', requestTenant(''))).toEqual([
-      'result of resolvePublicRequestTenant is not checked',
-    ])
+    expect(
+      reasons(
+        'apps/services/api/src/app/api/contact/route.ts',
+        requestTenant('')
+      )
+    ).toEqual(['result of resolvePublicRequestTenant is not checked'])
   })
 
   it('checks the API session result before any data access, with the same auth namespace restriction', () => {
@@ -8757,7 +9324,6 @@ describe('route authentication inventory: structural rule self-checks', () => {
       )
     }
     for (const route of [
-      'app/api/auth/organizations/current/route.ts',
       'apps/services/api/src/app/api/auth/organizations/current/route.ts',
     ]) {
       const source = fs.readFileSync(path.join(ROOT, route), 'utf8')
@@ -8791,7 +9357,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
     expect(
       reasons(
         admin,
-        `import { requireTenantPermission as guard } from '@/lib/tenant-permissions'
+        `import { requireTenantPermission as guard } from '@/apps/services/api/src/host/permissions'
          async function authorize(request: Request) { return guard(request, 'X', 'READ') }
          async function handler(request: Request) {
            const access = await authorize(request)
@@ -8804,7 +9370,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
     expect(
       reasons(
         admin,
-        `import { requireTenantPermission as guard } from '@/lib/tenant-permissions'
+        `import { requireTenantPermission as guard } from '@/apps/services/api/src/host/permissions'
          async function handler(request: Request) {
            const access = await guard(request, 'X', 'READ')
            if (!access.ok) return access.response
@@ -8813,38 +9379,41 @@ describe('route authentication inventory: structural rule self-checks', () => {
          export { handler as GET }`
       )
     ).toEqual(['ok'])
-    const alias = `import { POST as createQuote } from '@/app/api/quotes/route'
+    const alias = `import { POST as createQuote } from '@/apps/services/api/src/app/api/quotes/route'
          export async function POST(request: Request) { return createQuote(request) }`
-    expect(reasons('app/api/orcamentos/route.ts', alias)).toEqual(['ok'])
+    expect(
+      reasons('apps/services/api/src/app/api/orcamentos/route.ts', alias)
+    ).toEqual(['ok'])
     // The delegated handler is public, so its alias is public too and must be listed.
-    expect(reasons('app/api/new-alias/route.ts', alias)).toEqual([
-      PUBLIC_TENANT_OUTSIDE_SURFACE,
-    ])
+    expect(
+      reasons('apps/services/api/src/app/api/new-alias/route.ts', alias)
+    ).toEqual([PUBLIC_TENANT_OUTSIDE_SURFACE])
     // The delegate receives INERT arguments only: they run before its own guard.
     expect(
       reasons(
-        'app/api/orcamentos/route.ts',
-        `import { prisma } from '@/lib/prisma'
-         import { POST as createQuote } from '@/app/api/quotes/route'
+        'apps/services/api/src/app/api/orcamentos/route.ts',
+        `import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
+         import { POST as createQuote } from '@/apps/services/api/src/app/api/quotes/route'
          export async function POST(request: Request) { return createQuote(request, await prisma.user.deleteMany()) }`
       )[0]
     ).toMatch(BEFORE)
   })
 
   it('accepts exactly the PROLOGUE forms before the guard', () => {
-    const route = 'app/api/admin/new-feature/[id]/route.ts'
+    const route =
+      'apps/services/api/src/app/api/admin/new-feature/[id]/route.ts'
     const source = (prologue: string, prelude = '') => `
       import { NextResponse } from 'next/server'
-      import { prisma } from '@/lib/prisma'
-      import { checkRateLimit, strictRateLimit, consumeAuthAttempt } from '@/lib/rate-limit'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
+      import { checkRateLimit, strictRateLimit, consumeAuthAttempt } from '@/apps/services/api/src/host/rate-limit'
       import { rejectCrossOriginMutation } from '@gb-locacoes/backend/identity'
-      import { isTrustedMutationOrigin } from '@/lib/security/mutation-origin'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { isTrustedMutationOrigin } from '@/apps/services/api/src/host/mutation-origin'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       ${prelude}
       export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
         ${prologue}
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json({})
       }`
     const accepted: Array<[string, string?]> = [
@@ -8888,7 +9457,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
       // the rate limit: an in-memory limiter and its refusal, together
       [
         'const limit = checkRateLimit(request, customLimiter)\nif (!limit.allowed) return limit.response',
-        "import { rateLimit } from '@/lib/rate-limit'\nconst customLimiter = (request: any) => ({ allowed: true, remaining: 1, resetTime: 0, request })",
+        "import { rateLimit } from '@/apps/services/api/src/host/rate-limit'\nconst customLimiter = (request: any) => ({ allowed: true, remaining: 1, resetTime: 0, request })",
       ],
       ['const limit = checkRateLimit(request, strictRateLimit)'],
       [
@@ -8924,9 +9493,9 @@ describe('route authentication inventory: structural rule self-checks', () => {
     const source = (handler: string) => `
       import { NextResponse } from 'next/server'
       import { ZodError } from 'zod'
-      import { prisma } from '@/lib/prisma'
-      import { CustomerError } from '@/lib/client-documents'
-      import { requireTenantPermission } from '@/lib/tenant-permissions'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
+      import { CustomerError } from '@gb-locacoes/backend/customers'
+      import { requireTenantPermission } from '@/apps/services/api/src/host/permissions'
       export async function GET(request: Request) {
         ${handler}
       }`
@@ -8991,11 +9560,11 @@ describe('route authentication inventory: structural rule self-checks', () => {
       [
         admin,
         `import { NextResponse } from 'next/server'
-         import { prisma } from '@/lib/prisma'
-         import { requireAdminOrOperator } from '@/middlewares/require-admin'
-         export async function GET() {
-           const auth = await requireAdminOrOperator()
-           if (!auth.success) {
+         import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
+         import { requireTenantPermission as requireAdminOrOperator } from '@/apps/services/api/src/host/permissions'
+         export async function GET(request: Request) {
+           const auth = await requireAdminOrOperator(request, 'EQUIPMENTS', 'READ')
+           if (!auth.ok) {
              return NextResponse.json({ error: auth.error }, { status: auth.status })
            }
            return NextResponse.json(await prisma.user.count())
@@ -9005,9 +9574,9 @@ describe('route authentication inventory: structural rule self-checks', () => {
         admin,
         `import { NextResponse } from 'next/server'
          import { z } from 'zod'
-         import { requireTenantPermission } from '@/lib/tenant-permissions'
-         import { withTenantTransaction } from '@/lib/tenant'
-         import { isTrustedMutationOrigin } from '@/lib/security/mutation-origin'
+         import { requireTenantPermission } from '@/apps/services/api/src/host/permissions'
+         import { withTenantTransaction } from '@/apps/services/api/src/host/tenant-transaction'
+         import { isTrustedMutationOrigin } from '@/apps/services/api/src/host/mutation-origin'
          const Input = z.object({ name: z.string() })
          export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
            if (!isTrustedMutationOrigin(request))
@@ -9027,9 +9596,9 @@ describe('route authentication inventory: structural rule self-checks', () => {
          }`,
       ],
       [
-        'app/api/cron/new-job/route.ts',
-        `import { requireCronAuthorization } from '@/lib/security/external-request-auth'
-         import { prisma } from '@/lib/prisma'
+        'apps/services/api/src/app/api/cron/new-job/route.ts',
+        `import { requireCronAuthorization } from '@/apps/services/api/src/host/tenant-cron'
+         import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
          export async function GET(request: Request) {
            const denied = requireCronAuthorization(request)
            if (denied) return denied
@@ -9037,9 +9606,9 @@ describe('route authentication inventory: structural rule self-checks', () => {
          }`,
       ],
       [
-        'app/api/cron/new-job/route.ts',
-        `import { runTenantCron } from '@/lib/security/tenant-cron'
-         import { withTenantTransaction } from '@/lib/tenant'
+        'apps/services/api/src/app/api/cron/new-job/route.ts',
+        `import { runTenantCron } from '@/apps/services/api/src/host/tenant-cron'
+         import { withTenantTransaction } from '@/apps/services/api/src/host/tenant-transaction'
          async function runJob(context: { tenantId: string }) {
            return Response.json(await withTenantTransaction(context, (tx) => tx.quote.count()))
          }
@@ -9049,7 +9618,8 @@ describe('route authentication inventory: structural rule self-checks', () => {
       ],
       [
         admin,
-        `import { resolveTenantPrincipal, withTenantTransaction } from '@/lib/tenant'
+        `import { resolveTenantPrincipal } from '@/apps/services/api/src/host/private-identity'
+import { withTenantTransaction } from '@/apps/services/api/src/host/tenant-transaction'
          export async function GET(request: Request) {
            const access = await resolveTenantPrincipal(request)
            if (!access.ok || access.principal.role !== 'ADMIN')
@@ -9058,8 +9628,9 @@ describe('route authentication inventory: structural rule self-checks', () => {
          }`,
       ],
       [
-        'app/api/client/new-feature/route.ts',
-        `import { resolveTenantPrincipal, withTenantTransaction } from '@/lib/tenant'
+        'apps/services/api/src/app/api/client/new-feature/route.ts',
+        `import { resolveTenantPrincipal } from '@/apps/services/api/src/host/private-identity'
+import { withTenantTransaction } from '@/apps/services/api/src/host/tenant-transaction'
          export async function GET(request: Request) {
            try {
              const access = await resolveTenantPrincipal(request)
@@ -9071,10 +9642,10 @@ describe('route authentication inventory: structural rule self-checks', () => {
          }`,
       ],
       [
-        'app/api/admin/new-feature/[id]/route.ts',
+        'apps/services/api/src/app/api/admin/new-feature/[id]/route.ts',
         `import { NextResponse } from 'next/server'
-         import { checkRateLimit, adminApiRateLimit } from '@/lib/rate-limit'
-         import { resolveTenantPrincipal } from '@/lib/tenant'
+         import { checkRateLimit, adminApiRateLimit } from '@/apps/services/api/src/host/rate-limit'
+         import { resolveTenantPrincipal } from '@/apps/services/api/src/host/private-identity'
          export async function PATCH(request: Request, props: { params: Promise<{ id: string }> }) {
            const rateLimitCheck = checkRateLimit(request, adminApiRateLimit)
            if (!rateLimitCheck.allowed) {
@@ -9093,10 +9664,12 @@ describe('route authentication inventory: structural rule self-checks', () => {
          }`,
       ],
       [
-        'app/api/auth/new-flow/route.ts',
+        'apps/services/api/src/app/api/auth/new-flow/route.ts',
         `import NextAuth from 'next-auth'
-         import { authOptions, withSignInAvailability } from '@/lib/auth'
-         import { handleIdentityRequest, identityMode } from '@/lib/identity'
+         import { authOptions } from '@/apps/services/api/src/host/session'
+import { withSignInAvailability } from '@gb-locacoes/backend/http'
+         import { handleIdentityRequest } from '@/apps/services/api/src/host/session'
+import { identityMode } from '@gb-locacoes/backend/identity'
          const legacyHandler = withSignInAvailability(NextAuth(authOptions))
          async function handler(request: Request, context: { params: Promise<{ nextauth: string[] }> }) {
            if (identityMode(process.env) === 'better-auth') return handleIdentityRequest(request)
@@ -9112,20 +9685,20 @@ describe('route authentication inventory: structural rule self-checks', () => {
   })
 
   it('rejects a helper whose result never gates the handler', () => {
-    const imports = `import { prisma } from '@/lib/prisma'
-      import { requireAdmin } from '@/middlewares/require-admin'
-      import { requireTenantPermission } from '@/lib/tenant-permissions'`
+    const imports = `import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
+      import { requireTenantPermission } from '@/apps/services/api/src/host/permissions'`
     // (a) result assigned but never tested
     expect(
       reasons(
         admin,
         `${imports}
-         export async function GET() {
-           const auth = await requireAdmin()
+         export async function GET(request: Request) {
+           const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
            return Response.json(await prisma.user.findMany())
          }`
       )
-    ).toEqual(['result of requireAdmin is not checked'])
+    ).toEqual(['result of requireTenantPermission is not checked'])
     // (c) gate only in one branch
     for (const handler of [
       `const { searchParams } = new URL(request.url)
@@ -9154,8 +9727,8 @@ describe('route authentication inventory: structural rule self-checks', () => {
       reasons(
         admin,
         `${imports}
-         export async function GET() {
-           const check = async () => { const a = await requireAdmin(); return a }
+         export async function GET(request: Request) {
+           const check = async () => { const a = await requireAdmin(request, 'EQUIPMENTS', 'READ'); return a }
            return Response.json(await prisma.user.findMany())
          }`
       )[0]
@@ -9165,10 +9738,10 @@ describe('route authentication inventory: structural rule self-checks', () => {
       reasons(
         admin,
         `${imports}
-         export async function GET() {
+         export async function GET(request: Request) {
            const users = await prisma.user.findMany()
-           const auth = await requireAdmin()
-           if (!auth.success) return Response.json({}, { status: 403 })
+           const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+           if (!auth.ok) return Response.json({}, { status: 403 })
            return Response.json(users)
          }`
       )[0]
@@ -9178,27 +9751,29 @@ describe('route authentication inventory: structural rule self-checks', () => {
       reasons(
         admin,
         `${imports}
-         export async function GET() {
-           const auth = await requireAdmin()
-           if (!auth.success) console.warn('denied')
+         export async function GET(request: Request) {
+           const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+           if (!auth.ok) console.warn('denied')
            return Response.json(await prisma.user.findMany())
          }`
       )[0]
     ).toMatch(
-      /^result of requireAdmin: the refusal .* does not leave the handler/
+      /^result of requireTenantPermission: the refusal .* does not leave the handler/
     )
     // (f') a refusal that reaches data runs before authorization
     expect(
       reasons(
         admin,
         `${imports}
-         export async function GET() {
-           const auth = await requireAdmin()
-           if (!auth.success) return Response.json(await prisma.user.findMany())
+         export async function GET(request: Request) {
+           const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+           if (!auth.ok) return Response.json(await prisma.user.findMany())
            return Response.json({})
          }`
       )[0]
-    ).toMatch(/^result of requireAdmin: the refusal lib\/prisma#prisma/)
+    ).toMatch(
+      /^result of requireTenantPermission: the refusal tests\/security\/fixtures\/authorization-scanner-data#prisma/
+    )
     // (g) inverted test
     expect(
       reasons(
@@ -9258,7 +9833,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
          }`
       )[0]
     ).toMatch(
-      /^before the guard: requireTenantPermission receives lib\/prisma#prisma/
+      /^before the guard: requireTenantPermission receives tests\/security\/fixtures\/authorization-scanner-data#prisma/
     )
     // (l) a parameter default runs before the body
     expect(
@@ -9266,8 +9841,8 @@ describe('route authentication inventory: structural rule self-checks', () => {
         admin,
         `${imports}
          export async function POST(_request: Request, _early = prisma.user.deleteMany()) {
-           const auth = await requireAdmin()
-           if (!auth.success) return Response.json({}, { status: 403 })
+           const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+           if (!auth.ok) return Response.json({}, { status: 403 })
            return Response.json({})
          }`
       )[0]
@@ -9276,7 +9851,8 @@ describe('route authentication inventory: structural rule self-checks', () => {
 
   it('accepts only allowlist role checks on the principal under /api/admin', () => {
     const source = (check: string, prelude = '') => `
-      import { resolveTenantPrincipal, withTenantTransaction } from '@/lib/tenant'
+      import { resolveTenantPrincipal } from '@/apps/services/api/src/host/private-identity'
+import { withTenantTransaction } from '@/apps/services/api/src/host/tenant-transaction'
       const STAFF = ['ADMIN', 'OPERATOR'] as const
       export async function PUT(request: Request) {
         const access = await resolveTenantPrincipal(request)
@@ -9300,11 +9876,11 @@ describe('route authentication inventory: structural rule self-checks', () => {
     // Another approved helper after the principal, or a role predicate.
     const delegated = [
       [
-        "import { requireRoles } from '@/middlewares/require-admin'",
-        "const roles = await requireRoles(['ADMIN'])\nif (!roles.success) return Response.json({}, { status: 403 })",
+        "import { requireTenantPermission as requireRoles } from '@/apps/services/api/src/host/permissions'",
+        "const roles = await requireRoles(request, 'EQUIPMENTS', 'READ')\nif (!roles.ok) return Response.json({}, { status: 403 })",
       ],
       [
-        "import { canManageContracts } from '@/lib/contracts/service'",
+        "import { canManageContracts } from '@/apps/services/api/src/host/contracts'",
         'if (!canManageContracts(context)) return Response.json({}, { status: 403 })',
       ],
       [
@@ -9360,8 +9936,9 @@ describe('route authentication inventory: structural rule self-checks', () => {
 
   it('accepts a CLIENT only for the resource named by the route parameter it hands to the data access (finding 13)', () => {
     const source = (declare: string, owner: string, data: string) => `
-      import { resolveTenantPrincipal, withTenantTransaction } from '@/lib/tenant'
-      import { listClientDocuments } from '@/lib/client-documents'
+      import { resolveTenantPrincipal } from '@/apps/services/api/src/host/private-identity'
+import { withTenantTransaction } from '@/apps/services/api/src/host/tenant-transaction'
+      import { listClientDocuments } from '@/apps/services/api/src/host/client-documents'
       export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
         const access = await resolveTenantPrincipal(request)
         if (!access.ok) return access.response
@@ -9432,7 +10009,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
 
   it('only accepts result tests that tell a denied request from an authorized one (finding 12)', () => {
     const guarded = (imports: string, bind: string, check: string) => `
-      import { prisma } from '@/lib/prisma'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
       ${imports}
       export async function GET(request: Request) {
         ${bind}
@@ -9440,22 +10017,22 @@ describe('route authentication inventory: structural rule self-checks', () => {
         return Response.json(await prisma.user.findMany())
       }`
     const role = [
-      "import { requireAdmin } from '@/middlewares/require-admin'",
-      'const auth = await requireAdmin()',
+      "import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'",
+      "const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')",
     ] as const
     const permission = [
-      "import { requireTenantPermission } from '@/lib/tenant-permissions'",
+      "import { requireTenantPermission } from '@/apps/services/api/src/host/permissions'",
       "const access = await requireTenantPermission(request, 'X', 'READ')",
     ] as const
     const accepted: Array<readonly [string, string, string]> = [
-      [...role, 'if (!auth.success) return Response.json({}, { status: 403 })'],
+      [...role, 'if (!auth.ok) return Response.json({}, { status: 403 })'],
       [
         ...role,
-        'if (auth.success !== true) return Response.json({}, { status: 403 })',
+        'if (auth.ok !== true) return Response.json({}, { status: 403 })',
       ],
       [
         ...role,
-        'if (auth.success === false) return Response.json({}, { status: 403 })',
+        'if (auth.ok === false) return Response.json({}, { status: 403 })',
       ],
       [...permission, 'if (!access.ok) return access.response'],
       [...permission, 'if (access.ok === false) return access.response'],
@@ -9469,32 +10046,32 @@ describe('route authentication inventory: structural rule self-checks', () => {
       [
         ...role,
         'if (!auth) return Response.json({}, { status: 401 })',
-        'requireAdmin',
+        'requireTenantPermission',
       ],
       [
         ...role,
         'if (auth == null) return Response.json({}, { status: 401 })',
-        'requireAdmin',
+        'requireTenantPermission',
       ],
       [
         ...role,
         'if (auth === undefined) return Response.json({}, { status: 401 })',
-        'requireAdmin',
+        'requireTenantPermission',
       ],
       [
         ...role,
-        'if (auth.success === undefined) return Response.json({}, { status: 401 })',
-        'requireAdmin',
+        'if (auth.ok === undefined) return Response.json({}, { status: 401 })',
+        'requireTenantPermission',
       ],
       [
         ...role,
-        'if (auth.success == null) return Response.json({}, { status: 401 })',
-        'requireAdmin',
+        'if (auth.ok == null) return Response.json({}, { status: 401 })',
+        'requireTenantPermission',
       ],
       [
         ...role,
         'if (!auth.user) return Response.json({}, { status: 401 })',
-        'requireAdmin',
+        'requireTenantPermission',
       ],
       [
         ...permission,
@@ -9513,8 +10090,8 @@ describe('route authentication inventory: structural rule self-checks', () => {
       ])
     // A denial helper and a nullable helper are tested against null.
     const cron = (check: string) => `
-      import { prisma } from '@/lib/prisma'
-      import { requireCronAuthorization } from '@/lib/security/external-request-auth'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
+      import { requireCronAuthorization } from '@/apps/services/api/src/host/tenant-cron'
       export async function GET(request: Request) {
         const denied = requireCronAuthorization(request)
         ${check}
@@ -9526,18 +10103,21 @@ describe('route authentication inventory: structural rule self-checks', () => {
       'if (denied) return denied',
     ])
       expect(
-        reasons('app/api/cron/new-job/route.ts', cron(check)),
+        reasons(
+          'apps/services/api/src/app/api/cron/new-job/route.ts',
+          cron(check)
+        ),
         check
       ).toEqual(['ok'])
     expect(
       reasons(
-        'app/api/cron/new-job/route.ts',
+        'apps/services/api/src/app/api/cron/new-job/route.ts',
         cron('if (denied === undefined) return Response.json({})')
       )
     ).toEqual(['result of requireCronAuthorization is not checked'])
     const tenant = (helper: string, argument: string, check: string) => `
-      import { listPublicCategories } from '@/lib/catalog'
-      import { ${helper} } from '@/lib/tenant'
+      import { listPublicCategories } from '@/tests/security/fixtures/authorization-scanner-data'
+      import { ${helper} } from '@/apps/services/api/src/host/runtime'
       export async function GET(request: Request) {
         const tenant = await ${helper}(${argument})
         ${check}
@@ -9547,7 +10127,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
       tenant('resolvePublicRequestTenant', 'request', check)
     const slugTenant = (check: string) =>
       tenant('resolvePublicTenant', "'slug'", check)
-    const catalog = 'app/api/categories/route.ts'
+    const catalog = 'apps/services/api/src/app/api/categories/route.ts'
     for (const check of [
       'if (!tenant.ok) return tenant.response',
       'if (tenant.ok !== true) return tenant.response',
@@ -9576,7 +10156,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
     ).toEqual(['result of resolvePublicTenant is not checked'])
     // A delegated route handler answers a Response: `.ok` or a 2xx status, never its truthiness.
     const delegated = (check: string) => `
-      import { POST as createQuote } from '@/app/api/quotes/route'
+      import { POST as createQuote } from '@/apps/services/api/src/app/api/quotes/route'
       export async function POST(request: Request) {
         const response = await createQuote(request)
         ${check}
@@ -9588,7 +10168,10 @@ describe('route authentication inventory: structural rule self-checks', () => {
       'if (!response || response.status !== 201) return response',
     ])
       expect(
-        reasons('app/api/orcamentos/route.ts', delegated(check)),
+        reasons(
+          'apps/services/api/src/app/api/orcamentos/route.ts',
+          delegated(check)
+        ),
         check
       ).toEqual(['ok'])
     for (const check of [
@@ -9596,28 +10179,31 @@ describe('route authentication inventory: structural rule self-checks', () => {
       'if (response.status !== 404) return response',
     ])
       expect(
-        reasons('app/api/orcamentos/route.ts', delegated(check)),
+        reasons(
+          'apps/services/api/src/app/api/orcamentos/route.ts',
+          delegated(check)
+        ),
         check
       ).toEqual(['result of POST is not checked'])
   })
 
   it('rejects a data client loaded with import() or require() before the guard, and a guard loaded that way (finding 15)', () => {
     const source = (code: string) => `
-      import { requireAdmin } from '@/middlewares/require-admin'
-      export async function GET() {
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
+      export async function GET(request: Request) {
         ${code}
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json({})
       }`
     for (const code of [
-      "const { prisma } = await import('@/lib/prisma')\nawait prisma.user.findMany()",
-      "const { prisma: db } = await import('@/lib/prisma')\nconst users = db.user\nawait users.deleteMany()",
-      "const client = await import('@/lib/prisma')\nawait client.prisma.user.deleteMany()",
-      "const { prisma } = require('@/lib/prisma')\nawait prisma.user.deleteMany()",
-      "await (await import('@/lib/prisma')).prisma.user.deleteMany()",
-      "await require('@/lib/prisma').prisma.user.deleteMany()",
-      "const moduleName = '@/lib/prisma'\nconst { prisma } = await import(moduleName)\nawait prisma.user.deleteMany()",
+      "const { prisma } = await import('@/tests/security/fixtures/authorization-scanner-data')\nawait prisma.user.findMany()",
+      "const { prisma: db } = await import('@/tests/security/fixtures/authorization-scanner-data')\nconst users = db.user\nawait users.deleteMany()",
+      "const client = await import('@/tests/security/fixtures/authorization-scanner-data')\nawait client.prisma.user.deleteMany()",
+      "const { prisma } = require('@/tests/security/fixtures/authorization-scanner-data')\nawait prisma.user.deleteMany()",
+      "await (await import('@/tests/security/fixtures/authorization-scanner-data')).prisma.user.deleteMany()",
+      "await require('@/tests/security/fixtures/authorization-scanner-data').prisma.user.deleteMany()",
+      "const moduleName = '@/tests/security/fixtures/authorization-scanner-data'\nconst { prisma } = await import(moduleName)\nawait prisma.user.deleteMany()",
       "await globalThis.fetch('https://example.test', { method: 'POST' })",
       // inert modules loaded on the spot are not a PROLOGUE form either
       "const { z } = await import('zod')\nz.string().parse('x')",
@@ -9627,11 +10213,11 @@ describe('route authentication inventory: structural rule self-checks', () => {
     expect(
       reasons(
         admin,
-        `import { prisma } from '@/lib/prisma'
-         export async function GET() {
-           const { requireAdmin } = await import('@/middlewares/require-admin')
-           const auth = await requireAdmin()
-           if (!auth.success) return Response.json({}, { status: 403 })
+        `import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
+         export async function GET(request: Request) {
+           const { requireTenantPermission: requireAdmin } = await import('@/apps/services/api/src/host/permissions')
+           const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+           if (!auth.ok) return Response.json({}, { status: 403 })
            return Response.json(await prisma.user.findMany())
          }`
       )[0]
@@ -9698,16 +10284,16 @@ describe('route authentication inventory: structural rule self-checks', () => {
       ],
       [
         'local import() loader',
-        "const load = () => import('@/lib/prisma')\nawait (await load()).prisma.user.deleteMany()",
+        "const load = () => import('@/tests/security/fixtures/authorization-scanner-data')\nawait (await load()).prisma.user.deleteMany()",
       ],
       [
         'module import() loader',
         'await (await load()).prisma.user.deleteMany()',
-        "const load = () => import('@/lib/prisma')",
+        "const load = () => import('@/tests/security/fixtures/authorization-scanner-data')",
       ],
       [
         'local require() loader',
-        "const load = () => require('@/lib/prisma')\nawait load().prisma.user.deleteMany()",
+        "const load = () => require('@/tests/security/fixtures/authorization-scanner-data')\nawait load().prisma.user.deleteMany()",
       ],
       [
         'function returning the client',
@@ -9805,7 +10391,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
         )
       ).toEqual([])
       const active = `export async function GET() {
-        await (await import('@/lib/prisma')).prisma.payment.count()
+        await (await import('@/tests/security/fixtures/authorization-scanner-data')).prisma.payment.count()
         return Response.json({ error: 'Endpoint retired' }, { status: 410 })
       }`
       expect(
@@ -9818,7 +10404,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
     for (const name of ['test-login', 'fix-storage', 'supabase-setup']) {
       const route = `apps/services/api/src/app/api/${name}/route.ts`
       const code = `export async function POST() {
-        await (await import('@/lib/prisma')).prisma.user.deleteMany()
+        await (await import('@/tests/security/fixtures/authorization-scanner-data')).prisma.user.deleteMany()
         return Response.json({ error: 'Endpoint retired' }, { status: 410 })
       }`
       expect(
@@ -9830,7 +10416,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
     }
     const serviceRest = 'apps/services/api/src/app/api/[...rest]/route.ts'
     const restMutation = `export async function GET() {
-      await (await import('@/lib/prisma')).prisma.organization.findMany()
+      await (await import('@/tests/security/fixtures/authorization-scanner-data')).prisma.organization.findMany()
       return Response.json({}, { status: 404 })
     }`
     expect(
@@ -9849,56 +10435,61 @@ describe('route authentication inventory: structural rule self-checks', () => {
       }`
     const cases: Array<[string, string, string[]]> = [
       [
-        'app/api/admin/seed-admin/route.ts',
+        'apps/services/api/src/app/api/admin/seed-admin/route.ts',
         retired(
-          "const db = await import('@/lib/prisma')\nawait db.prisma.user.deleteMany()"
+          "const db = await import('@/tests/security/fixtures/authorization-scanner-data')\nawait db.prisma.user.deleteMany()"
         ),
         [
-          'app/api/admin/seed-admin/route.ts#POST: retired handler calls a module',
-          'app/api/admin/seed-admin/route.ts#POST: references lib/prisma#*',
+          'apps/services/api/src/app/api/admin/seed-admin/route.ts#POST: retired handler calls a module',
+          'apps/services/api/src/app/api/admin/seed-admin/route.ts#POST: references tests/security/fixtures/authorization-scanner-data#*',
         ],
       ],
       [
-        'app/api/admin/seed-admin/route.ts',
+        'apps/services/api/src/app/api/admin/seed-admin/route.ts',
         retired(
-          "await (await import('@/lib/prisma')).prisma.user.deleteMany()"
+          "await (await import('@/tests/security/fixtures/authorization-scanner-data')).prisma.user.deleteMany()"
         ),
         [
-          'app/api/admin/seed-admin/route.ts#POST: retired handler calls a module',
-          'app/api/admin/seed-admin/route.ts#POST: references lib/prisma#prisma',
+          'apps/services/api/src/app/api/admin/seed-admin/route.ts#POST: retired handler calls a module',
+          'apps/services/api/src/app/api/admin/seed-admin/route.ts#POST: references tests/security/fixtures/authorization-scanner-data#prisma',
         ],
       ],
       [
-        'app/api/admin/seed-admin/route.ts',
+        'apps/services/api/src/app/api/admin/seed-admin/route.ts',
         retired(
-          "const name = '@/lib/' + 'prisma'\nawait (await import(name)).prisma.user.deleteMany()"
+          "const name = '@/tests/security/fixtures/' + 'authorization-scanner-data'\nawait (await import(name)).prisma.user.deleteMany()"
         ),
         [
-          'app/api/admin/seed-admin/route.ts#POST: retired handler calls a module',
-          'app/api/admin/seed-admin/route.ts#POST: references <computed module>#*',
+          'apps/services/api/src/app/api/admin/seed-admin/route.ts#POST: retired handler calls a module',
+          'apps/services/api/src/app/api/admin/seed-admin/route.ts#POST: references <computed module>#*',
         ],
       ],
       [
-        'app/api/test-login/route.ts',
+        'apps/services/api/src/app/api/test-login/route.ts',
         `export async function POST(request: Request) {
-           const { prisma } = require('@/lib/prisma')
+           const { prisma } = require('@/tests/security/fixtures/authorization-scanner-data')
            await prisma.session.create({ data: await request.json() })
            return Response.json({ error: 'Endpoint retired' }, { status: 410 })
          }`,
         [
-          'app/api/test-login/route.ts#POST: retired handler calls a module',
-          'app/api/test-login/route.ts#POST: references lib/prisma#prisma',
+          'apps/services/api/src/app/api/test-login/route.ts#POST: retired handler calls a module',
+          'apps/services/api/src/app/api/test-login/route.ts#POST: references tests/security/fixtures/authorization-scanner-data#prisma',
         ],
       ],
       [
-        'app/api/[...rest]/route.ts',
+        'apps/services/api/src/app/api/[...rest]/route.ts',
         fs
-          .readFileSync(path.join(ROOT, 'app/api/[...rest]/route.ts'), 'utf8')
+          .readFileSync(
+            path.join(ROOT, 'apps/services/api/src/app/api/[...rest]/route.ts'),
+            'utf8'
+          )
           .replace(
-            /export async function GET\(_request: NextRequest\) \{\r?\n/,
-            "export async function GET(_request: NextRequest) {\n  const m = await import('@/lib/prisma')\n  await m.prisma.organization.findMany()\n"
+            /export function GET\(\) \{\r?\n/,
+            "export async function GET() {\n  const m = await import('@/tests/security/fixtures/authorization-scanner-data')\n  await m.prisma.organization.findMany()\n"
           ),
-        ['app/api/[...rest]/route.ts#GET: references lib/prisma#*'],
+        [
+          'apps/services/api/src/app/api/[...rest]/route.ts#GET: references tests/security/fixtures/authorization-scanner-data#*',
+        ],
       ],
     ]
     for (const [route, text, expected] of cases) {
@@ -10081,11 +10672,11 @@ describe('route authentication inventory: structural rule self-checks', () => {
       ],
       [
         'require aliased',
-        "const load = require\nawait load('@/lib/prisma').prisma.user.deleteMany()",
+        "const load = require\nawait load('@/tests/security/fixtures/authorization-scanner-data').prisma.user.deleteMany()",
       ],
       [
         'module loader of process',
-        "await (process as any).mainModule.require('@/lib/prisma').prisma.user.deleteMany()",
+        "await (process as any).mainModule.require('@/tests/security/fixtures/authorization-scanner-data').prisma.user.deleteMany()",
       ],
       [
         'parameter default that runs a data access (method)',
@@ -10138,19 +10729,19 @@ describe('route authentication inventory: structural rule self-checks', () => {
         .toMatch(REACHED)
     // A module list keeps the client one request parks after its gate for another request before its own.
     const kept = (read: string) => `
-       import { prisma } from '@/lib/prisma'
-       import { requireAdmin } from '@/middlewares/require-admin'
+       import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
+       import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
        const kept: any[] = []
-       export async function POST() {
-         const auth = await requireAdmin()
-         if (!auth.success) return Response.json({}, { status: 403 })
+       export async function POST(request: Request) {
+         const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+         if (!auth.ok) return Response.json({}, { status: 403 })
          kept.push(prisma)
          return Response.json({})
        }
        export async function GET(request: Request) {
          ${read}
-         const auth = await requireAdmin()
-         if (!auth.success) return Response.json({}, { status: 403 })
+         const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+         if (!auth.ok) return Response.json({}, { status: 403 })
          return Response.json({})
        }`
     expect(methods(admin, kept('await kept[0]?.user.deleteMany()'))).toEqual([
@@ -10170,12 +10761,12 @@ describe('route authentication inventory: structural rule self-checks', () => {
     expect(
       reasons(
         admin,
-        `import { prisma } from '@/lib/prisma'
-         import { requireAdmin } from '@/middlewares/require-admin'
-         async function authorize(_early = prisma.user.deleteMany()) { return requireAdmin() }
-         export async function POST() {
+        `import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
+         import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
+         async function authorize(_early = prisma.user.deleteMany()) { return requireAdmin(request, 'EQUIPMENTS', 'READ') }
+         export async function POST(request: Request) {
            const auth = await authorize()
-           if (!auth.success) return Response.json({}, { status: 403 })
+           if (!auth.ok) return Response.json({}, { status: 403 })
            return Response.json({})
          }`
       )
@@ -10258,7 +10849,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
       export function GET() {
         return Response.json({ error: 'Endpoint retired' }, { status: 410 })
       }`
-    const seed = 'app/api/admin/seed-admin/route.ts'
+    const seed = 'apps/services/api/src/app/api/admin/seed-admin/route.ts'
     const problems = (route: string, text: string) =>
       allowlistProblems(route, analyzeRouteModule(path.join(ROOT, route), text))
     const cases: Array<[string, string, string[]]> = [
@@ -10305,7 +10896,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
       [
         seed,
         retired(
-          "await (process as any).mainModule.require('@/lib/prisma').prisma.user.deleteMany()"
+          "await (process as any).mainModule.require('@/tests/security/fixtures/authorization-scanner-data').prisma.user.deleteMany()"
         ),
         [
           `${seed}#POST: retired handler calls a module`,
@@ -10315,7 +10906,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
       [
         seed,
         retired(
-          "const load = require\nawait load('@/lib/prisma').prisma.user.deleteMany()"
+          "const load = require\nawait load('@/tests/security/fixtures/authorization-scanner-data').prisma.user.deleteMany()"
         ),
         [
           `${seed}#POST: retired handler calls a module`,
@@ -10326,37 +10917,42 @@ describe('route authentication inventory: structural rule self-checks', () => {
         seed,
         retired(
           '',
-          "const { prisma } = require('@/lib/prisma')\nvoid prisma.user.deleteMany()"
+          "const { prisma } = require('@/tests/security/fixtures/authorization-scanner-data')\nvoid prisma.user.deleteMany()"
         ),
         [
           `${seed}#GET: retired handler calls a module`,
-          `${seed}#GET: references lib/prisma#prisma`,
+          `${seed}#GET: references tests/security/fixtures/authorization-scanner-data#prisma`,
           `${seed}#POST: retired handler calls a module`,
-          `${seed}#POST: references lib/prisma#prisma`,
+          `${seed}#POST: references tests/security/fixtures/authorization-scanner-data#prisma`,
         ],
       ],
       [
         seed,
         retired(
           '',
-          "import { prisma } from '@/lib/prisma'\nvoid prisma.user.deleteMany()"
+          "import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'\nvoid prisma.user.deleteMany()"
         ),
         [
           `${seed}#GET: retired handler calls a module`,
-          `${seed}#GET: references lib/prisma#prisma`,
+          `${seed}#GET: references tests/security/fixtures/authorization-scanner-data#prisma`,
           `${seed}#POST: retired handler calls a module`,
-          `${seed}#POST: references lib/prisma#prisma`,
+          `${seed}#POST: references tests/security/fixtures/authorization-scanner-data#prisma`,
         ],
       ],
       [
-        'app/api/[...rest]/route.ts',
+        'apps/services/api/src/app/api/[...rest]/route.ts',
         fs
-          .readFileSync(path.join(ROOT, 'app/api/[...rest]/route.ts'), 'utf8')
+          .readFileSync(
+            path.join(ROOT, 'apps/services/api/src/app/api/[...rest]/route.ts'),
+            'utf8'
+          )
           .replace(
-            /export async function GET\(_request: NextRequest\) \{\r?\n/,
-            'export async function GET(_request: NextRequest) {\n  await (globalThis as any).__prisma.organization.deleteMany()\n'
+            /export function GET\(\) \{\r?\n/,
+            'export async function GET() {\n  await (globalThis as any).__prisma.organization.deleteMany()\n'
           ),
-        ['app/api/[...rest]/route.ts#GET: references <global>#__prisma'],
+        [
+          'apps/services/api/src/app/api/[...rest]/route.ts#GET: references <global>#__prisma',
+        ],
       ],
     ]
     for (const [route, text, expected] of cases) {
@@ -10384,14 +10980,14 @@ describe('route authentication inventory: structural rule self-checks', () => {
 
   it('fails a route module that runs code when it loads, before any handler runs', () => {
     const guarded = (prelude: string) => `
-      import { prisma } from '@/lib/prisma'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
       import { z } from 'zod'
-      import { requireAdmin } from '@/middlewares/require-admin'
-      import { getZohoAccessToken } from '@/lib/zoho-mail'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
+      import { getZohoAccessToken } from '@/tests/security/fixtures/authorization-scanner-data'
       ${prelude}
-      export async function GET() {
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+      export async function GET(request: Request) {
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json(await prisma.user.findMany())
       }`
     for (const prelude of [
@@ -10400,7 +10996,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
       'class Seed { static rows = prisma.user.deleteMany() }',
       'class Seed { static { void prisma.user.deleteMany() } }',
       'if (process.env.SEED) void prisma.user.deleteMany()',
-      "import '@/lib/seed'",
+      "import '@/tests/security/fixtures/seed'",
       'const token = getZohoAccessToken()',
       'const rows = [1, 2].map(() => prisma.user.count())',
       'const repo = { get all() { return prisma.user.findMany() } }',
@@ -10494,7 +11090,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
       [
         'owner handed to a helper that is not owner-scoped',
         'return Response.json(await cancelClientRentals(principal, userId))',
-        "import { cancelClientRentals } from '@/lib/rentals'",
+        "import { cancelClientRentals } from '@/tests/security/fixtures/authorization-scanner-data'",
       ],
       [
         'raw SQL after an owner-scoped helper',
@@ -10949,20 +11545,22 @@ describe('route authentication inventory: structural rule self-checks', () => {
     for (const data of afterOwner)
       expect.soft(reasons(ownerRoute, ownerThen(data))[0], data).toMatch(OWNER)
     // real26.mts and real30.mts: the same channels inserted in the real routes (the files are only read).
-    const badges = 'app/api/admin/badges/route.ts'
-    const badgesSource = fs.readFileSync(path.join(ROOT, badges), 'utf8')
+    const badges = 'apps/services/api/src/app/api/admin/badges/route.ts'
+    const badgesSource = fs
+      .readFileSync(path.join(ROOT, badges), 'utf8')
+      .replace(/\r\n/g, '\n')
     const anchor =
-      'export async function GET(request: Request) {\n  const auth = await requireAdminOrOperator(request)'
+      'export async function GET(request: NextRequest) {\n  const access = await resolveTenantPrincipal(request)'
     expect(badgesSource).toContain(anchor)
     expect(reasons(badges, badgesSource)).toEqual(['ok'])
     for (const code of [
-      'await { then: (resolve: any) => resolve(getZohoAccessToken()) }',
-      'const jobs = [{ then: (resolve: any) => resolve(getZohoAccessToken()) }]\n  await jobs[0]',
-      'const jobs = { token: { then: (resolve: any) => resolve(getZohoAccessToken()) } }\n  await jobs.token',
-      'void [{ get token() { return getZohoAccessToken() } }][0].token',
-      '{ using lease = { [Symbol.dispose]() { void getZohoAccessToken() } }\n  void lease }',
-      '{ await using lease = { async [Symbol.asyncDispose]() { await getZohoAccessToken() } }\n  void lease }',
-      "void (({ toString() { void getZohoAccessToken(); return 'k' } }) in {})",
+      "await { then: (resolve: any) => resolve(readAdminBadges({ tenantId: 'foreign' })) }",
+      "const jobs = [{ then: (resolve: any) => resolve(readAdminBadges({ tenantId: 'foreign' })) }]\n  await jobs[0]",
+      "const jobs = { token: { then: (resolve: any) => resolve(readAdminBadges({ tenantId: 'foreign' })) } }\n  await jobs.token",
+      "void [{ get token() { return readAdminBadges({ tenantId: 'foreign' }) } }][0].token",
+      "{ using lease = { [Symbol.dispose]() { void readAdminBadges({ tenantId: 'foreign' }) } }\n  void lease }",
+      "{ await using lease = { async [Symbol.asyncDispose]() { await readAdminBadges({ tenantId: 'foreign' }) } }\n  void lease }",
+      "void (({ toString() { void readAdminBadges({ tenantId: 'foreign' }); return 'k' } }) in {})",
     ])
       expect
         .soft(
@@ -10970,20 +11568,20 @@ describe('route authentication inventory: structural rule self-checks', () => {
             badges,
             badgesSource.replace(
               anchor,
-              `export async function GET(request: Request) {\n  ${code}\n  const auth = await requireAdminOrOperator(request)`
+              `export async function GET(request: NextRequest) {\n  ${code}\n  const access = await resolveTenantPrincipal(request)`
             )
           )[0],
           code
         )
         .toMatch(BEFORE)
-    const documents = 'app/api/admin/clients/[id]/documents/route.ts'
+    const documents =
+      'apps/services/api/src/app/api/admin/clients/[id]/documents/route.ts'
     const documentsSource = fs.readFileSync(path.join(ROOT, documents), 'utf8')
     const access =
       /const documents = await listClientDocuments\(principal, userId\)/
-    const imported = documentsSource.replace(
-      "import { resolveTenantPrincipal } from '@/lib/tenant'",
-      "import { resolveTenantPrincipal, withTenantTransaction } from '@/lib/tenant'"
-    )
+    const imported =
+      "import { withTenantTransaction } from '@/apps/services/api/src/host/tenant-transaction'\n" +
+      documentsSource
     expect(imported).not.toBe(documentsSource)
     expect(reasons(documents, imported)).toEqual(['ok'])
     for (const code of [
@@ -10992,7 +11590,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
       'await withTenantTransaction(principal, async (tx: any) => { async function wipe() { await tx.rentals.deleteMany({}) } await wipe() })',
       'await { then: (resolve: any) => resolve(withTenantTransaction(principal, (tx: any) => tx.rentals.deleteMany({}))) }',
       'await withTenantTransaction(principal, async (tx: any) => { await { then: (resolve: any) => resolve(tx.rentals.deleteMany({})) } })',
-      "await (await import('@/lib/tenant')).withTenantTransaction(principal, (tx: any) => tx.rentals.deleteMany({}))",
+      "await (await import('@/apps/services/api/src/host/tenant-transaction')).withTenantTransaction(principal, (tx: any) => tx.rentals.deleteMany({}))",
     ]) {
       const mutated = imported.replace(
         access,
@@ -11121,11 +11719,11 @@ describe('route authentication inventory: structural rule self-checks', () => {
     // vload.json: what the module evaluates when it loads.
     const loaded = (prelude: string) => `
       import { z } from 'zod'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       ${prelude}
-      export async function GET() {
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+      export async function GET(request: Request) {
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json({})
       }`
     for (const prelude of [
@@ -11164,7 +11762,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
       export function GET() {
         return Response.json({ error: 'Endpoint retired' }, { status: 410 })
       }`
-    const seed = 'app/api/admin/seed-admin/route.ts'
+    const seed = 'apps/services/api/src/app/api/admin/seed-admin/route.ts'
     const problems = (route: string, text: string) =>
       allowlistProblems(route, analyzeRouteModule(path.join(ROOT, route), text))
     const reflective: Array<[string, string]> = [
@@ -11226,34 +11824,51 @@ describe('route authentication inventory: structural rule self-checks', () => {
         .soft(found.some(INERT_PROBLEM.test, INERT_PROBLEM), code)
         .toBe(true)
     }
-    // A public method that reaches data (health) lists what it may reach; the language itself is never listed.
-    const health = 'app/api/health/route.ts'
+    // Mutate the real deferred database callback: the thin health route delegates to this host composition.
+    const health = 'apps/services/api/src/app/api/health/route.ts'
     const healthSource = fs.readFileSync(path.join(ROOT, health), 'utf8')
-    const probe = '    await prisma.$queryRaw`SELECT 1`'
-    expect(healthSource).toContain(probe)
+    const healthHostFile = path.join(ROOT, PUBLIC_FACTORY_SOURCE)
+    const healthHostSource = fs.readFileSync(healthHostFile, 'utf8')
+    const probe = '() => getDatabaseRuntime().prisma.$queryRaw`SELECT 1`'
+    expect(healthHostSource).toContain(probe)
     expect(problems(health, healthSource)).toEqual([])
+    const withHealthProbe = (code: string) => {
+      const mutated = healthHostSource.replace(
+        probe,
+        `async () => {
+        const result = getDatabaseRuntime().prisma.$queryRaw\`SELECT 1\`
+        ${code}
+        return result
+      }`
+      )
+      expect(mutated, code).not.toBe(healthHostSource)
+      FIXTURE_FILES.set(healthHostFile, mutated)
+      try {
+        return problems(health, healthSource)
+      } finally {
+        FIXTURE_FILES.delete(healthHostFile)
+      }
+    }
     for (const [code, reference] of reflective.slice(0, 10)) {
-      const mutated = healthSource.replace(probe, `${probe}\n    ${code}`)
+      // The zero-argument health port has no handler request; retain an unknown computed key in its own scope.
+      const scoped = code.replace(
+        "request.headers.get('k')!",
+        'String(Date.now())'
+      )
       expect
-        .soft(problems(health, mutated), code)
+        .soft(withHealthProbe(scoped), code)
         .toContain(`${health}#GET: references ${reference}`)
     }
     // Reading keys and entries is not reflection.
-    expect(
-      problems(
-        health,
-        healthSource.replace(
-          probe,
-          `${probe}\n    void Object.keys({ a: 1 }).length`
-        )
-      )
-    ).toEqual([])
+    expect(withHealthProbe('void Object.keys({ a: 1 }).length')).toEqual([])
+    expect(problems(health, healthSource)).toEqual([])
     // vreal.mts, vreal2.mts and realdocs.mts: the same code inserted in the real routes (the files are only read).
-    const contract = 'app/api/admin/rentals/[id]/contract/route.ts'
+    const contract =
+      'apps/services/api/src/app/api/admin/rentals/[id]/contract/route.ts'
     const contractSource = fs.readFileSync(path.join(ROOT, contract), 'utf8')
     const guard =
-      '    const access = await resolveTenantPrincipal(request)\n    if (!access.ok) return access.response\n    // O mesmo'
-    expect(contractSource).toContain(guard)
+      / {4}const access = await resolveTenantPrincipal\(request\)\r?\n {4}if \(!access\.ok\) return access\.response\r?\n {4}\/\/ O mesmo/
+    expect(contractSource).toMatch(guard)
     expect(methods(contract, contractSource)).toEqual(['GET:ok', 'POST:ok'])
     for (const code of [
       `    if (await ${make}()) return NextResponse.json({})\n`,
@@ -11261,16 +11876,19 @@ describe('route authentication inventory: structural rule self-checks', () => {
     ])
       expect
         .soft(
-          methods(contract, contractSource.replace(guard, code + guard)),
+          methods(
+            contract,
+            contractSource.replace(guard, (matched) => code + matched)
+          ),
           code
         )
         .toEqual(['GET:ok', expect.stringMatching(/^POST:before the guard: /)])
-    const documents = 'app/api/admin/clients/[id]/documents/route.ts'
+    const documents =
+      'apps/services/api/src/app/api/admin/clients/[id]/documents/route.ts'
     const documentsSource = fs.readFileSync(path.join(ROOT, documents), 'utf8')
-    const withTransaction = documentsSource.replace(
-      "import { resolveTenantPrincipal } from '@/lib/tenant'",
-      "import { resolveTenantPrincipal, withTenantTransaction } from '@/lib/tenant'"
-    )
+    const withTransaction =
+      "import { withTenantTransaction } from '@/apps/services/api/src/host/tenant-transaction'\n" +
+      documentsSource
     const list =
       'const documents = await listClientDocuments(principal, userId)'
     const principalCall =
@@ -11380,11 +11998,11 @@ describe('route authentication inventory: structural rule self-checks', () => {
       expect.soft(reasons(admin, refusal(code!, prelude)), code).toEqual(['ok'])
     // When the module loads: a call of a global member and an operator on anything but literal data fail.
     const loaded = (prelude: string) => `
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       ${prelude}
-      export async function GET() {
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+      export async function GET(request: Request) {
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json({})
       }`
     for (const prelude of [
@@ -11401,7 +12019,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
     // `instanceof` runs the right side's Symbol.hasInstance, and a member chain there runs its getters: with a
     // Wiper whose static [Symbol.hasInstance] deletes users, the anonymous POST ran deleteMany before its 403.
     const probe =
-      "import { Wiper, Errors, CatalogError as Borrowed } from '@/lib/probe-wiper'\nimport * as lib from '@/lib/probe-wiper'"
+      "import { Wiper, Errors, CatalogError as Borrowed } from '@/tests/security/fixtures/probe-wiper'\nimport * as lib from '@/tests/security/fixtures/probe-wiper'"
     const outside: Array<[string, string?]> = [
       ['request instanceof Wiper', probe],
       ['request instanceof Errors.Validation', probe],
@@ -11444,19 +12062,19 @@ describe('route authentication inventory: structural rule self-checks', () => {
     // The catch around the guard runs when the guard throws: the same closed list.
     const errors = [
       "import { ZodError } from 'zod'",
-      "import { RentalMutationError } from '@/lib/rental-transaction'",
+      "import { RentalMutationError } from '@/packages/backend/src/modules/rentals/errors'",
       "import { CustomerError } from '@gb-locacoes/backend/customers'",
-      "import { Wiper, Errors } from '@/lib/probe-wiper'",
+      "import { Wiper, Errors } from '@/tests/security/fixtures/probe-wiper'",
     ].join('\n')
     const caught = (test: string) => `
-      import { prisma } from '@/lib/prisma'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
       import { z } from 'zod'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       ${errors}
       export async function POST(request: Request) {
         try {
-          const auth = await requireAdmin()
-          if (!auth.success) return Response.json({}, { status: 403 })
+          const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+          if (!auth.ok) return Response.json({}, { status: 403 })
           return Response.json({ ok: await prisma.user.count() })
         } catch (error) {
           if (${test}) return Response.json({}, { status: 400 })
@@ -11487,14 +12105,14 @@ describe('route authentication inventory: structural rule self-checks', () => {
       reasons(
         admin,
         `
-      import { prisma } from '@/lib/prisma'
-      import { Wiper, Errors } from '@/lib/probe-wiper'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
+      import { Wiper, Errors } from '@/tests/security/fixtures/probe-wiper'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       export async function POST(request: Request) {
         if (request instanceof Wiper) return Response.json({}, { status: 400 })
         if (request instanceof Errors.Validation) return Response.json({}, { status: 400 })
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json({ ok: await prisma.user.count() })
       }`
       )[0]
@@ -11506,24 +12124,24 @@ describe('route authentication inventory: structural rule self-checks', () => {
     // package's. With a stand-in zod.mjs the anonymous POST ran deleteMany before its 403, and loading the module ran
     // it with no request at all.
     const ROUTE_111 = `
-      import { prisma } from '@/lib/prisma'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
       import { ZodError, z } from '@/zod'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       export async function POST(request: Request) {
         if (request instanceof ZodError) return Response.json({}, { status: 400 })
         if (request instanceof z.ZodError) return Response.json({}, { status: 400 })
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json({ ok: await prisma.user.count() })
       }`
     const ROUTE_111_CATCH = `
-      import { prisma } from '@/lib/prisma'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
       import { ZodError } from '@/zod'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       export async function POST(request: Request) {
         try {
-          const auth = await requireAdmin()
-          if (!auth.success) return Response.json({}, { status: 403 })
+          const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+          if (!auth.ok) return Response.json({}, { status: 403 })
           return Response.json({ ok: await prisma.user.count() })
         } catch (error) {
           if (error instanceof ZodError) return Response.json({}, { status: 400 })
@@ -11531,13 +12149,13 @@ describe('route authentication inventory: structural rule self-checks', () => {
         }
       }`
     const ROUTE_112 = `
-      import { prisma } from '@/lib/prisma'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
       import { z } from '@/zod'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       const Input = z.object({ name: z.string().min(1) }).strict()
-      export async function GET() {
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+      export async function GET(request: Request) {
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json(await prisma.user.findMany())
       }`
     const from = (specifier: string) =>
@@ -11564,7 +12182,7 @@ describe('route authentication inventory: structural rule self-checks', () => {
     // Missing, and then present as a project file: zod.ts or zod/index.ts (the package owns the id 'zod').
     refused()
     const standIn =
-      "import { prisma } from '@/lib/prisma'\nexport class ZodError extends Error {\n  static [Symbol.hasInstance]() { void prisma.user.deleteMany(); return false }\n}\nexport const z = { ZodError, object: () => prisma.user.deleteMany() }\n"
+      "import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'\nexport class ZodError extends Error {\n  static [Symbol.hasInstance]() { void prisma.user.deleteMany(); return false }\n}\nexport const z = { ZodError, object: () => prisma.user.deleteMany() }\n"
     for (const file of ['zod.ts', 'zod/index.ts']) {
       FIXTURE_FILES.set(path.join(ROOT, file), standIn)
       try {
@@ -11579,23 +12197,32 @@ describe('route authentication inventory: structural rule self-checks', () => {
     // Control: the package itself.
     for (const route of from('zod'))
       expect.soft(reasons(admin, route), route).toEqual(['ok'])
-    // A listed project module is its file alone: not lib/catalog/index.ts or lib/catalog.mjs beside lib/catalog.ts.
+    // A listed project module is its file alone: backend catalog errors/index.ts and errors.mjs are synthetic shadows.
     const catalog = (specifier: string) => `
-      import { prisma } from '@/lib/prisma'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
       import { CatalogError } from '${specifier}'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       export async function POST(request: Request) {
         if (request instanceof CatalogError) return Response.json({}, { status: 400 })
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json({ ok: await prisma.user.count() })
       }`
     const poser =
       'export class CatalogError {\n  static [Symbol.hasInstance]() { return true }\n}\n'
     for (const [file, specifier] of [
-      ['lib/catalog/index.ts', '@/lib/catalog/index'],
-      ['lib/catalog.mjs', '@/lib/catalog.mjs'],
-      ['lib/catalog/index.ts', '../../../../lib/catalog/index'],
+      [
+        'packages/backend/src/modules/catalog/errors/index.ts',
+        '@/packages/backend/src/modules/catalog/errors/index',
+      ],
+      [
+        'packages/backend/src/modules/catalog/errors.mjs',
+        '@/packages/backend/src/modules/catalog/errors.mjs',
+      ],
+      [
+        'packages/backend/src/modules/catalog/errors/index.ts',
+        '../../../../../../../../packages/backend/src/modules/catalog/errors/index',
+      ],
     ] as const) {
       FIXTURE_FILES.set(path.join(ROOT, file), poser)
       try {
@@ -11606,12 +12233,17 @@ describe('route authentication inventory: structural rule self-checks', () => {
         FIXTURE_FILES.delete(path.join(ROOT, file))
       }
     }
-    expect(reasons(admin, catalog('@/lib/catalog/index'))[0]).toMatch(BEFORE)
+    expect(
+      reasons(
+        admin,
+        catalog('@/packages/backend/src/modules/catalog/errors/index')
+      )[0]
+    ).toMatch(BEFORE)
     // Controls: the listed module, by any specifier of its own file.
     for (const specifier of [
-      '@/lib/catalog',
-      '@/lib/catalog.ts',
-      '../../../../lib/catalog',
+      '@/packages/backend/src/modules/catalog/errors',
+      '@/packages/backend/src/modules/catalog/errors.ts',
+      '../../../../../../../../packages/backend/src/modules/catalog/errors',
     ])
       expect.soft(reasons(admin, catalog(specifier)), specifier).toEqual(['ok'])
     // A bare specifier is the package it resolves to: a `paths` alias is none, and zod is the one installed.
@@ -11633,14 +12265,14 @@ describe('route authentication inventory: structural rule self-checks', () => {
 
   it('lets a route module run only zod schema construction when it loads: no parse, config or value zod reads (finding 112, harness vq-travas-r4)', () => {
     const loaded = (prelude: string) => `
-      import { prisma } from '@/lib/prisma'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
       import { z } from 'zod'
-      import { Errors } from '@/lib/probe-wiper'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { Errors } from '@/tests/security/fixtures/probe-wiper'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       ${prelude}
-      export async function GET() {
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+      export async function GET(request: Request) {
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json(await prisma.user.findMany())
       }`
     const wipe = '() => prisma.user.deleteMany()'
@@ -11689,13 +12321,13 @@ describe('route authentication inventory: structural rule self-checks', () => {
       reasons(
         admin,
         `
-      import { prisma } from '@/lib/prisma'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
       import { z } from 'zod'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       const wipe = z.string().transform(() => prisma.user.deleteMany()).parse('go')
-      export async function GET() {
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+      export async function GET(request: Request) {
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json(await prisma.user.findMany())
       }`
       )[0]
@@ -11704,16 +12336,16 @@ describe('route authentication inventory: structural rule self-checks', () => {
 
   it('hands zod a function only as the callback of ZOD_CALLBACKS and extends only a known class when the module loads (finding 112, verifier vrf-ft-111-112)', () => {
     const loaded = (prelude: string) => `
-      import { prisma } from '@/lib/prisma'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
       import { z } from 'zod'
-      import { Wiper, Errors } from '@/lib/probe-wiper'
-      import * as lib from '@/lib/probe-wiper'
-      import { CatalogError } from '@/lib/catalog'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { Wiper, Errors } from '@/tests/security/fixtures/probe-wiper'
+      import * as lib from '@/tests/security/fixtures/probe-wiper'
+      import { CatalogError } from '@/packages/backend/src/modules/catalog/errors'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       ${prelude}
-      export async function GET() {
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+      export async function GET(request: Request) {
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json(await prisma.user.findMany())
       }`
     const wipe = '() => prisma.user.deleteMany()'
@@ -11754,13 +12386,13 @@ describe('route authentication inventory: structural rule self-checks', () => {
       reasons(
         admin,
         `
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
 import { z } from 'zod'
-import { requireAdmin } from '@/middlewares/require-admin'
+import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
 const Wipe = z.string({ checks: [{ _zod: { def: { check: 'custom' }, check: () => undefined, onattach: [() => void prisma.user.deleteMany()] } }] })
-export async function GET() {
-  const auth = await requireAdmin()
-  if (!auth.success) return Response.json({}, { status: 403 })
+export async function GET(request: Request) {
+  const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+  if (!auth.ok) return Response.json({}, { status: 403 })
   return Response.json(await prisma.user.findMany())
 }
 `
@@ -11783,13 +12415,13 @@ export async function GET() {
 
   it('reads every node of the top-level statements under a closed grammar: pattern keys, defaults and sources, decorators and members (finding 124, verifier vrf3-ft-111-112)', () => {
     const loaded = (prelude: string) => `
-      import { prisma } from '@/lib/prisma'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
       import { z } from 'zod'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       ${prelude}
-      export async function GET() {
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+      export async function GET(request: Request) {
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json({})
       }`
     const wipe =
@@ -11822,8 +12454,8 @@ export async function GET() {
       'class Tagged { [String(prisma.user.deleteMany())]() {} }',
       'enum Kind { A = String(prisma.user.deleteMany()) }',
       'export default prisma.user.deleteMany()',
-      "import boot = require('@/lib/prisma')",
-      "import '@/lib/prisma'",
+      "import boot = require('@/tests/security/fixtures/authorization-scanner-data')",
+      "import '@/tests/security/fixtures/authorization-scanner-data'",
     ]
     for (const prelude of refused)
       expect
@@ -11846,72 +12478,103 @@ export async function GET() {
 
   it('refuses a specifier that names more than one file, in a route and in the whole server source (finding 123, scenario B, verifier pC)', () => {
     const route = `
-      import { prisma } from '@/lib/prisma'
-      import { CatalogError } from '@/lib/catalog'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
+      import { CatalogError } from '@/packages/backend/src/modules/catalog/errors'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       export async function POST(request: Request) {
         if (request instanceof CatalogError) return Response.json({}, { status: 400 })
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json({ ok: await prisma.user.count() })
       }`
     const shadow =
-      "import { prisma } from '@/lib/prisma'\nexport class CatalogError extends Error {\n  static [Symbol.hasInstance]() { void prisma.user.deleteMany(); return false }\n}\n"
-    // Control: lib/catalog.ts alone is the listed module.
+      "import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'\nexport class CatalogError extends Error {\n  static [Symbol.hasInstance]() { void prisma.user.deleteMany(); return false }\n}\n"
+    // Control: packages/backend/src/modules/catalog/errors.ts alone is the listed module.
     expect(reasons(admin, route)).toEqual(['ok'])
     const scripts = serverSource('', /\.(?:[cm]?[jt]sx?|json)$/)
-    // Turbopack loads lib/catalog.tsx before lib/catalog.ts, webpack lib/catalog.js: whichever file sits beside it,
+    // Turbopack loads errors.tsx before errors.ts, webpack errors.js: whichever synthetic sibling sits beside it,
     // the route fails naming both, the id of the listed module fails, and so does the scan of the server source.
     for (const file of [
-      'lib/catalog.tsx',
-      'lib/catalog.js',
-      'lib/catalog.jsx',
-      'lib/catalog.mjs',
-      'lib/catalog.cjs',
-      'lib/catalog/index.ts',
-      'lib/catalog/index.js',
+      'packages/backend/src/modules/catalog/errors.tsx',
+      'packages/backend/src/modules/catalog/errors.js',
+      'packages/backend/src/modules/catalog/errors.jsx',
+      'packages/backend/src/modules/catalog/errors.mjs',
+      'packages/backend/src/modules/catalog/errors.cjs',
+      'packages/backend/src/modules/catalog/errors/index.ts',
+      'packages/backend/src/modules/catalog/errors/index.js',
     ]) {
       FIXTURE_FILES.set(path.join(ROOT, file), shadow)
       try {
         expect
           .soft(reasons(admin, route), file)
           .toEqual([
-            `ambiguous module: '@/lib/catalog' from ${admin} names lib/catalog.ts, ${file} (Next and TypeScript may load different files: keep one)`,
+            `ambiguous module: '@/packages/backend/src/modules/catalog/errors' from ${admin} names packages/backend/src/modules/catalog/errors.ts, ${file} (Next and TypeScript may load different files: keep one)`,
           ])
         expect
-          .soft(() => moduleFile('lib/catalog'), file)
+          .soft(
+            () => moduleFile('packages/backend/src/modules/catalog/errors'),
+            file
+          )
           .toThrow(AmbiguousModule)
         expect
           .soft(moduleIdCollisions([...scripts, file]), file)
-          .toEqual([`lib/catalog: lib/catalog.ts, ${file}`])
+          .toEqual([
+            `packages/backend/src/modules/catalog/errors: packages/backend/src/modules/catalog/errors.ts, ${file}`,
+          ])
       } finally {
         FIXTURE_FILES.delete(path.join(ROOT, file))
       }
     }
-    // Control: every resolver tries `.json` after the scripts, so lib/catalog.json beside it changes nothing
+    // Control: every resolver tries `.json` after the scripts, so the synthetic errors.json beside errors.ts changes nothing
     // (as packages/contracts/src/platform.json beside platform.ts).
-    FIXTURE_FILES.set(path.join(ROOT, 'lib/catalog.json'), '{}')
+    FIXTURE_FILES.set(
+      path.join(ROOT, 'packages/backend/src/modules/catalog/errors.json'),
+      '{}'
+    )
     try {
       expect(reasons(admin, route)).toEqual(['ok'])
-      expect(moduleIdCollisions([...scripts, 'lib/catalog.json'])).toEqual([])
+      expect(
+        moduleIdCollisions([
+          ...scripts,
+          'packages/backend/src/modules/catalog/errors.json',
+        ])
+      ).toEqual([])
     } finally {
-      FIXTURE_FILES.delete(path.join(ROOT, 'lib/catalog.json'))
+      FIXTURE_FILES.delete(
+        path.join(ROOT, 'packages/backend/src/modules/catalog/errors.json')
+      )
     }
     // The module a handler is re-exported from counts as the route itself.
-    FIXTURE_FILES.set(path.join(ROOT, 'lib/catalog.tsx'), shadow)
-    FIXTURE_FILES.set(path.join(ROOT, 'lib/probe-handler.ts'), route)
+    FIXTURE_FILES.set(
+      path.join(ROOT, 'packages/backend/src/modules/catalog/errors.tsx'),
+      shadow
+    )
+    FIXTURE_FILES.set(
+      path.join(ROOT, 'tests/security/fixtures/probe-handler.ts'),
+      route
+    )
     try {
       expect(
-        reasons(admin, "export { POST } from '@/lib/probe-handler'")
+        reasons(
+          admin,
+          "export { POST } from '@/tests/security/fixtures/probe-handler'"
+        )
       ).toEqual([
-        "ambiguous module: '@/lib/catalog' from lib/probe-handler.ts names lib/catalog.ts, lib/catalog.tsx (Next and TypeScript may load different files: keep one)",
+        "ambiguous module: '@/packages/backend/src/modules/catalog/errors' from tests/security/fixtures/probe-handler.ts names packages/backend/src/modules/catalog/errors.ts, packages/backend/src/modules/catalog/errors.tsx (Next and TypeScript may load different files: keep one)",
       ])
     } finally {
-      FIXTURE_FILES.delete(path.join(ROOT, 'lib/catalog.tsx'))
-      FIXTURE_FILES.delete(path.join(ROOT, 'lib/probe-handler.ts'))
+      FIXTURE_FILES.delete(
+        path.join(ROOT, 'packages/backend/src/modules/catalog/errors.tsx')
+      )
+      FIXTURE_FILES.delete(
+        path.join(ROOT, 'tests/security/fixtures/probe-handler.ts')
+      )
     }
     expect(
-      reasons(admin, "export { POST } from '@/lib/probe-handler'")
+      reasons(
+        admin,
+        "export { POST } from '@/tests/security/fixtures/probe-handler'"
+      )
     ).toEqual([UNRESOLVED])
     // The server source: every id names one file.
     expect(moduleIdCollisions(scripts)).toEqual([])
@@ -11920,9 +12583,9 @@ export async function GET() {
   it('checks the webhook handshake: the lookup only in its namespace, then INERT statements, then the verify token', () => {
     const source = (window: string) => `
       import { NextResponse } from 'next/server'
-      import { prisma } from '@/lib/prisma'
-      import { secretsMatch } from '@/lib/security/external-request-auth'
-      import { resolveWebhookIntegration } from '@/lib/security/tenant-webhook'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
+      import { secretsMatch } from '@gb-locacoes/backend/identity'
+      import { resolveWebhookIntegration } from '@/apps/services/api/src/host/webhook-authentication'
       export async function GET(request: Request, route?: { params: Promise<{ integrationId: string }> }) {
         if (!route) return NextResponse.json({ error: 'Gone' }, { status: 410 })
         const resolved = await resolveWebhookIntegration('WHATSAPP', route)
@@ -11933,18 +12596,27 @@ export async function GET() {
     const verify =
       "const token = new URL(request.url).searchParams.get('hub.verify_token')\nif (!secretsMatch(token, resolved.credential.verifyToken)) return NextResponse.json({}, { status: 403 })"
     expect(
-      reasons('app/api/webhooks/new-hook/route.ts', source(verify))
+      reasons(
+        'apps/services/api/src/app/api/webhooks/new-hook/route.ts',
+        source(verify)
+      )
     ).toEqual(['ok'])
-    expect(reasons('app/api/admin/new-hook/route.ts', source(verify))).toEqual([
-      'resolveWebhookIntegration does not authorize this namespace',
-    ])
+    expect(
+      reasons(
+        'apps/services/api/src/app/api/admin/new-hook/route.ts',
+        source(verify)
+      )
+    ).toEqual(['resolveWebhookIntegration does not authorize this namespace'])
     // Without the comparison nothing authorizes what follows the lookup.
     expect(
-      reasons('app/api/webhooks/new-hook/route.ts', source(''))[0]
+      reasons(
+        'apps/services/api/src/app/api/webhooks/new-hook/route.ts',
+        source('')
+      )[0]
     ).toMatch(BEFORE)
     expect(
       reasons(
-        'app/api/webhooks/new-hook/route.ts',
+        'apps/services/api/src/app/api/webhooks/new-hook/route.ts',
         source(`await prisma.tenantIntegration.findMany()\n${verify}`)
       )[0]
     ).toMatch(BEFORE)
@@ -11970,7 +12642,7 @@ export async function GET() {
       ),
       source.replace(
         "from '@gb-locacoes/backend/identity'",
-        "from '@/lib/security/external-request-auth'"
+        "from '@/apps/services/api/src/host/tenant-cron'"
       ),
     ]) {
       expect(changed).not.toBe(source)
@@ -11992,7 +12664,6 @@ export async function GET() {
         .filter((endpoint) => endpoint.verdict.ok && endpoint.verdict.owner)
         .map(key)
     ).toEqual([
-      'app/api/admin/clients/[id]/documents/route.ts#GET',
       'apps/services/api/src/app/api/admin/clients/[id]/documents/route.ts#GET',
     ])
   })
@@ -12058,7 +12729,7 @@ export async function GET() {
       'utf8'
     )
     const eager = enrollmentSource.replace(
-      /(export function createCustomerEnrollmentService\(\{[\s\S]*?\) \{\n)/,
+      /(export function createCustomerEnrollmentService\(\{[\s\S]*?\) \{\r?\n)/,
       "$1  void withTenantTransaction({ tenantId: 'x' }, (tx) => tx.organization.count())\n"
     )
     expect(eager).not.toBe(enrollmentSource)
@@ -12066,7 +12737,7 @@ export async function GET() {
       "createCustomerEnrollmentService runs withTenantTransaction({ tenantId: 'x' }, (tx) => tx.organization.count()) when called",
     ])
     const reading = enrollmentSource.replace(
-      /(export function createCustomerEnrollmentService\(\{[\s\S]*?\) \{\n)/,
+      /(export function createCustomerEnrollmentService\(\{[\s\S]*?\) \{\r?\n)/,
       '$1  const early = globalThis\n  void early\n'
     )
     expect(reading).not.toBe(enrollmentSource)
@@ -12158,8 +12829,8 @@ export async function GET() {
 
   it('traces the actual selection closure and rejects rewired session ports, early effects and removed CSRF refusals', () => {
     const routes = SELECTION_FACADES.map(
-      (facade) =>
-        `${facade.module === 'lib/organization-selection' ? '' : 'apps/services/api/src/'}app/api/auth/organizations/selection/route.ts`
+      (_facade) =>
+        'apps/services/api/src/app/api/auth/organizations/selection/route.ts'
     )
     const policy = fs.readFileSync(path.join(ROOT, SELECTION_SOURCE), 'utf8')
     for (const facade of SELECTION_FACADES) {
@@ -12274,18 +12945,29 @@ export async function GET() {
       changed
     )!
     expect([...reach(hidden.info, hidden.node).references]).not.toEqual([])
-    const root = exportedNode(
-      parseModule(path.join(ROOT, 'lib/auth.ts')),
-      'withSignInAvailability'
+    const nextAuth = parseModule(
+      path.join(
+        ROOT,
+        'apps/services/api/src/app/api/auth/[...nextauth]/route.ts'
+      )
     )
-    // Follow the public package re-export explicitly; it must be the same wrapper,
+    // Follow the host's real public-package import to the approved wrapper,
     // not an unrelated function with the approved facade name.
-    const binding = parseModule(path.join(ROOT, 'lib/auth.ts')).exports.get(
-      'withSignInAvailability'
-    )?.from
+    const binding = nextAuth.imports.get('withSignInAvailability')
+    const publicFile = binding && moduleFile(binding.module)
+    const wrapper =
+      binding && publicFile
+        ? exportedNode(parseModule(publicFile), binding.name)
+        : undefined
     expect(binding?.module).toBe('@gb-locacoes/backend/http')
     expect(binding?.name).toBe('withSignInAvailability')
-    expect(root?.node ?? binding).toBeDefined()
+    expect(wrapper?.node).toBeDefined()
+    expect(relative(wrapper!.info.file)).toBe(
+      HANDLER_WRAPPERS.find(
+        (entry) =>
+          entry.module === binding?.module && entry.name === binding?.name
+      )?.source
+    )
   })
 
   it('keeps the new quote transports guarded and refuses unvalidated tenant or limiter rewiring', () => {
@@ -12435,28 +13117,21 @@ export async function GET() {
       const outcome = checkFunction(
         located.info,
         located.node,
-        'app/api/cron/any/route.ts'
+        'apps/services/api/src/app/api/cron/any/route.ts'
       )
       expect(outcome, guard.name).toMatchObject({ ok: true })
     }
     // Every INERT_IMPORTS module resolves and still exports each name listed (a renamed module or a removed
     // function would leave an exception without object in the list: it must be noticed and dropped).
-    for (const entry of INERT_IMPORTS.filter((item) =>
-      item.module.startsWith('lib/')
-    )) {
-      const file = resolveModule(
-        path.join(ROOT, 'package.json'),
-        `@/${entry.module}`
-      )
+    for (const entry of INERT_IMPORTS) {
+      const file = moduleFile(entry.module)
       expect(file, entry.module).toBeDefined()
-      const source = fs.readFileSync(file!, 'utf8')
+      const info = parseModule(file!)
       for (const name of entry.names)
         expect(
-          new RegExp(
-            `export (?:async )?(?:function|const|let|class) ${name}\\b|export \\{[^}]*\\b${name}\\b[^}]*\\}`
-          ).test(source),
+          exportedNode(info, name),
           `${entry.module} exports ${name}`
-        ).toBe(true)
+        ).not.toBeNull()
     }
   })
 
@@ -12604,11 +13279,14 @@ export async function GET() {
       expect(mutated, label).not.toBe(source)
       expect(inertClassProblems(catalog, mutated), label).not.toEqual([])
     }
-    // An entry whose module does not export that class.
+    // An entry whose distinct canonical module does not export that class.
     expect(
-      inertClassProblems({ ...catalog, module: 'lib/rental-transaction' })
+      inertClassProblems({
+        ...catalog,
+        module: 'packages/backend/src/modules/rentals/errors',
+      })
     ).toEqual([
-      `lib/rental-transaction#CatalogError is not the class of ${catalog.source}`,
+      `packages/backend/src/modules/rentals/errors#CatalogError is not the class of ${catalog.source}`,
     ])
     // The natives keep the Symbol.hasInstance of Function.prototype; `z.ZodError` is a plain property of zod.
     for (const name of INERT_GLOBAL_CLASSES)
@@ -12630,29 +13308,34 @@ export async function GET() {
     ).toEqual(['zod#ZodError', 'zod#z.ZodError'])
   })
 
-  it('operations and rentals imports resolve the same sealed errors as the legacy facades', () => {
-    for (const [name, legacyModule, sharedModule] of [
-      ['VehicleError', 'lib/vehicles', '@gb-locacoes/backend/operations'],
+  it('public backend imports resolve the same sealed errors as their distinct canonical sources', () => {
+    for (const [name, canonicalModule, publicModule] of [
+      [
+        'VehicleError',
+        'packages/backend/src/modules/operations/vehicles',
+        '@gb-locacoes/backend/operations',
+      ],
       [
         'PaymentRequestError',
-        'lib/payment-obligation',
+        'packages/backend/src/modules/billing/payment-errors',
         '@gb-locacoes/backend/billing',
       ],
       [
         'RentalMutationError',
-        'lib/rental-transaction',
+        'packages/backend/src/modules/rentals/errors',
         '@gb-locacoes/backend/rentals',
       ],
-    ]) {
-      const legacy = INERT_CLASSES.find(
-        (entry) => entry.module === legacyModule && entry.name === name
+    ] as const) {
+      const canonical = INERT_CLASSES.find(
+        (entry) => entry.module === canonicalModule && entry.name === name
       )!
       const shared = INERT_CLASSES.find(
-        (entry) => entry.module === sharedModule && entry.name === name
+        (entry) => entry.module === publicModule && entry.name === name
       )!
-      expect(exportedClass(shared)).toBe(exportedClass(legacy))
-      expect(shared.source).toBe(legacy.source)
-      for (const entry of [legacy, shared]) {
+      expect(shared.module).not.toBe(canonical.module)
+      expect(exportedClass(shared)).toBe(exportedClass(canonical))
+      expect(shared.source).toBe(canonical.source)
+      for (const entry of [canonical, shared]) {
         expect(inertClassProblems(entry)).toEqual([])
         const source = fs.readFileSync(path.join(ROOT, entry.source!), 'utf8')
         const head = `export class ${name} extends Error {`
@@ -12679,16 +13362,19 @@ export async function GET() {
     expect(missing).toEqual([])
   })
 
-  it('the catalog package and legacy facade expose the same sealed error class', () => {
-    const legacy = INERT_CLASSES.find(
-      (entry) => entry.module === 'lib/catalog' && entry.name === 'CatalogError'
+  it('the catalog public package exposes the same sealed error as its distinct canonical source', () => {
+    const canonical = INERT_CLASSES.find(
+      (entry) =>
+        entry.module === 'packages/backend/src/modules/catalog/errors' &&
+        entry.name === 'CatalogError'
     )!
     const shared = INERT_CLASSES.find(
       (entry) =>
         entry.module === '@gb-locacoes/backend/catalog' &&
         entry.name === 'CatalogError'
     )!
-    expect(exportedClass(shared)).toBe(exportedClass(legacy))
+    expect(shared.module).not.toBe(canonical.module)
+    expect(exportedClass(shared)).toBe(exportedClass(canonical))
     expect(shared.source).toBe('packages/backend/src/modules/catalog/errors.ts')
     expect(inertClassProblems(shared)).toEqual([])
     const source = fs.readFileSync(path.join(ROOT, shared.source!), 'utf8')
@@ -12731,8 +13417,7 @@ export async function GET() {
     for (const file of [
       ...allRouteFiles.map(relative),
       ...INERT_CLASSES.flatMap((entry) => (entry.source ? [entry.source] : [])),
-      'proxy.ts',
-      'lib/prisma.ts',
+      'packages/backend/src/runtime/index.ts',
       // As contrapartes da API compartilhada (onda 135, E6): o proxy do serviço e o banco do runtime do backend.
       'apps/services/api/src/proxy.ts',
       'packages/backend/src/runtime/database.ts',
@@ -12748,23 +13433,23 @@ export async function GET() {
     // any anonymous `instanceof CatalogError` before a guard (this POST, or another route's) runs it afterwards.
     const route = path.join(ROOT, admin)
     const patched = `
-      import { prisma } from '@/lib/prisma'
-      import { CatalogError } from '@/lib/catalog'
-      import { requireAdmin } from '@/middlewares/require-admin'
-      export async function GET() {
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
+      import { CatalogError } from '@/packages/backend/src/modules/catalog/errors'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
+      export async function GET(request: Request) {
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         Object.defineProperty(CatalogError, Symbol.hasInstance, { value: () => { void prisma.user.deleteMany(); return false } })
         return Response.json({})
       }
       export async function POST(request: Request) {
         if (request instanceof CatalogError) return Response.json({}, { status: 400 })
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json({ ok: await prisma.user.count() })
       }`
     const change =
-      'app/api/admin/new-feature/route.ts:8: CatalogError is handed over in Object.defineProperty(CatalogError, Symbol.hasInstance, { value: () => { void pr'
+      'apps/services/api/src/app/api/admin/new-feature/route.ts:8: CatalogError is handed over in Object.defineProperty(CatalogError, Symbol.hasInstance, { value: () => { void pr'
     expect(sealedClassProblems(route, patched)).toEqual([change])
     // The route module fails whole: no handler of a module that changes such a class passes.
     expect(reasons(admin, patched)).toEqual([
@@ -12772,19 +13457,19 @@ export async function GET() {
       `the module changes a class after instanceof: ${change}`,
     ])
     const head =
-      "import { CatalogError } from '@/lib/catalog'\nimport * as catalog from '@/lib/catalog'\nimport { CatalogError as Renamed } from '@/lib/catalog'\n"
+      "import { CatalogError } from '@/packages/backend/src/modules/catalog/errors'\nimport * as catalog from '@/packages/backend/src/modules/catalog/errors'\nimport { CatalogError as Renamed } from '@/packages/backend/src/modules/catalog/errors'\n"
     for (const code of [
       'Reflect.defineProperty(Renamed, Symbol.hasInstance, { value: () => true })',
       'Object.defineProperty(catalog.CatalogError, Symbol.hasInstance, { value: () => true })',
       "Object.setPrototypeOf(catalog['CatalogError'], null)",
-      "export async function GET() { const { CatalogError: C } = await import('@/lib/catalog'); Object.setPrototypeOf(C, null) }",
-      "export async function GET() { const { CatalogError } = await import('@/lib/catalog'); void [CatalogError] }",
+      "export async function GET() { const { CatalogError: C } = await import('@/packages/backend/src/modules/catalog/errors'); Object.setPrototypeOf(C, null) }",
+      "export async function GET() { const { CatalogError } = await import('@/packages/backend/src/modules/catalog/errors'); void [CatalogError] }",
       '(CatalogError as any).x = 1',
       '(CatalogError as any).__defineGetter__(Symbol.hasInstance, () => () => true)',
       'const Alias = CatalogError',
       'const errors = { CatalogError }',
       'void (CatalogError instanceof Object)',
-      "export { CatalogError as Other } from '@/lib/catalog'",
+      "export { CatalogError as Other } from '@/packages/backend/src/modules/catalog/errors'",
       'export default CatalogError',
       'Object.defineProperty(Error, Symbol.hasInstance, { value: () => true })',
       "(Error as any).prepareStackTrace = () => ''",
@@ -12839,7 +13524,7 @@ export async function GET() {
     const { ESLint } = await import('eslint')
     const tool = await import('../../tools/eslint-runtime-rewrite.mjs')
     const eslint = new ESLint({ cwd: ROOT })
-    const rule = tool.plugin.rules[tool.RULE_NAME]
+    const rule = tool.default.rules[tool.RULE_NAME]
     const problems: string[] = []
     const covered: string[] = []
     const uncovered = new Set<string>()
@@ -12908,19 +13593,19 @@ export async function GET() {
     // What the inventory cannot see (a class reached through a value) is what the rule refuses, in a route and in
     // any server file (verifier vrf3-ft-111-112: pA.mts, pA2.mts).
     const patched = (patch: string) => `
-      import { prisma } from '@/lib/prisma'
-      import { CatalogError } from '@/lib/catalog'
-      import { requireAdmin } from '@/middlewares/require-admin'
-      export async function GET() {
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
+      import { CatalogError } from '@/packages/backend/src/modules/catalog/errors'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
+      export async function GET(request: Request) {
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         ${patch}
         return Response.json({})
       }
       export async function POST(request: Request) {
         if (request instanceof CatalogError) return Response.json({}, { status: 400 })
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json({ ok: await prisma.user.count() })
       }`
     const run =
@@ -12951,8 +13636,8 @@ export async function GET() {
         ),
       ],
       [
-        'lib/telemetry.ts',
-        `import { prisma } from '@/lib/prisma'\nObject.defineProperty(Object.getPrototypeOf(RangeError), Symbol.hasInstance, ${run})\nexport const TELEMETRY = 'on'\n`,
+        'packages/backend/src/runtime/telemetry.ts',
+        `import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'\nObject.defineProperty(Object.getPrototypeOf(RangeError), Symbol.hasInstance, ${run})\nexport const TELEMETRY = 'on'\n`,
       ],
     ] as const) {
       const [result] = await eslint.lintText(text, {
@@ -13060,13 +13745,13 @@ export async function GET() {
       },
     }
     const loaded = (prelude: string) => `
-      import { prisma } from '@/lib/prisma'
+      import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
       import { z } from 'zod'
-      import { requireAdmin } from '@/middlewares/require-admin'
+      import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
       ${prelude}
-      export async function GET() {
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+      export async function GET(request: Request) {
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json({})
       }`
     const wipe = '() => prisma.user.deleteMany()'
@@ -13145,6 +13830,7 @@ export async function GET() {
           'return authentication.resolveWebhookIntegration(',
         ],
         [
+          // The lib/ arm preserves the retired facade spelling; current WEBHOOK_AUTH_FACADES exercises the API branch.
           file.startsWith('lib/')
             ? '() => prisma'
             : '() => getDatabaseRuntime().prisma',
@@ -13160,6 +13846,150 @@ export async function GET() {
         expect(webhookAuthFacadeProblem(file, mutated), file).toBeDefined()
       }
     }
+  })
+
+  it('traces bounded canonical public GET closures and rejects missing refusal, forged requests, early data and forged host resolution', () => {
+    const hostFile = path.join(ROOT, PUBLIC_FACTORY_SOURCE)
+    const hostText = fs.readFileSync(hostFile, 'utf8')
+    for (const entry of PUBLIC_FACTORY_CLOSURES) {
+      const [name, , stem, pathName, dataPort, , earlyArguments] = entry
+      const route = `apps/services/api/src/app/api/${pathName}/route.ts`
+      const canonical = `packages/backend/src/http/${stem}.ts`
+      const sourceFile = path.join(ROOT, canonical)
+      const text = fs.readFileSync(sourceFile, 'utf8')
+      const baseline = () => analyzeRouteModule(path.join(ROOT, route))
+      expect(
+        baseline().map((endpoint) =>
+          endpoint.verdict.ok ? 'ok' : endpoint.verdict.reason
+        ),
+        name
+      ).toEqual(['ok'])
+      expect(allowlistProblems(route, baseline()), name).toEqual([])
+      const closed = publicFactoryClosure({
+        module: PUBLIC_FACTORY_HOST,
+        name,
+        file: hostFile,
+      })
+      expect(closed, name).not.toBeNull()
+      expect(
+        PUBLIC_FACTORY_COMPOSITIONS.get(closed!.info)?.node.getText(),
+        name
+      ).toContain(entry[1])
+      const mutations: Array<readonly [string, string, string]> = [
+        ['missing refusal', 'if (!tenant.ok) return tenant.response', ''],
+        [
+          'forged request',
+          'deps.resolveTenant(request',
+          'deps.resolveTenant(new Request(request.url)',
+        ],
+        [
+          'early data',
+          'const tenant = await deps.resolveTenant(request',
+          `await deps.${dataPort}(${earlyArguments})
+      const tenant = await deps.resolveTenant(request`,
+        ],
+      ]
+      if (stem === 'storefront-legal')
+        mutations.push(
+          ['missing kind refusal', 'if (!kind) return unknownKind()', ''],
+          [
+            'wrong kind refusal',
+            'if (!kind) return unknownKind()',
+            'if (kind) return unknownKind()',
+          ],
+          [
+            'kind from query',
+            '(await params).kind',
+            "new URL(request.url).searchParams.get('kind') ?? ''",
+          ],
+          [
+            'effect in kind refusal',
+            'if (!kind) return unknownKind()',
+            "if (!kind) { await deps.getDocument({ tenantId: 'foreign' }, 'terms'); return unknownKind() }",
+          ]
+        )
+      for (const [label, from, to] of mutations) {
+        const changed = text.replace(from, to)
+        expect(changed, `${name}: ${label} applies`).not.toBe(text)
+        FIXTURE_FILES.set(sourceFile, changed)
+        try {
+          const endpoints = baseline()
+          expect(endpoints, `${name}: ${label}`).toHaveLength(1)
+          expect(endpoints[0]!.verdict.ok, `${name}: ${label}`).toBe(false)
+          expect(
+            allowlistProblems(route, endpoints),
+            `${name}: ${label}`
+          ).not.toEqual([])
+        } finally {
+          FIXTURE_FILES.delete(sourceFile)
+        }
+        expect(
+          baseline().map((endpoint) => endpoint.verdict.ok),
+          name
+        ).toEqual([true])
+      }
+      // Replace precisely this composition's port, even when several arrows share the same text.
+      const host = parseModule(hostFile, hostText)
+      const call = host.locals.get(name) as ts.CallExpression
+      const object = strip(call.arguments[0]!) as ts.ObjectLiteralExpression
+      const property = object.properties.find(
+        (candidate) =>
+          ts.isPropertyAssignment(candidate) &&
+          propertyText(candidate.name) === 'resolveTenant'
+      ) as ts.PropertyAssignment
+      const forged =
+        hostText.slice(0, property.initializer.getStart()) +
+        "async () => ({ ok: true, context: { tenantId: 'foreign' } } as any)" +
+        hostText.slice(property.initializer.end)
+      expect(forged, `${name}: forged host resolver applies`).not.toBe(hostText)
+      FIXTURE_FILES.set(hostFile, forged)
+      try {
+        expect(
+          publicFactoryClosure({
+            module: PUBLIC_FACTORY_HOST,
+            name,
+            file: hostFile,
+          }),
+          name
+        ).toBeNull()
+        const endpoints = baseline()
+        expect(endpoints, name).toHaveLength(1)
+        expect(endpoints[0]!.verdict.ok, `${name}: forged host resolver`).toBe(
+          false
+        )
+        expect(allowlistProblems(route, endpoints), name).not.toEqual([])
+      } finally {
+        FIXTURE_FILES.delete(hostFile)
+      }
+      expect(
+        baseline().map((endpoint) => endpoint.verdict.ok),
+        name
+      ).toEqual([true])
+    }
+    const legalFile = path.join(
+      ROOT,
+      'packages/contracts/src/storefront-legal.ts'
+    )
+    const legalText = fs.readFileSync(legalFile, 'utf8')
+    const altered = legalText.replace(
+      /return \(\s*STOREFRONT_LEGAL_KINDS\.find\(/,
+      "void globalThis.fetch('https://fixture.test')\n  return (\n    STOREFRONT_LEGAL_KINDS.find("
+    )
+    expect(altered, 'the pure parser mutation applies').not.toBe(legalText)
+    FIXTURE_FILES.set(legalFile, altered)
+    try {
+      expect(publicFactoryLegalKindSourceIsInert()).toBe(false)
+      expect(
+        publicFactoryClosure({
+          module: PUBLIC_FACTORY_HOST,
+          name: 'publicStorefrontLegal',
+          file: hostFile,
+        })
+      ).toBeNull()
+    } finally {
+      FIXTURE_FILES.delete(legalFile)
+    }
+    expect(publicFactoryLegalKindSourceIsInert()).toBe(true)
   })
 
   it('keeps the result shape of every approved helper in sync with its source', () => {
@@ -13181,6 +14011,15 @@ export async function GET() {
           statement.name?.text === guard.name
       )
       expect(declaration, `${guard.module}#${guard.name}`).toBeDefined()
+      if (guard.requestArgument !== undefined) {
+        const request = declaration!.parameters[guard.requestArgument]
+        expect(
+          request,
+          `${guard.module} required request parameter`
+        ).toBeDefined()
+        expect(request!.questionToken, guard.module).toBeUndefined()
+        expect(request!.initializer, guard.module).toBeUndefined()
+      }
       const declared = declaration!.type?.getText() ?? ''
       const where = `${guard.module}#${guard.name}`
       if (guard.result.type === 'discriminated') {
@@ -13250,7 +14089,11 @@ export async function GET() {
         'isSameOriginMutation',
         'boolean',
       ],
-      ['lib/security/mutation-origin.ts', 'isTrustedMutationOrigin', 'boolean'],
+      [
+        'apps/services/api/src/host/mutation-origin.ts',
+        'isTrustedMutationOrigin',
+        'boolean',
+      ],
     ]
     for (const [file, name, declared] of guards) {
       const source = ts.createSourceFile(
@@ -13289,17 +14132,17 @@ export async function GET() {
   })
 
   it('inventories destructured, renamed and re-exported methods', () => {
-    const guarded = `import { requireAdmin } from '@/middlewares/require-admin'
-      export async function GET() {
-        const auth = await requireAdmin()
-        if (!auth.success) return Response.json({}, { status: 403 })
+    const guarded = `import { requireTenantPermission as requireAdmin } from '@/apps/services/api/src/host/permissions'
+      export async function GET(request: Request) {
+        const auth = await requireAdmin(request, 'EQUIPMENTS', 'READ')
+        if (!auth.ok) return Response.json({}, { status: 403 })
         return Response.json({})
       }`
-    const route = 'app/api/new-feature/route.ts'
+    const route = 'apps/services/api/src/app/api/admin/new-feature/route.ts'
     expect(
       methods(
         route,
-        `import { prisma } from '@/lib/prisma'
+        `import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
          ${guarded}
          export const { POST } = { POST: async () => Response.json(await prisma.user.deleteMany()) }`
       )
@@ -13307,7 +14150,7 @@ export async function GET() {
     expect(
       methods(
         route,
-        `import { prisma } from '@/lib/prisma'
+        `import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
          const handlers = {
            async PUT() { return Response.json(await prisma.user.deleteMany()) },
            DELETE: async () => Response.json(await prisma.user.deleteMany()),
@@ -13319,7 +14162,7 @@ export async function GET() {
     expect(
       methods(
         route,
-        `import { makeHandlers } from '@/lib/handlers'
+        `import { makeHandlers } from '@/tests/security/fixtures/handlers'
          ${guarded}
          export const { POST } = makeHandlers()
          export let PATCH = async () => Response.json({})`
@@ -13333,7 +14176,7 @@ export async function GET() {
     expect(
       methods(
         route,
-        `import { prisma } from '@/lib/prisma'
+        `import { prisma } from '@/tests/security/fixtures/authorization-scanner-data'
          ${guarded}
          async function wipe() { return Response.json(await prisma.user.deleteMany()) }
          export { wipe as DELETE }`
@@ -13343,14 +14186,14 @@ export async function GET() {
       methods(
         route,
         `${guarded}
-         export * from '@/app/api/payments/pix/webhook/route'`
+         export * from '@/apps/services/api/src/app/api/payments/pix/webhook/route'`
       )
     ).toEqual(['GET:ok', `POST:${NO_GUARD}`])
     expect(
       methods(
         route,
         `${guarded}
-         export { POST } from '@/app/api/payments/pix/webhook/route'`
+         export { POST } from '@/apps/services/api/src/app/api/payments/pix/webhook/route'`
       )
     ).toEqual(['GET:ok', `POST:${NO_GUARD}`])
     expect(
@@ -13365,9 +14208,10 @@ export async function GET() {
     ])
     // re-exporting a guarded route keeps its verdict
     expect(
-      methods(route, `export * from '@/app/api/admin/categories/route'`).every(
-        (entry) => entry.endsWith(':ok')
-      )
+      methods(
+        route,
+        `export * from '@/apps/services/api/src/app/api/admin/categories/route'`
+      ).every((entry) => entry.endsWith(':ok'))
     ).toBe(true)
     // `export const X = importedHandler` is the same value as a re-export (onda 135, C5: the OpenAPI generator only
     // reads `export const`): the imported handler is followed and keeps its own verdict, guarded or not, and the
@@ -13375,8 +14219,8 @@ export async function GET() {
     expect(
       methods(
         route,
-        `import { GET as list } from '@/app/api/admin/categories/route'
-         import { POST as webhook } from '@/app/api/payments/pix/webhook/route'
+        `import { GET as list } from '@/apps/services/api/src/app/api/admin/categories/route'
+         import { POST as webhook } from '@/apps/services/api/src/app/api/payments/pix/webhook/route'
          export const GET = list
          export const POST = webhook`
       )
@@ -13407,22 +14251,22 @@ export async function GET() {
   it('fails real routes once their authorization is removed or weakened (in-memory mutation)', () => {
     const mutations: Array<[string, RegExp, string]> = [
       [
-        'app/api/admin/categories/route.ts',
+        'apps/services/api/src/app/api/admin/categories/route.ts',
         /await requireTenantPermission\(([^)]*)\)/g,
         '({ ok: true } as any)',
       ],
       [
-        'app/api/admin/rentals/route.ts',
+        'apps/services/api/src/app/api/admin/rentals/route.ts',
         /principal\.role !== 'ADMIN'/g,
         'false',
       ],
       [
-        'app/api/cron/outbox/route.ts',
+        'apps/services/api/src/app/api/cron/outbox/route.ts',
         /requireCronAuthorization\(request\)/g,
         'null',
       ],
       [
-        'app/api/addresses/route.ts',
+        'apps/services/api/src/app/api/addresses/route.ts',
         /await resolveTenantPrincipal\(request\)/g,
         '({ ok: true } as any)',
       ],
@@ -13433,181 +14277,185 @@ export async function GET() {
         '',
       ],
       [
-        'app/api/admin/permissions/route.ts',
-        /if \(context\.role !== 'ADMIN'\)\s*return NextResponse\.json\(\{ error: 'Não autorizado' \}, \{ status: 403 \}\)/,
+        'apps/services/api/src/app/api/admin/permissions/route.ts',
+        /if \(access\.principal\.role !== 'ADMIN'\)\s*return NextResponse\.json\(\{ error: 'Não autorizado' \}, \{ status: 403 \}\)/,
         '',
       ],
       // Role compared with a constant that is not a staff allowlist.
       [
-        'app/api/admin/permissions/route.ts',
+        'apps/services/api/src/app/api/admin/permissions/route.ts',
         /context\.role !== 'ADMIN'/g,
         "context.role !== 'CLIENT'",
       ],
       [
-        'app/api/admin/audit-logs/route.ts',
+        'apps/services/api/src/app/api/admin/audit-logs/route.ts',
         /access\.principal\.role !== 'ADMIN'/g,
         "access.principal.role === 'CLIENT'",
       ],
       // The check of the helper's result is deleted.
       [
-        'app/api/admin/badges/route.ts',
-        /if \(!auth\.success\) \{\s*return NextResponse\.json\(auth\.body \?\? \{ error: auth\.error \}, \{\s*status: auth\.status,\s*headers: auth\.headers,\s*\}\)\s*\}/,
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /if \(!access\.ok\)\s*return new NextResponse\(access\.response\.body, \{[\s\S]*?\n {4}\}\)/,
         '',
       ],
       // Gate moved into a branch.
       [
-        'app/api/admin/drivers/route.ts',
+        'apps/services/api/src/app/api/admin/drivers/route.ts',
         /const access = await resolveTenantPrincipal\(request\)\s*if \(!access\.ok\) return access\.response\s*if \(access\.principal\.role !== 'ADMIN'\)/,
         "if (request.headers.has('x-strict')) {\nconst access = await resolveTenantPrincipal(request)\nif (!access.ok) return access.response\n}\nif (access.principal.role !== 'ADMIN')",
       ],
       // Gate helper result discarded with void.
       [
-        'app/api/cron/outbox/route.ts',
+        'apps/services/api/src/app/api/cron/outbox/route.ts',
         /const denied = requireCronAuthorization\(request\)\s*if \(denied\) return denied/,
         'void requireCronAuthorization(request)',
       ],
       // Finding 12: truthiness of a result that is always an object.
-      ['app/api/admin/badges/route.ts', /if \(!auth\.success\)/, 'if (!auth)'],
+      [
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /if \(!access\.ok\)/,
+        'if (!access)',
+      ],
       // Finding 13: the CLIENT "owner" compared with itself.
       [
-        'app/api/admin/clients/[id]/documents/route.ts',
+        'apps/services/api/src/app/api/admin/clients/[id]/documents/route.ts',
         /principal\.userId === userId/,
         'principal.userId === principal.userId',
       ],
       // Finding 14: a private route that resolves the public tenant instead of the principal.
       [
-        'app/api/addresses/route.ts',
+        'apps/services/api/src/app/api/addresses/route.ts',
         /resolveTenantPrincipal/g,
         'resolvePublicRequestTenant',
       ],
       // Finding 15: a data client loaded with import() and used before the gate.
       [
-        'app/api/admin/badges/route.ts',
-        /const auth = await requireAdminOrOperator\(request\)/,
-        "const { prisma: early } = await import('@/lib/prisma')\n  await early.user.count()\n  const auth = await requireAdminOrOperator(request)",
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /const access = await resolveTenantPrincipal\(request\)/,
+        "const { getDatabaseRuntime: early } = await import('@gb-locacoes/backend/runtime')\n  await early().prisma.user.count()\n  const access = await resolveTenantPrincipal(request)",
       ],
       // Finding 26: data reached through an object literal, a class or a callback parameter.
       [
-        'app/api/admin/badges/route.ts',
-        /const auth = await requireAdminOrOperator\(request\)/,
-        'const zoho = { token: () => getZohoAccessToken() }\n  await zoho.token()\n  const auth = await requireAdminOrOperator(request)',
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /const access = await resolveTenantPrincipal\(request\)/,
+        "const zoho = { token: () => readAdminBadges({ tenantId: 'foreign' }) }\n  await zoho.token()\n  const access = await resolveTenantPrincipal(request)",
       ],
       [
-        'app/api/admin/badges/route.ts',
-        /const auth = await requireAdminOrOperator\(request\)/,
-        'class Mail { token() { return getZohoAccessToken() } }\n  await new Mail().token()\n  const auth = await requireAdminOrOperator(request)',
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /const access = await resolveTenantPrincipal\(request\)/,
+        "class Mail { token() { return readAdminBadges({ tenantId: 'foreign' }) } }\n  await new Mail().token()\n  const access = await resolveTenantPrincipal(request)",
       ],
       [
-        'app/api/admin/badges/route.ts',
-        /const auth = await requireAdminOrOperator\(request\)/,
-        "await Promise.all([makeZohoMailRequest].map((send) => send('/accounts')))\n  const auth = await requireAdminOrOperator(request)",
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /const access = await resolveTenantPrincipal\(request\)/,
+        "await Promise.all([readAdminBadges].map((send) => send({ tenantId: 'foreign' })))\n  const access = await resolveTenantPrincipal(request)",
       ],
       // Finding 30: the CLIENT owner reaches a second access that ignores the owner.
       [
-        'app/api/admin/clients/[id]/documents/route.ts',
+        'apps/services/api/src/app/api/admin/clients/[id]/documents/route.ts',
         /const documents = await listClientDocuments\(principal, userId\)/,
-        "const documents = await listClientDocuments(principal, userId)\n    await (await import('@/lib/tenant')).withTenantTransaction(principal, (tx: any) => tx.rental.deleteMany({}))",
+        "const documents = await listClientDocuments(principal, userId)\n    await (await import('@/apps/services/api/src/host/tenant-transaction')).withTenantTransaction(principal, (tx: any) => tx.rentals.deleteMany({}))",
       ],
       // Finding 26 (second review): assignment, default, accessor, inheritance, member assigned later.
       [
-        'app/api/admin/badges/route.ts',
-        /const auth = await requireAdminOrOperator\(request\)/,
-        'let early: any\n  early = withTenantTransaction\n  await early({}, (tx: any) => tx.rental.deleteMany({}))\n  const auth = await requireAdminOrOperator(request)',
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /const access = await resolveTenantPrincipal\(request\)/,
+        "let early: any\n  early = readAdminBadges\n  await early({ tenantId: 'foreign' })\n  const access = await resolveTenantPrincipal(request)",
       ],
       [
-        'app/api/admin/badges/route.ts',
-        /const auth = await requireAdminOrOperator\(request\)/,
-        'const early = async (run: any = withTenantTransaction) => run({}, (tx: any) => tx.rental.deleteMany({}))\n  await early()\n  const auth = await requireAdminOrOperator(request)',
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /const access = await resolveTenantPrincipal\(request\)/,
+        "const early = async (run: any = readAdminBadges) => run({ tenantId: 'foreign' })\n  await early()\n  const access = await resolveTenantPrincipal(request)",
       ],
       [
-        'app/api/admin/badges/route.ts',
-        /const auth = await requireAdminOrOperator\(request\)/,
-        'const zoho = { get token() { return getZohoAccessToken() } }\n  await zoho.token\n  const auth = await requireAdminOrOperator(request)',
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /const access = await resolveTenantPrincipal\(request\)/,
+        "const zoho = { get token() { return readAdminBadges({ tenantId: 'foreign' }) } }\n  await zoho.token\n  const access = await resolveTenantPrincipal(request)",
       ],
       [
-        'app/api/admin/badges/route.ts',
-        /const auth = await requireAdminOrOperator\(request\)/,
-        'class Base { token() { return getZohoAccessToken() } }\n  class Mail extends Base {}\n  await new Mail().token()\n  const auth = await requireAdminOrOperator(request)',
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /const access = await resolveTenantPrincipal\(request\)/,
+        "class Base { token() { return readAdminBadges({ tenantId: 'foreign' }) } }\n  class Mail extends Base {}\n  await new Mail().token()\n  const access = await resolveTenantPrincipal(request)",
       ],
       [
-        'app/api/admin/badges/route.ts',
-        /const auth = await requireAdminOrOperator\(request\)/,
-        'const mail: any = {}\n  mail.token = () => getZohoAccessToken()\n  await mail.token()\n  const auth = await requireAdminOrOperator(request)',
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /const access = await resolveTenantPrincipal\(request\)/,
+        "const mail: any = {}\n  mail.token = () => readAdminBadges({ tenantId: 'foreign' })\n  await mail.token()\n  const access = await resolveTenantPrincipal(request)",
       ],
       // Finding 30 (second review): the owner handed to a local helper that ignores it, or negated in the filter.
       [
-        'app/api/admin/clients/[id]/documents/route.ts',
+        'apps/services/api/src/app/api/admin/clients/[id]/documents/route.ts',
         /const documents = await listClientDocuments\(principal, userId\)/,
-        "const documentsOf = async (p: any, _owner: string) => (await import('@/lib/tenant')).withTenantTransaction(p, (tx: any) => tx.clientDocument.findMany())\n    const documents = await documentsOf(principal, userId)",
+        "const documentsOf = async (p: any, _owner: string) => (await import('@/apps/services/api/src/host/tenant-transaction')).withTenantTransaction(p, (tx: any) => tx.clientDocument.findMany())\n    const documents = await documentsOf(principal, userId)",
       ],
       [
-        'app/api/admin/clients/[id]/documents/route.ts',
+        'apps/services/api/src/app/api/admin/clients/[id]/documents/route.ts',
         /const documents = await listClientDocuments\(principal, userId\)/,
-        "const documents = await (await import('@/lib/tenant')).withTenantTransaction(principal, (tx: any) => tx.clientDocument.findMany({ where: { NOT: { userId } } }))",
+        "const documents = await (await import('@/apps/services/api/src/host/tenant-transaction')).withTenantTransaction(principal, (tx: any) => tx.clientDocument.findMany({ where: { NOT: { userId } } }))",
       ],
       // Finding 26 (third review): tagged template, array literal, zod or promise chain, thenable, getter, default.
       [
-        'app/api/admin/badges/route.ts',
-        /const auth = await requireAdminOrOperator\(request\)/,
-        'function wipe(_strings: TemplateStringsArray, run: any) { return run({}, (tx: any) => tx.rentals.deleteMany({})) }\n  await wipe`${withTenantTransaction}`\n  const auth = await requireAdminOrOperator(request)',
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /const access = await resolveTenantPrincipal\(request\)/,
+        "function wipe(_strings: TemplateStringsArray, run: any) { return run({ tenantId: 'foreign' }) }\n  await wipe`${readAdminBadges}`\n  const access = await resolveTenantPrincipal(request)",
       ],
       [
-        'app/api/admin/badges/route.ts',
-        /const auth = await requireAdminOrOperator\(request\)/,
-        'const send = (run: any) => run({}, (tx: any) => tx.rentals.deleteMany({}))\n  await [send][0](withTenantTransaction)\n  const auth = await requireAdminOrOperator(request)',
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /const access = await resolveTenantPrincipal\(request\)/,
+        "const send = (run: any) => run({ tenantId: 'foreign' })\n  await [send][0](readAdminBadges)\n  const access = await resolveTenantPrincipal(request)",
       ],
       [
-        'app/api/admin/badges/route.ts',
-        /const auth = await requireAdminOrOperator\(request\)/,
-        'await Promise.resolve().then(() => 0).then(withTenantTransaction as any)\n  const auth = await requireAdminOrOperator(request)',
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /const access = await resolveTenantPrincipal\(request\)/,
+        "await Promise.resolve().then(() => ({ tenantId: 'foreign' })).then(readAdminBadges)\n  const access = await resolveTenantPrincipal(request)",
       ],
       [
-        'app/api/admin/badges/route.ts',
-        /const auth = await requireAdminOrOperator\(request\)/,
-        'await { then: (resolve: any) => resolve(getZohoAccessToken()) }\n  const auth = await requireAdminOrOperator(request)',
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /const access = await resolveTenantPrincipal\(request\)/,
+        "await { then: (resolve: any) => resolve(readAdminBadges({ tenantId: 'foreign' })) }\n  const access = await resolveTenantPrincipal(request)",
       ],
       [
-        'app/api/admin/badges/route.ts',
-        /const auth = await requireAdminOrOperator\(request\)/,
-        'void ({ get token() { return getZohoAccessToken() } }).token\n  const auth = await requireAdminOrOperator(request)',
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /const access = await resolveTenantPrincipal\(request\)/,
+        "void ({ get token() { return readAdminBadges({ tenantId: 'foreign' }) } }).token\n  const access = await resolveTenantPrincipal(request)",
       ],
       [
-        'app/api/admin/badges/route.ts',
-        /const auth = await requireAdminOrOperator\(request\)/,
-        'const { token = getZohoAccessToken() } = {} as any\n  void token\n  const auth = await requireAdminOrOperator(request)',
+        'apps/services/api/src/app/api/admin/badges/route.ts',
+        /const access = await resolveTenantPrincipal\(request\)/,
+        "const { token = readAdminBadges({ tenantId: 'foreign' }) } = {} as any\n  void token\n  const access = await resolveTenantPrincipal(request)",
       ],
       // Finding 30 (third review): loop variable over the client, owner shadowed, relation read.
       [
-        'app/api/admin/clients/[id]/documents/route.ts',
+        'apps/services/api/src/app/api/admin/clients/[id]/documents/route.ts',
         /const documents = await listClientDocuments\(principal, userId\)/,
-        "const documents = await listClientDocuments(principal, userId)\n    await (await import('@/lib/tenant')).withTenantTransaction(principal, async (tx: any) => { for (const m of [tx.rentals]) await m.deleteMany({}) })",
+        "const documents = await listClientDocuments(principal, userId)\n    await (await import('@/apps/services/api/src/host/tenant-transaction')).withTenantTransaction(principal, async (tx: any) => { for (const m of [tx.rentals]) await m.deleteMany({}) })",
       ],
       [
-        'app/api/admin/clients/[id]/documents/route.ts',
+        'apps/services/api/src/app/api/admin/clients/[id]/documents/route.ts',
         /const documents = await listClientDocuments\(principal, userId\)/,
-        "const documents = await listClientDocuments(principal, userId)\n    for (const userId of ((await request.json()) as { userIds: string[] }).userIds) await (await import('@/lib/tenant')).withTenantTransaction(principal, (tx: any) => tx.rentals.deleteMany({ where: { userId } }))",
+        "const documents = await listClientDocuments(principal, userId)\n    for (const userId of ((await request.json()) as { userIds: string[] }).userIds) await (await import('@/apps/services/api/src/host/tenant-transaction')).withTenantTransaction(principal, (tx: any) => tx.rentals.deleteMany({ where: { userId } }))",
       ],
       [
-        'app/api/admin/clients/[id]/documents/route.ts',
+        'apps/services/api/src/app/api/admin/clients/[id]/documents/route.ts',
         /const documents = await listClientDocuments\(principal, userId\)/,
-        "const documents = await (await import('@/lib/tenant')).withTenantTransaction(principal, (tx: any) => tx.user.findUnique({ where: { id: userId }, include: { memberships: true } }))",
+        "const documents = await (await import('@/apps/services/api/src/host/tenant-transaction')).withTenantTransaction(principal, (tx: any) => tx.user.findUnique({ where: { id: userId }, include: { memberships: true } }))",
       ],
       // A route module that touches data when it loads, before any handler runs.
       [
-        'app/api/admin/badges/route.ts',
+        'apps/services/api/src/app/api/admin/badges/route.ts',
         /export const dynamic = 'force-dynamic'/,
-        "export const dynamic = 'force-dynamic'\nvoid getZohoAccessToken()",
+        "export const dynamic = 'force-dynamic'\nvoid readAdminBadges({ tenantId: 'foreign' })",
       ],
       // Finding 108: the normalized routes back to work before the guard.
       [
-        'app/api/admin/rentals/[id]/contract/route.ts',
+        'apps/services/api/src/app/api/admin/rentals/[id]/contract/route.ts',
         /\s*\/\/ O mesmo 403 que generateRentalContract devolve, antes de qualquer leitura\.\s*if \(!canManageContracts\(access\.principal\)\)\s*return NextResponse\.json\(\{ error: 'Acesso negado' \}, \{ status: 403 \}\)/,
         '',
       ],
       [
-        'app/api/admin/zoho-mail/oauth/callback/route.ts',
-        /export async function GET\(request: NextRequest\) \{\n/,
-        "export async function GET(request: NextRequest) {\n  const early = receivedCode(new URL(request.url).searchParams)\n  if ('failure' in early) return early.failure\n",
+        'apps/services/api/src/app/api/admin/zoho-mail/oauth/callback/route.ts',
+        /export async function GET\(request: NextRequest\) \{\r?\n/,
+        "import { receivedCode } from '@/packages/backend/src/http/zoho-oauth-response'\nexport async function GET(request: NextRequest) {\n  const early = receivedCode(new URL(request.url).searchParams)\n  if ('failure' in early) return early.failure\n",
       ],
     ]
     for (const [route, pattern, replacement] of mutations) {

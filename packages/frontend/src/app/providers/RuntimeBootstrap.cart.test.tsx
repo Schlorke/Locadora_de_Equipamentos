@@ -13,7 +13,7 @@ import {
   PrivateAreaGate,
   type HttpClient,
   type TenantContext,
-} from '../index'
+} from '../index.web'
 import { useSession } from '../../entities/sessao'
 import { switchCartScope, useCartStore } from '../../features/carrinho'
 

@@ -15,7 +15,7 @@ export const LIVE_SITE = Object.freeze({
   siteIndexable: true,
 })
 
-/** Consulta de organização do resolvedor público nos dois hosts (`lib/tenant.ts` e `apps/services/api/src/host/runtime.ts`). */
+/** Consulta de organização do resolvedor público no host API (`apps/services/api/src/host/runtime.ts`). */
 export const PUBLIC_ORGANIZATION_SELECT = Object.freeze({
   id: true,
   status: true,

@@ -1,3 +1,39 @@
+import { withTenantTransaction } from '../../apps/services/api/src/host/tenant-transaction'
+import { createRentalTransaction } from '@gb-locacoes/backend/rentals'
+import { createPaymentIssuance } from '@gb-locacoes/backend/billing'
+import { createIntegrationCredentialResolver } from '@gb-locacoes/backend/runtime'
+import { getDatabaseRuntime } from '@gb-locacoes/backend/runtime'
+const fixtureDatabase = vi.hoisted(() => ({
+  prisma: undefined as unknown,
+  pool: undefined as import('pg').Pool | undefined,
+}))
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()
+  if (!process.env.TEST_DATABASE_URL)
+    return { ...actual, getDatabaseRuntime: () => ({ prisma: undefined }) }
+  const { requireTestDatabase } = await import('../helpers/test-database')
+  if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
+    throw new Error('Disposable opt-in required')
+  const { Pool } = await import('pg')
+  const { PrismaPg } = await import('@prisma/adapter-pg')
+  const { PrismaClient } = await import('@prisma/client')
+  const pool = new Pool({
+    connectionString: requireTestDatabase(process.env),
+    max: 8,
+  })
+  fixtureDatabase.pool = pool
+  const fixturePrisma = new PrismaClient({ adapter: new PrismaPg(pool) })
+  fixtureDatabase.prisma = fixturePrisma
+  return {
+    ...actual,
+    getDatabaseRuntime: () => ({ prisma: fixturePrisma }),
+    createIntegrationCredentialResolver: () => async () => ({
+      apiKey: credential.apiKey,
+      environment: 'sandbox',
+    }),
+  }
+})
 /**
  * Emissão (`issueTenantPayment`) sobre o PostgreSQL descartável: uma falha do
  * Asaas que prova que nada foi criado (429, 401…) devolve a tentativa a QUEUED
@@ -16,37 +52,6 @@ import {
   vi,
 } from 'vitest'
 const credential = vi.hoisted(() => ({ apiKey: 'fixture-api-key' }))
-vi.mock('@/lib/prisma', async () => {
-  if (!process.env.TEST_DATABASE_URL) return { prisma: undefined }
-  const { requireTestDatabase } = await import('../helpers/test-database')
-  if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
-    throw new Error('Disposable opt-in required')
-  const { Pool } = await import('pg')
-  const { PrismaPg } = await import('@prisma/adapter-pg')
-  const { PrismaClient } = await import('@prisma/client')
-  const pool = new Pool({
-    connectionString: requireTestDatabase(process.env),
-    max: 8,
-  })
-  return {
-    prisma: new PrismaClient({ adapter: new PrismaPg(pool) }),
-    testPool: pool,
-  }
-})
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => null,
-}))
-vi.mock('@/lib/security/tenant-webhook', () => ({
-  resolveIntegrationCredential: async () => ({
-    apiKey: credential.apiKey,
-    environment: 'sandbox',
-  }),
-}))
-import { prisma } from '@/lib/prisma'
-import {
-  issueTenantPayment,
-  scheduleIssuanceReconciliation,
-} from '@/lib/payment-issuance'
 import { createAsaasHttpClient } from '@gb-locacoes/backend/billing'
 import { UNKNOWN_ISSUANCE_SETTLE_MS } from '../../packages/backend/src/modules/billing/issue-payment'
 import { enqueueOutbox } from '@gb-locacoes/backend/outbox'
@@ -90,9 +95,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
       await prisma.tenantIntegration.deleteMany({ where: { tenantId } })
       await prisma.organization.deleteMany({ where: { id: tenantId } })
       await prisma.$disconnect()
-      const { testPool } = (await import('@/lib/prisma')) as unknown as {
-        testPool: { end(): Promise<void> }
-      }
+      const { testPool } = { testPool: requireFixturePool() }
       await testPool.end()
     })
     async function pendingBoleto(
@@ -355,9 +358,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
         ).data
       /** O tempo passa para a tentativa: `updatedAt` (a entrada em UNKNOWN) recua `ms`. */
       async function age(attemptId: string, ms: number) {
-        const { testPool } = (await import('@/lib/prisma')) as unknown as {
-          testPool: import('pg').Pool
-        }
+        const { testPool } = { testPool: requireFixturePool() }
         await testPool.query(
           `UPDATE payment_attempts SET "updatedAt" = "updatedAt" - ($2::int * interval '1 millisecond') WHERE id = $1`,
           [attemptId, ms]
@@ -1785,9 +1786,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
         }
         /** Os eventos da cobrança foram criados há `ms` a mais (a outbox mede a espera pela criação). */
         async function ageEvents(paymentId: string, ms: number) {
-          const { testPool } = (await import('@/lib/prisma')) as unknown as {
-            testPool: import('pg').Pool
-          }
+          const { testPool } = { testPool: requireFixturePool() }
           await testPool.query(
             `UPDATE outbox_events SET "createdAt" = "createdAt" - ($3::bigint * interval '1 millisecond') WHERE "tenantId" = $1 AND "aggregateId" = $2`,
             [tenantId, paymentId, ms]
@@ -2076,3 +2075,21 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
     })
   }
 )
+
+const prisma = getDatabaseRuntime().prisma
+function requireFixturePool() {
+  const pool = fixtureDatabase.pool
+  if (!pool) throw new Error('Owned fixture pool was not initialized')
+  return pool
+}
+
+const { withRentalTransaction } = createRentalTransaction({
+  withTenantTransaction,
+})
+const resolveIntegrationCredential = createIntegrationCredentialResolver()
+const { issueTenantPayment, scheduleIssuanceReconciliation } =
+  createPaymentIssuance({
+    withRentalTransaction,
+    withTenantTransaction,
+    resolveIntegrationCredential,
+  })

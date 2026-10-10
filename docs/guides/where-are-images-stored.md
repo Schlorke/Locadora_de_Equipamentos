@@ -1,132 +1,55 @@
-# 📍 Onde Estão as Imagens? - Guia Explicativo
+# Onde ficam as imagens do produto e das locadoras
 
-## 🎯 Resposta Rápida
+O
+[inventário anterior](../archive/wave135-pre-f/docs/guides/where-are-images-stored.md.source)
+descreve arquivos e operações da GB na época. Seus totais de imagens, URLs e
+otimizações não são um inventário nem uma operação executada na nova plataforma.
 
-**As imagens otimizadas JÁ estão no Supabase Storage!** O script já executou
-tudo. Não precisa fazer push de nada.
+## Arquivos estáticos e URLs persistidas
 
-## 📊 Arquitetura de Armazenamento
+`public/` conserva os assets estáticos versionados do produto. Imagens recebidas
+pelo formulário não são gravadas nessa pasta: o upload retorna uma URL do
+adaptador de armazenamento, que os fluxos correspondentes podem persistir no
+banco. Uma URL já presente no banco não comprova que o objeto existe ou que a
+conta de armazenamento está configurada neste ambiente.
 
-### 1. **Supabase Storage** (Onde as imagens estão fisicamente)
+## Caminho atual do upload
 
-- **Serviço**: Supabase Storage (similar ao AWS S3, Google Cloud Storage)
-- **Bucket**: `gb-locacoes-images`
-- **Localização**: Cloud da Supabase (servidor remoto)
-- **Estrutura**:
-  ```
-  gb-locacoes-images/
-  ├── equipments/
-  │   ├── equipment-abc123.webp  ← Imagem otimizada (JÁ está aqui!)
-  │   ├── equipment-def456.webp
-  │   └── ...
-  └── logos/
-      ├── logo-xyz789.webp
-      └── ...
-  ```
+`POST /api/upload` pertence a `apps/services/api/src/app/api/upload/route.ts`. A
+rota exige principal autorizado e ADMIN. A composição em
+`apps/services/api/src/host/branding.ts` entrega a transação e a porta de
+armazenamento ao backend.
 
-**Status**: ✅ As 105 imagens otimizadas JÁ estão aqui, substituindo as
-originais.
+`packages/backend/src/http/image-upload.ts` recebe `file` e finalidade
+`equipment` ou `logo`. Os caminhos gerados são:
 
-### 2. **Banco de Dados PostgreSQL** (Onde as URLs estão)
-
-- **O que armazena**: Apenas as URLs das imagens (texto)
-- **Campo**: `images` (array de strings)
-- **Exemplo**:
-  ```json
-  {
-    "images": [
-      "https://eeuwkiiugbantxvphpnz.supabase.co/storage/v1/object/public/gb-locacoes-images/equipments/equipment-abc123.webp"
-    ]
-  }
-  ```
-
-**Status**: ✅ 18 URLs foram atualizadas automaticamente pelo script.
-
-### 3. **Git/Repositório** (Código fonte apenas)
-
-- **O que está aqui**: Código, scripts, documentação
-- **O que NÃO está aqui**: As imagens em si (são muito grandes para Git)
-
-## 🔄 O que Aconteceu Quando Você Executou o Script
-
-```
-1. Script lista imagens no Supabase Storage
-   ↓
-2. Baixa cada imagem JPG/PNG
-   ↓
-3. Otimiza localmente (converte para WebP)
-   ↓
-4. Faz UPLOAD da versão otimizada para Supabase Storage
-   ↓
-5. Atualiza URLs no banco de dados PostgreSQL
-   ↓
-6. Remove imagem original do Supabase Storage
+```text
+prefixo: tenants/<tenantId>/
+finalidade equipamento: equipments/equipment-<UUID>.<extensão>
+finalidade logo: logos/logo-<UUID>.<extensão>
 ```
 
-**Resultado**: As imagens otimizadas JÁ estão no Supabase Storage, prontas para
-uso!
+A gravação usa `upsert: false`; a preparação dos bytes pertence a
+`packages/backend/src/modules/catalog/image-upload.ts`. Consulte o
+[guia de otimização](optimize-existing-images.md) para os parâmetros efetivos.
 
-## ✅ Como Verificar
+## Adaptador mantido, configuração futura
 
-### Verificar no Supabase Dashboard
+`createSupabaseImageStorage`, na entrada pública `@gb-locacoes/backend/runtime`,
+é implementado em `packages/backend/src/runtime/document-storage.ts` e cria o
+cliente somente no uso. O bucket nominal ainda é `gb-locacoes-images`; esse nome
+é compatibilidade de código, não prova de acesso, existência ou propriedade de
+uma conta cloud. `NEXT_PUBLIC_SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` são
+lidos pelo adaptador servidor; a chave de serviço nunca deve chegar ao cliente.
 
-1. Acesse: https://supabase.com/dashboard
-2. Selecione seu projeto
-3. Vá em **Storage** → **gb-locacoes-images**
-4. Você verá as imagens em formato `.webp`
+A nova hospedagem, o banco e o armazenamento ainda precisam de recursos e
+configuração próprios. Não copiar arquivos privados, URLs de projetos ou
+credenciais de GB. Os utilitários em `scripts/ops/storage-utils.ts` são
+quarentena operacional e não autorizam apagar objetos existentes.
 
-### Verificar no Site
+Para investigar uma imagem ausente, distinguir referência no banco, resposta
+HTTP da URL e renderização no cliente; preservar a dimensão e a aparência reais.
+Os testes de upload usam recursos próprios/fixtures e não certificam uma conta
+cloud ou a conclusão de uma migração externa.
 
-1. Abra o site (produção ou desenvolvimento)
-2. Abra DevTools (F12)
-3. Vá em **Network** → Filtre por **Img**
-4. Veja que as imagens são `.webp` (formato otimizado)
-
-## 🚀 O que Fazer com Git (Código)
-
-O Git push é apenas para o **código** que foi modificado:
-
-- ✅ Script de otimização (`scripts/optimize-existing-images.ts`)
-- ✅ Endpoint de upload otimizado (`app/api/upload/route.ts`)
-- ✅ Documentação (`docs/guides/optimize-existing-images.md`)
-- ✅ Dependências (`package.json` - sharp adicionado)
-
-**As imagens em si NÃO vão para o Git** (estão no Supabase Storage).
-
-## 📝 Resumo
-
-| Onde                 | O que tem                               | Status                             |
-| -------------------- | --------------------------------------- | ---------------------------------- |
-| **Supabase Storage** | Imagens otimizadas (105 arquivos .webp) | ✅ Já estão lá!                    |
-| **PostgreSQL**       | URLs das imagens (18 atualizadas)       | ✅ Já atualizado!                  |
-| **Git**              | Código do script e documentação         | ⏳ Você decide fazer commit ou não |
-
-## ❓ FAQ
-
-### "Preciso fazer push para as imagens aparecerem?"
-
-**Não!** As imagens já estão no Supabase Storage. O site já está usando as
-imagens otimizadas.
-
-### "O Git push atualiza as imagens?"
-
-**Não!** Git é apenas para código. As imagens estão no Supabase Storage, que é
-um serviço separado.
-
-### "Como as imagens chegam ao site?"
-
-1. Supabase Storage serve as imagens via URLs públicas
-2. Banco de dados armazena essas URLs
-3. Site lê URLs do banco e exibe as imagens
-4. Navegador baixa as imagens do Supabase Storage
-
-### "As imagens originais foram deletadas?"
-
-**Sim!** O script removeu as imagens JPG/PNG originais após fazer upload das
-versões WebP otimizadas.
-
----
-
-**Conclusão**: Tudo já está pronto! As imagens otimizadas já estão no Supabase
-Storage e o site já está usando elas. Você só precisa decidir se quer fazer
-commit do código (scripts, documentação) no Git.
+_Atualizado em 2026-10-09; nenhuma conta ou objeto externo foi acessado._

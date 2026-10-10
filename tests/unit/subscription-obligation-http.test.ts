@@ -7,71 +7,35 @@ const state = vi.hoisted(() => ({
   write: vi.fn(),
   accepted: vi.fn(),
 }))
-vi.mock('@/lib/tenant', () => ({ resolveTenantPrincipal: state.access }))
-vi.mock('@/lib/tenant-permissions', () => ({
-  requireTenantPermission: state.access,
-}))
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: state.access,
 }))
 vi.mock('../../apps/services/api/src/host/permissions', () => ({
   requireTenantPermission: state.access,
 }))
-vi.mock('@/lib/quote-boleto', () => ({
-  requestQuoteBoletoPayment: state.write,
-  requestQuoteBoletoDelivery: state.write,
-  ensureQuoteBoletoPayment: state.accepted,
-}))
 vi.mock('../../apps/services/api/src/host/payments', () => ({
   requestQuoteBoletoPayment: state.write,
   requestQuoteBoletoDelivery: state.write,
   ensureQuoteBoletoPayment: state.accepted,
 }))
-vi.mock('@/lib/payment-reissue', () => ({ requestBoletoReissue: state.write }))
-vi.mock('@/lib/financial-mutations', () => ({
-  updateFinancialStatus: state.write,
-}))
 vi.mock('../../apps/services/api/src/host/financial-mutations', () => ({
   requestBoletoReissue: state.write,
   updateFinancialStatus: state.write,
-}))
-vi.mock('@/lib/rental-lifecycle', () => ({
-  readAdminRental: vi.fn(),
-  updateRental: state.write,
-  checkinRental: state.write,
 }))
 vi.mock('../../apps/services/api/src/host/rentals', () => ({
   readAdminRental: vi.fn(),
   updateRental: state.write,
   checkinRental: state.write,
 }))
-vi.mock('@/lib/payment-obligation', async () => {
-  const { PaymentRequestError } = await import('@gb-locacoes/backend/billing')
-  return { PaymentRequestError }
-})
-vi.mock('@/lib/rental-transaction', async () => {
-  const { RentalMutationError } = await import('@gb-locacoes/backend/rentals')
-  return { RentalMutationError }
-})
-vi.mock('@/lib/rate-limit', () => ({
-  checkRateLimit: () => ({ allowed: true }),
-  strictRateLimit: {},
-}))
 vi.mock('../../apps/services/api/src/host/rate-limit', () => ({
   checkRateLimit: () => ({ allowed: true }),
   strictRateLimit: {},
 }))
-import { POST as oldGenerate } from '../../app/api/admin/quotes/[id]/generate-boleto/route'
 import { POST as apiGenerate } from '../../apps/services/api/src/app/api/admin/quotes/[id]/generate-boleto/route'
-import { POST as oldSend } from '../../app/api/admin/quotes/[id]/send-boleto/route'
 import { POST as apiSend } from '../../apps/services/api/src/app/api/admin/quotes/[id]/send-boleto/route'
-import { PUT as oldReissue } from '../../app/api/payments/boleto/[id]/regenerate/route'
 import { PUT as apiReissue } from '../../apps/services/api/src/app/api/payments/boleto/[id]/regenerate/route'
-import { POST as oldReturn } from '../../app/api/admin/rentals/[id]/checkin/route'
 import { POST as apiReturn } from '../../apps/services/api/src/app/api/admin/rentals/[id]/checkin/route'
-import { PATCH as oldClose } from '../../app/api/admin/rentals/[id]/route'
 import { PATCH as apiClose } from '../../apps/services/api/src/app/api/admin/rentals/[id]/route'
-import { PATCH as oldSettlement } from '../../app/api/admin/financial/entries/[id]/status/route'
 import { PATCH as apiSettlement } from '../../apps/services/api/src/app/api/admin/financial/entries/[id]/status/route'
 const principal = {
   tenantId: 'alfa',
@@ -80,42 +44,42 @@ const principal = {
   role: 'ADMIN',
 }
 const cases = [
-  ...[oldGenerate, apiGenerate].map((handler) => ({
+  ...[apiGenerate].map((handler) => ({
     handler,
     name: 'generate',
     method: 'POST',
     body: {},
     billing: true,
   })),
-  ...[oldSend, apiSend].map((handler) => ({
+  ...[apiSend].map((handler) => ({
     handler,
     name: 'send',
     method: 'POST',
     body: {},
     billing: true,
   })),
-  ...[oldReissue, apiReissue].map((handler) => ({
+  ...[apiReissue].map((handler) => ({
     handler,
     name: 'reissue',
     method: 'PUT',
     body: {},
     billing: true,
   })),
-  ...[oldReturn, apiReturn].map((handler) => ({
+  ...[apiReturn].map((handler) => ({
     handler,
     name: 'return',
     method: 'POST',
     body: {},
     billing: false,
   })),
-  ...[oldClose, apiClose].map((handler) => ({
+  ...[apiClose].map((handler) => ({
     handler,
     name: 'close',
     method: 'PATCH',
     body: { status: 'COMPLETED' },
     billing: false,
   })),
-  ...[oldSettlement, apiSettlement].map((handler) => ({
+  ...[apiSettlement].map((handler) => ({
     handler,
     name: 'settlement',
     method: 'PATCH',

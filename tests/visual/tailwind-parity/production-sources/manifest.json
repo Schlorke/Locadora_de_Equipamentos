@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "eb4c0098d5d8686b8d72e9aaf560968bb65274e4",
+  "sourceLabel": "main eb4c0098",
+  "tailwindVersion": "3.4.17",
+  "files": [
+    {
+      "path": "app/globals.css",
+      "gitBlob": "b44aa49364b26b700c6fe6a313a6a866c4af5d26",
+      "mode": "100644",
+      "bytes": 61779,
+      "sha256": "b0439afe3fbe76d7bbad974f25475b00aa461c61e72fd6fade62f47e3ec4af9b",
+      "fixture": "app/globals.css.source"
+    },
+    {
+      "path": "design-tokens/output/tokens-tailwind.json",
+      "gitBlob": "3d7415671409afeae10dd22ca4a66ab77b696f9c",
+      "mode": "100644",
+      "bytes": 1954,
+      "sha256": "bca88fd4fdd717c498ad6cf8f68768766cb8f89cb6305b9bc3af3804d8a14b5f",
+      "fixture": "design-tokens/output/tokens-tailwind.json.source"
+    },
+    {
+      "path": "postcss.config.cjs",
+      "gitBlob": "96c040d5c20007a5bae487a263fb4ed769fc51c0",
+      "mode": "100644",
+      "bytes": 536,
+      "sha256": "6f3215601b7292a13a7d9a35ef270dfaaaafedd85ea70222192e7368ac491c5d",
+      "fixture": "postcss.config.cjs.source"
+    },
+    {
+      "path": "tailwind.config.cjs",
+      "gitBlob": "e86a8753a3a7b6da5e0748a120768307f3420087",
+      "mode": "100644",
+      "bytes": 5176,
+      "sha256": "de39c4557ab5cc3b9a119db16c47f640f9c00bf82a42384dd7249cdc8c54ac36",
+      "fixture": "tailwind.config.cjs.source"
+    }
+  ]
+}

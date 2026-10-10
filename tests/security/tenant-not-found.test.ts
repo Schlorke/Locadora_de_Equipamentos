@@ -1,49 +1,10 @@
-/**
- * T8 (ADR docs/architecture/adr-tenant-hosts.md, D10): locadora com slug
- * inválido, reservado, inexistente ou suspensa recebe o mesmo 404 em todas as
- * APIs públicas, pelo host de locadora ou pelo tenantSlug explícito: status,
- * corpo (byte a byte) e cabeçalhos idênticos. Slug inválido ou reservado nem
- * chega a consultar o banco.
- */
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-
-const state = vi.hoisted(() => ({
-  lookups: [] as string[],
-  transactions: 0,
-  userId: 'user-1' as string | null,
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
 }))
-vi.mock('@/lib/prisma', () => ({
-  prisma: {
-    organization: {
-      findUnique: async ({ where }: { where: { slug: string } }) => {
-        state.lookups.push(where.slug)
-        return where.slug === 'suspensa'
-          ? { id: 'tenant-suspensa', status: 'SUSPENDED' }
-          : null
-      },
-    },
-    $transaction: async () => {
-      state.transactions += 1
-      throw new Error('no tenant data may be read for an unknown tenant')
-    },
-  },
-}))
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () =>
-    state.userId ? { user: { id: state.userId } } : null,
-}))
-vi.mock('@/lib/rate-limit', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/lib/rate-limit')>()),
-  checkRateLimit: () => ({ allowed: true }),
-}))
-
-import { NextRequest } from 'next/server'
-import { publicTenantNotFound } from '@/lib/tenant'
-// Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
-// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({
+async function createFPreparedDatabase() {
+  return {
     prisma: {
       organization: {
         findUnique: async ({ where }: { where: { slug: string } }) => {
@@ -58,12 +19,64 @@ vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
         throw new Error('no tenant data may be read for an unknown tenant')
       },
     },
-  }),
+  }
+}
+/**
+ * T8 (ADR docs/architecture/adr-tenant-hosts.md, D10): locadora com slug
+ * inválido, reservado, inexistente ou suspensa recebe o mesmo 404 em todas as
+ * APIs públicas, pelo host de locadora ou pelo tenantSlug explícito: status,
+ * corpo (byte a byte) e cabeçalhos idênticos. Slug inválido ou reservado nem
+ * chega a consultar o banco.
+ */
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+const state = vi.hoisted(() => ({
+  lookups: [] as string[],
+  transactions: 0,
+  userId: 'user-1' as string | null,
 }))
+
+import { NextRequest } from 'next/server'
+import { publicTenantNotFound } from '@gb-locacoes/backend/identity'
+// Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
+// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({
+      prisma: {
+        organization: {
+          findUnique: async ({ where }: { where: { slug: string } }) => {
+            state.lookups.push(where.slug)
+            return where.slug === 'suspensa'
+              ? { id: 'tenant-suspensa', status: 'SUSPENDED' }
+              : null
+          },
+        },
+        $transaction: async () => {
+          state.transactions += 1
+          throw new Error('no tenant data may be read for an unknown tenant')
+        },
+      },
+    }),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 vi.mock(
   '../../apps/services/api/src/host/rate-limit',
   async (importOriginal) => ({
-    ...(await importOriginal<typeof import('@/lib/rate-limit')>()),
+    ...(await importOriginal<
+      typeof import('../../apps/services/api/src/host/rate-limit')
+    >()),
     checkRateLimit: () => ({ allowed: true }),
   })
 )
@@ -76,47 +89,30 @@ vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
       state.userId ? { user: { id: state.userId } } : null,
   }))()),
 }))
-import * as legacyRoute0 from '@/app/api/quotes/route'
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/quotes/route'
-import * as legacyRoute1 from '@/app/api/contact/route'
+
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/contact/route'
-import * as legacyRoute2 from '@/app/api/orcamentos/route'
+
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/orcamentos/route'
-import * as legacyRoute3 from '@/app/api/categories/route'
+
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/categories/route'
-import * as legacyRoute4 from '@/app/api/equipments/route'
+
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/equipments/route'
-import * as legacyRoute5 from '@/app/api/equipamentos/search/route'
+
 import * as serviceRoute5 from '../../apps/services/api/src/app/api/equipamentos/search/route'
-import * as legacyRoute6 from '@/app/api/equipments/[id]/availability/route'
+
 import * as serviceRoute6 from '../../apps/services/api/src/app/api/equipments/[id]/availability/route'
-import * as legacyRoute7 from '@/app/api/settings/public/route'
+
 import * as serviceRoute7 from '../../apps/services/api/src/app/api/settings/public/route'
-import * as legacyRoute8 from '@/app/api/equipments/[id]/route'
+
 import * as serviceRoute8 from '../../apps/services/api/src/app/api/equipments/[id]/route'
-import * as legacyRoute9 from '@/app/api/public/tenants/[slug]/route'
+
 import * as serviceRoute9 from '../../apps/services/api/src/app/api/public/tenants/[slug]/route'
-import * as legacyRoute10 from '@/app/api/auth/organizations/current/route'
+
 import * as serviceRoute10 from '../../apps/services/api/src/app/api/auth/organizations/current/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      listQuotes: legacyRoute0.GET,
-      postQuote: legacyRoute0.POST,
-      postContact: legacyRoute1.POST,
-      postOrcamento: legacyRoute2.POST,
-      categories: legacyRoute3.GET,
-      equipments: legacyRoute4.GET,
-      search: legacyRoute5.GET,
-      availability: legacyRoute6.GET,
-      settings: legacyRoute7.GET,
-      equipmentDetail: legacyRoute8.GET,
-      tenantCard: legacyRoute9.GET,
-      currentOrganization: legacyRoute10.GET,
-    },
-  ],
   [
     'service',
     {

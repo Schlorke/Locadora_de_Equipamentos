@@ -52,6 +52,7 @@ describe(
     })
 
     it('TypeScript: tipo importado sem uso e parâmetro de assinatura de tipo', async () => {
+      // lib/sonda-sobra.ts é nome virtual de lintText no diretório antigo lib/, retirado em F; não grava fonte na raiz.
       const found = await errors(
         'lib/sonda-sobra.ts',
         [

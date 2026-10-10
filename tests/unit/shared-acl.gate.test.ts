@@ -90,6 +90,7 @@ const OWN_DATABASE_OR_SCHEMA: Readonly<Record<string, string>> = {
 /** Raízes de teste lidas inteiras; nas outras, só pastas de teste e arquivos *.test.* / *.spec.*. */
 const TEST_ROOTS = ['tests']
 const COLOCATED_ROOTS = ['apps', 'packages', 'lib', 'app', 'tools', 'scripts']
+// A .next antiga da raiz foi retirada em F; este basename ainda exclui gerados dos hosts na busca de mudanças de ACL.
 const SKIPPED_DIRECTORIES = new Set([
   'node_modules',
   '.next',

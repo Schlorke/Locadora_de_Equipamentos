@@ -1,3 +1,26 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  if (!process.env.TEST_DATABASE_URL) return { prisma: {} }
+  const { requireTestDatabase } = await import('../helpers/test-database')
+  const { Pool } = await import('pg')
+  const { PrismaClient } = await import('@prisma/client')
+  const { PrismaPg } = await import('@prisma/adapter-pg')
+  const pool = new Pool({
+    connectionString: requireTestDatabase(process.env),
+    max: 4,
+  })
+  fPreparedDatabase.pool = pool
+  return {
+    prisma: (fixtureDatabase.prisma = new PrismaClient({
+      adapter: new PrismaPg(pool),
+    })),
+  }
+}
+import { getDatabaseRuntime as getFPreparedDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 /**
  * Achado 2 da revisão com linhas reais (banco descartável): o cliente da
  * locadora A tem sessão em `a.<raiz>`; um script de `b.<raiz>` (mesmo site)
@@ -19,35 +42,26 @@ import {
 const state = vi.hoisted(() => ({ userId: null as string | null }))
 const fixtureDatabase = vi.hoisted(() => ({ prisma: undefined as unknown }))
 
-vi.mock('@/lib/prisma', async () => {
-  if (!process.env.TEST_DATABASE_URL) return { prisma: {} }
-  const { requireTestDatabase } = await import('../helpers/test-database')
-  const { Pool } = await import('pg')
-  const { PrismaClient } = await import('@prisma/client')
-  const { PrismaPg } = await import('@prisma/adapter-pg')
-  const pool = new Pool({
-    connectionString: requireTestDatabase(process.env),
-    max: 4,
-  })
-  return {
-    prisma: (fixtureDatabase.prisma = new PrismaClient({
-      adapter: new PrismaPg(pool),
-    })),
-  }
-})
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () =>
-    state.userId ? { user: { id: state.userId } } : null,
-}))
-
 import { NextRequest } from 'next/server'
 // As fixtures (tests/helpers/fixtures.ts) leem o banco pelo runtime do backend (onda 135, E4): o mesmo cliente que a
-// fábrica de `@/lib/prisma` acima cria, guardado no momento da criação (sem import cruzado entre os dois dublês).
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
-}))
-import { prisma } from '@/lib/prisma'
+// composição simulada do runtime fornece, guardado no momento da criação (sem import cruzado entre os dublês).
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
+const { prisma } = getFPreparedDatabaseRuntime()
 import {
   cleanupTestData,
   createCategory,
@@ -57,7 +71,7 @@ import {
   ensureTestTenant,
 } from '../helpers/fixtures'
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
-// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
+// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade da raiz foi retirada no bloco F.
 vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
   ...(await importOriginal<
     typeof import('../../apps/services/api/src/host/session')
@@ -67,25 +81,16 @@ vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
       state.userId ? { user: { id: state.userId } } : null,
   }))()),
 }))
-import * as legacyRoute0 from '@/app/api/cart/sync/route'
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/cart/sync/route'
-import * as legacyRoute1 from '@/app/api/cart/merge/route'
+
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/cart/merge/route'
-import * as legacyRoute2 from '@/app/api/addresses/route'
+
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/addresses/route'
-import * as legacyRoute3 from '@/app/api/addresses/[id]/route'
+
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/addresses/[id]/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      cartSync: legacyRoute0.POST,
-      cartMerge: legacyRoute1.POST,
-      createAddress: legacyRoute2.POST,
-      deleteAddress: legacyRoute3.DELETE,
-    },
-  ],
   [
     'service',
     {
@@ -259,3 +264,13 @@ describe.each(HOSTS)(
     )
   }
 )
+
+// Close the fixture-created Prisma and Pool after original row cleanup.
+afterAll(async () => {
+  if (!fPreparedDatabase.pool) return
+  try {
+    await getFPreparedDatabaseRuntime().prisma.$disconnect()
+  } finally {
+    await fPreparedDatabase.pool.end()
+  }
+})

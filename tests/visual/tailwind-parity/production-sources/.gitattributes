@@ -1,0 +1,2 @@
+# Preserve the exact archived Git blob bytes on Windows and Unix checkouts.
+*.source -text

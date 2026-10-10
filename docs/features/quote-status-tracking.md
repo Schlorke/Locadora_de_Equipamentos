@@ -73,11 +73,20 @@ model Quote {
 
 ### 3.3. Componentes Frontend
 
-- **`app/admin/orcamentos/page.tsx`**: Visualização admin com status
-- **`app/area-cliente/historico/page.tsx`**: Visualizacao cliente com refresh
-  periodico (30s) quando a aba esta visivel
-- **`app/area-cliente/historico/[id]/page.tsx`**: Detalhes do orcamento/locacao
-  com refresh periodico (30s) quando a aba esta visivel
+- **`packages/frontend/src/pages/orcamentos-admin/ui/Lista.web.tsx`**:
+  visualização admin com status, montada pela página da slice.
+- **`packages/frontend/src/pages/historico/ui/HistoricoPage.web.tsx`** (e
+  variante native): visualização cliente com refresh periodico (30s) quando a
+  aba esta visivel
+- **`packages/frontend/src/pages/historico-detalhe/ui/HistoricoDetalhePage.web.tsx`**
+  (e variante native): detalhes do orçamento/locação com refresh periódico (30s)
+  quando a aba está visível.
+
+Os modelos `use-history.ts` e `use-rental-detail.ts` usam `useActiveRefresh` e
+clientes HTTP escopados. O host monta as entradas públicas; troca de tenant/
+usuário/transporte invalida o ciclo anterior. A API atual é
+`apps/services/api/src/app/api`, com composição em `src/host/quotations.ts` e
+`src/host/portal.ts`; não há leitura ou encaminhamento ao antigo app da raiz.
 
 ## 4. Como Usar
 

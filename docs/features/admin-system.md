@@ -529,9 +529,9 @@ export function AdminFilterCard({
 
 #### **Layout (coluna única em resoluções intermediárias)**
 
-Algumas telas (ex.: `app/admin/orcamentos/page.tsx`) podem ficar “apertadas” em
-tablet/`md`. Para isso, o `AdminFilterCard` suporta um modo que **força coluna
-única** para todos os elementos do card:
+Algumas telas (ex.: `packages/frontend/src/pages/orcamentos-admin`) podem ficar
+“apertadas” em tablet/`md`. Para isso, o `AdminFilterCard` suporta um modo que
+**força coluna única** para todos os elementos do card:
 
 ```tsx
 <AdminFilterCard layout="stacked" />
@@ -545,8 +545,9 @@ tablet/`md`. Para isso, o `AdminFilterCard` suporta um modo que **força coluna
 
 O código atual oferece busca, grade paginada, visualização, criação/edição e
 exclusão com o diálogo unificado. Web e Expo consomem a slice de categorias; a
-API legada permanece ativa. A nota histórica de manutenção não representa o
-checkout atual.
+API fica em `apps/services/api/src/app/api/admin/categories` sobre
+backend/catalog. A montagem na antiga raiz era o checkpoint histórico; a nota de
+manutenção não representa o comportamento atual.
 
 ### **Paginação Inteligente**
 
@@ -696,17 +697,20 @@ O header segue os padrões do design system administrativo:
   `AdminHeaderActions`), entre o título da página e o botão do menu hambúrguer.
 - **Sincronização com Sidebar**: Ajusta largura automaticamente quando sidebar
   colapsa/expande
-- **Safari iOS (topo/rodape do navegador)**: O segmento `/admin` define
-  `viewport.themeColor = #334155` e
-  `apple-mobile-web-app-status-bar-style = default` em `app/admin/layout.tsx`
-  para manter cor consistente da status/address bar no mobile. Como reforco para
-  navegacao client-side, `app/ClientLayout.tsx` sincroniza essas metas em
-  runtime quando `pathname` inicia com `/admin`.
+- **Safari iOS (topo/rodape do navegador)**: a sincronização atual vive em
+  `packages/frontend/src/app/providers/ClientLayoutShell.web.tsx`: pathname
+  /admin define theme-color #334155, status-bar-style default e o fundo do html.
+  O layout web `apps/clients/web/src/app/layout.tsx` tem viewport global; o
+  grupo (admin) só compõe AppHostProviders/AdminLayoutShell. O antigo viewport
+  de app/admin/layout e o reforço de app/ClientLayout são história da raiz
+  aposentada, não arquivos a restaurar. Isso descreve código; não é nova prova
+  de Safari iOS.
 
 #### **Exemplo de Uso**
 
 ```tsx
-import AdminDesktopHeader from "@/components/admin/admin-desktop-header"
+// Trecho dentro de packages/frontend/src/app/providers/AdminLayoutShell.web.tsx
+import { AdminDesktopHeader } from "../../widgets/cabecalho-admin-barra"
 
 export default function AdminLayout() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
@@ -954,8 +958,9 @@ use o **mesmo padrão da página `/admin/financeiro`**:
   chamando a ação de abrir detalhes (ex.: `setSelectedRental`,
   `openQuoteDetails`).
 
-Referência de implementação: `app/admin/financeiro/page.tsx` (coluna de ações da
-tabela de lançamentos).
+Referência de implementação:
+`packages/frontend/src/pages/financeiro/ui/FinanceiroPage.web.tsx` (coluna de
+ações da tabela de lançamentos); o host web só monta a página.
 
 ---
 
@@ -965,10 +970,11 @@ tabela de lançamentos).
 
 #### **⚠️ Comportamento Crítico do Filtro Padrão**
 
-A página de gerenciamento de locações (`app/admin/rentals/page.tsx`) **DEVE**
-exibir por padrão apenas as locações com status **"Pendente" (PENDING)**,
-similar ao comportamento da primeira seção na página de configurações
-(`/admin/settings`).
+A página de locações
+(`packages/frontend/src/pages/locacoes/ui/LocacoesPage.web.tsx`, modelo
+`model/carga.ts` e variante native da slice) **DEVE** exibir por padrão apenas
+as locações com status **"Pendente" (PENDING)**, similar ao comportamento da
+primeira seção na página de configurações (`/admin/settings`).
 
 **Implementação Obrigatória:**
 
@@ -1025,36 +1031,38 @@ enum Role {
   novos acessos sem alinhamento.
 - `CLIENT`: sem acesso ao `/admin/*`.
 
-### **Middleware de Proteção**
+### **Principal e política no servidor**
+
+Não autorizar locadora pelo User.role global nem por getServerSession isolado. O
+adapter resolve o principal, devolve a recusa e confere o papel do vínculo antes
+da consulta. Trecho real do GET em
+`apps/services/api/src/app/api/admin/permissions/route.ts`:
 
 ```tsx
-// middlewares/require-admin.ts
-export async function requireRoles(roles: Role[]) {
-  const session = await getServerSession(authOptions)
-
-  if (!session?.user) {
-    return { success: false, error: "Não autenticado", status: 401 }
-  }
-
-  const userRole = session.user.role as Role
-  if (!roles.includes(userRole)) {
-    return { success: false, error: "Acesso negado", status: 403 }
-  }
-
-  return { success: true, user: session.user }
-}
-
-export async function requireFinancialAccess() {
-  return requireRoles(["ADMIN", "FINANCIAL"])
+export async function GET(request: NextRequest) {
+  const access = await resolveTenantPrincipal(request)
+  if (!access.ok) return access.response
+  if (access.principal.role !== "ADMIN")
+    return NextResponse.json({ error: "Não autorizado" }, { status: 403 })
+  const permissions = await readPermissionRows(access.principal)
+  return NextResponse.json({ permissions })
 }
 ```
 
+resolveTenantPrincipal é composto em host/private-identity sobre
+createTenantPrincipalResolver; readPermissionRows consulta somente a locadora do
+principal. Rotas granulares usam host/permissions e
+createTenantPermissionResolver: CLIENT recusa, ADMIN do vínculo passa e os
+demais dependem da Permission tenant/role/module/action. Ocultar menu não
+autoriza API. O antigo exemplo requireRoles por sessão global foi substituído
+por este fluxo; não restaurar esse bypass após F.
+
 ### **Navegação por role**
 
-- `app/admin/layout.tsx` redireciona `FINANCIAL` para `/admin/financeiro` quando
-  tenta abrir outras telas administrativas. No host web, o portão do painel
-  (`PrivateAreaGate` com `resolveAdminRoleRedirect`, onda 135) faz o mesmo e
-  leva quem não é ADMIN de `/admin/settings` para `/admin`.
+- No host web, o portão do painel (`PrivateAreaGate` de RuntimeBootstrap com
+  `resolveAdminRoleRedirect`, onda 135) redireciona FINANCIAL para
+  /admin/financeiro quando tenta abrir outras telas administrativas e leva quem
+  não é ADMIN de `/admin/settings` para `/admin`.
 - Carregamento das rotas do painel no host web (onda 135): `loading.tsx` em
   `admin/orcamentos` e `admin/orcamentos/[id]` (`AdminQuotesLoading` e
   `QuoteIdLoading`), `admin/categorias` (o mesmo spinner da listagem, que a raiz
@@ -1065,11 +1073,15 @@ export async function requireFinancialAccess() {
 
 ### **SessionProvider no Admin (evitar redirects no refresh)**
 
-- O `SessionProvider` global é instanciado no `app/layout.tsx` com sessão
-  inicial do servidor.
-- **Não** crie um `SessionProvider` adicional em `app/admin/layout.tsx` sem
-  sessão inicial; isso reintroduz estado `loading/unauthenticated` e pode
-  disparar redirect indevido para `/admin/login` ao dar refresh.
+- O host web instala AppHostProviders, que entrega hostAuth e hostApiClient a
+  AppProviders/RuntimeBootstrap. A sessão e a locadora atuais têm um ciclo
+  único; o PrivateAreaGate aguarda esse estado antes de montar conteúdo privado.
+- **Não** instale provider de sessão adicional no layout (admin). Duplicar
+  bootstraps/estado pode introduzir loading/unauthenticated e redirects no
+  refresh. initialSession é uma porta opcional de AppProviders, não a promessa
+  de que o host atual já enviou uma sessão lida no servidor.
+- O SessionProvider no app/layout da raiz era a implementação histórica; a regra
+  de evitar ciclos concorrentes permanece após sua retirada em F.
 
 ---
 
@@ -1192,8 +1204,9 @@ ImageUpload. Nenhuma regra/ACL/RLS/HTTP mudou. Ver
 [onda 77](shared-api-host.md).
 
 Categorias com ícones, demais destinos, aparelhos/fidelidade visual, SaaS e
-operação continuam pendentes. Exports não substituem aceite em dispositivo; app/
-e scheduler permanecem ativos.
+operação continuam pendentes. Exports não substituem aceite em dispositivo; a
+antiga app/ e o scheduler permaneciam ativos naquele checkpoint anterior ao
+corte F.
 
 ## Categorias administrativas Expo — onda 78 (2026-10-03, sem commit)
 

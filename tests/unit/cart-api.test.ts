@@ -12,13 +12,6 @@ const state = vi.hoisted(() => ({
     cartItem: { deleteMany: vi.fn(), upsert: vi.fn() },
   },
 }))
-vi.mock('@/lib/tenant', () => ({ resolveTenantPrincipal: state.principal }))
-vi.mock('@/lib/prisma', () => ({ prisma: { $transaction: state.transaction } }))
-import {
-  GET as legacyRead,
-  POST as legacySync,
-} from '@/app/api/cart/sync/route'
-import { POST as legacyMerge } from '@/app/api/cart/merge/route'
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: state.principal,
 }))
@@ -31,10 +24,7 @@ import {
 } from '../../apps/services/api/src/app/api/cart/sync/route'
 import { POST as serviceMerge } from '../../apps/services/api/src/app/api/cart/merge/route'
 
-const adapters = [
-  ['legacy', legacyRead, legacySync, legacyMerge],
-  ['service', serviceRead, serviceSync, serviceMerge],
-] as const
+const adapters = [['service', serviceRead, serviceSync, serviceMerge]] as const
 const principal = {
   tenantId: 'cart-tenant',
   userId: 'cart-client',

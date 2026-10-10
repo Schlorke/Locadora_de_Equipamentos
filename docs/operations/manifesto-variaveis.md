@@ -13,11 +13,13 @@ e reprova variável lida pelo código que falte aqui, e linha daqui que nenhum
 código do projeto leia. O `.env.example` da API e o do web listam exatamente as
 linhas "Sim" e "Opcional" das suas tabelas.
 
-Antes de existir a tag de pré-exclusão, a conferência do fallback usa a raiz
-presente e registra esse estado pré-tag; não comprova um artefato imutável.
-Depois da criação da tag, deve usar exclusivamente suas fontes fixadas por SHA,
-inclusive após a exclusão da raiz no checkout. Uma tag incompleta ou a ausência
-simultânea da tag e da raiz impedem a conferência.
+A tag de pré-exclusão foi publicada em 2026-10-09 e aponta para
+`978ceb9244c81c7cb2888b798fad8ce90edad25e`. A conferência do fallback usa
+exclusivamente os blobs dessa referência, após a retirada da antiga app/ e lib/
+no clone F. Antes da tag, a conferência usava a raiz presente e registrava o
+estado pré-tag; esse resultado antigo não comprova o artefato imutável atual.
+Tag ausente ou incompleta impede a conferência. Configuração hospedada, banco
+real, provedores e operação continuam posteriores à preparação local.
 
 Coluna "Configurar":
 
@@ -118,32 +120,37 @@ Os webhooks, o mobile, o agendador e o proxy do web chamam esta origem.
 
 ## Projeto web (`apps/clients/web`)
 
-Projeto Vercel com Root Directory `apps/clients/web` e o `vercel.json` mínimo do
-host (sem crons). Domínios `<raiz>`, `www.<raiz>`, `app.<raiz>` e `*.<raiz>`. O
-web não usa banco: nenhuma variável de banco, segredo de provedor ou identidade
-entra aqui (a URL pública do Supabase só serve às imagens).
+Projeto Vercel com Root Directory `apps/clients/web` e
+`apps/clients/web/vercel.json` (sem crons). Domínios `<raiz>`, `www.<raiz>`,
+`app.<raiz>` e `*.<raiz>`. O web não usa banco: nenhuma variável de banco,
+segredo de provedor ou identidade entra aqui (a URL pública do Supabase só serve
+às imagens).
 
 <!-- manifesto:web -->
 
-| Variável                          | Configurar | Valor no corte                     | Notas                                                                                                                                                                      |
-| --------------------------------- | ---------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PLATFORM_ENV`                    | Sim        | `production`                       | Lida também no build.                                                                                                                                                      |
-| `PLATFORM_ROOT_DOMAIN`            | Sim        | `<raiz>`                           | Lida no build (`next.config.mjs`) e no proxy.                                                                                                                              |
-| `PLATFORM_PUBLIC_PORT`            | Opcional   | Ausente                            | Só development (3001).                                                                                                                                                     |
-| `PLATFORM_EDGE_SECRET`            | Sim        | Mesmo valor da API                 | 32 caracteres ou mais.                                                                                                                                                     |
-| `PLATFORM_EDGE_SECRET_PREVIOUS`   | Opcional   | Valor anterior durante a rotação   | Mesmo valor da API.                                                                                                                                                        |
-| `PLATFORM_LABS_ENABLED`           | Opcional   | Ausente                            | Ignorada em produção.                                                                                                                                                      |
-| `WEB_API_ORIGIN`                  | Sim        | `<origem-api>`                     | Só a origem, em https, sem caminho. No retorno (7.3) o domínio da API muda de projeto, não esta variável.                                                                  |
-| `NEXT_PUBLIC_AUTH_MODE`           | Sim        | `better-auth` (D3)                 | Embutida no build: trocar exige rebuild. Igual ao `AUTH_MODE` da API.                                                                                                      |
-| `NEXT_PUBLIC_SUPABASE_URL`        | Sim        | Mesmo valor da API                 | Lida no build (`next.config.mjs`): o hostname do Supabase entra em `images.remotePatterns` (fotos, logo e carrossel); sem ela o otimizador recusa as fotos. Não é segredo. |
-| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Opcional   | Chave da produção atual            | Mapa da página de contato; restringir a chave aos domínios novos.                                                                                                          |
-| `NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID`  | Opcional   | Map ID da produção atual           | Idem.                                                                                                                                                                      |
-| `NODE_ENV`                        | Automática | `production`                       | Definida pelo Next.js.                                                                                                                                                     |
-| `VERCEL_ENV`                      | Automática | `production` no deploy de produção | Sem `PLATFORM_ENV`, conta como produção.                                                                                                                                   |
+| Variável                          | Configurar | Valor no corte                     | Notas                                                                                                                                                                                       |
+| --------------------------------- | ---------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PLATFORM_ENV`                    | Sim        | `production`                       | Lida também no build.                                                                                                                                                                       |
+| `PLATFORM_ROOT_DOMAIN`            | Sim        | `<raiz>`                           | Lida no build (`apps/clients/web/next.config.mjs`) e no proxy.                                                                                                                              |
+| `PLATFORM_PUBLIC_PORT`            | Opcional   | Ausente                            | Só development (3001).                                                                                                                                                                      |
+| `PLATFORM_EDGE_SECRET`            | Sim        | Mesmo valor da API                 | 32 caracteres ou mais.                                                                                                                                                                      |
+| `PLATFORM_EDGE_SECRET_PREVIOUS`   | Opcional   | Valor anterior durante a rotação   | Mesmo valor da API.                                                                                                                                                                         |
+| `PLATFORM_LABS_ENABLED`           | Opcional   | Ausente                            | Ignorada em produção.                                                                                                                                                                       |
+| `WEB_API_ORIGIN`                  | Sim        | `<origem-api>`                     | Só a origem, em https, sem caminho. No retorno (7.3) o domínio da API muda de projeto, não esta variável.                                                                                   |
+| `NEXT_PUBLIC_AUTH_MODE`           | Sim        | `better-auth` (D3)                 | Embutida no build: trocar exige rebuild. Igual ao `AUTH_MODE` da API.                                                                                                                       |
+| `NEXT_PUBLIC_SUPABASE_URL`        | Sim        | Mesmo valor da API                 | Lida no build (`apps/clients/web/next.config.mjs`): o hostname do Supabase entra em `images.remotePatterns` (fotos, logo e carrossel); sem ela o otimizador recusa as fotos. Não é segredo. |
+| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Opcional   | Chave da produção atual            | Mapa da página de contato; restringir a chave aos domínios novos.                                                                                                                           |
+| `NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID`  | Opcional   | Map ID da produção atual           | Idem.                                                                                                                                                                                       |
+| `NODE_ENV`                        | Automática | `production`                       | Definida pelo Next.js.                                                                                                                                                                      |
+| `VERCEL_ENV`                      | Automática | `production` no deploy de produção | Sem `PLATFORM_ENV`, conta como produção.                                                                                                                                                    |
 
 <!-- /manifesto:web -->
 
 ## Projeto `fallback-raiz` (raiz da tag de pré-exclusão)
+
+> O antigo next.config.mjs e o antigo vercel.json da raiz foram retirados no
+> clone F. O fallback conserva esses arquivos somente nos blobs da tag C, nunca
+> como configuração da árvore atual.
 
 Projeto Vercel com Root Directory na raiz do repositório, publicado a partir da
 tag `checkpoint/onda-135-pre-exclusao`, **sem domínio** e com os Cron Jobs

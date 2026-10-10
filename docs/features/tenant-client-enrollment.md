@@ -32,16 +32,18 @@ multi-host).
 
 ## 3. Entry Points
 
-- API legada: `app/api/client/enroll/route.ts`, ativa.
-- Serviço parcial: `apps/services/api/src/app/api/client/enroll/route.ts`;
-  composição de sessão e resolução pública em `src/host`. Os clientes ainda usam
-  a origem legada configurada.
+- API atual: `apps/services/api/src/app/api/client/enroll/route.ts`, com
+  sessão/resolução pública em `src/host` e factory de customers. O adapter
+  antigo `app/api/client/enroll/route.ts` foi retirado em F; o host web
+  encaminha à API configurada, sem atribuir tenant pelo corpo nem restaurar a
+  raiz.
 - Entrada estrita comum: `packages/contracts/src/customer-enrollment.ts`.
 - Backend: `packages/backend/src/modules/customers/enroll.ts` (exportado pelo
   index de `customers`).
 - Frontend: `packages/frontend/src/pages/vincular-locadora`,
   `packages/frontend/src/features/selecionar-locadora/model/{use-host-tenant,use-tenant-suggestion,suggested-tenant}.ts`,
-  `ui/HostMembershipNotice.tsx`, `app/providers/RuntimeBootstrap.tsx`.
+  `packages/frontend/src/features/selecionar-locadora/ui/HostMembershipNotice.tsx`,
+  `packages/frontend/src/app/providers/RuntimeBootstrap.tsx`.
 - Rota do host web:
   `apps/clients/web/src/app/(public)/[locadora]/(auth)/vincular/page.tsx`.
 
@@ -68,7 +70,7 @@ atual; confirmar usa a rota explícita de seleção; slug desconhecido é ignora
 
 ## 5. Components and Files
 
-- `app/api/client/enroll/route.ts`
+- `apps/services/api/src/app/api/client/enroll/route.ts`
 - `packages/backend/src/modules/customers/enroll.ts`
 - `packages/frontend/src/pages/vincular-locadora/**`
 - `packages/frontend/src/features/selecionar-locadora/**`

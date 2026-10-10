@@ -2,10 +2,13 @@
 
 ## 📋 Visão Geral
 
-Sistema de cache inteligente usando Service Worker para resolver o problema de
-rate limiting (429) do GitHub ao carregar recursos do drei-assets.
+Registro da implementação de novembro de 2025 para reduzir rate limiting (429)
+do GitHub ao carregar recursos do drei-assets. Após F, o host web não registra
+Service Worker (M4): seus providers não montam registrador. O arquivo
+`public/sw.js` permanece como asset, e o proxy Drei continua na API; isso não
+prova cache ativo nos clientes atuais.
 
-## 🎯 Problema Resolvido
+## 🎯 Problema da implementação histórica (Nov 2025)
 
 - **Antes**: Requisições diretas ao GitHub → Rate limiting (429) → Aplicação
   quebrava
@@ -14,17 +17,27 @@ rate limiting (429) do GitHub ao carregar recursos do drei-assets.
 
 ## 🏗️ Arquitetura
 
-### Componentes
+### Componentes da implementação antiga (retirada em F)
 
 ```
-public/sw.js                          # Service Worker principal
-lib/sw-register.ts                    # registerServiceWorker (registro e atualização)
-app/service-worker-register.tsx # Componente React para registro
-app/ClientLayout.tsx                  # Integração no layout
-app/api/drei-proxy/[...path]/route.ts # Fallback proxy (já existente)
+public/sw.js                          # Asset ainda presente; não registrado pelo host web atual
+lib/sw-register.ts                    # Arquivo antigo retirado: registro/atualização
+app/service-worker-register.tsx       # Componente antigo retirado
+app/ClientLayout.tsx                  # Layout antigo retirado
+app/api/drei-proxy/[...path]/route.ts  # Adapter antigo retirado
 ```
 
-### Fluxo de Funcionamento
+### Donos atuais
+
+- `apps/clients/web/src/host/providers/{AppHostProviders,TenantSiteProviders}.tsx`
+  compõem o shell/ScrollReveal, sem registrar SW.
+- `apps/services/api/src/app/api/drei-proxy/[...path]/route.ts` compõe
+  `createDreiAssetProxy` de `packages/backend/src/http/drei-assets.ts`. O proxy
+  é independente do registro de um SW no navegador.
+- `public/sw.js` conserva o código de cache/mensagens. Asset existente não
+  confirma controlador ativo ou cache herdado em um navegador específico.
+
+### Fluxo da implementação antiga, quando o SW estava registrado
 
 ```
 1. Usuário acessa a página
@@ -43,7 +56,7 @@ app/api/drei-proxy/[...path]/route.ts # Fallback proxy (já existente)
       └─ Se falhar (429): Usa proxy local como fallback
 ```
 
-## 📊 Estratégia de Cache
+## 📊 Estratégia do asset SW, quando registrado
 
 ### Cache First, Network Fallback
 
@@ -53,23 +66,28 @@ app/api/drei-proxy/[...path]/route.ts # Fallback proxy (já existente)
 
 ## 🚀 Uso
 
-### Registro Automático
+### Registro automático antigo e estado atual
 
-O Service Worker é registrado automaticamente quando a aplicação carrega. Não
-requer configuração manual.
+Na implementação de 2025, o layout antigo registrava o SW automaticamente. Esse
+registrador foi retirado em F; os providers atuais não o montam. Não adicionar
+registro manual ao host para reproduzir esse documento. A presença de um
+controller antigo no navegador precisa ser inspecionada naquele perfil e não
+comprova que o aplicativo atual registrou o worker.
 
-### Funções Disponíveis
+### Funções históricas e mensagens ainda presentes no asset
 
-`lib/sw-register.ts` exporta só `registerServiceWorker()`, chamado por
-`app/service-worker-register.tsx`. Os utilitários `unregisterServiceWorker`,
-`clearServiceWorkerCache`, `getCacheSize` e `isServiceWorkerActive` não tinham
-chamador e saíram na faxina da onda 9 (entrada 225 de
-`docs/issues/known-issues.md`; versão anterior em
-`git show 4b02f52f:lib/sw-register.ts`). O `public/sw.js` continua respondendo
-às mensagens `SKIP_WAITING`, `CLEAR_CACHE` e `GET_CACHE_SIZE` (as duas últimas
-respondem pela porta do `MessageChannel`).
+O arquivo antigo `lib/sw-register.ts`, retirado em F, exportava
+`registerServiceWorker()`, chamado pelo componente antigo
+`app/service-worker-register.tsx`, também retirado. Os utilitários
+`unregisterServiceWorker`, `clearServiceWorkerCache`, `getCacheSize` e
+`isServiceWorkerActive` não tinham chamador e saíram na faxina da onda 9
+(entrada 225 de `docs/issues/known-issues.md`; referência histórica ao commit
+4b02f52f do arquivo antigo, não disponível como comando de reprodução no
+histórico limpo publicado). O `public/sw.js` continua respondendo às mensagens
+`SKIP_WAITING`, `CLEAR_CACHE` e `GET_CACHE_SIZE` (as duas últimas respondem pela
+porta do `MessageChannel`).
 
-## 📈 Performance
+## 📈 Estimativas históricas com SW registrado (não medidas após F)
 
 ### Primeira Vez (Cold Start)
 
@@ -93,7 +111,7 @@ respondem pela porta do `MessageChannel`).
 
 ## 🔍 Debug
 
-### Console Logs
+### Console Logs históricos, somente com um worker ativo
 
 O Service Worker imprime logs úteis no console:
 
@@ -106,7 +124,7 @@ O Service Worker imprime logs úteis no console:
 [SW] 🔄 Tentando proxy local devido a erro 429
 ```
 
-### Chrome DevTools
+### Chrome DevTools: inspeção de eventual worker herdado
 
 1. Abra DevTools (F12)
 2. Vá para **Application** → **Service Workers**
@@ -114,7 +132,7 @@ O Service Worker imprime logs úteis no console:
 4. Vá para **Cache Storage** → **gb-locacoes-drei-assets-v1**
 5. Veja todos os recursos cacheados
 
-### Limpeza Manual
+### Limpeza Manual: somente se houver controller ativo no perfil inspecionado
 
 ```javascript
 // No console do navegador (o sw.js responde pela porta do MessageChannel):
@@ -135,7 +153,7 @@ Ou, no DevTools, **Application** → **Cache Storage** → apagar
 
 O cache usa versão (`CACHE_NAME = 'gb-locacoes-drei-assets-v1'`).
 
-Para forçar atualização em todos os usuários:
+Na instalação antiga com SW registrado, o procedimento de versionamento era:
 
 1. Altere a versão em `public/sw.js`:
    ```javascript
@@ -144,10 +162,13 @@ Para forçar atualização em todos os usuários:
 2. Faça deploy
 3. Navegadores detectarão automaticamente e atualizarão
 
-### Comportamento
+### Comportamento histórico do registrador retirado
 
-- **Desenvolvimento**: Atualiza automaticamente
-- **Produção**: Atualiza ao recarregar página
+- **Desenvolvimento**: Atualizava automaticamente.
+- **Produção**: Atualizava ao recarregar página.
+
+O host atual não executa esse registrador; publicar só o asset não instala um
+worker nos clientes novos.
 
 ## 🛡️ Segurança
 
@@ -169,7 +190,7 @@ Para forçar atualização em todos os usuários:
 | Opera     | ✅ Sim                        |
 | IE 11     | ❌ Não (graceful degradation) |
 
-## 🎯 Resolução do Problema
+## 🎯 Exemplo histórico da resolução com SW registrado
 
 ### Antes (com rate limiting)
 
@@ -192,7 +213,7 @@ Usuário 2 (próximas): Cache → 200 OK ✅ (instantâneo)
 Todos os usuários: Cache local ✅ (zero requisições ao GitHub)
 ```
 
-## 📝 Notas Importantes
+## 📝 Notas da implementação antiga com SW registrado
 
 1. **Cache Persistente**: O cache persiste entre sessões até ser limpo
    manualmente ou o navegador decidir limpar.
@@ -222,5 +243,6 @@ Todos os usuários: Cache local ✅ (zero requisições ao GitHub)
 
 ---
 
-**Implementado por**: GB-Locações Team **Data**: Novembro 2025 **Status**: ✅
-Ativo e Funcionando
+**Implementado por**: GB-Locações Team **Data**: Novembro 2025 **Status atual
+após F**: asset SW preservado, registro automático antigo retirado; proxy Drei
+da API ativo por código, sem prova nova de cache/browser.

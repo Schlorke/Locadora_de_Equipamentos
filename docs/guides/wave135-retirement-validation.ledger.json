@@ -1,0 +1,3878 @@
+{
+  "schemaVersion": 4,
+  "kind": "Rootless F prepared-base checkpoint candidate",
+  "preparedAtUtc": "2026-10-10T01:59:04.766Z",
+  "status": "PREPARED_BASE_CODE_PROOFS_CLOSED_PRE_PUBLICATION",
+  "sourceRepository": "p2/aposentar-raiz",
+  "evidenceRoot": "%TEMP%/locadora-wave135-finish-20261009",
+  "scope": "Clone local após retirada F; candidatos documentais externos. Eventos por recibo/build, sem publicação F, sem herdar a prova C.",
+  "cloneFinalClosureCheckpoint": {
+    "date": "2026-10-10",
+    "status": "CLONE_CODE_CLOSED_FINAL_ADDENDUM_GATES_PENDING",
+    "closure": {
+      "receipt": "p2-validation/final-documentary-closure-20261010T1003/summary.json",
+      "sha256": "91de096f2501dfe4e27535c99e18bf080181944636bbb51fb2a16ada2ae3df31",
+      "startedAtUtc": "2026-10-10T10:02:20.7525866Z",
+      "completedAtUtc": "2026-10-10T10:10:07.4628842Z",
+      "stepExitCodes": [0, 0, 0],
+      "gateCommands": 12,
+      "summaryScopeDoesNotProveNewWholeUnit": true
+    },
+    "proofs": {
+      "newWholeUnit": {
+        "receipt": "p2-validation/final-unit-after-documentary-captions-20261010T1010/root-observed-receipt.json",
+        "sha256": "758dffa0c122e6a2a5620e5c7d5ba71f31a8151bbb7d34c2e7543baf899467ff",
+        "logSha256": "f9c76ffa645a18b5438f3d5a7d905656ba601d4c3e572b536ab0b5e4b0142992",
+        "recordedAtUtc": "2026-10-10T10:20:05.5652109Z",
+        "passed": 4104,
+        "collected": 4104,
+        "skipped": 0,
+        "filesPassed": 179,
+        "filesCollected": 179,
+        "exitCodeObservedByExecutor": 0,
+        "durationSecondsReportedByVitest": 406.99,
+        "exactProcessStartTimestamp": null
+      },
+      "gateRegressions": {
+        "log": "p2-validation/final-documentary-closure-20261010T1003/gate-regressions/test-gates.log",
+        "sha256": "21f5ba2248cb549805a471d19984ab4244f874cfcea116149f15ff7908cb8573",
+        "passed": 324,
+        "files": 14,
+        "durationSeconds": 97.3,
+        "stepExitCode": 0
+      },
+      "strictOpenApi": {
+        "log": "p2-validation/final-documentary-closure-20261010T1003/openapi-strict-after-production-build/test-unit.log",
+        "sha256": "20ebe660c3d5a2a246146d6b3a8eef01c0ebda50375d016f0633e8bc5cce7f22",
+        "passed": 13,
+        "files": 1,
+        "durationSeconds": 33.79,
+        "stepExitCode": 0
+      }
+    },
+    "priorCheckpointStates": "Historical RED/pending and earlier green observations preserved; no previous raw verdict or C record rewritten.",
+    "remainingExternalReceipts": [
+      "FINAL_ADDENDUM_FORMAT_AND_AFFECTED_GATES",
+      "ORIGINAL_DIRECTORY_VALIDATION",
+      "PUBLICATION_F",
+      "FINAL_CI_F"
+    ],
+    "fCommitSha": null,
+    "limits": "Clone code checks closed at this observation. No future publication/CI/original-validation result, unit process timestamp, device or provider proof is inferred."
+  },
+  "firstStageC": {
+    "commit": "978ceb9244c81c7cb2888b798fad8ce90edad25e",
+    "publicRepository": "https://github.com/Schlorke/Locadora_de_Equipamentos",
+    "tag": "checkpoint/onda-135-pre-exclusao",
+    "publishedAtUtc": "2026-10-09T21:28:34.1368882Z",
+    "publicationReceipt": {
+      "path": "stage1-publication-receipt.json",
+      "sha256": "e427a08b23ffeea4a1c379f6a0af28946c4aeae48b7cac230d22a6ec9d03db1c"
+    },
+    "cleanHistoryReceipt": {
+      "path": "clean-initial-publication-verification.json",
+      "sha256": "c390eac40d0432e4ac2d1f356f4852c73d9aa1d4d3eba66633152c3c62c01dbc"
+    },
+    "baseDocumentsCurrentHashes": {
+      "docs/guides/wave135-base-validation.md": "e6d037d2ddfc6865ef6987c5649ee365d5e231116675bb9d2c6467738f77cc70",
+      "docs/guides/wave135-base-validation.ledger.json": "7a192494e72b4f2e3309dd49cca472b6df9489c85b7783b13d5c84b171ded816"
+    },
+    "baseDocumentsEditedByThisPreparation": false,
+    "meaning": "Prova histórica publicada de C; não é reclassificada como execução pós-F."
+  },
+  "suites": [
+    {
+      "suite": "security",
+      "status": "PASSED_WITH_SKIPS",
+      "command": "pnpm test:security --maxWorkers=2",
+      "passed": 948,
+      "failed": 0,
+      "skipped": 18,
+      "collected": 966,
+      "filesPassed": 33,
+      "filesSkipped": 0,
+      "filesCollected": 33,
+      "durationSeconds": 72.44,
+      "processExitCode": null,
+      "exitCodeEvidence": "The retained stdout log has a completed Vitest summary, but this preparation did not receive an independent process-exit receipt. No exit code is inferred.",
+      "log": {
+        "path": "p2-validation/test-security.log.previous-20261009T2340270815256Z",
+        "sha256": "26ec5a68809dd153d532b696ebe80e52752599b17becebfbdf6ec9ad75cc8e79",
+        "bytes": 754,
+        "lastWriteUtc": "2026-10-09T22:40:43.608Z",
+        "excerpts": [
+          {
+            "line": 9,
+            "text": " Test Files  33 passed (33)"
+          },
+          {
+            "line": 10,
+            "text": "      Tests  948 passed | 18 skipped (966)"
+          },
+          {
+            "line": 11,
+            "text": "   Start at  19:39:31"
+          },
+          {
+            "line": 12,
+            "text": "   Duration  72.44s (import 66%, tests 31%, transform 2%)"
+          }
+        ]
+      },
+      "skipReason": "18 controles sem banco em tenant-request.test.ts; o bloco exige ausência de TEST_DATABASE_URL.",
+      "skipSourceEvidence": [
+        {
+          "path": "tests/security/tenant-request.test.ts",
+          "sha256": "581b0d4ccf830907b4d5b1ddce7ee2acb5d0f8db6dafb46dc0c46f3e3c23ec29",
+          "lines": [293, 294, 296, 377, 416, 630, 848, 849]
+        }
+      ],
+      "sourceTemporalLimit": "Resultado da última rodada concluída neste log, anterior à nova full unit pós-formatação. Hashes de fonte do candidato anterior são observações daquele checkpoint, não prova de execução das fontes atuais."
+    },
+    {
+      "suite": "identity",
+      "status": "PASSED",
+      "command": "pnpm test:identity --maxWorkers=2",
+      "passed": 797,
+      "failed": 0,
+      "skipped": 0,
+      "collected": 797,
+      "filesPassed": 27,
+      "filesSkipped": 0,
+      "filesCollected": 27,
+      "durationSeconds": 182.21,
+      "processExitCode": null,
+      "exitCodeEvidence": "The retained stdout log has a completed Vitest summary, but this preparation did not receive an independent process-exit receipt. No exit code is inferred.",
+      "log": {
+        "path": "p2-validation/test-identity.log",
+        "sha256": "64c5f4b76a72bf6fbac9feffb16ef40048aa55a98abc417bff0354e2884ec1d3",
+        "bytes": 1618,
+        "lastWriteUtc": "2026-10-09T22:45:26.349555+00:00",
+        "excerpts": [
+          {
+            "line": 15,
+            "text": "Test Files  27 passed (27)"
+          },
+          {
+            "line": 16,
+            "text": "Tests  797 passed (797)"
+          },
+          {
+            "line": 17,
+            "text": "Start at  19:42:24"
+          },
+          {
+            "line": 18,
+            "text": "Duration  182.21s (tests 56%, import 41%, transform 3%)"
+          }
+        ]
+      },
+      "skipReason": null,
+      "skipSourceEvidence": [],
+      "sourceTemporalLimit": "Resultado da última rodada concluída neste log, anterior à nova full unit pós-formatação. Hashes de fonte do candidato anterior são observações daquele checkpoint, não prova de execução das fontes atuais."
+    },
+    {
+      "suite": "platform",
+      "status": "PASSED_WITH_SKIPS",
+      "command": "pnpm test:platform --maxWorkers=2",
+      "passed": 3768,
+      "failed": 0,
+      "skipped": 2,
+      "collected": 3770,
+      "filesPassed": 647,
+      "filesSkipped": 0,
+      "filesCollected": 647,
+      "durationSeconds": 357.1,
+      "processExitCode": null,
+      "exitCodeEvidence": "The retained stdout log has a completed Vitest summary, but this preparation did not receive an independent process-exit receipt. No exit code is inferred.",
+      "log": {
+        "path": "p2-validation/test-platform.log",
+        "sha256": "70bdcb646c6ae22884c44d3c1b13f1db372ca49c12efd2bc8812585d0cf6a22f",
+        "bytes": 1224,
+        "lastWriteUtc": "2026-10-09T23:05:38.776357+00:00",
+        "excerpts": [
+          {
+            "line": 13,
+            "text": "Test Files  647 passed (647)"
+          },
+          {
+            "line": 14,
+            "text": "Tests  3768 passed | 2 skipped (3770)"
+          },
+          {
+            "line": 15,
+            "text": "Start at  19:59:41"
+          },
+          {
+            "line": 16,
+            "text": "Duration  357.10s (import 56%, environment 23%, tests 16%, transform 4%, setup 2%)"
+          }
+        ]
+      },
+      "skipReason": "2 casos de propagação de Button.web exigem o sentinel EXPECT_PRIMARY; a rodada normal não prova essa propagação.",
+      "skipSourceEvidence": [
+        {
+          "path": "packages/ui/src/web/Button.web.test.tsx",
+          "sha256": "0f185b31f3445f37866cd988a8054b29bbba94ee97563b9df3450567d59349c0",
+          "lines": [9, 11, 14, 15, 19]
+        }
+      ],
+      "sourceTemporalLimit": "Resultado da última rodada concluída neste log, anterior à nova full unit pós-formatação. Hashes de fonte do candidato anterior são observações daquele checkpoint, não prova de execução das fontes atuais."
+    },
+    {
+      "suite": "web",
+      "status": "PASSED_WITH_SKIPS",
+      "command": "pnpm test:web --maxWorkers=2",
+      "passed": 438,
+      "failed": 0,
+      "skipped": 16,
+      "collected": 454,
+      "filesPassed": 42,
+      "filesSkipped": 2,
+      "filesCollected": 44,
+      "durationSeconds": 32.56,
+      "processExitCode": null,
+      "exitCodeEvidence": "The retained stdout log has a completed Vitest summary, but this preparation did not receive an independent process-exit receipt. No exit code is inferred.",
+      "log": {
+        "path": "p2-validation/test-web.log",
+        "sha256": "65318209ba9ffbb18041f9d2725f72c3a9f275c490e244b87f84bc1a63ff0f74",
+        "bytes": 1041,
+        "lastWriteUtc": "2026-10-09T23:06:12.144917+00:00",
+        "excerpts": [
+          {
+            "line": 12,
+            "text": "Test Files  42 passed | 2 skipped (44)"
+          },
+          {
+            "line": 13,
+            "text": "Tests  438 passed | 16 skipped (454)"
+          },
+          {
+            "line": 14,
+            "text": "Start at  20:05:39"
+          },
+          {
+            "line": 15,
+            "text": "Duration  32.56s (import 70%, environment 10%, transform 10%, tests 9%)"
+          }
+        ]
+      },
+      "skipReason": "7 T5/T6 exigem TENANT_HOSTS_E2E=1 e 9 jornadas exigem JOURNEYS_E2E=1; não foram exercitados nessa rodada normal.",
+      "skipSourceEvidence": [
+        {
+          "path": "tests/e2e/tenant-hosts.spec.ts",
+          "sha256": "0983a2bbfbda55f4b5cb98310978f50a70ffd0e552fe17745665d662c9c582f1",
+          "lines": [22, 116]
+        },
+        {
+          "path": "tests/e2e/journeys.spec.ts",
+          "sha256": "544a716ff5bd2dc33791beffd44577d75a787106b20e01c28ea68ec7fec23314",
+          "lines": [58, 1434, 1890, 2019, 2037]
+        }
+      ],
+      "sourceTemporalLimit": "Resultado da última rodada concluída neste log, anterior à nova full unit pós-formatação. Hashes de fonte do candidato anterior são observações daquele checkpoint, não prova de execução das fontes atuais."
+    },
+    {
+      "suite": "mobile",
+      "status": "PASSED",
+      "command": "pnpm test:mobile --maxWorkers=2",
+      "passed": 99,
+      "failed": 0,
+      "skipped": 0,
+      "collected": 99,
+      "filesPassed": 17,
+      "filesSkipped": 0,
+      "filesCollected": 17,
+      "durationSeconds": 11.53,
+      "processExitCode": null,
+      "exitCodeEvidence": "The retained stdout log has a completed Vitest summary, but this preparation did not receive an independent process-exit receipt. No exit code is inferred.",
+      "log": {
+        "path": "p2-validation/test-mobile.log",
+        "sha256": "9e0e318dc96322fe42a7a9070661a23a182875f8b68912cb674f9dddc14d3fe2",
+        "bytes": 686,
+        "lastWriteUtc": "2026-10-09T22:51:51.083965+00:00",
+        "excerpts": [
+          {
+            "line": 9,
+            "text": "Test Files  17 passed (17)"
+          },
+          {
+            "line": 10,
+            "text": "Tests  99 passed (99)"
+          },
+          {
+            "line": 11,
+            "text": "Start at  19:51:39"
+          },
+          {
+            "line": 12,
+            "text": "Duration  11.53s (import 76%, transform 12%, environment 7%, tests 5%)"
+          }
+        ]
+      },
+      "skipReason": null,
+      "skipSourceEvidence": [],
+      "sourceTemporalLimit": "Resultado da última rodada concluída neste log, anterior à nova full unit pós-formatação. Hashes de fonte do candidato anterior são observações daquele checkpoint, não prova de execução das fontes atuais."
+    },
+    {
+      "suite": "contract",
+      "status": "PASSED",
+      "command": "pnpm test:contract --maxWorkers=2",
+      "passed": 106,
+      "failed": 0,
+      "skipped": 0,
+      "collected": 106,
+      "filesPassed": 1,
+      "filesSkipped": 0,
+      "filesCollected": 1,
+      "durationSeconds": 6.72,
+      "processExitCode": null,
+      "exitCodeEvidence": "The retained stdout log has a completed Vitest summary, but this preparation did not receive an independent process-exit receipt. No exit code is inferred.",
+      "log": {
+        "path": "p2-validation/test-contract.log",
+        "sha256": "52a78f17e5d0a93e8e455a9dd7cfb858a11b32d9fd9ae659e7371a67d7aed409",
+        "bytes": 436,
+        "lastWriteUtc": "2026-10-09T22:51:58.556065+00:00",
+        "excerpts": [
+          {
+            "line": 9,
+            "text": "Test Files  1 passed (1)"
+          },
+          {
+            "line": 10,
+            "text": "Tests  106 passed (106)"
+          },
+          {
+            "line": 11,
+            "text": "Start at  19:51:51"
+          },
+          {
+            "line": 12,
+            "text": "Duration  6.72s (import 62%, transform 29%, tests 9%)"
+          }
+        ]
+      },
+      "skipReason": null,
+      "skipSourceEvidence": [],
+      "sourceTemporalLimit": "Resultado da última rodada concluída neste log, anterior à nova full unit pós-formatação. Hashes de fonte do candidato anterior são observações daquele checkpoint, não prova de execução das fontes atuais."
+    },
+    {
+      "suite": "visual-tools",
+      "status": "PASSED",
+      "command": "pnpm test:visual-tools --maxWorkers=2",
+      "passed": 101,
+      "failed": 0,
+      "skipped": 0,
+      "collected": 101,
+      "filesPassed": 6,
+      "filesSkipped": 0,
+      "filesCollected": 6,
+      "durationSeconds": 7.72,
+      "processExitCode": null,
+      "exitCodeEvidence": "The retained stdout log has a completed Vitest summary, but this preparation did not receive an independent process-exit receipt. No exit code is inferred.",
+      "log": {
+        "path": "p2-validation/test-visual-tools.log",
+        "sha256": "516bb2d7e93f92aaa69b4088bbc24aae5dd5c28788abb01444bd1bf5743d1d51",
+        "bytes": 443,
+        "lastWriteUtc": "2026-10-09T22:52:07.000923+00:00",
+        "excerpts": [
+          {
+            "line": 9,
+            "text": "Test Files  6 passed (6)"
+          },
+          {
+            "line": 10,
+            "text": "Tests  101 passed (101)"
+          },
+          {
+            "line": 11,
+            "text": "Start at  19:51:59"
+          },
+          {
+            "line": 12,
+            "text": "Duration  7.72s (tests 94%, import 4%, transform 2%)"
+          }
+        ]
+      },
+      "skipReason": null,
+      "skipSourceEvidence": [],
+      "sourceTemporalLimit": "Resultado da última rodada concluída neste log, anterior à nova full unit pós-formatação. Hashes de fonte do candidato anterior são observações daquele checkpoint, não prova de execução das fontes atuais."
+    }
+  ],
+  "pending": [
+    {
+      "id": "final-whole-gates",
+      "status": "DOCUMENTATION_GATES_AFTER_APPLY",
+      "result": null,
+      "reason": "Final documentary/affected architecture-reference gates run after this cohort is applied. No circular pre-application dependency."
+    },
+    {
+      "id": "a10-slow3g-f",
+      "status": "NOT_EXECUTED_IN_THIS_CHECKPOINT",
+      "result": null,
+      "reason": "A10 F normal é próprio; Slow3G histórico em C continua parcial e não preenche F."
+    },
+    {
+      "id": "docker-linux-and-ci",
+      "status": "PENDING",
+      "result": null,
+      "reason": "Sem execução Linux/CI pós-retirada entregue."
+    },
+    {
+      "id": "f-publication",
+      "status": "PENDING",
+      "result": null,
+      "reason": "Commit/push F ainda sem recibo; C continua publicação histórica separada."
+    },
+    {
+      "id": "real-provider-and-production",
+      "status": "FUTURE_SCOPE",
+      "result": null,
+      "reason": "Casa organizada; provedores contratados/credenciais externas/prod/deploy não são ligados ou certificados neste checkpoint."
+    }
+  ],
+  "limitations": [
+    "Contagens por suíte podem compartilhar casos; não somar como total de testes únicos.",
+    "Skips são casos coletados sem execução e não entram como aprovações.",
+    "Logs de texto mantêm sumário Vitest; processExitCode só deve ser preenchido com recibo independente do executor.",
+    "101 testes visual-tools validam ferramentas, não equivalem à captura de telas, aprovação humana ou prova de GPU/dispositivo.",
+    "O aceite humano e as provas visuais da primeira etapa continuam históricos em C; nenhum aceite novo é criado para F.",
+    "Os três itens NOT_PROVEN de propagação de tokens não são promovidos a provados por essas rodadas.",
+    "Hygiene verde mantém 667 findings aceitos por 173 entradas; não significa zero dívida.",
+    "Tokens verde mantém cotas existentes; somente arquitetura mede zero total neste checkpoint.",
+    "check:tokens tem falha deliberada do sentinel web e verifica expectativas registradas; três níveis seguem NOT_PROVEN.",
+    "Relatos de exit do executor têm provenance própria e não são inventados a partir de logs stdout sem recibo direto.",
+    "As minutas anteriores conservaram a unit RED então vigente; os eventos finais4104/4104, P2 e B11 têm recibos próprios, sem promoção retroativa.",
+    "As novas rodadas API/tenant usam os BUILD_ID registrados à época (rEF/QmM); as jornadas finais usam compilações su5/hL. Não transplantar resultadosentre builds.",
+    "Integração65→42 remove apenas23 execuções físicas duplicadas com contrapartes canônicas preservadas; nenhum motor auth legacy foi aposentado.",
+    "E22 mede CSS raw/AST/ordem/utilitários de 2 sheets/276029 bytes e 25 HTML prerenderizados; não mede pixels, SSR tenant ou usabilidade.",
+    "Android/iOS HBC e Storybook build não comprovam instalação, dispositivo, performance ou deploy.",
+    "A10 normal scoped usa HDR sintético neutro e Draco local, GPU observado, vídeo amostrado 250 ms; sem Slow3G/device/CDNlighting. Três consoleErrors brutos continuam registrados.",
+    "Correções posteriores e provas focais não mudam retroativamente a unit RED ou as tentativas inválidas/encerradas antes dos casos.",
+    "O aceite humano C não é promovido a novo aceite visual F; baseline e oracles permanecem intactos nesta preparação."
+  ],
+  "infrastructure": {
+    "scope": "local-disposable-only",
+    "migrationDirectoriesObserved": 35,
+    "migrationsAppliedPostF": null,
+    "realProviderValidation": null,
+    "productionDeployment": null,
+    "externalCredentialRevocation": false,
+    "externalCredentialChanges": false,
+    "meaning": "PostgreSQL local descartável nosjobs com recibo; inventário35 migrations não é atestado global de aplicação em todas as rodadas. Sem provedores reais ou produção.",
+    "choice": "Infraestrutura hospedada,DBprodução e provedores serão escolhidos depois conforme usuário; migrations locais não criam/homologam conta,banco ou provedoresprodução."
+  },
+  "warningsObserved": [
+    {
+      "suite": "identity",
+      "kind": "pg concurrent client.query deprecation",
+      "blockingFailureReported": false
+    },
+    {
+      "suite": "platform",
+      "kind": "esbuild/oxc configuration precedence warning",
+      "blockingFailureReported": false
+    },
+    {
+      "suite": "platform/web",
+      "kind": "three CommonJS deprecation warning",
+      "blockingFailureReported": false
+    }
+  ],
+  "preparationActions": {
+    "tests": false,
+    "gates": false,
+    "builds": false,
+    "gitCommands": false,
+    "formatters": false,
+    "database": false,
+    "scanners": false,
+    "productParsers": false,
+    "browser": false,
+    "activeSourceWrites": false,
+    "externalCandidateWritesOnly": true
+  },
+  "previousCandidate": {
+    "path": "reviews/retirement-validation-candidate-v5",
+    "manifestSha256": "56a4911d1ba237f5738c57c124bbaf614d96d074824ca12fe97226185ae539a2",
+    "retainedFrozen": true
+  },
+  "unit": {
+    "lastCompletedPreFormatting": {
+      "status": "PASSED",
+      "passed": 4104,
+      "failed": 0,
+      "skipped": 0,
+      "collected": 4104,
+      "filesPassed": 179,
+      "filesCollected": 179,
+      "durationSeconds": 428.56,
+      "processExitCode": null,
+      "log": {
+        "path": "p2-validation/test-unit.log.previous-20261009T2331043556797Z",
+        "sha256": "b91ed66ec21b8069e95b753ce8db2b9c1f8fbe70dee285a69e888983cfd98300",
+        "bytes": 3217,
+        "lastWriteUtc": "2026-10-09T23:19:22.413007+00:00",
+        "excerpts": [
+          {
+            "line": 27,
+            "text": "Test Files  179 passed (179)"
+          },
+          {
+            "line": 28,
+            "text": "Tests  4104 passed (4104)"
+          },
+          {
+            "line": 29,
+            "text": "Start at  20:12:13"
+          },
+          {
+            "line": 30,
+            "text": "Duration  428.56s (tests 52%, import 46%, transform 1%)"
+          }
+        ]
+      },
+      "meaning": "Rodada pós-F anterior à formatação/correção mínima final; não preenche a prova pós-formatação."
+    },
+    "currentPostFormatting": {
+      "schemaVersion": 1,
+      "kind": "Final whole unit closed after restored P2 and generated data refresh",
+      "observedAtUtc": "2026-10-10T01:39:51.996Z",
+      "status": "PASSED",
+      "passed": 4104,
+      "failed": 0,
+      "skipped": 0,
+      "collected": 4104,
+      "filesPassed": 179,
+      "filesFailed": 0,
+      "filesCollected": 179,
+      "durationSeconds": 346.88,
+      "actualStartLocal": "22:32:03",
+      "localDate": "2026-10-09",
+      "timezone": "America/Sao_Paulo",
+      "exitCode": 0,
+      "exitEvidence": "Actual process exit0 explicitly supplied by sole executor/root.",
+      "evidence": {
+        "path": "p2-validation/final-unit-20261010T0134/test-unit.log",
+        "sha256": "b67de29dff199bbab3fe2e5a9e03a87bb0a5d9d0573e9af3e8787c990f6dc3ba",
+        "bytes": 3218,
+        "summary": [
+          " Test Files  179 passed (179)",
+          "      Tests  4104 passed (4104)",
+          "   Start at  22:32:03",
+          "   Duration  346.88s (tests 57%, import 41%, transform 1%)"
+        ]
+      },
+      "coverageIncludes": [
+        "Restored P2 source",
+        "Strict final generated OpenAPI check",
+        "Prior rootincrementalfalse fix",
+        "Prior overview diagram fix"
+      ],
+      "historyRetained": [
+        "Preformat4104/0",
+        "Postformat4102/2",
+        "OpenAPI4103/1"
+      ],
+      "executedByThisAgent": {
+        "activeWrites": false,
+        "commands": false,
+        "git": false,
+        "tests": false,
+        "gates": false,
+        "scanners": false,
+        "formatters": false,
+        "browser": false,
+        "database": false
+      },
+      "meaning": "Actual completed whole unit after restored P2 and final generated data; historical RED attempts remain separate.",
+      "pendingAtOriginalReceipt": {
+        "b11": "Recovery v3 running session64191; verify0/install0/databasecreate0, generate/migrate in progress. No B11 verdict.",
+        "documentalGates": "Execute after actual final docs apply; do not circularly block their application.",
+        "publicationF": "No F commit exists yet; this is checkpoint before publication."
+      },
+      "subsequentB11": {
+        "path": "p2-validation/b11-v3-root-verdict.json",
+        "sha256": "75fe3eda1e33a15afcb6473c4e62d7c7c85ef435c4e7cadd53b1f7432a50b82c",
+        "bytes": 1606,
+        "operatorReviewed": true,
+        "reviewedAtUtc": "2026-10-10T01:54:10.572509+00:00"
+      }
+    },
+    "newWholeRun": {
+      "status": "COMPLETED_PASSED",
+      "passed": 4104,
+      "failed": 0,
+      "skipped": 0,
+      "filesPassed": 179,
+      "durationSeconds": 346.88,
+      "exitCode": 0,
+      "evidence": {
+        "path": "p2-validation/final-unit-20261010T0134/test-unit.log",
+        "sha256": "b67de29dff199bbab3fe2e5a9e03a87bb0a5d9d0573e9af3e8787c990f6dc3ba",
+        "bytes": 3218,
+        "summary": [
+          " Test Files  179 passed (179)",
+          "      Tests  4104 passed (4104)",
+          "   Start at  22:32:03",
+          "   Duration  346.88s (tests 57%, import 41%, transform 1%)"
+        ]
+      }
+    },
+    "postFormattingHistory": [
+      {
+        "status": "FAILED",
+        "passed": 4102,
+        "failed": 2,
+        "skipped": 0,
+        "collected": 4104,
+        "filesPassed": 178,
+        "filesFailed": 1,
+        "filesCollected": 179,
+        "durationSeconds": 340.22,
+        "log": {
+          "path": "p2-validation/test-unit.log",
+          "sha256": "69d89ac8568efff4343be4ef8d492987e1fabe6aff3b7b59937e6ea03ac508b2",
+          "bytes": 5490,
+          "lastWriteUtc": "2026-10-09T23:36:45.441Z",
+          "lines": 86,
+          "excerpts": [
+            {
+              "line": 76,
+              "text": " Test Files  1 failed | 178 passed (179)"
+            },
+            {
+              "line": 77,
+              "text": "      Tests  2 failed | 4102 passed (4104)"
+            },
+            {
+              "line": 78,
+              "text": "   Start at  20:31:05"
+            },
+            {
+              "line": 79,
+              "text": "   Duration  340.22s (tests 53%, import 45%, transform 1%)"
+            }
+          ]
+        },
+        "processExitCode": null,
+        "executorReport": {
+          "sessionId": "39577",
+          "reportedExitCode": 1,
+          "origin": "Atualização explícita do executor/root"
+        },
+        "failureFile": "tests/unit/retired-artifacts.test.ts",
+        "failures": [
+          {
+            "case": "cada artefato da lista saiu de verdade (arquivo, script, dependência e link)",
+            "finding": "tsconfig.tsbuildinfo existe na raiz"
+          },
+          {
+            "case": "docs, instruções de agente e comentários só citam os artefatos como saídos",
+            "finding": "docs/architecture/overview.md:55 conserva diagrama antigo com referência ao pipeline Style Dictionary sem qualificação eficaz"
+          }
+        ],
+        "meaning": "Na época desse evento, a unit pós-formatação terminou RED. Rodadas posteriores não reescrevem o resultado histórico; a unit vigente4104/4104 está registrada separadamente."
+      },
+      {
+        "status": "FAILED_HISTORICAL_ATTEMPT",
+        "passed": 4103,
+        "failed": 1,
+        "skipped": 0,
+        "collected": 4104,
+        "filesPassed": 178,
+        "filesFailed": 1,
+        "filesCollected": 179,
+        "durationSeconds": 365.53,
+        "log": {
+          "path": "p2-validation/final-unit-20261010T0110/test-unit.log",
+          "sha256": "e735708cf006e936399a36aa5ff7459eb2ac7228d1d0ada8fe9ddc76fc92b5ad",
+          "bytes": 5463,
+          "lastWriteUtc": "2026-10-10T01:15:15.934Z"
+        },
+        "failure": "Strict generated OpenAPI mismatch,36 paths; exit1,not timeout.",
+        "priorTwoFixesPassed": true,
+        "meaning": "Na época desse evento, o dado OpenAPI divergiu. Refresh gerado, foco13/13 e full unit4104/4104 posteriores são eventos distintos e não reescrevem esta tentativa."
+      }
+    ]
+  },
+  "gates": [
+    {
+      "gate": "arch",
+      "status": "PASSED",
+      "measurements": {
+        "violations": 0,
+        "packages": 9
+      },
+      "log": {
+        "path": "p2-validation/arch.log",
+        "sha256": "3e4b232e32fbe12f49fcaea824c88f2ad15d85f7aec41a003324d34f08e822cb",
+        "bytes": 575,
+        "lastWriteUtc": "2026-10-09T23:21:27.230275+00:00",
+        "excerpts": [
+          {
+            "line": 5,
+            "text": "architecture ratchet: baseline total 0 in 0 file(s) (UNIVERSAL-DOM-JSX 0, UNIVERSAL-WEB-LIB 0, WORKSPACE-ESCAPE 0, LEGACY-DEEP-IMPORT 0, LEGACY-DOM-JSX 0, LEGACY-WEB-LIB 0) [tools/arch-baseline.json]"
+          },
+          {
+            "line": 6,
+            "text": "architecture ratchet: current total 0 in 0 file(s) (UNIVERSAL-DOM-JSX 0, UNIVERSAL-WEB-LIB 0, WORKSPACE-ESCAPE 0, LEGACY-DEEP-IMPORT 0, LEGACY-DOM-JSX 0, LEGACY-WEB-LIB 0); 0 above baseline"
+          },
+          {
+            "line": 7,
+            "text": "architecture gate passed (9 packages)"
+          }
+        ]
+      },
+      "processExitCode": null,
+      "executorReport": {
+        "sessionId": "29461",
+        "reportedExitCode": 0,
+        "origin": "Relato explícito do executor/root; logs stdout anexados por hash. Não é um recibo de exit gravado dentro destes logs."
+      },
+      "temporalLimit": "Evento já concluído antes das duas correções da unit pós-formatação; não se relabela como fechamento global final. Gates324 posteriores são evento próprio."
+    },
+    {
+      "gate": "tokens",
+      "status": "PASSED_WITH_EXISTING_RATCHETS",
+      "measurements": {
+        "newAboveBaseline": 0,
+        "cssImportant": 0,
+        "tailwindPaletteClass": {
+          "current": 5762,
+          "baseline": 5762
+        },
+        "arbitraryColor": {
+          "current": 18,
+          "baseline": 18
+        },
+        "arbitraryDimension": {
+          "current": 538,
+          "baseline": 538
+        },
+        "hslTriple": {
+          "current": 0,
+          "baseline": 0
+        },
+        "zIndexLiteral": {
+          "current": 328,
+          "baseline": 328
+        }
+      },
+      "log": {
+        "path": "p2-validation/tokens.log",
+        "sha256": "634b935b612e642a9008784e1647b225bb407a61fcfa98f2700781100d37b0e4",
+        "bytes": 60528,
+        "lastWriteUtc": "2026-10-09T23:21:28.864994+00:00",
+        "excerpts": [
+          {
+            "line": 455,
+            "text": "ratchet (now/baseline): tailwind-palette-class 5762/5762, arbitrary-color 18/18, arbitrary-dimension 538/538, hsl-triple 0/0, z-index-literal 328/328"
+          },
+          {
+            "line": 456,
+            "text": "zero tolerance (every scope, no baseline): css-important 0"
+          },
+          {
+            "line": 458,
+            "text": "token gate passed — examined 1213 code and 17 CSS files; 616 test/fixture files skipped; not examined: .example=2, .md=2, .mts=2, .json=7, .tsbuildinfo=1"
+          }
+        ]
+      },
+      "processExitCode": null,
+      "executorReport": {
+        "sessionId": "29461",
+        "reportedExitCode": 0,
+        "origin": "Relato explícito do executor/root; logs stdout anexados por hash. Não é um recibo de exit gravado dentro destes logs."
+      },
+      "temporalLimit": "Evento já concluído antes das duas correções da unit pós-formatação; não se relabela como fechamento global final. Gates324 posteriores são evento próprio."
+    },
+    {
+      "gate": "check:test-names",
+      "status": "PASSED",
+      "measurements": {
+        "colocated": 707,
+        "orphanAllowed": 3,
+        "orphanUnlisted": 0,
+        "staleAllowlist": 0
+      },
+      "log": {
+        "path": "p2-validation/check-test-names.log",
+        "sha256": "7160c7e5e718ee828a558986ab991ebc6f70d304b4df64eb7c9352073a75a27c",
+        "bytes": 1228,
+        "lastWriteUtc": "2026-10-09T23:21:29.285415+00:00",
+        "excerpts": [
+          {
+            "line": 8,
+            "text": "test colocation check passed — 707 colocated test file(s), 3 orphan(s): 3 allowed, 0 unlisted; 0 stale allowlist entries"
+          }
+        ]
+      },
+      "processExitCode": null,
+      "executorReport": {
+        "sessionId": "29461",
+        "reportedExitCode": 0,
+        "origin": "Relato explícito do executor/root; logs stdout anexados por hash. Não é um recibo de exit gravado dentro destes logs."
+      },
+      "temporalLimit": "Evento já concluído antes das duas correções da unit pós-formatação; não se relabela como fechamento global final. Gates324 posteriores são evento próprio."
+    },
+    {
+      "gate": "docs:validate",
+      "status": "PASSED",
+      "measurements": {},
+      "log": {
+        "path": "p2-validation/docs-validate.log",
+        "sha256": "44deab8d5b7137625766247bef206c71c3d9c9efbbfe1f74337e29ad453cfe1b",
+        "bytes": 201,
+        "lastWriteUtc": "2026-10-09T23:21:29.644116+00:00",
+        "excerpts": [
+          {
+            "line": 5,
+            "text": "Docs index/link validation passed."
+          }
+        ]
+      },
+      "processExitCode": null,
+      "executorReport": {
+        "sessionId": "29461",
+        "reportedExitCode": 0,
+        "origin": "Relato explícito do executor/root; logs stdout anexados por hash. Não é um recibo de exit gravado dentro destes logs."
+      },
+      "temporalLimit": "Evento já concluído antes das duas correções da unit pós-formatação; não se relabela como fechamento global final. Gates324 posteriores são evento próprio."
+    },
+    {
+      "gate": "lint:css",
+      "status": "PASSED_REPORTED_BY_EXECUTOR",
+      "measurements": {
+        "maxWarnings": 0
+      },
+      "log": {
+        "path": "p2-validation/lint-css.log",
+        "sha256": "8683cdae4897fc7f9a767d4e00badef8f6151cda5ea8fb1b7b70c89ba2511abb",
+        "bytes": 185,
+        "lastWriteUtc": "2026-10-09T23:21:29.913221+00:00",
+        "excerpts": [
+          {
+            "line": 3,
+            "text": "> stylelint \"packages/**/*.css\" \"apps/**/*.css\" --max-warnings 0"
+          }
+        ]
+      },
+      "processExitCode": null,
+      "executorReport": {
+        "sessionId": "29461",
+        "reportedExitCode": 0,
+        "origin": "Relato explícito do executor/root; logs stdout anexados por hash. Não é um recibo de exit gravado dentro destes logs."
+      },
+      "temporalLimit": "Evento já concluído antes das duas correções da unit pós-formatação; não se relabela como fechamento global final. Gates324 posteriores são evento próprio."
+    },
+    {
+      "gate": "hygiene",
+      "status": "PASSED_WITH_ACCEPTED_DEBT",
+      "measurements": {
+        "acceptedFindings": 667,
+        "baselineEntries": 173,
+        "newFindings": 0
+      },
+      "log": {
+        "path": "p2-validation/hygiene.log",
+        "sha256": "093abd41c9eb92a564ee6e7aa8f1ad52618b52ab562709254d578c44d8beb18a",
+        "bytes": 257,
+        "lastWriteUtc": "2026-10-09T23:22:14.998642+00:00",
+        "excerpts": [
+          {
+            "line": 5,
+            "text": "hygiene: ok (667 achado(s) aceito(s) por 173 item(ns) de tools/hygiene-baseline.json, cada um com motivo)"
+          }
+        ]
+      },
+      "processExitCode": null,
+      "executorReport": {
+        "sessionId": "29461",
+        "reportedExitCode": 0,
+        "origin": "Relato explícito do executor/root; logs stdout anexados por hash. Não é um recibo de exit gravado dentro destes logs."
+      },
+      "temporalLimit": "Evento já concluído antes das duas correções da unit pós-formatação; não se relabela como fechamento global final. Gates324 posteriores são evento próprio."
+    },
+    {
+      "gate": "typecheck",
+      "status": "PASSED_REPORTED_BY_EXECUTOR",
+      "measurements": {
+        "projects": 14
+      },
+      "log": {
+        "path": "p2-validation/typecheck.log",
+        "sha256": "b4135fcbf6d8059c536d176eb69dad0db5b8f5deeff20261d25bb7f4719248e4",
+        "bytes": 739,
+        "lastWriteUtc": "2026-10-09T23:22:15.310663+00:00",
+        "excerpts": [
+          {
+            "line": 3,
+            "text": "> tsc -p packages/contracts/tsconfig.json && tsc -p packages/domain/tsconfig.json && tsc -p packages/design-tokens/tsconfig.json && tsc -p packages/backend/tsconfig.json && tsc -p packages/ui/tsconfig.json && tsc -p packages/ui/tsconfig.native.json && tsc -p packages/ui/tsconfig.native.test.json && tsc -p packages/frontend/tsconfig.json && tsc -p packages/frontend/tsconfig.native.json && tsc -p packages/frontend/tsconfig.native.test.json && tsc -p apps/clients/web/tsconfig.json && tsc -p apps/clients/mobile/tsconfig.json && tsc -p apps/clients/mobile/tsconfig.test.json && tsc -p apps/services/api/tsconfig.json"
+          }
+        ]
+      },
+      "processExitCode": null,
+      "executorReport": {
+        "sessionId": "29461",
+        "reportedExitCode": 0,
+        "origin": "Relato explícito do executor/root; logs stdout anexados por hash. Não é um recibo de exit gravado dentro destes logs."
+      },
+      "temporalLimit": "Evento já concluído antes das duas correções da unit pós-formatação; não se relabela como fechamento global final. Gates324 posteriores são evento próprio."
+    },
+    {
+      "gate": "type-check",
+      "status": "PASSED_REPORTED_BY_EXECUTOR",
+      "measurements": {
+        "rootNoEmit": true
+      },
+      "log": {
+        "path": "p2-validation/type-check.log",
+        "sha256": "a1630fad2b28a786015b5167194b5d945865124ac27d7de14b0fcb877f6101c4",
+        "bytes": 154,
+        "lastWriteUtc": "2026-10-09T23:24:21.389768+00:00",
+        "excerpts": [
+          {
+            "line": 3,
+            "text": "> tsc -p tsconfig.json --noEmit"
+          }
+        ]
+      },
+      "processExitCode": null,
+      "executorReport": {
+        "sessionId": "29461",
+        "reportedExitCode": 0,
+        "origin": "Relato explícito do executor/root; logs stdout anexados por hash. Não é um recibo de exit gravado dentro destes logs."
+      },
+      "temporalLimit": "Evento já concluído antes das duas correções da unit pós-formatação; não se relabela como fechamento global final. Gates324 posteriores são evento próprio."
+    },
+    {
+      "gate": "check:tokens",
+      "status": "PASSED_EXPECTATIONS_WITH_NOT_PROVEN",
+      "measurements": {
+        "notProven": ["style resolution (web)", "web render", "mobile export"],
+        "deliberateWebSentinelFailureExpected": true,
+        "nativeRuntimeCovered": false
+      },
+      "log": {
+        "path": "p2-validation/check-tokens.log",
+        "sha256": "15539924762b8c9aaea3264ca977d3379a0e2e1a685a93d185ce9e9f7a32a2b4",
+        "bytes": 10792,
+        "lastWriteUtc": "2026-10-09T23:25:14.160863+00:00",
+        "excerpts": [
+          {
+            "line": 10,
+            "text": "❯ packages/ui/src/web/Button.web.test.tsx (7 tests | 1 failed) 17ms"
+          },
+          {
+            "line": 48,
+            "text": "Test Files  1 failed | 1 passed (2)"
+          },
+          {
+            "line": 49,
+            "text": "Tests  1 failed | 10 passed (11)"
+          },
+          {
+            "line": 109,
+            "text": "ok           style resolution (native)"
+          },
+          {
+            "line": 110,
+            "text": "NOT PROVEN   style resolution (web) (esperado: O Button.web tira as cores de classes Tailwind literais de packages/ui/src/contract/button.ts (bg-slate-700, text-orange-500, border-gray-200...), não de @gb-locacoes/design-tokens; trocar o token não muda o Button web.)"
+          },
+          {
+            "line": 111,
+            "text": "ok           no other failing assertion"
+          },
+          {
+            "line": 112,
+            "text": "NOT PROVEN   web render (esperado: Não executado: next build só veria a cópia temporária do token com um alias de bundler, que apps/clients/web/next.config.mjs não tem; e a resolução de estilo web acima já mostra que o Button.web não consome o token.)"
+          },
+          {
+            "line": 113,
+            "text": "NOT PROVEN   mobile export (esperado: Não executado: expo export só veria a cópia temporária do token com um alias do Metro, que apps/clients/mobile/metro.config.js não tem; reescrever tokens.ts no lugar foi removido de propósito (checkout compartilhado).)"
+          },
+          {
+            "line": 114,
+            "text": "token propagation matches tools/token-propagation-expectations.json (3 level(s) not proven yet, listed with a reason)"
+          }
+        ]
+      },
+      "processExitCode": null,
+      "executorReport": {
+        "sessionId": "29461",
+        "reportedExitCode": 0,
+        "origin": "Relato explícito do executor/root; logs stdout anexados por hash. Não é um recibo de exit gravado dentro destes logs."
+      },
+      "temporalLimit": "Evento já concluído antes das duas correções da unit pós-formatação; não se relabela como fechamento global final. Gates324 posteriores são evento próprio."
+    }
+  ],
+  "ratchet": {
+    "status": "PASSED",
+    "baseRef": "checkpoint/onda-135-pre-exclusao",
+    "baseCommit": "978ceb9244c81c7cb2888b798fad8ce90edad25e",
+    "log": {
+      "path": "p2-validation/ratchet-guard.log",
+      "sha256": "0bd2cb4c6e1143003c9ec462fcdfd992d79ce5fc065f37203d139fb3b3f187e1",
+      "bytes": 12775,
+      "lastWriteUtc": "2026-10-09T23:27:59.512422+00:00",
+      "excerpts": [
+        {
+          "line": 5,
+          "text": "ratchet guard: base checkpoint/onda-135-pre-exclusao -> 978ceb9244c8"
+        },
+        {
+          "line": 70,
+          "text": "ratchet guard passed"
+        }
+      ]
+    },
+    "processExitCode": null,
+    "executorReport": {
+      "sessionId": "71040",
+      "reportedExitCode": 0,
+      "origin": "Relato explícito do executor/root"
+    },
+    "meaning": "Comparação correta com a tag C, preservada como base explícita; não usa origin/main ausente ou HEAD sem parent como base fictícia."
+  },
+  "lint": {
+    "status": "PASSED",
+    "log": {
+      "path": "p2-validation/lint.log",
+      "sha256": "d42a77b5d8892f6ea193ca4c11de1aa33a3215395cdd1e813de13ed25a85fea4",
+      "bytes": 146
+    },
+    "processExitCode": 0,
+    "executorReport": {
+      "sessionId": "80211",
+      "reportedExitCode": 0,
+      "origin": "Atualização explícita do executor/root após a nova execução real"
+    },
+    "previousRed": {
+      "status": "FAILED_HISTORICAL_CORRECTED",
+      "lastExecutedErrors": 7,
+      "lastExecutedFiles": 2,
+      "log": {
+        "path": "p2-validation/lint.log.previous-20261009T2338071396408Z",
+        "sha256": "ac147773e53471b14e1584d5925fdf0508e7e9d32e51ba3120d7b3ea76d8b17d",
+        "bytes": 1455,
+        "lastWriteUtc": "2026-10-09T23:25:11.139265+00:00",
+        "excerpts": [
+          {
+            "line": 7,
+            "text": "34:17  error  'health' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars"
+          },
+          {
+            "line": 8,
+            "text": "36:17  error  'dreiProxy' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars"
+          },
+          {
+            "line": 11,
+            "text": "8242:26  error  'pattern' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars"
+          },
+          {
+            "line": 12,
+            "text": "8242:35  error  'replacement' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars"
+          },
+          {
+            "line": 13,
+            "text": "11335:7   error  Spaces are hard to count. Use {4}                                              no-regex-spaces"
+          },
+          {
+            "line": 14,
+            "text": "12237:8   error  'facade' is defined but never used. Allowed unused args must match /^_/u       @typescript-eslint/no-unused-vars"
+          },
+          {
+            "line": 15,
+            "text": "13628:9   error  Spaces are hard to count. Use {4}                                              no-regex-spaces"
+          },
+          {
+            "line": 17,
+            "text": "✖ 7 problems (7 errors, 0 warnings)"
+          },
+          {
+            "line": 20,
+            "text": "ELIFECYCLE  Command failed with exit code 1."
+          }
+        ]
+      },
+      "lastReportedExitCode": 1,
+      "currentRerunResult": {
+        "processExitCode": 0,
+        "receipt": {
+          "path": "p2-validation/serial-checks-20261009T2338067237967Z.json",
+          "sha256": "5425968134b56b23b16c3c22fe536d2467ff9936fa3e8336efe91dc985746839",
+          "bytes": 2101,
+          "observedAtUtc": "2026-10-10T00:20:43.103Z",
+          "lastWriteUtc": "2026-10-09T23:41:41.088Z"
+        },
+        "stepName": "lint"
+      },
+      "applicationReceipt": {
+        "path": "p2-validation/lint-seven-applied.json",
+        "sha256": "ba5de025fbafece30debf4f2ac63a1a4ab94c5cfeea429da69b07e4a1c7489d7",
+        "state": "reviewed-exact-cohort-applied-not-validated",
+        "at": "2026-10-09T23:28:49.599962+00:00",
+        "manifestSha256": "e35ba023ce90fc15d9396de62dd1acfa16df1445d5f0fe69aa0ed5d115e7fe0a"
+      },
+      "meaning": "Correção mínima de unused bindings/args e regex de quatro espaços foi aplicada; aplicar código não prova lint verde."
+    },
+    "meaning": "A nova execução lint tem exit0 no recibo serial; o RED7 anterior e a aplicação mínima permanecem históricos separados.",
+    "latestObserved": {
+      "status": "PASSED",
+      "processExitCode": 0,
+      "log": {
+        "path": "p2-validation/lint.log",
+        "sha256": "d42a77b5d8892f6ea193ca4c11de1aa33a3215395cdd1e813de13ed25a85fea4",
+        "bytes": 146,
+        "lastWriteUtc": "2026-10-09T23:38:07.523Z",
+        "lines": 5,
+        "excerpts": []
+      },
+      "receipt": {
+        "path": "p2-validation/serial-checks-20261009T2338067237967Z.json",
+        "sha256": "5425968134b56b23b16c3c22fe536d2467ff9936fa3e8336efe91dc985746839",
+        "bytes": 2101,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-09T23:41:41.088Z"
+      },
+      "stepName": "lint"
+    },
+    "exitReceipt": {
+      "path": "p2-validation/serial-checks-20261009T2338067237967Z.json",
+      "sha256": "5425968134b56b23b16c3c22fe536d2467ff9936fa3e8336efe91dc985746839",
+      "bytes": 2101,
+      "observedAtUtc": "2026-10-10T00:20:43.103Z",
+      "lastWriteUtc": "2026-10-09T23:41:41.088Z"
+    }
+  },
+  "runbookRead": {
+    "path": "run-owned-f-profile.ps1",
+    "sha256": "714bb99e49561f99139ae837d553f7782526d568fbf7a7b15603717c73470541",
+    "lines": [14, 15, 21, 22, 23, 84, 85, 88, 95, 103, 104, 110, 111, 115],
+    "meaning": "Script de execução próprio parametriza repositório/evidência e usa TEST_DATABASE_DISPOSABLE=true. Fonte lida, não executada; não expõe URL nem credenciais do arquivo de DB."
+  },
+  "postUnitCorrections": {
+    "status": "APPLIED_NOT_VALIDATED",
+    "receipt": {
+      "path": "p2-validation/final-cleanliness-20261009T233753Z/receipt.json",
+      "sha256": "d80506b3d9dfd51da21acb33a2f445a056eeb0727acccc959e485e6970fece8e"
+    },
+    "changes": [
+      {
+        "file": "docs/architecture/overview.md",
+        "before": "bc66574b105c12f8dea6329c006a7aafc19b70650e320e0b6f489715aef5df04",
+        "after": "4f6927ff3f3d855e63659011e1f4e58266dbef12439cc328612c0c92928e8a63",
+        "reason": "remove superseded historical diagram from active architecture page; C Git checkpoint preserves original"
+      },
+      {
+        "file": "tsconfig.json",
+        "before": "b33938430e81007d04463305c7ca7daac0b74ac58409793f56c857aac05b60b5",
+        "after": "cb587de49c4a12bc276252989d196e52ec754cd68be14694e4ab573a43c89fa3",
+        "reason": "root noEmit checker must not recreate retired root incremental output"
+      }
+    ],
+    "ownedOutputMoved": {
+      "source": "p2/aposentar-raiz/tsconfig.tsbuildinfo",
+      "destination": "p2-validation/final-cleanliness-20261009T233753Z/tsconfig.tsbuildinfo.generated",
+      "sha256": "e11e2fa8a78c6b0b11484d92c0009bb14675b2597bb84e50621ad169a3ee85e0",
+      "bytes": 675192
+    },
+    "meaning": "Root desativou incremental no checker raiz, moveu apenas output próprio ao backup externo e retirou somente o diagrama superado; a prova integral4104/4104 posterior está vinculada em unit. C e as falhas anteriores permanecem históricos."
+  },
+  "currentValidationQueue": {
+    "status": "RECORDED_PER_STEP",
+    "executorSessionId": "80211",
+    "origin": "Recibos serial-checks reais lidos; não executados por esta preparação",
+    "steps": [
+      {
+        "name": "lint",
+        "processExitCode": 0
+      },
+      {
+        "name": "gates",
+        "passed": 324,
+        "failed": 0,
+        "skipped": 0,
+        "filesPassed": 14,
+        "durationSeconds": 80.21,
+        "processExitCode": 0,
+        "log": {
+          "path": "p2-validation/test-gates.log",
+          "sha256": "1121399949b602d8c189fbb828c14b2cb26e71c03b9f4e4f0428a4b7c0231018",
+          "bytes": 930,
+          "lastWriteUtc": "2026-10-09T23:40:26.709Z",
+          "lines": 14,
+          "excerpts": [
+            {
+              "line": 9,
+              "text": " Test Files  14 passed (14)"
+            },
+            {
+              "line": 10,
+              "text": "      Tests  324 passed (324)"
+            },
+            {
+              "line": 11,
+              "text": "   Start at  20:39:06"
+            },
+            {
+              "line": 12,
+              "text": "   Duration  80.21s (tests 87%, import 12%)"
+            }
+          ]
+        }
+      },
+      {
+        "name": "security-reviewed-detectors",
+        "passed": 121,
+        "failed": 0,
+        "skipped": 0,
+        "filesPassed": 2,
+        "durationSeconds": 45.72,
+        "processExitCode": 0,
+        "log": {
+          "path": "p2-validation/test-security.log.previous-20261009T2341138458589Z",
+          "sha256": "5a084f54c09e5cb60bc3b461ce367821e339f9373ee0387c44f2d95b2e054580",
+          "bytes": 523,
+          "lastWriteUtc": "2026-10-09T23:41:13.454Z",
+          "excerpts": [
+            {
+              "line": 9,
+              "text": " Test Files  2 passed (2)"
+            },
+            {
+              "line": 10,
+              "text": "      Tests  121 passed (121)"
+            },
+            {
+              "line": 11,
+              "text": "   Start at  20:40:27"
+            },
+            {
+              "line": 12,
+              "text": "   Duration  45.72s (import 73%, tests 23%, transform 5%)"
+            }
+          ]
+        }
+      },
+      {
+        "name": "tenant-no-database-controls",
+        "passed": 32,
+        "failed": 0,
+        "skipped": 8,
+        "collected": 40,
+        "filesPassed": 1,
+        "durationSeconds": 11.94,
+        "processExitCode": 0,
+        "log": {
+          "path": "p2-validation/test-security.log",
+          "sha256": "54fda1849a84db98c29293dea289e84874b5e0da14462dff9f12d673f386d541",
+          "bytes": 477,
+          "lastWriteUtc": "2026-10-09T23:41:26.380Z",
+          "lines": 14,
+          "excerpts": [
+            {
+              "line": 9,
+              "text": " Test Files  1 passed (1)"
+            },
+            {
+              "line": 10,
+              "text": "      Tests  32 passed | 8 skipped (40)"
+            },
+            {
+              "line": 11,
+              "text": "   Start at  20:41:14"
+            },
+            {
+              "line": 12,
+              "text": "   Duration  11.94s (import 80%, transform 19%)"
+            }
+          ]
+        },
+        "skipReason": "Oito controles com DB exigem TEST_DATABASE_URL; esta rodada sem DB não os executa."
+      },
+      {
+        "name": "integration-first-attempt",
+        "processExitCode": 1,
+        "status": "FAILED_SETUP_BEFORE_CASES",
+        "reason": "Servidor API compilado ausente; tentativa encerrada antes de executar casos. A integração posterior42/42 é evento separado.",
+        "log": {
+          "path": "p2-validation/test-integration.log.previous-20261009T2343595854957Z",
+          "sha256": "d326bde76c743a214b96ee8392d3a924745120a4113955b5287f26590748e9de",
+          "bytes": 2772,
+          "lastWriteUtc": "2026-10-09T23:41:41.030Z",
+          "excerpts": []
+        }
+      }
+    ],
+    "receipt": {
+      "path": "p2-validation/serial-checks-20261009T2338067237967Z.json",
+      "sha256": "5425968134b56b23b16c3c22fe536d2467ff9936fa3e8336efe91dc985746839",
+      "bytes": 2101,
+      "observedAtUtc": "2026-10-10T00:20:43.103Z",
+      "lastWriteUtc": "2026-10-09T23:41:41.088Z"
+    },
+    "doesNotReplaceFullUnit": "Gates324 incluem o foco retired-artifacts. Nenhuma nova unit4104 completa é inferida.",
+    "originalReceiptCompletionAt": null
+  },
+  "localCheckpointDate": "2026-10-09",
+  "localCheckpointTimezone": "America/Sao_Paulo",
+  "serialReceipts": [
+    {
+      "receipt": {
+        "path": "p2-validation/serial-checks-20261009T2337557427848Z.json",
+        "sha256": "f567fe6b946363180d11ef7be863e2d2fa6ecf15cfccc4e5df392ad8d6cd3c1b",
+        "bytes": 537,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-09T23:37:56.175Z"
+      },
+      "record": {
+        "phase": "checks",
+        "repository": "C:\\Users\\harry\\AppData\\Local\\Temp\\locadora-wave135-finish-20261009\\p2\\aposentar-raiz",
+        "startedAtUtc": "2026-10-09T23:37:55.7492644Z",
+        "completedAtUtc": null,
+        "steps": [
+          {
+            "name": "lint",
+            "startedAtUtc": "2026-10-09T23:37:55.7566065Z",
+            "completedAtUtc": "2026-10-09T23:37:56.1715712Z",
+            "exitCode": 1,
+            "parameters": {
+              "Files": ["lint"],
+              "Task": "gates"
+            },
+            "buildIds": {}
+          }
+        ]
+      }
+    },
+    {
+      "receipt": {
+        "path": "p2-validation/serial-checks-20261009T2338067237967Z.json",
+        "sha256": "5425968134b56b23b16c3c22fe536d2467ff9936fa3e8336efe91dc985746839",
+        "bytes": 2101,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-09T23:41:41.088Z"
+      },
+      "record": {
+        "phase": "checks",
+        "repository": "C:\\Users\\harry\\AppData\\Local\\Temp\\locadora-wave135-finish-20261009\\p2\\aposentar-raiz",
+        "startedAtUtc": "2026-10-09T23:38:06.7324757Z",
+        "completedAtUtc": null,
+        "steps": [
+          {
+            "name": "lint",
+            "startedAtUtc": "2026-10-09T23:38:06.7391496Z",
+            "completedAtUtc": "2026-10-09T23:39:04.0165895Z",
+            "exitCode": 0,
+            "parameters": {
+              "Task": "gates",
+              "Files": ["lint"]
+            },
+            "buildIds": {}
+          },
+          {
+            "name": "gates",
+            "startedAtUtc": "2026-10-09T23:39:04.0246784Z",
+            "completedAtUtc": "2026-10-09T23:40:26.7956569Z",
+            "exitCode": 0,
+            "parameters": {
+              "Task": "gates",
+              "Files": ["test:gates"]
+            },
+            "buildIds": {}
+          },
+          {
+            "name": "security-reviewed-detectors",
+            "startedAtUtc": "2026-10-09T23:40:26.7979782Z",
+            "completedAtUtc": "2026-10-09T23:41:13.5451636Z",
+            "exitCode": 0,
+            "parameters": {
+              "Files": ["test:security"],
+              "Task": "gates",
+              "Arguments": [
+                "tests/security/route-auth-inventory.test.ts",
+                "tests/security/public-surface.test.ts"
+              ]
+            },
+            "buildIds": {}
+          },
+          {
+            "name": "tenant-no-database-controls",
+            "startedAtUtc": "2026-10-09T23:41:13.5466480Z",
+            "completedAtUtc": "2026-10-09T23:41:26.5031626Z",
+            "exitCode": 0,
+            "parameters": {
+              "Files": ["test:security"],
+              "Task": "gates",
+              "WithoutDatabase": true,
+              "Arguments": ["tests/security/tenant-request.test.ts"]
+            },
+            "buildIds": {}
+          },
+          {
+            "name": "integration",
+            "startedAtUtc": "2026-10-09T23:41:26.5051085Z",
+            "completedAtUtc": "2026-10-09T23:41:41.0860987Z",
+            "exitCode": 1,
+            "parameters": {
+              "Task": "gates",
+              "Files": ["test:integration"]
+            },
+            "buildIds": {}
+          }
+        ]
+      }
+    },
+    {
+      "receipt": {
+        "path": "p2-validation/serial-legacy-20261009T2342026964388Z.json",
+        "sha256": "25aadf5346f283970921693a685848576f3e1316703673cb0ce8a3c840f8d8d9",
+        "bytes": 2246,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-09T23:49:32.208Z"
+      },
+      "record": {
+        "phase": "legacy",
+        "repository": "C:\\Users\\harry\\AppData\\Local\\Temp\\locadora-wave135-finish-20261009\\p2\\aposentar-raiz",
+        "startedAtUtc": "2026-10-09T23:42:02.7028943Z",
+        "completedAtUtc": "2026-10-09T23:49:32.2045467Z",
+        "steps": [
+          {
+            "name": "production-build-legacy",
+            "startedAtUtc": "2026-10-09T23:42:02.7096229Z",
+            "completedAtUtc": "2026-10-09T23:43:59.1843078Z",
+            "exitCode": 0,
+            "parameters": {
+              "Auth": "legacy",
+              "Task": "build-root"
+            },
+            "buildIds": {
+              "api": "1fUqYvXf7UEjYiTV-Kddl",
+              "web": "rEF56biJkNQNEpGWPkFj3"
+            }
+          },
+          {
+            "name": "integration",
+            "startedAtUtc": "2026-10-09T23:43:59.1993390Z",
+            "completedAtUtc": "2026-10-09T23:45:46.4764985Z",
+            "exitCode": 0,
+            "parameters": {
+              "Files": ["test:integration"],
+              "Task": "gates"
+            },
+            "buildIds": {
+              "api": "1fUqYvXf7UEjYiTV-Kddl",
+              "web": "rEF56biJkNQNEpGWPkFj3"
+            }
+          },
+          {
+            "name": "api-legacy-old-root-absent",
+            "startedAtUtc": "2026-10-09T23:45:46.4807965Z",
+            "completedAtUtc": "2026-10-09T23:48:40.4209647Z",
+            "exitCode": 0,
+            "parameters": {
+              "Legacy": "absent",
+              "Auth": "legacy",
+              "Task": "api"
+            },
+            "buildIds": {
+              "api": "1fUqYvXf7UEjYiTV-Kddl",
+              "web": "rEF56biJkNQNEpGWPkFj3"
+            }
+          },
+          {
+            "name": "tenant-hosts-legacy",
+            "startedAtUtc": "2026-10-09T23:48:40.4229646Z",
+            "completedAtUtc": "2026-10-09T23:48:54.8612266Z",
+            "exitCode": 0,
+            "parameters": {
+              "Auth": "legacy",
+              "Task": "tenant"
+            },
+            "buildIds": {
+              "api": "1fUqYvXf7UEjYiTV-Kddl",
+              "web": "rEF56biJkNQNEpGWPkFj3"
+            }
+          },
+          {
+            "name": "journeys-legacy",
+            "startedAtUtc": "2026-10-09T23:48:54.8640755Z",
+            "completedAtUtc": "2026-10-09T23:49:32.2019736Z",
+            "exitCode": 0,
+            "parameters": {
+              "Auth": "legacy",
+              "Task": "journeys"
+            },
+            "buildIds": {
+              "api": "1fUqYvXf7UEjYiTV-Kddl",
+              "web": "rEF56biJkNQNEpGWPkFj3"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "receipt": {
+        "path": "p2-validation/serial-better-auth-20261009T2353205862748Z.json",
+        "sha256": "801a0daa03fc4f49469978d664f8156ee49492eed3ce30d6ee388fb33f95d57a",
+        "bytes": 1858,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-09T23:59:39.650Z"
+      },
+      "record": {
+        "phase": "better-auth",
+        "repository": "C:\\Users\\harry\\AppData\\Local\\Temp\\locadora-wave135-finish-20261009\\p2\\aposentar-raiz",
+        "startedAtUtc": "2026-10-09T23:53:20.5925268Z",
+        "completedAtUtc": null,
+        "steps": [
+          {
+            "name": "production-web-build-better-auth",
+            "startedAtUtc": "2026-10-09T23:53:20.5987861Z",
+            "completedAtUtc": "2026-10-09T23:54:15.6764231Z",
+            "exitCode": 0,
+            "parameters": {
+              "Task": "build-web",
+              "Auth": "better-auth"
+            },
+            "buildIds": {
+              "web": "QmM0SgcvbVbJSSkD-H4Xi",
+              "api": "1fUqYvXf7UEjYiTV-Kddl"
+            }
+          },
+          {
+            "name": "api-better-auth-old-root-absent",
+            "startedAtUtc": "2026-10-09T23:54:15.6935572Z",
+            "completedAtUtc": "2026-10-09T23:57:42.4321210Z",
+            "exitCode": 0,
+            "parameters": {
+              "Legacy": "absent",
+              "Auth": "better-auth",
+              "Task": "api"
+            },
+            "buildIds": {
+              "web": "QmM0SgcvbVbJSSkD-H4Xi",
+              "api": "1fUqYvXf7UEjYiTV-Kddl"
+            }
+          },
+          {
+            "name": "tenant-hosts-better-auth",
+            "startedAtUtc": "2026-10-09T23:57:42.4358184Z",
+            "completedAtUtc": "2026-10-09T23:57:55.8146372Z",
+            "exitCode": 0,
+            "parameters": {
+              "Task": "tenant",
+              "Auth": "better-auth"
+            },
+            "buildIds": {
+              "web": "QmM0SgcvbVbJSSkD-H4Xi",
+              "api": "1fUqYvXf7UEjYiTV-Kddl"
+            }
+          },
+          {
+            "name": "journeys-better-auth",
+            "startedAtUtc": "2026-10-09T23:57:55.8177368Z",
+            "completedAtUtc": "2026-10-09T23:59:39.6481402Z",
+            "exitCode": 1,
+            "parameters": {
+              "Task": "journeys",
+              "Auth": "better-auth"
+            },
+            "buildIds": {
+              "web": "QmM0SgcvbVbJSSkD-H4Xi",
+              "api": "1fUqYvXf7UEjYiTV-Kddl"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "integration": {
+    "status": "PASSED",
+    "passed": 42,
+    "failed": 0,
+    "skipped": 0,
+    "filesPassed": 13,
+    "durationSeconds": 102.09,
+    "processExitCode": 0,
+    "log": {
+      "path": "p2-validation/test-integration.log",
+      "sha256": "fafb548dad0fbc2be2c8b7614f4519ed9073bcfc4d6e2e529e07537d0466e349",
+      "bytes": 3071,
+      "lastWriteUtc": "2026-10-09T23:45:45.649Z",
+      "lines": 49,
+      "excerpts": [
+        {
+          "line": 40,
+          "text": " Test Files  13 passed (13)"
+        },
+        {
+          "line": 41,
+          "text": "      Tests  42 passed (42)"
+        },
+        {
+          "line": 42,
+          "text": "   Start at  20:44:03"
+        },
+        {
+          "line": 43,
+          "text": "   Duration  102.09s (import 48%, tests 29%, transform 8%, setup 8%, environment 7%)"
+        }
+      ]
+    },
+    "receipt": {
+      "path": "p2-validation/serial-legacy-20261009T2342026964388Z.json",
+      "sha256": "25aadf5346f283970921693a685848576f3e1316703673cb0ce8a3c840f8d8d9",
+      "bytes": 2246,
+      "observedAtUtc": "2026-10-10T00:20:43.103Z",
+      "lastWriteUtc": "2026-10-09T23:49:32.208Z"
+    },
+    "stepName": "integration",
+    "builds": {
+      "api": "1fUqYvXf7UEjYiTV-Kddl",
+      "web": "rEF56biJkNQNEpGWPkFj3"
+    },
+    "cToFDelta": {
+      "ledger": {
+        "path": "reviews/integration-c-to-f-delta/integration-delta.ledger.json",
+        "sha256": "33036e570f08d7a48d124b8218cdb3a4685f625afb4c29f0f75bf1f7a8dc70b3",
+        "bytes": 30866,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-09T23:50:38.943Z"
+      },
+      "sourceManifestSha256": "f9f81d0aa594e26b33c0e6e210e20ee400066c368c968040d783a2c9a846587c",
+      "cPassed": 65,
+      "fPassed": 42,
+      "removedPhysicalDuplicateExecutions": 23,
+      "canonicalPreserved": 23,
+      "otherPreserved": 19,
+      "arithmetic": "C = 2 * 23 + 19; F = 1 * 23 + 19",
+      "meaning": "Dez matrizes físicas de dois hosts passam a um host canônico. As 23 instâncias de serviço e 19 casos restantes ficam preservados; não se retira o motor de autenticação legacy.",
+      "scope": "Comparação registrada de corpos/assertions/fixtures com normalização só EOL; não é prova universal de equivalência."
+    }
+  },
+  "apiHttp": [
+    {
+      "auth": "legacy",
+      "oldPhysicalRoot": "absent",
+      "status": "PASSED_WITH_SKIP",
+      "passed": 2400,
+      "failed": 0,
+      "skipped": 1,
+      "collected": 2401,
+      "filesPassed": 64,
+      "durationSeconds": 170.88,
+      "processExitCode": 0,
+      "log": {
+        "path": "p2-validation/api-v2-absent-legacy.log",
+        "sha256": "967ebe421af8629ca23ccc0fcf0da94231eac4e6f02a830064c6743e61ff2e26",
+        "bytes": 811,
+        "lastWriteUtc": "2026-10-09T23:48:40.346Z",
+        "lines": 17,
+        "excerpts": [
+          {
+            "line": 10,
+            "text": " Test Files  64 passed (64)"
+          },
+          {
+            "line": 11,
+            "text": "      Tests  2400 passed | 1 skipped (2401)"
+          },
+          {
+            "line": 12,
+            "text": "   Start at  20:45:47"
+          },
+          {
+            "line": 13,
+            "text": "   Duration  170.88s (tests 87%, import 9%, transform 3%, setup 1%)"
+          }
+        ]
+      },
+      "receipt": {
+        "path": "p2-validation/serial-legacy-20261009T2342026964388Z.json",
+        "sha256": "25aadf5346f283970921693a685848576f3e1316703673cb0ce8a3c840f8d8d9",
+        "bytes": 2246,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-09T23:49:32.208Z"
+      },
+      "stepName": "api-legacy-old-root-absent",
+      "builds": {
+        "api": "1fUqYvXf7UEjYiTV-Kddl",
+        "web": "rEF56biJkNQNEpGWPkFj3"
+      }
+    },
+    {
+      "auth": "better-auth",
+      "oldPhysicalRoot": "absent",
+      "status": "PASSED",
+      "passed": 2398,
+      "failed": 0,
+      "skipped": 0,
+      "collected": 2398,
+      "filesPassed": 64,
+      "durationSeconds": 200.82,
+      "processExitCode": 0,
+      "log": {
+        "path": "p2-validation/api-v2-absent-better-auth.log",
+        "sha256": "385702df81d240b53a9e8c3bc86d33929388043f355234dde90f67198d027973",
+        "bytes": 810,
+        "lastWriteUtc": "2026-10-09T23:57:42.342Z",
+        "lines": 17,
+        "excerpts": [
+          {
+            "line": 10,
+            "text": " Test Files  64 passed (64)"
+          },
+          {
+            "line": 11,
+            "text": "      Tests  2398 passed (2398)"
+          },
+          {
+            "line": 12,
+            "text": "   Start at  20:54:19"
+          },
+          {
+            "line": 13,
+            "text": "   Duration  200.82s (tests 84%, import 12%, transform 2%, setup 1%)"
+          }
+        ]
+      },
+      "receipt": {
+        "path": "p2-validation/serial-better-auth-20261009T2353205862748Z.json",
+        "sha256": "801a0daa03fc4f49469978d664f8156ee49492eed3ce30d6ee388fb33f95d57a",
+        "bytes": 1858,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-09T23:59:39.650Z"
+      },
+      "stepName": "api-better-auth-old-root-absent",
+      "builds": {
+        "api": "1fUqYvXf7UEjYiTV-Kddl",
+        "web": "QmM0SgcvbVbJSSkD-H4Xi"
+      }
+    }
+  ],
+  "tenantHosts": [
+    {
+      "auth": "legacy",
+      "status": "PASSED",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "filesPassed": 1,
+      "processExitCode": 0,
+      "builds": {
+        "api": "1fUqYvXf7UEjYiTV-Kddl",
+        "web": "rEF56biJkNQNEpGWPkFj3",
+        "specSha256": "0983a2bbfbda55f4b5cb98310978f50a70ffd0e552fe17745665d662c9c582f1"
+      },
+      "cleanupSucceeded": true,
+      "errors": [],
+      "preservedResources": {
+        "database": false,
+        "roles": []
+      },
+      "environment": {
+        "platform": "development",
+        "node": "production"
+      },
+      "completion": {
+        "path": "p2-validation/tenant-hosts-legacy-701eb2ea2f/completion.json",
+        "sha256": "84e82c820aa8fbb349a729026f1320af57581489c004bd8db17d8a024112165f",
+        "bytes": 2419
+      },
+      "testLog": {
+        "path": "p2-validation/tenant-hosts-legacy-701eb2ea2f/tenant-hosts.log",
+        "sha256": "e0c68aef748099d1b264d33ca066d6b4b31d99adf98cf67f5d9afcc2f9d921d6",
+        "bytes": 221,
+        "summary": [
+          " Test Files  1 passed (1)",
+          "      Tests  7 passed (7)",
+          "   Duration  6.06s (tests 99%, transform 1%)"
+        ]
+      },
+      "meaning": "Spec existente sem mock de resposta/autenticação; processos eDB descartáveis próprios. Não representa infraestrutura contratada ou produção."
+    },
+    {
+      "auth": "better-auth",
+      "status": "PASSED",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "filesPassed": 1,
+      "processExitCode": 0,
+      "builds": {
+        "api": "1fUqYvXf7UEjYiTV-Kddl",
+        "web": "QmM0SgcvbVbJSSkD-H4Xi",
+        "specSha256": "0983a2bbfbda55f4b5cb98310978f50a70ffd0e552fe17745665d662c9c582f1"
+      },
+      "cleanupSucceeded": true,
+      "errors": [],
+      "preservedResources": {
+        "database": false,
+        "roles": []
+      },
+      "environment": {
+        "platform": "development",
+        "node": "production"
+      },
+      "completion": {
+        "path": "p2-validation/tenant-hosts-better-auth-66ed642268/completion.json",
+        "sha256": "d0bd2523936ec8e2336cd19d726302bd00d6a236ef5a41d640b25f2666f41180",
+        "bytes": 2424
+      },
+      "testLog": {
+        "path": "p2-validation/tenant-hosts-better-auth-66ed642268/tenant-hosts.log",
+        "sha256": "35b7409dddbccddc5825657914937cb4571b34a899fb5a25abcd52c6c34ef27a",
+        "bytes": 221,
+        "summary": [
+          " Test Files  1 passed (1)",
+          "      Tests  7 passed (7)",
+          "   Duration  5.25s (tests 99%, transform 1%)"
+        ]
+      },
+      "meaning": "Spec existente sem mock de resposta/autenticação; processos eDB descartáveis próprios. Não representa infraestrutura contratada ou produção."
+    }
+  ],
+  "navigationFinal": {
+    "status": "COMPLETED",
+    "processExitCode": 0,
+    "receipt": {
+      "path": "p2-validation/navigation-final-20261010T0009218670076Z.json",
+      "sha256": "21b3c514a0e858085e5870e7af985b7cf496576d7b28a05c7091605c848059f7",
+      "bytes": 2268,
+      "observedAtUtc": "2026-10-10T00:20:43.103Z",
+      "lastWriteUtc": "2026-10-10T00:12:04.755Z"
+    },
+    "startedAtUtc": "2026-10-10T00:09:21.8723081Z",
+    "completedAtUtc": "2026-10-10T00:12:04.7516906Z",
+    "observedLogLinks": {
+      "path": "p2-validation/navigation-final-observed-log-links.json",
+      "sha256": "9a69c8995e7fa20c4dd6a361aff73824f4d6bd3b2553a18b0794a326ab92460b",
+      "bytes": 770,
+      "observedAtUtc": "2026-10-10T00:20:43.103Z",
+      "lastWriteUtc": "2026-10-10T00:12:23.353Z"
+    },
+    "apiBuildId": "1fUqYvXf7UEjYiTV-Kddl",
+    "steps": [
+      {
+        "task": "build-web",
+        "auth": "legacy",
+        "startedAtUtc": "2026-10-10T00:09:21.8808160Z",
+        "completedAtUtc": "2026-10-10T00:09:32.2544368Z",
+        "exitCode": 0,
+        "log": "p2-validation/build-web.log.before-final-20261010T0009218670076Z",
+        "logSha256": "8c2c1d1f8004ae8d70876897cac1a123075826d4b0af61cfa9fcc8c189810bcf",
+        "webBuildId": "su5TP01nn7yVwD5T1o223",
+        "apiBuildId": "1fUqYvXf7UEjYiTV-Kddl"
+      },
+      {
+        "task": "journeys",
+        "auth": "legacy",
+        "startedAtUtc": "2026-10-10T00:09:32.2721408Z",
+        "completedAtUtc": "2026-10-10T00:10:07.6127184Z",
+        "exitCode": 0,
+        "log": "p2-validation/journeys-legacy.log",
+        "logSha256": "eb4da5f6e62eb5f3e30645eee9270eb9cd61e8ac670eeba7b38f90ba7aa0f5d4",
+        "webBuildId": "su5TP01nn7yVwD5T1o223",
+        "apiBuildId": "1fUqYvXf7UEjYiTV-Kddl"
+      },
+      {
+        "task": "build-web",
+        "auth": "better-auth",
+        "startedAtUtc": "2026-10-10T00:10:07.6238168Z",
+        "completedAtUtc": "2026-10-10T00:10:18.0345115Z",
+        "exitCode": 0,
+        "log": "p2-validation/build-web.better-auth.final-navigation.log",
+        "logSha256": "f076bee9155d11e5168abe775ffcaa5ee88e4890f97726d79180c2057e7ff4de",
+        "webBuildId": "hL116oKB5L8ARlqFZExQA",
+        "apiBuildId": "1fUqYvXf7UEjYiTV-Kddl"
+      },
+      {
+        "task": "journeys",
+        "auth": "better-auth",
+        "startedAtUtc": "2026-10-10T00:10:18.0384895Z",
+        "completedAtUtc": "2026-10-10T00:12:04.7501633Z",
+        "exitCode": 0,
+        "log": "p2-validation/journeys-better-auth.log",
+        "logSha256": "47b1dfea5d80657f0b3e75be956406a3cf3445d755902d3fdbfffda0ed905457",
+        "webBuildId": "hL116oKB5L8ARlqFZExQA",
+        "apiBuildId": "1fUqYvXf7UEjYiTV-Kddl"
+      }
+    ],
+    "journeys": [
+      {
+        "auth": "legacy",
+        "status": "PASSED_WITH_SKIPS",
+        "passed": 7,
+        "failed": 0,
+        "skipped": 2,
+        "collected": 9,
+        "filesPassed": 1,
+        "durationSeconds": 34.39,
+        "processExitCode": 0,
+        "webBuildId": "su5TP01nn7yVwD5T1o223",
+        "apiBuildId": "1fUqYvXf7UEjYiTV-Kddl",
+        "log": {
+          "path": "p2-validation/journeys-legacy.log",
+          "sha256": "eb4da5f6e62eb5f3e30645eee9270eb9cd61e8ac670eeba7b38f90ba7aa0f5d4",
+          "bytes": 229,
+          "lastWriteUtc": "2026-10-10T00:10:07.517Z",
+          "excerpts": [
+            {
+              "line": 5,
+              "text": " Test Files  1 passed (1)"
+            },
+            {
+              "line": 6,
+              "text": "      Tests  7 passed | 2 skipped (9)"
+            },
+            {
+              "line": 7,
+              "text": "   Start at  21:09:33"
+            },
+            {
+              "line": 8,
+              "text": "   Duration  34.39s (tests 99%)"
+            }
+          ]
+        },
+        "skipMeaning": "Condicionais declaradas da suíte: caso BetterAuth específico e braços mutuamente exclusivos de cadastro por motor; skips não são aprovações."
+      },
+      {
+        "auth": "better-auth",
+        "status": "PASSED_WITH_SKIP",
+        "passed": 8,
+        "failed": 0,
+        "skipped": 1,
+        "collected": 9,
+        "filesPassed": 1,
+        "durationSeconds": 105.71,
+        "processExitCode": 0,
+        "webBuildId": "hL116oKB5L8ARlqFZExQA",
+        "apiBuildId": "1fUqYvXf7UEjYiTV-Kddl",
+        "log": {
+          "path": "p2-validation/journeys-better-auth.log",
+          "sha256": "47b1dfea5d80657f0b3e75be956406a3cf3445d755902d3fdbfffda0ed905457",
+          "bytes": 231,
+          "lastWriteUtc": "2026-10-10T00:12:04.675Z",
+          "excerpts": [
+            {
+              "line": 5,
+              "text": " Test Files  1 passed (1)"
+            },
+            {
+              "line": 6,
+              "text": "      Tests  8 passed | 1 skipped (9)"
+            },
+            {
+              "line": 7,
+              "text": "   Start at  21:10:18"
+            },
+            {
+              "line": 8,
+              "text": "   Duration  105.71s (tests 100%)"
+            }
+          ]
+        },
+        "skipMeaning": "Condicionais declaradas da suíte: caso BetterAuth específico e braços mutuamente exclusivos de cadastro por motor; skips não são aprovações."
+      }
+    ],
+    "testOnlyNavigationCorrection": {
+      "path": "tests/e2e/journeys.spec.ts",
+      "sha256": "03f935a35b085e9feef1c8841512ccff1c390e51dcbd99720eb70e56de7f312f",
+      "lines": [1858, 1859, 1865, 1866, 1869, 1874],
+      "meaning": "J3 aguarda origin do painel e pathname exato /admin/financeiro após selecionar locadora e após tentar rota proibida; mantém redirects/guards/assertions reais. Não muda produto nem oracle."
+    }
+  },
+  "navigationHistory": [
+    {
+      "auth": "legacy",
+      "status": "PASSED_WITH_SKIPS",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 2,
+      "durationSeconds": 36.34,
+      "processExitCode": 0,
+      "webBuildId": "rEF56biJkNQNEpGWPkFj3",
+      "log": {
+        "path": "p2-validation/journeys-legacy.before-navigation-settle.log",
+        "sha256": "3f26c709f7bf3b653fef9150ae4474ad9f1ddcccdf4b12368cd72a5a95b1d595",
+        "bytes": 229,
+        "lastWriteUtc": "2026-10-09T23:49:32.102Z",
+        "excerpts": [
+          {
+            "line": 5,
+            "text": " Test Files  1 passed (1)"
+          },
+          {
+            "line": 6,
+            "text": "      Tests  7 passed | 2 skipped (9)"
+          },
+          {
+            "line": 7,
+            "text": "   Start at  20:48:55"
+          },
+          {
+            "line": 8,
+            "text": "   Duration  36.34s (tests 99%)"
+          }
+        ]
+      },
+      "receipt": {
+        "path": "p2-validation/serial-legacy-20261009T2342026964388Z.json",
+        "sha256": "25aadf5346f283970921693a685848576f3e1316703673cb0ce8a3c840f8d8d9",
+        "bytes": 2246,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-09T23:49:32.208Z"
+      }
+    },
+    {
+      "auth": "better-auth",
+      "status": "FAILED_BEFORE_TEST_ONLY_WAIT",
+      "passed": 7,
+      "failed": 1,
+      "skipped": 1,
+      "durationSeconds": 102.79,
+      "processExitCode": 1,
+      "webBuildId": "QmM0SgcvbVbJSSkD-H4Xi",
+      "log": {
+        "path": "p2-validation/journeys-better-auth.before-navigation-settle.log",
+        "sha256": "8796f880390c60e76ae31e051d9d52c1b8696517f8c06653e350e83871b88d05",
+        "bytes": 1639,
+        "lastWriteUtc": "2026-10-09T23:59:39.589Z",
+        "excerpts": [
+          {
+            "line": 29,
+            "text": " Test Files  1 failed (1)"
+          },
+          {
+            "line": 30,
+            "text": "      Tests  1 failed | 7 passed | 1 skipped (9)"
+          },
+          {
+            "line": 31,
+            "text": "   Start at  20:57:56"
+          },
+          {
+            "line": 32,
+            "text": "   Duration  102.79s (tests 100%)"
+          }
+        ]
+      },
+      "receipt": {
+        "path": "p2-validation/serial-better-auth-20261009T2353205862748Z.json",
+        "sha256": "801a0daa03fc4f49469978d664f8156ee49492eed3ce30d6ee388fb33f95d57a",
+        "bytes": 1858,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-09T23:59:39.650Z"
+      }
+    },
+    {
+      "auth": "better-auth",
+      "status": "PASSED_WITH_SKIP",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 1,
+      "durationSeconds": 104.65,
+      "processExitCode": null,
+      "reportedExitCode": 0,
+      "exitOrigin": "Relato executor; stdout não vira recibo de processo independente.",
+      "webBuildId": "QmM0SgcvbVbJSSkD-H4Xi",
+      "log": {
+        "path": "p2-validation/journeys-better-auth.log.before-final-20261010T0009218670076Z",
+        "sha256": "543b3209ee5f05dd9ebe746e62b5628b070ee35a60c949669d16d0a992ab265d",
+        "bytes": 231,
+        "lastWriteUtc": "2026-10-10T00:03:10.374Z",
+        "excerpts": [
+          {
+            "line": 5,
+            "text": " Test Files  1 passed (1)"
+          },
+          {
+            "line": 6,
+            "text": "      Tests  8 passed | 1 skipped (9)"
+          },
+          {
+            "line": 7,
+            "text": "   Start at  21:01:25"
+          },
+          {
+            "line": 8,
+            "text": "   Duration  104.65s (tests 100%)"
+          }
+        ]
+      }
+    },
+    {
+      "authRequested": "legacy",
+      "actualWebBuildProfile": "better-auth",
+      "status": "INVALID_BUILD_PROFILE",
+      "passed": 3,
+      "failed": 4,
+      "skipped": 2,
+      "durationSeconds": 144.07,
+      "processExitCode": null,
+      "reportedExitCode": 1,
+      "webBuildId": "QmM0SgcvbVbJSSkD-H4Xi",
+      "log": {
+        "path": "p2-validation/journeys-legacy.log.before-final-20261010T0009218670076Z",
+        "sha256": "472a00840a23e53120cf593004901ce43ecfdc2720bda65ccab89c92a0bbe60d",
+        "bytes": 3849,
+        "lastWriteUtc": "2026-10-10T00:08:51.529Z",
+        "excerpts": [
+          {
+            "line": 77,
+            "text": " Test Files  1 failed (1)"
+          },
+          {
+            "line": 78,
+            "text": "      Tests  4 failed | 3 passed | 2 skipped (9)"
+          },
+          {
+            "line": 79,
+            "text": "   Start at  21:06:27"
+          },
+          {
+            "line": 80,
+            "text": "   Duration  144.07s (tests 100%)"
+          }
+        ]
+      },
+      "meaning": "Erro do executor: rodada legacy iniciada sobre web compilado BetterAuth. Preservar o resultado bruto falho; não vale como regressão de produto nem como prova legacy."
+    }
+  ],
+  "compiledCss": [
+    {
+      "authReportedByExecutor": "legacy",
+      "status": "IDENTICAL_WITHIN_MEASURED_SCOPE",
+      "reportedExitCode": 0,
+      "comparison": {
+        "path": "p2-validation/e22-legacy-final/comparison.json",
+        "sha256": "759ad75f04304a2d66f160d6ff9e77628fffaa4a54c48f3893ef0601983d1a6b",
+        "bytes": 27255,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-09T23:50:27.559Z"
+      },
+      "cBuildId": "T-Qbiffln46vwsFDvOYAW",
+      "cEngine": "better-auth",
+      "fBuildId": "rEF56biJkNQNEpGWPkFj3",
+      "summary": {
+        "cCssFiles": 2,
+        "fCssFiles": 2,
+        "cCssBytes": 276029,
+        "fCssBytes": 276029,
+        "matchedSheetPairs": 2,
+        "unmatchedC": [],
+        "unmatchedF": [],
+        "rawChangedPairs": 0,
+        "astChangedPairs": 0,
+        "relativeBlockOrderChangedPairs": 0,
+        "removedUtilityOccurrences": 0,
+        "addedUtilityOccurrences": 0,
+        "staticPageStylesheetOrderMismatches": 0
+      },
+      "result": "Raw emitted CSS multiset and existing prerendered stylesheet hash order are identical within captured scope.",
+      "limits": [
+        "AST records preserve selectors, declaration values/important, nested conditions, keyframes/font-face/property blocks and relative order. Syntax serialization differences are not silently approved. Nested block records overlap, so their counts are not pixels, elements or independent regressions.",
+        "Utility names use the unchanged official productClasses extractor; it covers the utilities layer, not every custom/component rule. Full AST and raw comparisons remain in the report.",
+        "Static HTML head link order does not prove dynamic tenant SSR or computed styles.",
+        "No CSS source scan, source mutation, provider call, browser, capture, baseline edit or build is performed by this script.",
+        "No automatic semantic, visual or pixel acceptance. Any missing/changed active selector or declarations need computed/visual evidence using the official harness after the F build."
+      ],
+      "temporalLimit": "Mede F legacy rEF… anterior à navegação finalsu5…; não se relabela esse relatório como medição do novo BUILD_ID. A referência CSS C éBetterAuth e a igualdade trata CSS compartilhado, não sessão/auth."
+    },
+    {
+      "authReportedByExecutor": "better-auth",
+      "status": "IDENTICAL_WITHIN_MEASURED_SCOPE",
+      "reportedExitCode": 0,
+      "comparison": {
+        "path": "p2-validation/e22-better-auth-final/comparison.json",
+        "sha256": "1b58aa668e7789893b20fddf0ba4d56a37550aab1f6d2d6a906459790dc4f07d",
+        "bytes": 27260,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-10T00:12:23.604Z"
+      },
+      "summaryReceipt": {
+        "path": "p2-validation/e22-better-auth-final/summary.json",
+        "sha256": "4d8804024ef6d1f18f415137c5aabff4bff0ef34c3c4716b07c9839aaf6c4633",
+        "bytes": 515,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-10T00:12:23.605Z"
+      },
+      "cBuildId": "T-Qbiffln46vwsFDvOYAW",
+      "cEngine": "better-auth",
+      "fBuildId": "hL116oKB5L8ARlqFZExQA",
+      "summary": {
+        "cCssFiles": 2,
+        "fCssFiles": 2,
+        "cCssBytes": 276029,
+        "fCssBytes": 276029,
+        "matchedSheetPairs": 2,
+        "unmatchedC": [],
+        "unmatchedF": [],
+        "rawChangedPairs": 0,
+        "astChangedPairs": 0,
+        "relativeBlockOrderChangedPairs": 0,
+        "removedUtilityOccurrences": 0,
+        "addedUtilityOccurrences": 0,
+        "staticPageStylesheetOrderMismatches": 0
+      },
+      "result": "Raw emitted CSS multiset and existing prerendered stylesheet hash order are identical within captured scope.",
+      "limits": [
+        "AST records preserve selectors, declaration values/important, nested conditions, keyframes/font-face/property blocks and relative order. Syntax serialization differences are not silently approved. Nested block records overlap, so their counts are not pixels, elements or independent regressions.",
+        "Utility names use the unchanged official productClasses extractor; it covers the utilities layer, not every custom/component rule. Full AST and raw comparisons remain in the report.",
+        "Static HTML head link order does not prove dynamic tenant SSR or computed styles.",
+        "No CSS source scan, source mutation, provider call, browser, capture, baseline edit or build is performed by this script.",
+        "No automatic semantic, visual or pixel acceptance. Any missing/changed active selector or declarations need computed/visual evidence using the official harness after the F build."
+      ],
+      "navigationBuildReceipt": {
+        "path": "p2-validation/navigation-final-20261010T0009218670076Z.json",
+        "sha256": "21b3c514a0e858085e5870e7af985b7cf496576d7b28a05c7091605c848059f7",
+        "bytes": 2268,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-10T00:12:04.755Z"
+      }
+    }
+  ],
+  "packaging": [
+    {
+      "auth": "legacy",
+      "status": "PASSED",
+      "task": "mobile",
+      "summary": {
+        "path": "p2-validation/p1-packaging-20261009T235043Z-e8d938bdc0f54508a4e40cd1031bcd35/summary.json",
+        "sha256": "78e4a5dabfd1a2cddfd8c9cfd2041a76fc35da4b21677da11d24af330cd3e5f4",
+        "bytes": 3250,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-09T23:52:12.891Z"
+      },
+      "startedAtUtc": "2026-10-09T23:50:43.6938448Z",
+      "completedAtUtc": "2026-10-09T23:52:12.8890029Z",
+      "node": "v24.21.0",
+      "isolation": "OS allowlist + explicit synthetic values + .env read isolation; telemetry off",
+      "commands": [
+        {
+          "name": "node-version",
+          "exitCode": 0,
+          "pid": 23884
+        },
+        {
+          "name": "bundle-mobile",
+          "exitCode": 0,
+          "pid": 59012
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "p2-validation/p1-packaging-20261009T235043Z-e8d938bdc0f54508a4e40cd1031bcd35/mobile/metadata.json",
+          "bytes": 3442,
+          "sha256": "3f147e77d5dcc103cd45a21d96f45ca76f61a140d74db51db10511d9de68d966"
+        },
+        {
+          "path": "p2-validation/p1-packaging-20261009T235043Z-e8d938bdc0f54508a4e40cd1031bcd35/mobile/_expo/static/js/android/entry-6d21516b700be4b135c985f0ea23b7d4.hbc",
+          "bytes": 9344432,
+          "sha256": "b269d4a915b6f6c00ea3be216cb62c1626c29daf0f9e53e55bb051f308946e83"
+        },
+        {
+          "path": "p2-validation/p1-packaging-20261009T235043Z-e8d938bdc0f54508a4e40cd1031bcd35/mobile/_expo/static/js/ios/entry-5210a1092e642526797f67f657a28500.hbc",
+          "bytes": 8970199,
+          "sha256": "7fa3d644d590cb6b5879b3d75a4d62e4949f73a3b8c2f6fe81721b3d46c6f5fe"
+        }
+      ],
+      "meaning": "Android + iOS exportados; sem instalação/device ou Storybook legacy nesta rodada."
+    },
+    {
+      "auth": "better-auth",
+      "status": "PASSED",
+      "task": "all",
+      "summary": {
+        "path": "p2-validation/p1-packaging-20261010T001239Z-a4bd0324a3704bd6a758cca36681cf37/summary.json",
+        "sha256": "185f62f730babd05c7b43b15630fe466b3d8e3624667200938f1a0f1a0f42ee9",
+        "bytes": 5115,
+        "observedAtUtc": "2026-10-10T00:20:43.103Z",
+        "lastWriteUtc": "2026-10-10T00:14:23.393Z"
+      },
+      "startedAtUtc": "2026-10-10T00:12:39.3896942Z",
+      "completedAtUtc": "2026-10-10T00:14:23.3917580Z",
+      "node": "v24.21.0",
+      "isolation": "OS allowlist + explicit synthetic values + .env read isolation; telemetry off",
+      "commands": [
+        {
+          "name": "node-version",
+          "exitCode": 0,
+          "pid": 8152
+        },
+        {
+          "name": "bundle-mobile",
+          "exitCode": 0,
+          "pid": 78468
+        },
+        {
+          "name": "build-storybook",
+          "exitCode": 0,
+          "pid": 71028
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "p2-validation/p1-packaging-20261010T001239Z-a4bd0324a3704bd6a758cca36681cf37/mobile/metadata.json",
+          "bytes": 3442,
+          "sha256": "06fba5feeecb782afb19306620abce8701df281ea27439ca59f322bdb47b65aa"
+        },
+        {
+          "path": "p2-validation/p1-packaging-20261010T001239Z-a4bd0324a3704bd6a758cca36681cf37/mobile/_expo/static/js/android/entry-9ce27ccb257b9d3d787faf217f3209f4.hbc",
+          "bytes": 9344436,
+          "sha256": "16a537e6016f29d52bead0c70f08141fd44f32952ec382efdf9a8537f5ad3b81"
+        },
+        {
+          "path": "p2-validation/p1-packaging-20261010T001239Z-a4bd0324a3704bd6a758cca36681cf37/mobile/_expo/static/js/ios/entry-a325f523e4f0c21d823fcea365e3de44.hbc",
+          "bytes": 8970202,
+          "sha256": "8686cc39a1dc3245e51e7f660772adf33883c92f84d71cfec718a5fe0d7bcffc"
+        },
+        {
+          "path": "p2-validation/p1-packaging-20261010T001239Z-a4bd0324a3704bd6a758cca36681cf37/storybook/index.html",
+          "bytes": 3322,
+          "sha256": "b0c915d096c8dcac52b68a1a5de242e5db8c4f47a6faf1debc132913d0e8a993"
+        },
+        {
+          "path": "p2-validation/p1-packaging-20261010T001239Z-a4bd0324a3704bd6a758cca36681cf37/storybook/iframe.html",
+          "bytes": 19344,
+          "sha256": "77533eadb58f14f04b372d8bed70d89126b0d6144442add93408cfcc72c3c868"
+        },
+        {
+          "path": "p2-validation/p1-packaging-20261010T001239Z-a4bd0324a3704bd6a758cca36681cf37/storybook/index.json",
+          "bytes": 59294,
+          "sha256": "c9ee7921254fad3c5f68b9e808386fc1219cf4cd410bb03b3d108cd102101643"
+        }
+      ],
+      "meaning": "Android + iOS HBC e Storybook export/build; sem instalação/device, deploy ou prova deuso das histórias."
+    }
+  ],
+  "a10Normal": {
+    "status": "PASS_WITH_STATED_SCOPE",
+    "auth": "better-auth",
+    "buildId": "hL116oKB5L8ARlqFZExQA",
+    "network": "normal",
+    "wrapper": {
+      "path": "p2-validation/a10-f-better-auth-normal-2026-10-10T00-14-40-972Z-d54d9832/wrapper-receipt.json",
+      "sha256": "d4f963932b4786f314c73745691f5d3fbe971f420503bb3db7068b57e2935d5f",
+      "bytes": 6573
+    },
+    "raw": {
+      "path": "p2-validation/a10-f-better-auth-normal-2026-10-10T00-14-40-972Z-d54d9832/a10-temporal/captures/2026-10-10T00-14-41-315Z/report.json",
+      "sha256": "7d1cea44c5c84fd7f7f8abb77d003afe1faf5ecb4f8229b254e4a320252c3fa1",
+      "bytes": 90017,
+      "status": "captured-pending-manual-review"
+    },
+    "manualReview": {
+      "path": "p2-validation/a10-f-better-auth-normal-2026-10-10T00-14-40-972Z-d54d9832/root-manual-frame-review.json",
+      "sha256": "8a51662f34234deffd12265688481e7d95ceeb9b1084f8a47594a71ebfe43422",
+      "bytes": 5082,
+      "status": "PASS_WITH_STATED_SCOPE",
+      "reviewedAtUtc": "2026-10-10T00:18:00.6459946Z",
+      "reviewer": "root",
+      "observations": [
+        "Six milestone screenshots inspected individually. Compressor stays framed after reveal while rotating; no sustained camera zoom was detected.",
+        "Video frames at 250 ms intervals inspected: initial reveal, compressor rotation, blank fade between models, gradual second fit, and third scaffolding model visible at end.",
+        "Gradual Betoneira camera fit detected by unchanged measurement; first compressor has no qualifying sustained radial change.",
+        "Two context losses are confirmed disconnected renderer disposal; zero unexpected losses."
+      ],
+      "limits": [
+        "250 ms frame sampling does not prove every instantaneous first-paint frame.",
+        "Public anonymous normal desktop Chrome with hardware reported renderer; no identity, database, physical device or Slow 3G proof.",
+        "Neutral synthetic HDR and installed Draco responses preserve execution scope, not external CDN lighting or transfer availability."
+      ],
+      "videoReview": "Sampled at 250 ms intervals, not continuous playback"
+    },
+    "metrics": {
+      "mainStatus": 200,
+      "hardwareCriterionSatisfied": true,
+      "radialMeasurementComplete": true,
+      "criticalResourceFailures": [],
+      "missingMilestones": [],
+      "probeErrorCount": 0,
+      "pageErrors": [],
+      "consoleErrorsRetained": [
+        {
+          "at": 1791591282826,
+          "message": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "at": 1791591283375,
+          "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "at": 1791591283377,
+          "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        }
+      ],
+      "contextLosses": {
+        "rawCount": 2,
+        "expectedDisconnectedDisposals": 2,
+        "unexpected": 0
+      },
+      "gradualBetoneiraDetected": true,
+      "sustainedCompressorChangeDetected": false
+    },
+    "cleanup": {
+      "observed": [
+        {
+          "label": "browser connection",
+          "observed": "closed",
+          "at": "2026-10-10T00:14:56.782Z"
+        },
+        {
+          "label": "owned browser process",
+          "observed": "closed",
+          "at": "2026-10-10T00:14:57.389Z"
+        },
+        {
+          "label": "owned child web pid=29960",
+          "observed": "closed",
+          "at": "2026-10-10T00:14:58.053Z"
+        },
+        {
+          "label": "owned child backend pid=70716",
+          "observed": "closed",
+          "at": "2026-10-10T00:14:58.620Z"
+        },
+        {
+          "label": "local deny proxy",
+          "observed": "closed",
+          "at": "2026-10-10T00:14:58.621Z"
+        },
+        {
+          "label": "port reservation 0",
+          "observed": "closed",
+          "at": "2026-10-10T00:14:58.621Z"
+        },
+        {
+          "label": "port reservation 1",
+          "observed": "closed",
+          "at": "2026-10-10T00:14:58.621Z"
+        },
+        {
+          "label": "port reservation 2",
+          "observed": "closed",
+          "at": "2026-10-10T00:14:58.621Z"
+        },
+        {
+          "label": "log handle 3",
+          "observed": "closed",
+          "at": "2026-10-10T00:14:58.621Z"
+        },
+        {
+          "label": "log handle 4",
+          "observed": "closed",
+          "at": "2026-10-10T00:14:58.621Z"
+        }
+      ],
+      "postClosePorts": [
+        {
+          "label": "web",
+          "port": 58593,
+          "free": true,
+          "code": null
+        },
+        {
+          "label": "backend",
+          "port": 58594,
+          "free": true,
+          "code": null
+        },
+        {
+          "label": "denyProxy",
+          "port": 58596,
+          "free": true,
+          "code": null
+        }
+      ],
+      "complete": true
+    },
+    "substitutions": [
+      "Forest HDR replaced with a synthetic neutral 16x8 RGBE file; lighting/CDN availability is not certified.",
+      "Draco 1.5.5 remote URLs fulfilled from installed three/examples/jsm/libs/draco files, unchanged bytes.",
+      "Fulfilled HDR/Draco responses do not certify Slow3G transfer timing of those CDN resources."
+    ],
+    "limits": [
+      "Public carousel capture is not an authentication/session proof and does not replace J1-J7.",
+      "NODE_ENV=production plus PLATFORM_ENV=development provides loopback tenant routing; compiled headers retain their build host rules.",
+      "GPU status comes from the actual renderer; headed software rendering is emulated evidence only.",
+      "The instrumentation wraps renderer.render, delegates unchanged, then measures; collection overhead is recorded.",
+      "Sphere-based apparent size is a camera-fit diagnostic, not a substitute for video/frame review of visible growth."
+    ],
+    "reviewSeparation": "O raw capturado continua pending-manual-review; aceite scoped está em arquivo separado. Esta preparação leu os recibos, não realizou inspeção visual própria nem novo aceite.",
+    "baselineWritten": false
+  },
+  "openApiFinal": {
+    "schemaVersion": 1,
+    "kind": "OpenAPI generated-data refresh and strict focused validation",
+    "preparedAtUtc": "2026-10-10T01:26:14.367Z",
+    "candidateOnly": true,
+    "appliedByThisAgent": false,
+    "precededBy": {
+      "event": "unit-4103-1-openapi-pending.json",
+      "status": "HISTORICAL_RED_RETAINED",
+      "passed": 4103,
+      "failed": 1,
+      "total": 4104
+    },
+    "refresh": {
+      "status": "APPLIED_BY_ROOT_EXACT_PREIMAGE",
+      "target": "public/openapi.json",
+      "beforeSha256": "d78107a9775ef5e4e894dd55ed777bc99144388011f04a9662ffdaaf83c7aa79",
+      "afterSha256": "d2656a1991b319913db0ee06ae3d406ae5e4a876f5d6f14bf6f200899b3e3f9d",
+      "currentSha256": "d2656a1991b319913db0ee06ae3d406ae5e4a876f5d6f14bf6f200899b3e3f9d",
+      "currentHashMatches": true,
+      "classification": "generated-document-refresh-after-retirement",
+      "diagnostic": {
+        "changedLeaves": 637,
+        "opaqueCompilerIdDifferences": 637,
+        "nonCounterSemanticDifferences": 0,
+        "publicSchemaDocumentUnchanged": true,
+        "strictGeneratorAndCanonicalCheckUnchanged": true,
+        "productionCodeUnchanged": true
+      },
+      "interpretation": "Final-program TypeScript diagnostic IDs changed after code/Prisma/type-config consolidation; this is not a demonstrated public-contract or product behavior change. Exact causal attribution to incremental configuration is not proven.",
+      "evidence": [
+        {
+          "path": "reviews/openapi-final-generated-root-reviewed/manifest.json",
+          "sha256": "0a561445caee2be9e6cf8f7fe1913095815916d30a5865afb61698eb5059a2f0",
+          "bytes": 526
+        },
+        {
+          "path": "p2-validation/cohort-exact-91804142-5159-43c7-8f9f-27b1f56b4b1a/completion.json",
+          "sha256": "f65141ca928ccea1046c105cbe2ccc009362dbcab5425f3506f140dc7d1e53e4",
+          "bytes": 804
+        },
+        {
+          "path": "p2-validation/openapi-final-semantic-diff.json",
+          "sha256": "6e40dc12537a534b1b8d812a9b3a4216ee240b14170c90def496cb01684d4fb6",
+          "bytes": 636584
+        }
+      ]
+    },
+    "focus": {
+      "status": "PASSED",
+      "files": 1,
+      "passed": 13,
+      "failed": 0,
+      "total": 13,
+      "durationSeconds": 12.37,
+      "exit": 0,
+      "exitEvidence": "Actual exit0 reported by root; raw log confirms counts/duration.",
+      "evidence": {
+        "path": "p2-validation/openapi-final-strict-20261010T0118/test-unit.log",
+        "sha256": "ab1be9a6af923ca1c5877cc186c61af142c15333e696d85a06656bd18dbf6954",
+        "bytes": 452
+      },
+      "scope": "Strict generated OpenAPI focus only; no whole-unit substitution."
+    },
+    "executedByThisAgent": {
+      "activeWrites": false,
+      "commands": false,
+      "git": false,
+      "tests": false,
+      "gates": false,
+      "scanners": false,
+      "formatters": false,
+      "browser": false,
+      "database": false
+    },
+    "pendingAtStrictFocusReceipt": {
+      "wholeUnit": "PENDING_NEW_COMPLETED_RECEIPT",
+      "b11": "PENDING_FRESH_SAME_INPUTS_RECORDS_AND_COMPARISON",
+      "p2": "V6_RUNNING_REPORTED_BY_ROOT",
+      "finalGates": "PENDING",
+      "publicationF": "PENDING"
+    },
+    "subsequentFinalResults": {
+      "wholeUnit": {
+        "status": "COMPLETED_PASSED",
+        "passed": 4104,
+        "failed": 0,
+        "skipped": 0,
+        "filesPassed": 179,
+        "durationSeconds": 346.88,
+        "exitCode": 0,
+        "evidence": {
+          "path": "p2-validation/final-unit-20261010T0134/test-unit.log",
+          "sha256": "b67de29dff199bbab3fe2e5a9e03a87bb0a5d9d0573e9af3e8787c990f6dc3ba",
+          "bytes": 3218,
+          "summary": [
+            " Test Files  179 passed (179)",
+            "      Tests  4104 passed (4104)",
+            "   Start at  22:32:03",
+            "   Duration  346.88s (tests 57%, import 41%, transform 1%)"
+          ]
+        }
+      },
+      "p2Verdict": {
+        "path": "p2-validation/p2-v6-root-verdict.json",
+        "sha256": "037fb60c97fd5bd26c18a38fa05020f0f0ed3d486a2934045a31e2e0401e9f9f",
+        "bytes": 7698,
+        "operatorReviewed": true,
+        "reviewedAtUtc": "2026-10-10T01:28:54.731274+00:00"
+      },
+      "b11Verdict": {
+        "path": "p2-validation/b11-v3-root-verdict.json",
+        "sha256": "75fe3eda1e33a15afcb6473c4e62d7c7c85ef435c4e7cadd53b1f7432a50b82c",
+        "bytes": 1606,
+        "operatorReviewed": true,
+        "reviewedAtUtc": "2026-10-10T01:54:10.572509+00:00"
+      },
+      "documentaryGates": "AFTER_THIS_COHORT_APPLIED",
+      "publicationF": "POSTERIOR_EXTERNAL_RECEIPT"
+    }
+  },
+  "visualFinal": {
+    "status": "STYLE_COMPARISON_PASSED",
+    "runDirectory": "visual-full-ba-20261010T001623Z-d4db09e0efdf41bc87a2752cb5877fdd",
+    "webBuild": "hL116oKB5L8ARlqFZExQA",
+    "captureWrapper": {
+      "completedAtUtc": "2026-10-10T00:50:01.6000534Z",
+      "commandsExit0": 4,
+      "portsReleased": true,
+      "childExitObserved": true,
+      "rawStatusRetained": true
+    },
+    "scope": {
+      "files": 80,
+      "captures": 536,
+      "diagnostics": [],
+      "problems": []
+    },
+    "freshComparison": {
+      "exit": 0,
+      "files": 80,
+      "captures": 536,
+      "elements": 31065,
+      "pending": [],
+      "approved": [],
+      "unused": [],
+      "problems": []
+    },
+    "evidence": [
+      {
+        "path": "visual-full-ba-20261010T001623Z-d4db09e0efdf41bc87a2752cb5877fdd/summary.json",
+        "sha256": "cc4cc7c8d9593fd4eac732645181bd764b2ca26eeb58dbd893f2473bf1efe424",
+        "bytes": 4714
+      },
+      {
+        "path": "visual-full-ba-20261010T001623Z-d4db09e0efdf41bc87a2752cb5877fdd/capture-scope.json",
+        "sha256": "79097cde9ee75aeeea4200ea351895c695421644ab5a0f367768c7e207252af0",
+        "bytes": 40203
+      },
+      {
+        "path": "visual-full-ba-20261010T001623Z-d4db09e0efdf41bc87a2752cb5877fdd/comparison.json",
+        "sha256": "579c9d9ea4feef7920fc7accd37e448a3cddf83d262932291022d42c3cf38982",
+        "bytes": 127
+      },
+      {
+        "path": "visual-full-ba-20261010T001623Z-d4db09e0efdf41bc87a2752cb5877fdd/comparison.exit-code.txt",
+        "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+        "bytes": 1
+      },
+      {
+        "path": "visual-full-ba-20261010T001623Z-d4db09e0efdf41bc87a2752cb5877fdd/reference-scope.json",
+        "sha256": "89c7056c34dc05491e96981b44e805175c650f543cb8e4f116f478e01266151b",
+        "bytes": 57984
+      }
+    ],
+    "humanBaselineSha256": "3a3d4402e72248a467575a67acc6502fd061f3060faaa979766b6a8295e164f3",
+    "baselineUnchanged": true,
+    "noAutomaticApproval": true,
+    "limits": [
+      "Raw capture summary retains capture-command-passed-comparison-pending; fresh comparator receipt is separate.",
+      "Property/element comparison is not a pixel comparison.",
+      "Fixture APIs/blocked 3D capture do not prove hosted DB/providers/device/GPU/performance or modal usability.",
+      "Owned child exit and ports released are bounded evidence, not an inventory of every Chromium descendant."
+    ]
+  },
+  "p2Formal": {
+    "status": "PASS_WITH_STATED_SCOPE",
+    "rootVerdict": {
+      "path": "p2-validation/p2-v6-root-verdict.json",
+      "sha256": "037fb60c97fd5bd26c18a38fa05020f0f0ed3d486a2934045a31e2e0401e9f9f",
+      "bytes": 7698,
+      "operatorReviewed": true,
+      "reviewedAtUtc": "2026-10-10T01:28:54.731274+00:00"
+    },
+    "rawSeries": {
+      "path": "p2-negative-series-v6/runs/20261010T0119078974140Z-f736ff0101854cdc8c79a7573286bb91/series.json",
+      "sha256": "b53c10bd7c2629e4086a56cba504c6b7a5e91294a783c3251d41de553b424e18",
+      "status": "closed-restored-evidence-awaits-root-review",
+      "operatorReviewed": false,
+      "mutantKilled": null,
+      "retainedUnchanged": true
+    },
+    "mutantsKilled": 5,
+    "classesCovered": 4,
+    "probes": [
+      {
+        "probeId": "cart-allow",
+        "mutantKilled": true,
+        "literalAssertionFailureReviewed": true,
+        "exactSourceRestored": true,
+        "restoredPositivePassed": true,
+        "measurements": [
+          {
+            "phase": "mutated",
+            "selected": 1,
+            "passed": 0,
+            "failed": 1,
+            "actualFocalExitCode": 1,
+            "focalLog": {
+              "sha256": "627e30525513ee7d6a458eea9d88717a603683a088c5381c2ebdb56f778b2a5a",
+              "bytes": 17166,
+              "path": "C:\\Users\\harry\\AppData\\Local\\Temp\\locadora-wave135-finish-20261009\\p2-positive-collector-v5\\runs\\20261010T0120134486034Z-6073ab76b7174d33bcfbded9c1b48838\\focal-mutated-cart-allow-15e5c9e191d1433d9d70abf1cd3f2e92\\focal.log"
+            }
+          },
+          {
+            "phase": "restored",
+            "selected": 1,
+            "passed": 1,
+            "failed": 0,
+            "actualFocalExitCode": 0,
+            "focalLog": {
+              "sha256": "6b0f2db54ffe01d4170023b3ed2e2fa7ca54bcf7c070a19fc3c084603aee4627",
+              "bytes": 14493,
+              "path": "C:\\Users\\harry\\AppData\\Local\\Temp\\locadora-wave135-finish-20261009\\p2-positive-collector-v5\\runs\\20261010T0121474505748Z-0cf1512a61f9466d90fab3ac0d253ed6\\focal-restored-cart-allow-063905c7cfc94333ac5c9187314ed5b4\\focal.log"
+            }
+          }
+        ]
+      },
+      {
+        "probeId": "cart-body",
+        "mutantKilled": true,
+        "literalAssertionFailureReviewed": true,
+        "exactSourceRestored": true,
+        "restoredPositivePassed": true,
+        "measurements": [
+          {
+            "phase": "mutated",
+            "selected": 1,
+            "passed": 0,
+            "failed": 1,
+            "actualFocalExitCode": 1,
+            "focalLog": {
+              "sha256": "a33f7fd4bd0e2631527674eae82df576c8607720c262cdcc46603b77ead33dcd",
+              "bytes": 17149,
+              "path": "C:\\Users\\harry\\AppData\\Local\\Temp\\locadora-wave135-finish-20261009\\p2-positive-collector-v5\\runs\\20261010T0123204248238Z-2604a37cd82a4c0b9ab7d668bf043de3\\focal-mutated-cart-body-73ba7f981afd458ea335a4baf1964a9a\\focal.log"
+            }
+          },
+          {
+            "phase": "restored",
+            "selected": 1,
+            "passed": 1,
+            "failed": 0,
+            "actualFocalExitCode": 0,
+            "focalLog": {
+              "sha256": "971c733d1fe8777c3171d8ffc14b3e0dfc17b180c0906e40db918a66a508a225",
+              "bytes": 14493,
+              "path": "C:\\Users\\harry\\AppData\\Local\\Temp\\locadora-wave135-finish-20261009\\p2-positive-collector-v5\\runs\\20261010T0124473349898Z-10980519b59a4878afe499769bbc9f54\\focal-restored-cart-body-30f5c39fe1dc4042a433daedc67cafb1\\focal.log"
+            }
+          }
+        ]
+      },
+      {
+        "probeId": "better-auth-legacy",
+        "mutantKilled": true,
+        "literalAssertionFailureReviewed": true,
+        "exactSourceRestored": true,
+        "restoredPositivePassed": true,
+        "measurements": [
+          {
+            "phase": "mutated",
+            "selected": 5,
+            "passed": 0,
+            "failed": 5,
+            "actualFocalExitCode": 1,
+            "focalLog": {
+              "sha256": "9cd2face1866485570c1c254c2b402b9e907d6da393242e6a309ab25e23078bb",
+              "bytes": 24790,
+              "path": "C:\\Users\\harry\\AppData\\Local\\Temp\\locadora-wave135-finish-20261009\\p2-positive-collector-v5\\runs\\20261010T0125324900635Z-bd2f5dd9469d4ed5ae989a1709e8390c\\focal-mutated-better-auth-legacy-86a9b734680441159b8b2b9e9442eddb\\focal.log"
+            }
+          },
+          {
+            "phase": "restored",
+            "selected": 5,
+            "passed": 5,
+            "failed": 0,
+            "actualFocalExitCode": 0,
+            "focalLog": {
+              "sha256": "35209596e61f4c8f012debb136d9bbdd410755b4979c1a98f13c3c6402677d85",
+              "bytes": 3968,
+              "path": "C:\\Users\\harry\\AppData\\Local\\Temp\\locadora-wave135-finish-20261009\\p2-positive-collector-v5\\runs\\20261010T0126071481460Z-e6cac733f4e04581b2bb6396c5b4b508\\focal-restored-better-auth-legacy-2dab62910e6547d793d73fe80d1986ee\\focal.log"
+            }
+          }
+        ]
+      },
+      {
+        "probeId": "public-resolver-call",
+        "mutantKilled": true,
+        "literalAssertionFailureReviewed": true,
+        "exactSourceRestored": true,
+        "restoredPositivePassed": true,
+        "measurements": [
+          {
+            "phase": "mutated",
+            "selected": 1,
+            "passed": 0,
+            "failed": 1,
+            "actualFocalExitCode": 1,
+            "focalLog": {
+              "sha256": "84cf0ff904adc5f70bd8cd07c1a1273ccecc8178d74bd832f1f1bcd348991416",
+              "bytes": 2456,
+              "path": "C:\\Users\\harry\\AppData\\Local\\Temp\\locadora-wave135-finish-20261009\\p2-positive-collector-v5\\runs\\20261010T0126410474405Z-2a00a0a1676a48f5970ab2e068209b89\\focal-mutated-public-resolver-call-c7513ac17c8e4c59b72e0804b7b07eae\\focal.log"
+            }
+          },
+          {
+            "phase": "restored",
+            "selected": 1,
+            "passed": 1,
+            "failed": 0,
+            "actualFocalExitCode": 0,
+            "focalLog": {
+              "sha256": "fc512dcd2372dbffd4942203af022ed945a94174c62e972b13be87a38215531d",
+              "bytes": 1411,
+              "path": "C:\\Users\\harry\\AppData\\Local\\Temp\\locadora-wave135-finish-20261009\\p2-positive-collector-v5\\runs\\20261010T0127069986032Z-8b0a2d1bc0eb42e0aeb9ad09b750aad2\\focal-restored-public-resolver-call-2c3ea74681904fe897be20e600e18189\\focal.log"
+            }
+          }
+        ]
+      },
+      {
+        "probeId": "removed-health-route",
+        "mutantKilled": true,
+        "literalAssertionFailureReviewed": true,
+        "exactSourceRestored": true,
+        "restoredPositivePassed": true,
+        "measurements": [
+          {
+            "phase": "mutated",
+            "selected": 1,
+            "passed": 0,
+            "failed": 1,
+            "actualFocalExitCode": 1,
+            "focalLog": {
+              "sha256": "1f742bdcd0391bbf41ebb662a1ab42b033ad4f8140dd522596f659059cb1faf2",
+              "bytes": 18556,
+              "path": "C:\\Users\\harry\\AppData\\Local\\Temp\\locadora-wave135-finish-20261009\\p2-positive-collector-v5\\runs\\20261010T0127373832154Z-f543f9b44da74f63bf738edf00efef1d\\focal-mutated-removed-health-route-161345871e1e4311b010f866869574d4\\focal.log"
+            }
+          },
+          {
+            "phase": "restored",
+            "selected": 1,
+            "passed": 1,
+            "failed": 0,
+            "actualFocalExitCode": 0,
+            "focalLog": {
+              "sha256": "ba594831688b7ce1993a5012b58b141c5e06571b41e14b3499ee49bd795e1224",
+              "bytes": 17215,
+              "path": "C:\\Users\\harry\\AppData\\Local\\Temp\\locadora-wave135-finish-20261009\\p2-positive-collector-v5\\runs\\20261010T0128052378866Z-2d350d8892a44455bb374e0e2e3aad8b\\focal-restored-removed-health-route-481f5997ccf743afbfc7dfb79c46cb08\\focal.log"
+            }
+          }
+        ]
+      }
+    ],
+    "protectedSourceFilesRestored": 49,
+    "realApiRebuilds": 4,
+    "allOwnedProcessesClosed": true,
+    "activeMutationAbsent": true,
+    "limits": [
+      "Five selected mutations; not an exhaustive mutation campaign.",
+      "HTTP selected suites are partial records, not a replacement for whole-suite B3/B11."
+    ],
+    "priorVersions": {
+      "v3": "HISTORICAL_NOT_PROMOTED",
+      "v4": "HISTORICAL_NOT_PROMOTED",
+      "v5": "Collector finalizer grammar failure,not product assertion. Actual cart Allow difference retained,source restored and positive0+6assertions passed. No retrospective promotion."
+    }
+  },
+  "hygieneDebt": {
+    "acceptedEntries": 173,
+    "declaredDebt": true,
+    "zeroDeadCodeClaim": false
+  },
+  "finalContextCandidates": {
+    "headers": "Final-context-headers-v1 filled with completed unit/P2/B11/visual facts; protected historical units retained byte-exact.",
+    "testing": "Approved eight prose edits with explicit CRLF-to-LF normalization from final-testing-guide-v2-lf; historical block text retained after only that EOL normalization.",
+    "index": "Three-line docsREADME insert only.",
+    "preApplicationConditions": [
+      "Exact active preimage guards",
+      "Root review of this candidate"
+    ],
+    "postApplicationChecks": [
+      "Documentary gates and affected architecture/reference focus"
+    ],
+    "postPublicationProofs": [
+      "Actual F transfer/revalidation",
+      "Actual F commit/push/CI receipt"
+    ]
+  },
+  "b11RecoveryHistory": [
+    {
+      "phase": "v2 preparation/offline install",
+      "preparationExit": 0,
+      "installExit": 1,
+      "reason": "Missing cached tarball",
+      "databaseCreated": false
+    },
+    {
+      "phase": "v2 frozen public install and setup",
+      "installExit": 0,
+      "status": "STOPPED_SETUP_BEFORE_DATABASE",
+      "reason": "Expected pnpm store v10; actual path v10/v10",
+      "databaseCreated": false
+    },
+    {
+      "phase": "v3 actual execution and independent root verdict",
+      "status": "PASS_WITH_STATED_SCOPE",
+      "guardRelaxation": false,
+      "sourceInputOracleChanged": false,
+      "rootVerdict": {
+        "path": "p2-validation/b11-v3-root-verdict.json",
+        "sha256": "75fe3eda1e33a15afcb6473c4e62d7c7c85ef435c4e7cadd53b1f7432a50b82c",
+        "bytes": 1606,
+        "operatorReviewed": true,
+        "reviewedAtUtc": "2026-10-10T01:54:10.572509+00:00"
+      },
+      "rawExecution": {
+        "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/execution.json",
+        "sha256": "52cb454460cb473378d8cdd24adc35d368d6462c710359e2316f7d0383971558",
+        "bytes": 29153,
+        "retainedUnchanged": true,
+        "operatorReviewedResult": false,
+        "complete": true,
+        "databaseCleanupComplete": true
+      },
+      "result": "Whole controls and assertion comparisons completed in both engines; earlier setup failures retained."
+    }
+  ],
+  "b11Progress": {
+    "status": "PASS_WITH_STATED_SCOPE",
+    "wholeB11Closed": true,
+    "rootVerdict": {
+      "path": "p2-validation/b11-v3-root-verdict.json",
+      "sha256": "75fe3eda1e33a15afcb6473c4e62d7c7c85ef435c4e7cadd53b1f7432a50b82c",
+      "bytes": 1606,
+      "operatorReviewed": true,
+      "reviewedAtUtc": "2026-10-10T01:54:10.572509+00:00"
+    },
+    "rawExecution": {
+      "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/execution.json",
+      "sha256": "52cb454460cb473378d8cdd24adc35d368d6462c710359e2316f7d0383971558",
+      "bytes": 29153,
+      "retainedUnchanged": true,
+      "operatorReviewedResult": false,
+      "complete": true,
+      "databaseCleanupComplete": true
+    },
+    "sourceControl": {
+      "cCommit": "978ceb9244c81c7cb2888b798fad8ce90edad25e",
+      "fixtureHash": "205f6cffe6f1b9180793eed7f1ddc42dcee87a562d9b4d960b04f4ad4f180421",
+      "manifestSha256": "11f082a93761588cf8175bfcc65929308d2f8f70e58c1392bfeeef5757a80dd7",
+      "originalProductNotWritten": true,
+      "p2ProductNotWritten": true,
+      "oldRecordsNotWritten": true,
+      "guardAndOracleUnmodified": true,
+      "currentFixtureInputs": {
+        "files": 158,
+        "eolOnly": 151,
+        "commentsOnly": 4,
+        "identical": 3,
+        "evidence": "Source equivalence inventory explicitly reviewed by sole executor/root; not inferred from comparison counts.",
+        "rawEol": {
+          "crlf": 154,
+          "lf": 4,
+          "evidence": "Raw158 input inventory explicitly confirmed by executor/root and Audit; raw inputs not normalized by this cohort."
+        }
+      }
+    },
+    "allStepsExitedZero": 21,
+    "steps": [
+      {
+        "id": "verify-reuse-c-before-install",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:38:23.4613123Z",
+        "completedAtUtc": "2026-10-10T01:38:25.3847828Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/verify-reuse-c-before-install/stdout.log",
+          "sha256": "f3fc06e3c0394ec690ea8d03340878310131019d84c2bc167aaf53dbccff6521"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/verify-reuse-c-before-install/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {}
+      },
+      {
+        "id": "install-c-frozen-public-registry",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:38:25.4143341Z",
+        "completedAtUtc": "2026-10-10T01:38:27.7524594Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/install-c-frozen-public-registry/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/install-c-frozen-public-registry/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {}
+      },
+      {
+        "id": "database-create",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:38:27.7680669Z",
+        "completedAtUtc": "2026-10-10T01:38:30.3231053Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/database-create/stdout.log",
+          "sha256": "66b1f4015812867b74d4fead5012871ff6839e58feaf13df78485220d34b083c"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/database-create/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {}
+      },
+      {
+        "id": "generate-c",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:38:30.3618387Z",
+        "completedAtUtc": "2026-10-10T01:38:41.0766451Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/generate-c/stdout.log",
+          "sha256": "88374b38fceaaaec5c851b236c483575044062c889bab31bf2992d4c0c57393c"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/generate-c/stderr.log",
+          "sha256": "75066079154e16278b8bbb61e3a8fed567403e1667eda92ad7c8eeab0cda5879"
+        },
+        "buildIds": {}
+      },
+      {
+        "id": "migrate-c-on-owned-db",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:38:41.1009416Z",
+        "completedAtUtc": "2026-10-10T01:38:43.1739446Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/migrate-c-on-owned-db/stdout.log",
+          "sha256": "cda317b09eba926b230afb12d8d1283caaa87430768c83ee2dae889cd04301a6"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/migrate-c-on-owned-db/stderr.log",
+          "sha256": "12c78b95e22f41104cb5a1575a423e552240c1521cca797a07c975e4d3d64797"
+        },
+        "buildIds": {}
+      },
+      {
+        "id": "verify-before-legacy",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:38:43.2064256Z",
+        "completedAtUtc": "2026-10-10T01:38:45.1180119Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/verify-before-legacy/stdout.log",
+          "sha256": "f3fc06e3c0394ec690ea8d03340878310131019d84c2bc167aaf53dbccff6521"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/verify-before-legacy/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {}
+      },
+      {
+        "id": "build-root-legacy",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:38:45.1395671Z",
+        "completedAtUtc": "2026-10-10T01:40:17.9501269Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/build-root-legacy/stdout.log",
+          "sha256": "d8fb97703f34c4158ebfc5033af61815709e0e3f476cbdd20f7923ff3beec04e"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/build-root-legacy/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {
+          "root": {
+            "sha256": "a82cc0679653d85d93103cfe33089d99582eda54170064861bf3b3caf7ac74aa",
+            "value": "VH59_uuP4o9rVy-CZZO6l"
+          }
+        }
+      },
+      {
+        "id": "build-api-legacy",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:40:17.9936077Z",
+        "completedAtUtc": "2026-10-10T01:40:55.4107995Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/build-api-legacy/stdout.log",
+          "sha256": "65aad21c75d63c2aa1058f101b3e08ddb2d28b112a7643ebf9a41a40c935c17a"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/build-api-legacy/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {
+          "root": {
+            "sha256": "a82cc0679653d85d93103cfe33089d99582eda54170064861bf3b3caf7ac74aa",
+            "value": "VH59_uuP4o9rVy-CZZO6l"
+          },
+          "api": {
+            "sha256": "ea75084b2d80ca40f487d4996684035d276463623ba63511b677f6d88f80e095",
+            "value": "U7Qw9nJUz1I1LnO_qFTrt"
+          }
+        }
+      },
+      {
+        "id": "build-web-legacy",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:40:55.4454149Z",
+        "completedAtUtc": "2026-10-10T01:41:26.3513024Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/build-web-legacy/stdout.log",
+          "sha256": "ad3162afccdf42b45afc070bde2969c48abf4e8c738175b29fecb1712f441c7b"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/build-web-legacy/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {
+          "root": {
+            "sha256": "a82cc0679653d85d93103cfe33089d99582eda54170064861bf3b3caf7ac74aa",
+            "value": "VH59_uuP4o9rVy-CZZO6l"
+          },
+          "api": {
+            "sha256": "ea75084b2d80ca40f487d4996684035d276463623ba63511b677f6d88f80e095",
+            "value": "U7Qw9nJUz1I1LnO_qFTrt"
+          },
+          "web": {
+            "sha256": "4843ba62d52f05389b2e9e9c149e5af77b64685a4765428b105825d04f4e9709",
+            "value": "clO4_Zob4RVd6_mDrrYjo"
+          }
+        }
+      },
+      {
+        "id": "api-legacy",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:41:26.3729929Z",
+        "completedAtUtc": "2026-10-10T01:46:30.0267619Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/api-legacy/stdout.log",
+          "sha256": "71415d6e48df00fff6fbf3f2b404bb2ce1712df0780a1dca4b6ad5a475d9102c"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/api-legacy/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {
+          "root": {
+            "sha256": "a82cc0679653d85d93103cfe33089d99582eda54170064861bf3b3caf7ac74aa",
+            "value": "VH59_uuP4o9rVy-CZZO6l"
+          },
+          "api": {
+            "sha256": "ea75084b2d80ca40f487d4996684035d276463623ba63511b677f6d88f80e095",
+            "value": "U7Qw9nJUz1I1LnO_qFTrt"
+          },
+          "web": {
+            "sha256": "4843ba62d52f05389b2e9e9c149e5af77b64685a4765428b105825d04f4e9709",
+            "value": "clO4_Zob4RVd6_mDrrYjo"
+          }
+        }
+      },
+      {
+        "id": "verify-after-legacy",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:46:30.0508724Z",
+        "completedAtUtc": "2026-10-10T01:46:33.3515267Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/verify-after-legacy/stdout.log",
+          "sha256": "f3fc06e3c0394ec690ea8d03340878310131019d84c2bc167aaf53dbccff6521"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/verify-after-legacy/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {
+          "root": {
+            "sha256": "a82cc0679653d85d93103cfe33089d99582eda54170064861bf3b3caf7ac74aa",
+            "value": "VH59_uuP4o9rVy-CZZO6l"
+          },
+          "api": {
+            "sha256": "ea75084b2d80ca40f487d4996684035d276463623ba63511b677f6d88f80e095",
+            "value": "U7Qw9nJUz1I1LnO_qFTrt"
+          },
+          "web": {
+            "sha256": "4843ba62d52f05389b2e9e9c149e5af77b64685a4765428b105825d04f4e9709",
+            "value": "clO4_Zob4RVd6_mDrrYjo"
+          }
+        }
+      },
+      {
+        "id": "b11-legacy",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:46:33.3795472Z",
+        "completedAtUtc": "2026-10-10T01:46:33.7175207Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/b11-legacy/stdout.log",
+          "sha256": "4bba61826f0bc2afa57786af023d557e5f09f3d17ca06a51afa2d71e4b393059"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/b11-legacy/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {
+          "root": {
+            "sha256": "a82cc0679653d85d93103cfe33089d99582eda54170064861bf3b3caf7ac74aa",
+            "value": "VH59_uuP4o9rVy-CZZO6l"
+          },
+          "api": {
+            "sha256": "ea75084b2d80ca40f487d4996684035d276463623ba63511b677f6d88f80e095",
+            "value": "U7Qw9nJUz1I1LnO_qFTrt"
+          },
+          "web": {
+            "sha256": "4843ba62d52f05389b2e9e9c149e5af77b64685a4765428b105825d04f4e9709",
+            "value": "clO4_Zob4RVd6_mDrrYjo"
+          }
+        }
+      },
+      {
+        "id": "verify-before-better-auth",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:46:33.7366544Z",
+        "completedAtUtc": "2026-10-10T01:46:35.5937497Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/verify-before-better-auth/stdout.log",
+          "sha256": "f3fc06e3c0394ec690ea8d03340878310131019d84c2bc167aaf53dbccff6521"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/verify-before-better-auth/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {
+          "root": {
+            "sha256": "a82cc0679653d85d93103cfe33089d99582eda54170064861bf3b3caf7ac74aa",
+            "value": "VH59_uuP4o9rVy-CZZO6l"
+          },
+          "api": {
+            "sha256": "ea75084b2d80ca40f487d4996684035d276463623ba63511b677f6d88f80e095",
+            "value": "U7Qw9nJUz1I1LnO_qFTrt"
+          },
+          "web": {
+            "sha256": "4843ba62d52f05389b2e9e9c149e5af77b64685a4765428b105825d04f4e9709",
+            "value": "clO4_Zob4RVd6_mDrrYjo"
+          }
+        }
+      },
+      {
+        "id": "build-root-better-auth",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:46:35.6117508Z",
+        "completedAtUtc": "2026-10-10T01:46:58.1023923Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/build-root-better-auth/stdout.log",
+          "sha256": "5635c7d6aa9e9251ef015d620df050aec2fcca56f1cc6c60907332f5d67d7e0b"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/build-root-better-auth/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {
+          "root": {
+            "sha256": "d7d0d2eb9e0ba9db87d691c354ce62d4d2a7106fcdafd99f5c0009d6565cd022",
+            "value": "7CsRtgpgts0odY5SD-Q1D"
+          },
+          "api": {
+            "sha256": "ea75084b2d80ca40f487d4996684035d276463623ba63511b677f6d88f80e095",
+            "value": "U7Qw9nJUz1I1LnO_qFTrt"
+          },
+          "web": {
+            "sha256": "4843ba62d52f05389b2e9e9c149e5af77b64685a4765428b105825d04f4e9709",
+            "value": "clO4_Zob4RVd6_mDrrYjo"
+          }
+        }
+      },
+      {
+        "id": "build-api-better-auth",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:46:58.1404501Z",
+        "completedAtUtc": "2026-10-10T01:47:22.4398131Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/build-api-better-auth/stdout.log",
+          "sha256": "fce87a70360ea7fde80d64ee3b3e54e162e4ce4c152086a8f20322d268dd5131"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/build-api-better-auth/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {
+          "root": {
+            "sha256": "d7d0d2eb9e0ba9db87d691c354ce62d4d2a7106fcdafd99f5c0009d6565cd022",
+            "value": "7CsRtgpgts0odY5SD-Q1D"
+          },
+          "api": {
+            "sha256": "c275d49082a230c18e06541fe51892089c19d621e7f2213ab3fd81678068740e",
+            "value": "yQiLyE-TbiO0skWUo8oSG"
+          },
+          "web": {
+            "sha256": "4843ba62d52f05389b2e9e9c149e5af77b64685a4765428b105825d04f4e9709",
+            "value": "clO4_Zob4RVd6_mDrrYjo"
+          }
+        }
+      },
+      {
+        "id": "build-web-better-auth",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:47:22.4602453Z",
+        "completedAtUtc": "2026-10-10T01:47:33.3290259Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/build-web-better-auth/stdout.log",
+          "sha256": "e248b1a562ed6a74c05bb58ea8c80a90535593e01324b95cd179fe22b2dbb9ca"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/build-web-better-auth/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {
+          "root": {
+            "sha256": "d7d0d2eb9e0ba9db87d691c354ce62d4d2a7106fcdafd99f5c0009d6565cd022",
+            "value": "7CsRtgpgts0odY5SD-Q1D"
+          },
+          "api": {
+            "sha256": "c275d49082a230c18e06541fe51892089c19d621e7f2213ab3fd81678068740e",
+            "value": "yQiLyE-TbiO0skWUo8oSG"
+          },
+          "web": {
+            "sha256": "0bd4233d42625f5db79eb3957a27f90f2c51285147091ee034a4e34c03b06252",
+            "value": "VFewp__Z7d63L6_pVyP0b"
+          }
+        }
+      },
+      {
+        "id": "api-better-auth",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:47:33.3633590Z",
+        "completedAtUtc": "2026-10-10T01:52:18.4675460Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/api-better-auth/stdout.log",
+          "sha256": "4335fc1b6aaedcc796df7497a600a8a652202103add4802220101fc3d684dfc8"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/api-better-auth/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {
+          "root": {
+            "sha256": "d7d0d2eb9e0ba9db87d691c354ce62d4d2a7106fcdafd99f5c0009d6565cd022",
+            "value": "7CsRtgpgts0odY5SD-Q1D"
+          },
+          "api": {
+            "sha256": "c275d49082a230c18e06541fe51892089c19d621e7f2213ab3fd81678068740e",
+            "value": "yQiLyE-TbiO0skWUo8oSG"
+          },
+          "web": {
+            "sha256": "0bd4233d42625f5db79eb3957a27f90f2c51285147091ee034a4e34c03b06252",
+            "value": "VFewp__Z7d63L6_pVyP0b"
+          }
+        }
+      },
+      {
+        "id": "verify-after-better-auth",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:52:18.5109052Z",
+        "completedAtUtc": "2026-10-10T01:52:20.6062646Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/verify-after-better-auth/stdout.log",
+          "sha256": "f3fc06e3c0394ec690ea8d03340878310131019d84c2bc167aaf53dbccff6521"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/verify-after-better-auth/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {
+          "root": {
+            "sha256": "d7d0d2eb9e0ba9db87d691c354ce62d4d2a7106fcdafd99f5c0009d6565cd022",
+            "value": "7CsRtgpgts0odY5SD-Q1D"
+          },
+          "api": {
+            "sha256": "c275d49082a230c18e06541fe51892089c19d621e7f2213ab3fd81678068740e",
+            "value": "yQiLyE-TbiO0skWUo8oSG"
+          },
+          "web": {
+            "sha256": "0bd4233d42625f5db79eb3957a27f90f2c51285147091ee034a4e34c03b06252",
+            "value": "VFewp__Z7d63L6_pVyP0b"
+          }
+        }
+      },
+      {
+        "id": "b11-better-auth",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:52:20.6393495Z",
+        "completedAtUtc": "2026-10-10T01:52:21.0020775Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/b11-better-auth/stdout.log",
+          "sha256": "f2c51e055b73ef455f3fdb0476a34f62badcd2035b3c9ebe652a0ac6dfea2093"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/b11-better-auth/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {
+          "root": {
+            "sha256": "d7d0d2eb9e0ba9db87d691c354ce62d4d2a7106fcdafd99f5c0009d6565cd022",
+            "value": "7CsRtgpgts0odY5SD-Q1D"
+          },
+          "api": {
+            "sha256": "c275d49082a230c18e06541fe51892089c19d621e7f2213ab3fd81678068740e",
+            "value": "yQiLyE-TbiO0skWUo8oSG"
+          },
+          "web": {
+            "sha256": "0bd4233d42625f5db79eb3957a27f90f2c51285147091ee034a4e34c03b06252",
+            "value": "VFewp__Z7d63L6_pVyP0b"
+          }
+        }
+      },
+      {
+        "id": "collect-new-p0",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:52:21.0380762Z",
+        "completedAtUtc": "2026-10-10T01:52:22.9969166Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/collect-new-p0/stdout.log",
+          "sha256": "7fc70221c2d9b786dc3f73d1aec99c4e56743f6e5877ce91723985f1f64de342"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/collect-new-p0/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {
+          "root": {
+            "sha256": "d7d0d2eb9e0ba9db87d691c354ce62d4d2a7106fcdafd99f5c0009d6565cd022",
+            "value": "7CsRtgpgts0odY5SD-Q1D"
+          },
+          "api": {
+            "sha256": "c275d49082a230c18e06541fe51892089c19d621e7f2213ab3fd81678068740e",
+            "value": "yQiLyE-TbiO0skWUo8oSG"
+          },
+          "web": {
+            "sha256": "0bd4233d42625f5db79eb3957a27f90f2c51285147091ee034a4e34c03b06252",
+            "value": "VFewp__Z7d63L6_pVyP0b"
+          }
+        }
+      },
+      {
+        "id": "database-cleanup",
+        "exitCode": 0,
+        "timedOut": false,
+        "observedExited": true,
+        "startedAtUtc": "2026-10-10T01:52:23.0421220Z",
+        "completedAtUtc": "2026-10-10T01:52:23.5381335Z",
+        "stdout": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/database-cleanup/stdout.log",
+          "sha256": "3dce4bfa4235fcd91c3cc23867f9f4032dee87b007fbe84ff54b172803c8a533"
+        },
+        "stderr": {
+          "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/database-cleanup/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "buildIds": {
+          "root": {
+            "sha256": "d7d0d2eb9e0ba9db87d691c354ce62d4d2a7106fcdafd99f5c0009d6565cd022",
+            "value": "7CsRtgpgts0odY5SD-Q1D"
+          },
+          "api": {
+            "sha256": "c275d49082a230c18e06541fe51892089c19d621e7f2213ab3fd81678068740e",
+            "value": "yQiLyE-TbiO0skWUo8oSG"
+          },
+          "web": {
+            "sha256": "0bd4233d42625f5db79eb3957a27f90f2c51285147091ee034a4e34c03b06252",
+            "value": "VFewp__Z7d63L6_pVyP0b"
+          }
+        }
+      }
+    ],
+    "comparisons": [
+      {
+        "auth": "legacy",
+        "wholeFiles": 64,
+        "presentPassed": 3018,
+        "absentPassed": 2400,
+        "legacyOnly": 618,
+        "openViolations": 0,
+        "waivers": 0,
+        "routes": {
+          "total": 173,
+          "covered": 158
+        },
+        "methods": {
+          "total": 221,
+          "covered": 201
+        },
+        "existingExceptions": 20,
+        "onlyWithoutRoot": 0,
+        "assertionCompareExitCode": 0,
+        "existingCoverageExceptions": 20,
+        "comparisonWaivers": 0
+      },
+      {
+        "auth": "better-auth",
+        "wholeFiles": 64,
+        "presentPassed": 3014,
+        "absentPassed": 2398,
+        "legacyOnly": 616,
+        "openViolations": 0,
+        "waivers": 0,
+        "routes": {
+          "total": 173,
+          "covered": 164
+        },
+        "methods": {
+          "total": 221,
+          "covered": 207
+        },
+        "existingExceptions": 14,
+        "onlyWithoutRoot": 0,
+        "assertionCompareExitCode": 0,
+        "existingCoverageExceptions": 14,
+        "comparisonWaivers": 0
+      }
+    ],
+    "presentSuiteResults": [
+      {
+        "auth": "legacy",
+        "filesPassed": 64,
+        "passed": 3018,
+        "failed": 0,
+        "skipped": 2,
+        "collected": 3020,
+        "durationSeconds": 295.93,
+        "exitCode": 0
+      },
+      {
+        "auth": "better-auth",
+        "filesPassed": 64,
+        "passed": 3014,
+        "failed": 0,
+        "skipped": 0,
+        "collected": 3014,
+        "durationSeconds": 276.95,
+        "exitCode": 0
+      }
+    ],
+    "logs": [
+      {
+        "id": "api-legacy",
+        "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/api-legacy/stdout.log",
+        "sha256": "71415d6e48df00fff6fbf3f2b404bb2ce1712df0780a1dca4b6ad5a475d9102c",
+        "bytes": 6980,
+        "summary": [
+          " Test Files  64 passed (64)",
+          "      Tests  3018 passed | 2 skipped (3020)",
+          "   Duration  295.93s (tests 92%, import 6%, transform 1%, setup 1%)",
+          "API parity coverage: 158/173 routes and 201/221 methods with an expected success outcome; 20 justified exceptions."
+        ]
+      },
+      {
+        "id": "b11-legacy",
+        "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/b11-legacy/stdout.log",
+        "sha256": "4bba61826f0bc2afa57786af023d557e5f09f3d17ca06a51afa2d71e4b393059",
+        "bytes": 171,
+        "summary": [
+          "API parity assertions: 2400 cases compared (3018 with the root, 2400 without it); 618 only with the root (legacy arms), 0 only without it; 0 open violations, 0 justified."
+        ]
+      },
+      {
+        "id": "api-better-auth",
+        "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/api-better-auth/stdout.log",
+        "sha256": "4335fc1b6aaedcc796df7497a600a8a652202103add4802220101fc3d684dfc8",
+        "bytes": 7880,
+        "summary": [
+          " Test Files  64 passed (64)",
+          "      Tests  3014 passed (3014)",
+          "   Duration  276.95s (tests 93%, import 5%, transform 1%, setup 1%)",
+          "API parity coverage: 164/173 routes and 207/221 methods with an expected success outcome; 14 justified exceptions."
+        ]
+      },
+      {
+        "id": "b11-better-auth",
+        "path": "b11-p0-current-fixture-control/recovery-v3-runs/20261010T0138233317942Z-c2968c04ce0a4decb5bfa162e909e989/stages/b11-better-auth/stdout.log",
+        "sha256": "f2c51e055b73ef455f3fdb0476a34f62badcd2035b3c9ebe652a0ac6dfea2093",
+        "bytes": 171,
+        "summary": [
+          "API parity assertions: 2398 cases compared (3014 with the root, 2398 without it); 616 only with the root (legacy arms), 0 only without it; 0 open violations, 0 justified."
+        ]
+      }
+    ],
+    "independentReview": {
+      "coverageProblems": 0,
+      "missingCases": 0,
+      "allAbsentCasesAssertionsAtLeastOne": true,
+      "absentCasesAtLeastHalfPresent": true,
+      "evidence": "Explicit independent executor/root review; verdict bound to raw execution/log hashes."
+    },
+    "databaseCleanup": {
+      "complete": true,
+      "ownDatabaseDropped": true,
+      "pgPreserved": true,
+      "sentinelUnchanged": true,
+      "activeSessions": 0,
+      "databaseInventoryRestored": true,
+      "rolesUnchanged": true,
+      "noUnknownDatabaseDropped": true
+    },
+    "ownEntryProcessesObservedExited": true,
+    "ownCleanupErrors": [],
+    "noProviderDeploy": true,
+    "noPushOrCommit": true,
+    "limits": [
+      "Whole current-fixture C controls compared to pre-existing full F absent records.",
+      "No provider, production database or deployment action.",
+      "Existing success-coverage exceptions20/14 are distinct from comparison waivers0/0. Skips2/0 are not passes.",
+      "B11 current-fixture C controls do not rewrite original C records or relabel their build IDs."
+    ]
+  },
+  "retiredRootGeneratedArtifactsCaption": ".next, next-env.d.ts e tsconfig.tsbuildinfo da raiz foram retirados no Bloco F; as menções preservadas registram a estrutura antiga e os resultados da época, sem instruir recriar esses artefatos na raiz atual.",
+  "postDocumentApplicationCheckpoint": {
+    "checkpointDate": "2026-10-10",
+    "dateMeaning": "Current local documentary checkpoint supplied by executor; not an F commit date. The 2026-10-09 checkpoint remains historical.",
+    "status": "TOKEN_READER_GATE_PASSED_UNIT_RED_DOCUMENTARY_CAPTIONS_PENDING",
+    "v7Application": {
+      "path": "p2-validation/cohort-exact-c2498d9a-396d-481f-ae34-41c1127751e8/completion.json",
+      "sha256": "2961f591133e406ea24c315dcc51102be27f489c2e3c52d4fd04ef2de0505b99",
+      "at": "2026-10-10T02:13:43.030341+00:00",
+      "state": "reviewed-exact-cohort-applied-not-validated"
+    },
+    "v7Formatting": {
+      "path": "p2-validation/format-final-docs-415cbe90-7889-46bc-b599-642f4583d636/receipt.json",
+      "sha256": "2a6d37d94061a22e7e71c2b759b75d90418294f7922d0a7fb7bc8ad92806f812",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-10T02:14:50.440747+00:00",
+      "state": "formatted-exact-documents-history-preserved"
+    },
+    "historyProof": {
+      "path": "reviews/retirement-v7-post-format-history-proof.json",
+      "sha256": "1993ac584682d1cbdde0ac2c8f205b6a4593fc8ed08668e75e3c950b6e92d257",
+      "sixHeaderPinsByteExact": true,
+      "testingHistoricalContentIdenticalAfterOnlyCRLFToLF": true,
+      "cDocumentsByteExact": true,
+      "meaning": "Existing post-format filesystem proof; preserved unchanged and not a test execution."
+    },
+    "failedAttempt": {
+      "path": "p2-validation/final-documentary-closure-20261010T0216/summary.json",
+      "sha256": "225dc0a28f2d2af372a7d12742b7166260891c593d01a60f1b4a5e79c0f1b78f",
+      "wrapperCompletedAtUtc": null,
+      "observedStep": {
+        "name": "final-gates",
+        "startedAtUtc": "2026-10-10T02:14:55.8062286Z",
+        "completedAtUtc": "2026-10-10T02:19:07.3073770Z",
+        "exitCode": 1
+      },
+      "failingGate": {
+        "name": "check:tokens",
+        "log": "p2-validation/final-documentary-closure-20261010T0216/final-gates/check-tokens.log",
+        "logSha256": "851157f3593261d7ba8196340efbde7a682be1ee99740b6ee71764d61ac51190",
+        "reportedExitCode": 1,
+        "error": "expected one hex definition of orange600 in packages/design-tokens/src, found 0"
+      },
+      "classification": "RED_READER_QUOTE_FORMAT_MISMATCH",
+      "noOtherExitCodesInferred": true,
+      "meaning": "Actual post-application failed step; its wrapper still has completedAtUtc:null. Prior green events remain historical and distinct."
+    },
+    "readerCorrection": {
+      "path": "tools/token-propagation-check.mjs",
+      "status": "APPLIED_REAL_GATE_PASSED",
+      "application": {
+        "path": "p2-validation/cohort-exact-cf6fdee2-3a19-4a94-9701-bdd2668bc2ed/completion.json",
+        "sha256": "a15f01057a1721693d8de267f702855be7b99c61ccac3a43e6864b75f540cb3b",
+        "at": "2026-10-10T09:40:51.957148+00:00",
+        "state": "reviewed-exact-cohort-applied-not-validated",
+        "sourceBeforeSha256": "616776a402532e37702ef9d2c663596d0fa012cdad02f46575ea30649ef00940",
+        "sourceAfterSha256": "8f4ae498fa47be90c790f28794c1b088357b2499a829606cb50d7ff505c0d151"
+      },
+      "rootCause": "DEFINITION recognized only double-quoted hex literals; formatting left orange600: '#ea580c' in primitives.ts. The canonical hex remained unchanged.",
+      "change": "Recognize single or double opening quotes with corresponding closing quote; extract the six-digit hex from capture group 2.",
+      "preserved": [
+        "Exactly one canonical hex definition is required.",
+        "Sentinel replacement stays in a temporary copy.",
+        "Canonical token and source-tree integrity hashes remain required.",
+        "Propagation expectations and the three NOT_PROVEN levels remain unchanged.",
+        "Product style values, oracle, visual baselines and skips remain unchanged."
+      ]
+    },
+    "realGateAfterCorrection": {
+      "command": "pnpm check:tokens",
+      "status": "PASSED_WITH_EXISTING_NOT_PROVEN",
+      "log": {
+        "path": "p2-validation/token-quote-gate-20261010T0941/check-tokens.log",
+        "sha256": "75d5aa4e64582bb6c0b86da366852719318e5753d86d3452e76c757b63b5ee1b"
+      },
+      "exitCodeObservedByExecutor": 0,
+      "durationSecondsObservedByExecutor": 5.2,
+      "exactStartTimestamp": null,
+      "exitAndDurationEvidence": "Executor observed completion exit 0 and duration 5.20s; this agent only read the retained log.",
+      "previousCanonicalHex": "#ea580c",
+      "tokensFileUnchanged": true,
+      "tokenSourceTreeUnchanged": true,
+      "aliasApplied": true,
+      "nativePropagated": true,
+      "otherFailingAssertions": 0,
+      "internalVitest": {
+        "passed": 10,
+        "failed": 1,
+        "failureMeaning": "Existing deliberately red web sentinel assertion; expected by propagation expectations, not hidden or skipped."
+      },
+      "notProven": ["style resolution (web)", "web render", "mobile export"],
+      "expectationsChanged": false,
+      "meaning": "Real production checker reads the formatted canonical token and matches existing expectations. No web/mobile propagation or global closure is inferred."
+    },
+    "fullUnitAfterTokenCorrection": {
+      "status": "RED_DOCUMENTARY_HISTORICAL_MENTIONS",
+      "command": "pnpm test:unit --maxWorkers=2",
+      "receipt": {
+        "path": "p2-validation/final-unit-after-token-quote-20261010T0945/summary.json",
+        "sha256": "0e223715aa0cfff058d84406ac4b4f13277f8f9b9cb0c3bbad3a468790f8cfc0",
+        "startedAtUtc": "2026-10-10T09:44:35.6281229Z",
+        "completedAtUtc": "2026-10-10T09:51:08.3530158Z",
+        "exitCode": 1
+      },
+      "log": {
+        "path": "p2-validation/final-unit-after-token-quote-20261010T0945/test-unit.log",
+        "sha256": "b2c40c7fe67c5116c820c22daaaf29250ede09664021bd1de68d054224595a77"
+      },
+      "passed": 4103,
+      "failed": 1,
+      "skipped": 0,
+      "collected": 4104,
+      "filesPassed": 178,
+      "filesFailed": 1,
+      "filesCollected": 179,
+      "durationSeconds": 391.15,
+      "failureFile": "tests/unit/retired-artifacts.test.ts",
+      "findingCount": 4,
+      "findingLocations": [
+        { "path": "CLAUDE_TO_CODEX_HANDOFF.md", "lineInRetainedLog": 726 },
+        { "path": "CLAUDE_TO_CODEX_HANDOFF.md", "lineInRetainedLog": 749 },
+        {
+          "path": "docs/guides/wave135-retirement-validation.ledger.json",
+          "lineInRetainedLog": 614
+        },
+        {
+          "path": "docs/guides/wave135-retirement-validation.md",
+          "lineInRetainedLog": 161
+        }
+      ],
+      "findingMeaning": "Four preserved historical references lacked an effective filewide retirement caption; log line numbers are event provenance, not post-edit positions.",
+      "preparedDocumentaryCorrection": "Add factual retirement captions before the first Markdown H2 in handoff and guide, and a whole-JSON-unit caption field in this ledger. Preserve the historical references and detector rules.",
+      "correctionState": "EXTERNAL_CANDIDATE_NOT_APPLIED",
+      "meaning": "Actual integral RED after the two-line token reader correction; distinct from the real check:tokens gate exit 0 and from the earlier historical 4104/4104 event.",
+      "futureUnitGreen": null
+    },
+    "globalClosureAndExistingRegressions": "PENDING_ACTUAL_EXECUTION_RECEIPTS",
+    "publicationF": "POSTERIOR_EXTERNAL_RECEIPT_REQUIRED",
+    "finalFci": "POSTERIOR_EXTERNAL_RECEIPT_REQUIRED",
+    "fCommitSha": null,
+    "limits": [
+      "This checkpoint records application, formatting, the RED step and the real corrected gate; it does not claim a future global green execution.",
+      "No previous raw verdict, dated checkpoint, C evidence or test oracle is rewritten.",
+      "Hosted services, providers and production database remain outside the local work."
+    ]
+  },
+  "postApplyWorkflow": {
+    "documentationGates": "PENDING_AFTER_DOCUMENTS_APPLIED",
+    "noCircularBlock": true,
+    "publicationF": "POSTERIOR_EXTERNAL_RECEIPT_REQUIRED",
+    "transferRevalidation": "POSTERIOR_EXTERNAL_RECEIPT_REQUIRED",
+    "finalFci": "POSTERIOR_EXTERNAL_RECEIPT_REQUIRED",
+    "fCommitSha": null,
+    "documentState": "Saved checkpoint before publication; no future execution is claimed inside this commit candidate."
+  },
+  "testingEol": {
+    "source": "reviews/final-testing-guide-v2-lf/manifest.json",
+    "sourceManifestSha256": "d60710b72b3448ecb7cc43e46b6f1770e878905c87c5814831361cccb0e26b34",
+    "beforeSha256": "6678158fc6d844b147f11bcdba002764220c10067bad3a9d8b51cd1ac71f7ccc",
+    "beforeCRLF": 409,
+    "payloadSha256": "0d6f23c259ab009b507b871923ba381617bb4d5705419433c726ff2d5e7d4dbe",
+    "historicalNormalizedSha256": "ebf5245d86c8f57da132b4d74eb4b84d93a6314d560366d10f1e802da817ebd9",
+    "historicalContentIdenticalAfterOnlyCRLFToLF": true,
+    "approvedProseEdits": 8,
+    "sealedSourcesNormalized": false
+  },
+  "localCheckpointDateEvidence": {
+    "date": "2026-10-09",
+    "rootClockObservation": "01:38 UTC = 22:38 America/Sao_Paulo on2026-10-09",
+    "cCommitDateReportedByRootGit": "2026-10-09",
+    "fCommitExists": false,
+    "dateNotClaimedAsFCommit": true
+  },
+  "preparedAsExternalCandidate": true,
+  "latestPublicAssetsBuild": {
+    "state": "production-build-passed",
+    "task": "build:web",
+    "auth": "better-auth",
+    "exitCode": 0,
+    "observedSessionExited": 45220,
+    "recordedAtUtc": "2026-10-10T01:57:53.5399432Z",
+    "log": {
+      "sha256": "1db2afbd886536c67b61f25ffc02b32c2923b018b16ccfd710d7f092806f4e26",
+      "createdUtc": "2026-10-10T01:55:48.3451776Z",
+      "path": "C:\\Users\\harry\\AppData\\Local\\Temp\\locadora-wave135-finish-20261009\\p2-validation\\final-web-current-public-assets-20261010T0200\\build-web.log",
+      "modifiedUtc": "2026-10-10T01:56:58.9172238Z"
+    },
+    "buildID": {
+      "sha256": "b4f7967b2490632113cd8730acad54b5eaedd8eed02a1d54e2a523937e289e7c",
+      "value": "CU_6NKo8BvCyf0t6xndXV"
+    },
+    "limits": [
+      "New build identity; existing A10/visual runs retain their original recorded build IDs.",
+      "No deployment or production database."
+    ],
+    "rootObservedReceipt": {
+      "path": "p2-validation/final-web-current-public-assets-20261010T0200/root-observed-receipt.json",
+      "sha256": "52d43eba4646daed956f6fb6ddc6e6b7cb403e071d063a37af83671ac86b6270",
+      "bytes": 870
+    },
+    "reason": "Refresh production output with current generated public/openapi.json; source unchanged. Earlier navigation/A10/visual proofs keep their recorded build identities."
+  }
+}

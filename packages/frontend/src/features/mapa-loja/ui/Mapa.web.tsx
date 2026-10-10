@@ -37,7 +37,7 @@ const SOLUTION_CHANNEL = 'GMP_QB_locatorplus_v11_cABCDE'
 
 /**
  * Molduras do mapa (altura, cantos e borda), as da produção: a padrão, de 400px, e a do cartão "Onde estamos" da página
- * de contato (`eb4c0098:app/contato/page.tsx:296`), com borda e 450px a partir do `md`. A moldura mora no mapa (a fatia
+ * de contato (origem histórica `eb4c0098:app/contato/page.tsx:296`, retirada em F), com borda e 450px a partir do `md`. A moldura mora no mapa (a fatia
  * dona); a página escolhe qual. O aviso sem chave do Google usa a mesma moldura.
  */
 const ALTURA_DO_MAPA = 'h-[400px]'

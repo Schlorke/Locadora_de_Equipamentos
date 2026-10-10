@@ -2,6 +2,23 @@
 
 Goal: load the smallest set of documents that still gives correct context.
 
+> A raiz legada app/ e lib/, middlewares/require-admin.ts,
+> schemas/settings.schema.ts, types/global.d.ts, types/google-maps-ecl.d.ts,
+> proxy.ts, next.config.mjs, vercel.json, Dockerfile e components.json da raiz
+> foram retirados no Bloco F local. Os auxiliares antigos
+> scripts/patch-prisma.js, scripts/fix-prisma-imports.js e
+> scripts/patch-next-env-for-typecheck.cjs também saíram. O retorno usa um clone
+> completo da tag de pré-exclusão, nunca uma fachada na árvore atual. Os hosts
+> apps/services/api e apps/clients/web, packages, public, Prisma e
+> types/next-auth.d.ts permanecem. Checkpoint da base preparada: **base
+> preparada no clone; unit, P2, B11 e visual fechados no escopo declarado**, em
+> 2026-10-09, checkpoint pré-publicação. Provas e limites no
+> [guia F](../guides/wave135-retirement-validation.md) e seu ledger. Estado
+> salvo antes da publicação: F está no clone independente;
+> transferência/revalidação, commit/push e CI final F são passos posteriores com
+> recibos externos. Nenhum SHA futuro é antecipado. Operação externa e corte
+> permanecem separados.
+
 ## Mandatory Reading Order
 
 1. `AGENTS.md`
@@ -88,12 +105,25 @@ pnpm install. A entrada 237 registra store local com junção à raiz; nunca apa
 recursivamente pastas com links ou aceitar recriação de node_modules sem avaliar
 o destino. Não esconder o problema com ignore de artefatos.
 
-## Modernização em curso
+## Estado da base e evolução do produto
 
-Aceite operacional local da API: onda 59 de docs/features/shared-api-host.md e
-docs/guides/shared-api-acceptance.md. Multipart/PDF/OAuth/cache/jobs e HTML SSR
-aprovados nos dois motores; operação externa, aparelhos e retirada de app/
-continuam pendentes. Não confundir inventário montado com conclusão geral.
+O [checkpoint da base preparada](../guides/wave135-retirement-validation.md) e
+seu [ledger](../guides/wave135-retirement-validation.ledger.json) são a
+referência vigente dos resultados finais. Estado: **base preparada no clone;
+unit, P2, B11 e visual fechados no escopo declarado**. Unit 4.104/4.104 sem
+skips, P2 v6 e B11 v3 no escopo declarado e visual F 80/536/31.065 sem
+pendências têm recibos próprios. Gates documentais executarão após aplicação.
+Dispositivos, Slow 3G completo e foundations NOT_PROVEN continuam separados.
+
+Os resultados antigos das ondas ficam históricos. Contratos e comportamento:
+docs/features/shared-api-host.md, docs/guides/shared-api-acceptance.md e
+handoff. Não confundir inventário ou aplicação de patch com execução verde. As
+173 entradas aceitas de hygiene são dívida declarada, não zero código morto.
+
+Infraestrutura hospedada, banco de produção e provedores serão escolhidos
+depois, conforme a decisão do usuário. Migrations no PostgreSQL local
+descartável não criam nem homologam conta, banco ou provedores de produção.
+Aparelhos, operação externa e corte conservam critérios próprios.
 
 A decisão posterior é multiempresa. Leia `docs/architecture/modernization.md` e
 `docs/architecture/multiempresa.md` antes de tocar APIs, dados ou autenticação.

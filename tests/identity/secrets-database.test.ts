@@ -20,7 +20,6 @@ import { createPlatformJobs } from '../../packages/backend/src/modules/platform-
 import { getPlatformDatabaseRuntime } from '../../packages/backend/src/runtime/platform-database'
 import { getDatabaseRuntime } from '../../packages/backend/src/runtime/database'
 import { runConfiguredPlatformJobs } from '../../packages/backend/src/runtime/platform-jobs'
-import { GET as legacyPlatformCron } from '../../app/api/cron/platform/route'
 import { GET as apiPlatformCron } from '../../apps/services/api/src/app/api/cron/platform/route'
 import {
   createOwnerPaymentAccountConnection,
@@ -1217,7 +1216,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
       ).rejects.toThrow('SECRET_CONTEXT_INVALID')
       expect(JSON.stringify(answer)).toBe('true')
     })
-    it('the configured runtime and both existing cron adapters use only scoped account keys', async () => {
+    it('the configured runtime and API cron use scoped account keys during financial reconciliation', async () => {
       const f = await configurationFixture()
       const integrations = await unsafe.tenantIntegration.findMany({
         where: {
@@ -1325,7 +1324,6 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
           new Request('http://internal.example.test/api/cron/platform', {
             headers: { authorization: 'Bearer synthetic-account-cron' },
           })
-        expect((await legacyPlatformCron(request())).status).toBe(200)
         expect((await apiPlatformCron(request())).status).toBe(200)
         expect(fetch).toHaveBeenCalled()
         const payment = await unsafe.payment.create({
@@ -1372,7 +1370,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
         )
         // The existing service runtime gets a real business-role pool only for financial work.
         financialRuntime = getDatabaseRuntime()
-        expect((await legacyPlatformCron(request())).status).toBe(200)
+        expect((await apiPlatformCron(request())).status).toBe(200)
         expect(
           (
             await unsafe.payment.findUniqueOrThrow({
@@ -1384,7 +1382,6 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
           'WEBHOOK_RECONCILIATION_REQUIRED'
         )
         expect(hooks.get(f.apiKey)![0].interrupted).toBe(true)
-        expect((await apiPlatformCron(request())).status).toBe(200)
       } finally {
         if (financialRuntime) {
           await financialRuntime.prisma.$disconnect()

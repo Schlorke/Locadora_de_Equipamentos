@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { getDatabaseRuntime } from '@gb-locacoes/backend/runtime'
-import { processPayment as legacyProcessPayment } from '@/lib/payment-processor'
+
 import { processPayment as serviceProcessPayment } from '../../apps/services/api/src/host/payment-webhooks'
 import {
   cleanupTestData,
@@ -19,7 +19,6 @@ import {
 // sai no bloco F; a do serviço fica.
 const { prisma } = getDatabaseRuntime()
 const HOSTS = [
-  { name: 'legacy root', processPayment: legacyProcessPayment },
   { name: 'service', processPayment: serviceProcessPayment },
 ] as const
 

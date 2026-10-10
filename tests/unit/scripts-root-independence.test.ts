@@ -4,13 +4,13 @@ import ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
 /**
- * Os scripts operacionais (`scripts/**`, inclusive os que o package.json chama) sobrevivem à exclusão da raiz
- * legada (plano da onda 135, seções 6.1 e 6.2): nenhum importa `app/`, `lib/`, `middlewares/`, `schemas/`, `types/`
- * ou `proxy.ts`, nem por `@/` nem por caminho relativo. O que eles usavam da raiz foi portado (D9 = portar): Prisma e
- * Supabase pelo `@gb-locacoes/backend/runtime`, o código de orçamento por `@gb-locacoes/backend/quotations`, e as
- * quarentenas `lib/storage-utils.ts` (COD-03) e `lib/google-merchant/*` (COD-04) para `scripts/ops/`.
+ * Os scripts operacionais (`scripts/**`, inclusive os que o package.json chama) não podem voltar a importar a raiz
+ * antiga retirada em F (plano da onda 135, seções 6.1 e 6.2): `app/`, `lib/`, `middlewares/`, `schemas/`, `types/`
+ * ou `proxy.ts`, nem por `@/` nem por caminho relativo. Os antigos lib/storage-utils.ts (COD-03) e
+ * lib/google-merchant/* (COD-04) foram retirados; as quarentenas portadas pertencem a `scripts/ops/`.
+ * Prisma/Supabase usam `@gb-locacoes/backend/runtime` e orçamento `@gb-locacoes/backend/quotations`.
  * Só o import é cobrado (declaração, `export … from`, `import()`, `require()` e `import('…')` de tipo); texto que
- * apenas cita o caminho, como o reescritor `scripts/fix-prisma-imports.js`, não conta.
+ * apenas cita o caminho, como o antigo reescritor scripts/fix-prisma-imports.js retirado em F, não conta.
  */
 const ROOT = path.resolve(import.meta.dirname, '../..')
 const LEGACY_ROOTS = ['app', 'lib', 'middlewares', 'schemas', 'types', 'proxy']
@@ -59,7 +59,7 @@ function importedSpecifiers(file: string, source: string): string[] {
   return found
 }
 
-/** O especificador leva à raiz legada? `@/lib/x`, `../lib/x`, `../../app/x`, `../proxy`… */
+/** O especificador leva à raiz antiga retirada? Exemplos sintéticos: `@/lib/x`, `../lib/x`, `../../app/x`, `../proxy`. */
 function reachesLegacyRoot(file: string, specifier: string): boolean {
   let target: string
   if (specifier.startsWith('@/')) target = specifier.slice(2)
@@ -74,6 +74,8 @@ function reachesLegacyRoot(file: string, specifier: string): boolean {
 
 describe('scripts operacionais sem a raiz legada', () => {
   it('reconhece só import real e só a raiz legada', () => {
+    // Os imports de app/lib/middleware/proxy antigos retirados abaixo são textos adversariais passados ao parser,
+    // sem escrever arquivos ou carregar essas fachadas no runtime. O controle string mantém o mesmo texto sem import.
     const source = [
       "import a from '@/lib/prisma'",
       "export { b } from '../lib/x'",

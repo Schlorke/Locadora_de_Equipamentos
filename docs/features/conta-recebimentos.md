@@ -72,12 +72,14 @@ com a criação desligada ou outro modelo, devolve ao dono os pedidos nunca
 enviados. Nunca vão para fila, auditoria, `lastErrorCode` ou resposta.
 
 **Rotas e composição (parte B).** `GET` e
-`POST /api/admin/payment-account/create` existem nos dois hosts (`app/api` da
-raiz legada e `apps/services/api`), com a mesma composição:
-`handleConfiguredPaymentAccountCreation` em `runtime/platform-jobs.ts`, oferta
-em transação READ ONLY e pedido no papel de plataforma isolado, sem chamada ao
-provedor. `runtime/subaccount-creation.ts` lê os interruptores uma vez para os
-dois hosts:
+`POST /api/admin/payment-account/create` coexistiam nos dois adapters da parte B
+(`app/api` da raiz antiga, retirada em F, e `apps/services/api`). Hoje o adapter
+canônico é
+`apps/services/api/src/app/api/admin/payment-account/create/route.ts`, com a
+mesma composição: `handleConfiguredPaymentAccountCreation` em
+`runtime/platform-jobs.ts`, oferta em transação READ ONLY e pedido no papel de
+plataforma isolado, sem chamada ao provedor. `runtime/subaccount-creation.ts` lê
+os interruptores uma vez para os dois hosts:
 
 - `PLATFORM_SUBACCOUNT_CREATION`: só `on` liga; ausente ou `off` desliga; outro
   valor é inválido e também deixa a criação indisponível;
@@ -551,8 +553,9 @@ Referências oficiais:
 - `packages/backend/src/modules/billing/receiving-account-readiness.ts`
 - `packages/backend/src/http/owner-payment-account-create.ts`
 - `packages/backend/src/runtime/{subaccount-creation,platform-jobs}.ts`
-- `app/api/admin/payment-account/create/route.ts` e
-  `apps/services/api/src/app/api/admin/payment-account/create/route.ts`
+- `apps/services/api/src/app/api/admin/payment-account/create/route.ts`:
+  GET/POST privado com principal ativo; o runtime revalida dono e vínculo. A
+  antiga `app/api/admin/payment-account/create/route.ts` foi retirada em F.
 - `packages/frontend/src/pages/recebimentos-admin/` (`api/creation-offer.ts`,
   `api/create-account.ts`, `model/use-account-creation.ts`,
   `model/valor-faturamento.ts`, `ui/AccountCreation.web.tsx`)

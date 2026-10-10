@@ -93,9 +93,9 @@ export const GB_SITE_CONTENT = Object.freeze({
   }),
   // 55763c1e: widgets/avaliacoes-google/ui/Avaliacoes.web.tsx:20 (selo e pesquisa do Google Avaliações do Consumidor).
   googleMerchantId: '5721491678',
-  // Onda 135, A11 (decisão do dono D4 de 2026-10-08): medição da GB. eb4c0098: app/layout.tsx:191 (ID do Google
-  // Analytics 4, o padrão do código quando NEXT_PUBLIC_GA_MEASUREMENT_ID faltava) e :193 (ID do Google Ads, idem com
-  // NEXT_PUBLIC_GOOGLE_ADS_ID).
+  // Onda 135, A11 (decisão do dono D4 de 2026-10-08): medição da GB. O antigo app/layout.tsx da raiz foi retirado em F;
+  // a referência histórica eb4c0098:191/:193 documenta os IDs padrão de Analytics 4/Google Ads usados quando
+  // NEXT_PUBLIC_GA_MEASUREMENT_ID/NEXT_PUBLIC_GOOGLE_ADS_ID faltavam.
   googleAnalyticsId: 'G-5S49T61C7N',
   googleAdsId: 'AW-17933178077',
 })
@@ -105,7 +105,8 @@ export const GB_SITE_CONTENT_PENDING = Object.freeze([
   'siteContent.fleetSize (D-B)',
   'siteContent.reviews (D-A)',
   // D4: na produção os dois códigos vinham do ambiente (GOOGLE_SITE_VERIFICATION e FACEBOOK_DOMAIN_VERIFICATION em
-  // app/layout.tsx:157-171), nunca do código; o script não inventa valor. O dono informa no painel ou verifica pelo DNS.
+  // antigo app/layout.tsx:157-171 da raiz, retirado em F), nunca do código; o script não inventa valor.
+  // O dono informa no painel ou verifica pelo DNS.
   'siteContent.googleSiteVerification (D4)',
   'siteContent.facebookDomainVerification (D4)',
 ])

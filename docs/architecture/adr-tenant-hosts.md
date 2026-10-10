@@ -1,11 +1,25 @@
 # ADR: locadora resolvida pelo host (subdomínio)
 
-Decisão de produto tomada pelo usuário em 2026-09-26. Estado: aceita. Os Lotes 0
-a 4b estão implementados no commit `da19f601` (onda 2). Os Lotes 6 e 7a estão
-implementados só na árvore de trabalho (onda 3, sem commit), com as pendências
-da seção "Estado da implementação". Os Lotes 5 e 7b a 12 estão pendentes. Com o
-Lote 4b, esta ADR substitui `docs/architecture/adr-web-route-groups.md` na parte
-de rotas.
+Decisão de produto do usuário de 2026-09-26: aceita. Com o Lote 4b, esta ADR
+substitui `docs/architecture/adr-web-route-groups.md` na parte de rotas.
+
+## Situação do clone pós-F — 2026-10-09
+
+A primeira etapa foi publicada na árvore limpa
+`978ceb9244c81c7cb2888b798fad8ce90edad25e`. No clone independente pós-F, o
+antigo `app/`, as fachadas `lib/`, `proxy.ts`, `next.config.mjs` e `vercel.json`
+da raiz foram aposentados. O host web permanece em `apps/clients/web`; o
+servidor HTTP é `apps/services/api`, sobre os módulos de `packages/backend`.
+Isso não retira o motor de autenticação `legacy`, não ativa infraestrutura e não
+corta a produção da GB.
+
+A medição de arquitetura registrada saiu com exit 0 e `oldScopesIntact=true` ao
+atualizar a baseline; não é o gate final. Tipos, testes, builds e gates finais
+pós-F ainda estão pendentes. A rodada focada existente de
+`p2-validation/test-unit.log` tem 245 aprovados e duas falhas de
+retired-artifacts; não é certificado de fechamento. Lotes 8, 9, 10, 11 e o corte
+operacional 12 têm seus próprios critérios; os registros datados abaixo não
+substituem uma validação atual de infraestrutura.
 
 ## Contexto
 
@@ -15,12 +29,13 @@ PostgreSQL aplica RLS com `FORCE` e o contexto `app.tenant_id` vale só dentro d
 transação; o acesso privado depende de membership ativo; nada atravessa
 locadoras.
 
-Antes desta decisão, a locadora pública era escolhida por `?tenantSlug=` e
-`sessionStorage` na web, por `tenantSlug` e `x-tenant-id` no mobile, e o painel
-usava seleção explícita (`selected-tenant-id` e `x-tenant-id`). O host web novo
-(`apps/clients/web`, Next 16.3.6) ainda não está em produção: o `vercel.json` da
-raiz faz build só do legado, e o host web encaminha `/api` ao legado por
-`rewrites().fallback` para `WEB_API_ORIGIN`.
+Na configuração anterior à decisão, a locadora pública vinha de
+?tenantSlug/sessionStorage na web e tenantSlug/x-tenant-id no mobile; o painel
+usava seleção explícita. O antigo `vercel.json` da raiz construía o legado, e a
+API passava por rewrites de fallback. Esse arquivo foi aposentado no clone
+pós-F; os configs atuais são `apps/clients/web/vercel.json` e
+`apps/services/api/vercel.json`. Hoje o proxy web encaminha /api com contexto de
+borda para WEB_API_ORIGIN do serviço, sem fallback para a árvore raiz.
 
 Decisões de produto do usuário (2026-09-26):
 
@@ -29,10 +44,11 @@ Decisões de produto do usuário (2026-09-26):
 - existe **um único app mobile** para todas as locadoras;
 - o nome da plataforma é **provisório** e fica em um único lugar central.
 
-## Fatos verificados que condicionam o desenho
+## Fatos levantados na decisão e em suas emendas
 
-Conferidos no código instalado (Next 16.3.6, Better Auth 1.7.6) e na
-documentação da Vercel antes da decisão.
+Os itens desta seção registram verificações que condicionaram o desenho e as
+emendas posteriores nas versões indicadas (Next 16.3.6, Better Auth 1.7.6). Não
+são prova de produção nem aprovação automática de um build pós-F.
 
 - **Rotas dinâmicas vêm antes do `fallback`.** Com `(public)/[locadora]`,
   `/api/equipamentos/search` casaria com a rota da locadora antes do rewrite de
@@ -66,7 +82,9 @@ documentação da Vercel antes da decisão.
   só lê `x-forwarded-*` com `trustedProxyHeaders`. A origem pública chega ao
   backend pelo contexto de borda, nunca por `x-forwarded-host`.
 - **A Vercel aceita prefixos de preview** no formato `{prefixo}---{url}`.
-- **O JSON-LD atual permite XSS** (`StructuredData.tsx`, `SEOSchemas.tsx`).
+- No levantamento original, StructuredData.tsx/SEOSchemas.tsx permitiam XSS; a
+  decisão D12 exige JSON-LD escapado. A constatação histórica não declara
+  vulnerabilidade atual nem dispensa a caracterização de serialização.
 - **`/api/drei-proxy` é usado pelo carrossel 3D crítico**
   (`ModelViewer.web.tsx`); negar essa rota em host de locadora quebraria o
   componente.
@@ -189,18 +207,22 @@ define:
 - `x-platform-client-ip`: valor de `x-real-ip` definido pela Vercel no projeto
   web.
 
-O segredo é compartilhado, estático e rotacionável (`PLATFORM_EDGE_SECRET` e
-`PLATFORM_EDGE_SECRET_PREVIOUS`). Quem chama o legado direto consegue forjar
-headers, mas não carrega o cookie da vítima; o segredo torna a forja impossível
-a custo mínimo. Sem segredo válido, o backend trata a requisição como "sem host"
-(falha fechada).
+O backend valida a borda com o segredo atual e o anterior. Chamar o serviço
+diretamente pode forjar os headers públicos, mas não o segredo da borda nem o
+cookie da vítima. Sem segredo válido, a requisição é tratada como sem host, com
+falha fechada. Essa proteção pertence ao backend, não a uma API raiz
+remanescente.
 
-## Estrutura de pastas do host web (Lote 4b)
+## Estrutura do host web
+
+Os caminhos abaixo são relativos a `apps/clients/web/`; não são arquivos da raiz
+aposentada do repositório. O antigo `proxy.ts` raiz foi aposentado; o owner
+ativo é `apps/clients/web/src/proxy.ts`.
 
 ```text
-apps/clients/web/src/
-  proxy.ts
-  host/
+apps/clients/web/
+  src/proxy.ts
+  src/host/
     routing/decide.ts (+ decide.test.ts)     # tabela do proxy, pura
     routing/route-table.ts                   # TENANT_API_ALLOWLIST, TENANT_ACCOUNT_API, TENANT_API_DENYLIST, PUBLIC_TENANT_QUERY_ROUTES, LOCAL_API_ROUTES, APP_HOST_PATHS, LABS_PATHS
     routing/public-entries.generated.ts      # gerado por tools/generate-public-entries.mjs (+ teste de sincronia)
@@ -209,7 +231,7 @@ apps/clients/web/src/
     providers/AppHostProviders.tsx           # 'use client'; admin, equipe, labs
     providers/PlatformProviders.tsx          # 'use client'; apex
     auth/client.ts                           # basePath relativo (mesma origem)
-  app/
+  src/app/
     layout.tsx                               # <html>/<body>/fontes/CSS; sem providers de área, sem dados
     not-found.tsx                            # 404 neutro, noindex
     (platform)/plataforma/                   # alcançável SÓ via rewrite do apex
@@ -233,7 +255,7 @@ apps/clients/web/src/
     (auth)/admin/login/ recuperar-senha/ reset-password/ auth/callback/
     (admin)/layout.tsx + admin/**            # URLs /admin/** inalteradas, só no host app
     (labs)/layout.tsx + **                   # notFound() sem PLATFORM_LABS_ENABLED=true ou em produção
-    api/internal/revalidate/route.ts         # Lote 9: único handler local (LOCAL_API_ROUTES)
+    api/internal/revalidate/route.ts         # previsto no Lote 9; ainda ausente no clone pós-F
 ```
 
 - As URLs visíveis não mudam: no host da locadora continuam `/`,
@@ -265,10 +287,10 @@ Acesso direto ao segmento interno fica bloqueado em cinco camadas:
 sequenceDiagram
   autonumber
   participant N as Navegador (a.raiz)
-  participant P as proxy.ts
+  participant P as apps/clients/web/src/proxy.ts
   participant R as App Router
-  participant G as host/server/public-api.ts
-  participant L as Legado (WEB_API_ORIGIN)
+  participant G as apps/clients/web/src/host/server/public-api.ts
+  participant L as API (apps/services/api, WEB_API_ORIGIN)
   participant DB as PostgreSQL (RLS FORCE)
   N->>P: GET https://a.raiz/equipamentos/eq1
   P->>P: classifyHost = tenant(a); remove x-platform-* de entrada
@@ -277,7 +299,7 @@ sequenceDiagram
   G->>L: GET /api/public/tenants/a (tags t:a:site)
   L->>DB: organizations (global) slug=a
   L-->>G: 200 cartão, ou 404 idêntico para inexistente/suspensa
-  G-->>R: site ou null (notFound → app/not-found.tsx)
+  G-->>R: site ou null (notFound → apps/clients/web/src/app/not-found.tsx)
   R->>G: getPublicEquipment("a","eq1")
   G->>L: GET /api/equipments/eq1?tenantSlug=a
   L->>DB: withTenantTransaction(tenantA)
@@ -297,8 +319,8 @@ sequenceDiagram
 sequenceDiagram
   autonumber
   participant N as Navegador
-  participant A as a.raiz (proxy + legado)
-  participant C as app.raiz (proxy + legado)
+  participant A as a.raiz (web proxy + API identity)
+  participant C as app.raiz (web proxy + API identity)
   participant G as Google
   N->>A: POST /api/auth/sign-in/social {provider, callbackURL:/area-cliente}
   A->>A: handleIdentityRequest reconstrói URL https://a.raiz; originCheck usa trustedOrigins(req) = [app, https://a.raiz]
@@ -320,8 +342,8 @@ sequenceDiagram
 sequenceDiagram
   autonumber
   participant N as Navegador
-  participant P as proxy.ts
-  participant L as Legado
+  participant P as apps/clients/web/src/proxy.ts
+  participant L as API (apps/services/api)
   participant DB as PostgreSQL
   N->>P: GET https://a.raiz/admin/orcamentos
   P-->>N: 308 https://app.raiz/admin/orcamentos?locadora=a
@@ -350,7 +372,7 @@ sequenceDiagram
   participant U as App Expo
   participant O as iOS/Android
   participant P as proxy (app.raiz)
-  participant L as Legado
+  participant L as API (apps/services/api)
   O->>U: https://raiz/l/a/equipamentos/eq1 (AASA/assetlinks servidos no apex)
   U->>U: rota l/[slug]/[...path]: isTenantSlug(a) e caminho na allowlist
   U->>P: GET /api/public/tenants/a
@@ -372,14 +394,18 @@ sequenceDiagram
   `{ hostKind, tenantSlug?, origin, clientIp } | null`. Valida
   `x-platform-edge-auth` contra o segredo atual e o anterior com
   `timingSafeEqual` e revalida `origin` com `classifyHost`.
-- `lib/tenant.ts`: `resolvePublicRequestTenant(request, { bodySlug })` segue a
-  tabela abaixo. `resolvePublicTenant(slug)` passa a usar `isTenantSlug` do
-  contrato; um teste de arquitetura proíbe chamá-la direto de um handler.
-- `tenant-principal.ts`: candidatos
-  `{ source: 'host' | 'header' | 'cookie'; tenantId }`; mais de um id distinto
-  dá 400 `Conflicting tenant selection`.
-- `lib/security/mutation-origin.ts`: origem esperada =
-  `edge?.origin ?? WEB_PUBLIC_ORIGIN`.
+- `packages/backend/src/modules/identity/public-tenant.ts` contém a política de
+  resolvePublicRequestTenant e resolvePublicTenant, composta por
+  `apps/services/api/src/host/runtime.ts`. A antiga `lib/tenant.ts` foi
+  aposentada no clone pós-F; a tabela abaixo conserva seleção/conflito/erro.
+- `packages/backend/src/modules/identity/tenant-principal.ts` combina fontes
+  host/header/cookie e recusa mais de um tenantId distinto; o adapter privado
+  está em `apps/services/api/src/host/private-identity.ts`.
+- A antiga `lib/security/mutation-origin.ts` foi aposentada. A política atual
+  está em `packages/backend/src/modules/identity/same-origin-mutation.ts`, com
+  adapter em `apps/services/api/src/host/mutation-origin.ts`: a borda válida
+  determina a origem; sem ela, usa origem configurada válida ou a origem da
+  requisição, mantendo a checagem exata.
 - Rotas novas: `GET /api/equipments/[id]`, `GET /api/public/tenants/[slug]`,
   `GET /api/auth/organizations/current` e, no Lote 6, `POST /api/client/enroll`.
 
@@ -401,6 +427,12 @@ Cache:
 | Rewrite externo                             | **Nunca** ligar `x-vercel-enable-rewrite-caching`.                                                                                               |
 
 ## Identidade (Lote 6)
+
+No clone pós-F, `apps/services/api/src/host/session.ts` compõe os motores reais
+sobre
+`packages/backend/src/modules/identity/{configuration,factory,runtime,application-session}.ts`.
+A retirada da raiz não autoriza remover NextAuth, aceitar JWT após falha Better
+Auth ou transformar erro em sessão anônima bem-sucedida.
 
 - `baseURL` estático `https://app.<raiz>`; nunca `allowedHosts` com curinga.
 - `trustedOrigins(request)` = origens estáticas (`${scheme}://`, `exp://` só em
@@ -459,13 +491,15 @@ Cache:
   saída é trocar o esquema por App Links/Universal Links (`https`) quando os
   identificadores do app existirem.
 
-## ISR, SEO e mobile
+## Requisitos de ISR, SEO e mobile
 
-- **ISR (Lote 9):** `generateStaticParams` com `[]` e `revalidate = 3600` no
-  layout `[locadora]`; tags `t:{slug}:site`, `t:{slug}:catalog`,
-  `t:{slug}:eq:{id}`. Invalidação em `POST /api/internal/revalidate` (Bearer
-  `PLATFORM_REVALIDATE_SECRET` com `timingSafeEqual`, gramática de tag
-  validada), só no `app.`, emitida pela outbox. O preço cobrado é sempre
+- **ISR (Lote 9, planejado):** o desenho exige `generateStaticParams` com `[]` e
+  `revalidate = 3600` no layout `[locadora]`; tags `t:{slug}:site`,
+  `t:{slug}:catalog`, `t:{slug}:eq:{id}`. A invalidação prevista é
+  `POST /api/internal/revalidate` (Bearer `PLATFORM_REVALIDATE_SECRET`,
+  `timingSafeEqual` e gramática de tag validada), só no `app.`, emitida pela
+  outbox. Esse handler ainda não existe no clone pós-F; a escrita de settings na
+  API não o implementa automaticamente. O preço cobrado deve continuar
   recalculado no servidor com `Decimal.js`.
 - **SEO (Lote 5):** `robots.txt` por locadora com `Disallow` das áreas privadas
   e `Sitemap` na origem canônica (fora de produção, `Disallow: /`); sitemap com
@@ -473,12 +507,17 @@ Cache:
   `(auth)`, `(account)`, `(labs)` e nos `not-found`; JSON-LD com `<` escapado e
   sem dados padrão da GB. `Setting.publicBaseUrl` deixa de ser fonte: e-mails,
   PDFs e Merchant usam `canonicalOrigin`.
-- **Mobile (Lote 7b):** `app.config.ts` lê `platform.json` (nome, slug, scheme),
-  `associatedDomains` e `intentFilters` no apex com prefixo `/l/`, `apiUrl` =
-  `https://app.<raiz>`. Rotas `l/[slug]/[...path]` (caminhos permitidos: vazio,
-  `equipamentos`, `equipamentos/{id}`, `orcamento`, `contato`; nunca token, id
-  ou papel no link) e `locadoras`. `?tenantSlug=` no deep link é aceito por uma
-  versão.
+- **Mobile (Lote 7b, desenho aprovado):** prevê `app.config.ts` lendo
+  `platform.json` (nome, slug, scheme), `associatedDomains` e `intentFilters` no
+  apex com prefixo `/l/`, e `apiUrl` = `https://app.<raiz>`. Prevê rotas
+  `l/[slug]/[...path]` (caminhos permitidos: vazio, `equipamentos`,
+  `equipamentos/{id}`, `orcamento`, `contato`; nunca token, id ou papel no link)
+  e `locadoras`; `?tenantSlug=` no deep link seria aceito por uma versão. No
+  clone pós-F, o Expo usa `apps/clients/mobile/app.json`; não há
+  `app.config.ts`. A origem real vem de EXPO_PUBLIC_API_URL em
+  `apps/clients/mobile/src/host/api-config.ts`, e o modo de autenticação de
+  EXPO_PUBLIC_AUTH_MODE em `src/host/auth/client.ts`. A retirada da raiz não
+  certifica associação de domínio ou convergência desses identificadores.
 - **Diretório (Lotes 7a e 7c):** busca com `q` de 3 caracteres ou mais, no
   máximo 10 resultados, só `ACTIVE` com opt-in, sem CNPJ, telefone, e-mail, CEP,
   paginação ou logo; cartão por slug com logo lido em transação da locadora;
@@ -506,10 +545,11 @@ lugar: o banco não a guarda, e o preflight do Lote 3 lê o JSON.
   as mensagens nunca repetem segredos. Não exige nem recusa `WEB_API_ORIGIN`,
   que é só do processo web: devolve `apiOrigin` normalizada ou `null` (onda 4,
   entrada 188 de `docs/issues/known-issues.md`);
-- `resolveWebPlatformEnv(process.env)`, só no web (`proxy.ts` e o gateway
-  `host/server/public-api.ts`): `resolvePlatformEnv` mais `WEB_API_ORIGIN`
-  válida (só a origem, https fora de development) e obrigatória em produção. O
-  backend nunca usa esta função;
+- `resolveWebPlatformEnv(process.env)`, só no web
+  (`apps/clients/web/src/proxy.ts` e
+  `apps/clients/web/src/host/server/public-api.ts`): resolvePlatformEnv mais
+  WEB_API_ORIGIN válida (só a origem, https fora de development) e obrigatória
+  em produção. O backend nunca usa esta função;
 - `platformOrigins(env, via?)` e `tenantOrigin(env, slug, via?)`, que no preview
   montam as origens irmãs do mesmo deploy; `canonicalOrigin(env, alvo)` sempre
   sob o domínio raiz;
@@ -521,13 +561,13 @@ do cartão público (qualquer chave extra é rejeitada; logo só em https).
 Exports: `@gb-locacoes/contracts/platform`, `/platform.json` e `/directory`. O
 escopo npm `@gb-locacoes/*` continua; renomear é outra decisão.
 
-| Consumidor          | Onde usa                                                                                                                                                           |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Web                 | proxy, layouts, rotas de SEO                                                                                                                                       |
-| Backend             | `configuration.ts` e `factory.ts` (`appName`, origens), `lib/identity.ts` (`PLATFORM.displayName` no lugar de `PLATFORM_NAME`), `lib/tenant.ts`, `mutation-origin` |
-| E-mails de negócio  | marca e contatos da locadora vindos de `Setting`, remetente da plataforma                                                                                          |
-| Mobile              | `app.config.ts`                                                                                                                                                    |
-| `packages/frontend` | recebe o nome por props ou provider, sem ler env                                                                                                                   |
+| Consumidor          | Onde usa                                                                                                                                                                                                                                                           |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Web                 | proxy, layouts, rotas de SEO                                                                                                                                                                                                                                       |
+| Backend/API         | `packages/backend/src/modules/identity/{configuration,factory,runtime,public-tenant,same-origin-mutation}.ts` e `apps/services/api/src/host/{session,runtime,mutation-origin}.ts`; as antigas `lib/identity.ts` e `lib/tenant.ts` foram aposentadas no clone pós-F |
+| E-mails de negócio  | marca e contatos da locadora vindos de `Setting`, remetente da plataforma                                                                                                                                                                                          |
+| Mobile              | `apps/clients/mobile/src/host/auth/client.ts` usa PLATFORM no cookiePrefix; `apps/clients/mobile/app.json` é o config Expo atual. Derivação por `app.config.ts` permanece requisito do Lote 7b.                                                                    |
+| `packages/frontend` | recebe o nome por props ou provider, sem ler env                                                                                                                                                                                                                   |
 
 ## Modelo de dados
 
@@ -568,29 +608,37 @@ minúsculo, nunca sob `PLATFORM_ROOT_DOMAIN`; status `PENDING`, `VERIFIED`,
 por TXT, mapa `hostname → slug` em Edge Config e reverificação periódica contra
 takeover.
 
-## Variáveis de ambiente
+## Variáveis de ambiente dos hosts atuais
 
-| Variável                                                | Onde                         | Valor                                              | Observação                                                       |
-| ------------------------------------------------------- | ---------------------------- | -------------------------------------------------- | ---------------------------------------------------------------- |
-| `PLATFORM_ROOT_DOMAIN`                                  | web, legado, build do mobile | `localhost`, `staging.<raiz>`, `<raiz>`            | Obrigatória fora de development. Sem esquema, porta ou caminho.  |
-| `PLATFORM_ENV`                                          | web, legado                  | `development`, `preview`, `staging`, `production`  | Produção exige https e proíbe labs.                              |
-| `PLATFORM_PUBLIC_PORT`                                  | web, legado                  | `3001`                                             | Só em development (web em 3001, legado em 3000).                 |
-| `PLATFORM_EDGE_SECRET`, `PLATFORM_EDGE_SECRET_PREVIOUS` | web (proxy), legado          | 32 caracteres ou mais                              | Rotação com dois valores aceitos.                                |
-| `PLATFORM_LABS_ENABLED`                                 | web                          | `false`                                            | Ignorada em produção.                                            |
-| `PLATFORM_CUSTOM_DOMAINS`                               | web                          | `off`                                              | Lote 11.                                                         |
-| `PLATFORM_REVALIDATE_SECRET`                            | web, legado                  | 32 caracteres ou mais                              | Lote 9.                                                          |
-| `PLATFORM_RATE_LIMIT_SECRET`                            | legado                       | 32 caracteres ou mais                              | Lote 7a. Obrigatória em produção e igual em todas as instâncias. |
-| `PLATFORM_IOS_TEAM_ID`, `PLATFORM_ANDROID_CERT_SHA256`  | web                          | —                                                  | Arquivos de associação dos links (Lote 7c).                      |
-| `WEB_API_ORIGIN`                                        | web                          | origem da API configurada, legada ou compartilhada | Obrigatória em produção; https fora de development.              |
-| `BETTER_AUTH_URL`                                       | legado                       | `https://app.<raiz>`                               | Em produção, validada como igual à origem `app`.                 |
-| `AUTH_TRUSTED_ORIGINS`                                  | legado                       | `locadora://` (e `exp://` só em dev)               | O curinga já é proibido.                                         |
-| `BETTER_AUTH_TRUSTED_ORIGINS`                           | legado                       | vazia                                              | Recusada no Lote 6: o Better Auth a somaria a toda requisição.   |
-| `WEB_PUBLIC_ORIGIN`                                     | legado                       | domínio legado                                     | Só para requisições sem borda. Sai no Lote 12.                   |
-| `AUTH_MODE`, `NEXT_PUBLIC_AUTH_MODE`                    | legado, web                  | `better-auth` para login em subdomínio             | Já existem.                                                      |
+| Variável                                            | Onde                                   | Valor/contrato                            | Observação                                                                                                           |
+| --------------------------------------------------- | -------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| PLATFORM_ROOT_DOMAIN                                | web, API; mobile no desenho do Lote 7b | localhost, staging.<raiz>, <raiz>         | Obrigatória fora de development; sem esquema, porta ou caminho.                                                      |
+| PLATFORM_ENV                                        | web, API                               | development, preview, staging, production | Produção exige https e proíbe labs.                                                                                  |
+| PLATFORM_PUBLIC_PORT                                | web, API                               | 3001                                      | Porta pública só em development; a origem do serviço é configurada separadamente por WEB_API_ORIGIN.                 |
+| PLATFORM_EDGE_SECRET, PLATFORM_EDGE_SECRET_PREVIOUS | proxy web e API                        | segredo próprio com 32 caracteres ou mais | Rotação com dois valores aceitos, sem publicar credenciais.                                                          |
+| PLATFORM_LABS_ENABLED                               | web                                    | false                                     | Ignorada em produção.                                                                                                |
+| PLATFORM_CUSTOM_DOMAINS                             | web                                    | off                                       | Lote 11 mantém critérios próprios.                                                                                   |
+| PLATFORM_REVALIDATE_SECRET                          | web/API no plano do Lote 9             | segredo próprio com 32 caracteres ou mais | Revalidação ainda planejada; não há handler interno no clone.                                                        |
+| PLATFORM_RATE_LIMIT_SECRET                          | API                                    | segredo próprio com 32 caracteres ou mais | Obrigatória em produção e igual entre instâncias do mesmo produto.                                                   |
+| PLATFORM_IOS_TEAM_ID, PLATFORM_ANDROID_CERT_SHA256  | web                                    | configuração futura                       | Associação dos links; não inventar conta, certificado ou publicação.                                                 |
+| WEB_API_ORIGIN                                      | web                                    | origem explícita de apps/services/api     | Obrigatória em produção; https fora de development.                                                                  |
+| BETTER_AUTH_URL                                     | API                                    | https://app.<raiz>                        | Em produção, igual à origem app.                                                                                     |
+| AUTH_TRUSTED_ORIGINS                                | API                                    | locadora://; exp:// só em dev             | Sem curinga de host.                                                                                                 |
+| BETTER_AUTH_TRUSTED_ORIGINS                         | API                                    | vazia                                     | Recusada para impedir soma de origens globais à função por requisição.                                               |
+| WEB_PUBLIC_ORIGIN                                   | API                                    | origem pública configurada                | Compatibilidade de chamadas sem borda, validada por same-origin-mutation; não é removida automaticamente com a raiz. |
+| AUTH_MODE                                           | API/backend                            | legacy ou better-auth                     | Seleção real do motor; não elimina o modo legacy ao aposentar o servidor antigo.                                     |
+| NEXT_PUBLIC_AUTH_MODE                               | build do web                           | mesmo modo escolhido para a UI            | Variável pública embutida no bundle; mudança exige reconstrução do web.                                              |
+| EXPO_PUBLIC_AUTH_MODE                               | build do mobile                        | legacy ou better-auth                     | Lida pelo cliente Expo; independente do nome usado pelo bundle web.                                                  |
 
-A aposentar: `PLATFORM_NAME` (substituída por `platform.json`),
-`ZOHO_REDIRECT_URI` e `NEXTAUTH_URL` (Lote 12). `EXPO_PUBLIC_API_URL` passa a
-ser derivada em `app.config.ts`.
+O plano original do Lote 12 previa aposentar PLATFORM_NAME, ZOHO_REDIRECT_URI e
+NEXTAUTH_URL. PLATFORM_NAME foi substituída pelo platform.json; a retirada da
+árvore raiz não declara eliminadas variáveis ainda usadas pelo motor legacy, SSR
+ou callbacks. NEXTAUTH_URL e NEXTAUTH_URL_INTERNAL precisam ser URLs válidas no
+runtime que os usa; não neutralizar como string vazia. EXPO_PUBLIC_API_URL é a
+origem configurada em `apps/clients/mobile/src/host/api-config.ts`; sua
+derivação automática por app.config.ts ainda é desenho do Lote 7b.
+Infraestrutura e credenciais de cada ambiente são configuradas depois, sem
+reutilizar os serviços da GB.
 
 ## Testes de isolamento
 
@@ -646,41 +694,44 @@ flowchart LR
 
 Paralelos: Lotes 0 e 1; Lotes 1, 2, 3 e 4a; Lotes 5, 6, 7a e 7c.
 
-| Lote                                    | Escopo                                                                                                                                                                                                                                                                                           | Critérios de saída                                                                                               |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| 0. Contrato e ADR (**implementado**)    | `packages/contracts/src/{platform.json, platform.ts, platform.test.ts, directory.ts, directory.test.ts}`, exports em `packages/contracts/package.json`, `.env.example`, esta ADR, seção em `multiempresa.md`                                                                                     | T1 e T2 verdes com 40 casos ou mais; `tsc -p packages/contracts`; `pnpm arch` sem regressão                      |
-| 1. XSS no JSON-LD (**implementado**)    | `shared/lib/seo/serialize-json-ld.ts`, `StructuredData.tsx`, `SEOSchemas.tsx`, `EquipamentoTrilha.web.tsx` e testes                                                                                                                                                                              | Nome com `</script><script>` sai como `</script...`                                                              |
-| 2. Borda e endpoints (**implementado**) | `modules/identity/{platform-edge, tenant-principal}`, `modules/directory/{index, card}`, `lib/tenant.ts`, `mutation-origin`, as 7 rotas públicas e as 3 novas, testes de segurança                                                                                                               | T7 e T8; sem borda, comportamento idêntico ao atual; cartão com logo via `withTenantTransaction`                 |
-| 3. Slug no banco (**implementado**)     | migração A, `tools/tenant-slug-preflight.mjs`, script `tenant:slug-preflight`, `docs/features/tenant-slug-policy.md`                                                                                                                                                                             | Migração aplica em banco descartável; preflight aborta sem alterar dados; `x`, `a--b` e 64 caracteres rejeitados |
-| 4a. Modo host (**implementado**)        | `public-tenant-routing.ts` (modo `host`), `use-visible-pathname.web.ts` e trocas de `usePathname` (inclui só a fonte do pathname em `ScrollRevealInit.web.tsx`, preservando `scrollRevealReady`, `delayBoundsFit`, `maxDuration={0}` e `disableAutoFit`), links por `resolveHref`, regra de lint | Modo legado intacto; nenhum `href` com `tenantSlug` no modo host; checklist do primeiro modelo 3D sem zoom       |
-| 4b. Host web (**implementado**)         | `proxy.ts`, `host/**`, moves de `app/**`, `next.config.mjs`, `tools/generate-public-entries.mjs`, `vitest.web.config.ts`, e2e, nota em `adr-web-route-groups.md`                                                                                                                                 | T3, T4, T5, T6, T15 e T16; 47 URLs preservadas; `next build`; allowlist conferida                                |
-| 5. SEO por host                         | seo do frontend, Route Handlers de SEO, `email-branding`, `oficio-data-mapper`, `google-merchant/mapper`                                                                                                                                                                                         | T12; `robots` diferentes por host; `noindex` em `app.`, preview, `(auth)` e `(account)`                          |
-| 6. Identidade (**onda 3, parcial**)     | `identity/{configuration, factory}`, `customers/enroll`, `lib/identity.ts`, Zoho, `RuntimeBootstrap.tsx`, vínculo                                                                                                                                                                                | T9 e T10; links de reset no host de origem; papel certo por superfície; `pnpm test:identity`                     |
-| 7a. Diretório (**onda 3**)              | `schema.prisma`, migração B, `tenant-models.json`, `modules/directory/{search, rate-limit}`, `app/api/public/tenants/route.ts`, limpeza no cron                                                                                                                                                  | T13; `pnpm db:generate` e checagem de tenant verdes                                                              |
-| 7c. Diretório web e apex                | `features/buscar-locadora`, `pages/escolher-locadora`, `(platform)/plataforma/{page, l/..., well-known/**}`                                                                                                                                                                                      | Parser de link e allowlist de caminhos testados; UI só com design aprovado                                       |
-| 7b. Mobile                              | `app.config.ts` (remove `app.json`), rotas `l/[slug]/[...path]` e `locadoras`, `active-tenant.ts`                                                                                                                                                                                                | Parser de deep link; troca de locadora limpa estado; bundle; `AUTH_TRUSTED_ORIGINS` com o novo scheme            |
-| 8. Staging multi-host                   | Projeto Vercel com root `apps/clients/web`, domínios curinga, certificado, prefixos de preview, OAuth de staging                                                                                                                                                                                 | T5 a T10, T13 e T16 contra hosts reais                                                                           |
-| 9. ISR                                  | layout e páginas `[locadora]`, gateway, `revalidate`, outbox, handlers de admin                                                                                                                                                                                                                  | T14; LCP igual ou melhor; reversão com `force-dynamic`                                                           |
-| 10. Limpeza da compatibilidade          | `?tenantSlug` de navegação, `sessionStorage`, `?tenantSlug` no deep link                                                                                                                                                                                                                         | Telemetria de parâmetro legado zerada por N semanas                                                              |
-| 11. Domínios próprios                   | `OrganizationDomain`, verificação, Edge Config, classe `custom`                                                                                                                                                                                                                                  | Domínio `PENDING`/`DISABLED` dá 404; T5 a T12 repetidos                                                          |
-| 12. Corte da GB                         | slug e domínio da GB (atribuição de dados com aprovação), DNS, desligamento do legado em produção; a remoção da raiz no repositório não espera este lote (D0 = b, 2026-10-08, `docs/operations/runbook-corte-raiz-legada.md`)                                                                    | Conforme o passo 7 de `adr-backend-extraction.md`                                                                |
+| Lote                                              | Escopo                                                                                                                                                                                                                                                                                                                | Critérios de saída                                                                                               |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 0. Contrato e ADR (**implementado**)              | `packages/contracts/src/{platform.json, platform.ts, platform.test.ts, directory.ts, directory.test.ts}`, exports em `packages/contracts/package.json`, `.env.example`, esta ADR, seção em `multiempresa.md`                                                                                                          | T1 e T2 verdes com 40 casos ou mais; `tsc -p packages/contracts`; `pnpm arch` sem regressão                      |
+| 1. XSS no JSON-LD (**implementado**)              | `shared/lib/seo/serialize-json-ld.ts`, `StructuredData.tsx`, `SEOSchemas.tsx`, `EquipamentoTrilha.web.tsx` e testes                                                                                                                                                                                                   | Nome com `</script><script>` sai como `</script...`                                                              |
+| 2. Borda e endpoints (**implementado na onda 2**) | Na época: módulos identity/directory e antiga `lib/tenant.ts`, aposentada no clone pós-F. Hoje: `packages/backend/src/modules/identity/{platform-edge,tenant-principal,public-tenant,same-origin-mutation}.ts`, directory e `apps/services/api/src/host/runtime.ts`, com adapters em `apps/services/api/src/app/api`. | T7/T8 e guards sem borda; cartão com logo via withTenantTransaction.                                             |
+| 3. Slug no banco (**implementado**)               | migração A, `tools/tenant-slug-preflight.mjs`, script `tenant:slug-preflight`, `docs/features/tenant-slug-policy.md`                                                                                                                                                                                                  | Migração aplica em banco descartável; preflight aborta sem alterar dados; `x`, `a--b` e 64 caracteres rejeitados |
+| 4a. Modo host (**implementado**)                  | `public-tenant-routing.ts` (modo `host`), `use-visible-pathname.web.ts` e trocas de `usePathname` (inclui só a fonte do pathname em `ScrollRevealInit.web.tsx`, preservando `scrollRevealReady`, `delayBoundsFit`, `maxDuration={0}` e `disableAutoFit`), links por `resolveHref`, regra de lint                      | Modo legado intacto; nenhum `href` com `tenantSlug` no modo host; checklist do primeiro modelo 3D sem zoom       |
+| 4b. Host web (**implementado**)                   | `apps/clients/web/src/proxy.ts`, `apps/clients/web/src/host`, rotas em `apps/clients/web/src/app` e `apps/clients/web/next.config.mjs`; tools/generate-public-entries.mjs, vitest.web.config.ts e E2E. Os antigos wrappers `app/` da raiz foram aposentados no clone pós-F.                                           | T3–T6/T15/T16; 47 URLs no registro da onda 2, não contagem atual. Build e allowlist têm validação própria.       |
+| 5. SEO por host                                   | seo do frontend, Route Handlers de SEO, `email-branding`, `oficio-data-mapper`, `google-merchant/mapper`                                                                                                                                                                                                              | T12; `robots` diferentes por host; `noindex` em `app.`, preview, `(auth)` e `(account)`                          |
+| 6. Identidade (**onda 3 e emendas**)              | `packages/backend/src/modules/identity/{configuration,factory,runtime,application-session}.ts`, customers/enroll e `apps/services/api/src/host/session.ts`; a antiga `lib/identity.ts` foi aposentada no clone pós-F.                                                                                                 | T9/T10, reset no host de origem e papel por superfície; gates pós-F pendentes.                                   |
+| 7a. Diretório (**onda 3**)                        | `prisma/schema.prisma`, migrationB, tools/tenant-models.json, `packages/backend/src/modules/directory`, `apps/services/api/src/app/api/public/tenants/route.ts` e limpeza no runtime/outbox.                                                                                                                          | T13 e políticas persistentes; db:generate/tenant:check não substituem as provas de banco.                        |
+| 7c. Diretório web e apex                          | `features/buscar-locadora`, `pages/escolher-locadora`, `(platform)/plataforma/{page, l/..., well-known/**}`                                                                                                                                                                                                           | Parser de link e allowlist de caminhos testados; UI só com design aprovado                                       |
+| 7b. Mobile                                        | `app.config.ts` (remove `app.json`), rotas `l/[slug]/[...path]` e `locadoras`, `active-tenant.ts`                                                                                                                                                                                                                     | Parser de deep link; troca de locadora limpa estado; bundle; `AUTH_TRUSTED_ORIGINS` com o novo scheme            |
+| 8. Staging multi-host                             | Projeto Vercel com root `apps/clients/web`, domínios curinga, certificado, prefixos de preview, OAuth de staging                                                                                                                                                                                                      | T5 a T10, T13 e T16 contra hosts reais                                                                           |
+| 9. ISR                                            | layout e páginas `[locadora]`, gateway, `revalidate`, outbox, handlers de admin                                                                                                                                                                                                                                       | T14; LCP igual ou melhor; reversão com `force-dynamic`                                                           |
+| 10. Limpeza da compatibilidade                    | `?tenantSlug` de navegação, `sessionStorage`, `?tenantSlug` no deep link                                                                                                                                                                                                                                              | Telemetria de parâmetro legado zerada por N semanas                                                              |
+| 11. Domínios próprios                             | `OrganizationDomain`, verificação, Edge Config, classe `custom`                                                                                                                                                                                                                                                       | Domínio `PENDING`/`DISABLED` dá 404; T5 a T12 repetidos                                                          |
+| 12. Corte da GB                                   | slug e domínio da GB (atribuição de dados com aprovação), DNS, desligamento do legado em produção; a remoção da raiz no repositório não espera este lote (D0 = b, 2026-10-08, `docs/operations/runbook-corte-raiz-legada.md`)                                                                                         | Conforme o passo 7 de `adr-backend-extraction.md`                                                                |
 
-Emenda de 2026-10-08 (onda 135, decisões do dono): pela D0 = b, a remoção da
-raiz legada no repositório sai do Lote 12 e acontece logo depois das provas sem
-a raiz (P0, P1 e P2) e da tag `checkpoint/onda-135-pre-exclusao`; o Lote 12 fica
-com o corte de produção da GB, pelo
-[runbook do corte](../operations/runbook-corte-raiz-legada.md). Se a D2,
-decidida no dia do corte, escolher o 308 de `locacoesgb.com.br` para
-`gb.<raiz>`, o Lote 12 vem antes do Lote 11 (o domínio próprio deixa de ser
-pré-requisito do corte).
+Emenda de 2026-10-08 (D0 = b): a retirada da raiz no repositório foi separada do
+corte de produção da GB. A primeira etapa limpa 978ceb9244 foi publicada com tag
+de pré-exclusão; no clone independente pós-F de 2026-10-09, o antigo `app/` e as
+fachadas `lib/` foram aposentados, e a validação final ainda está pendente. O
+Lote 12 continua sendo corte de produção/dados/DNS pelo
+[runbook](../operations/runbook-corte-raiz-legada.md), sem autorização para
+tocar serviços da GB. A decisão D2 sobre eventual 308 de locacoesgb.com.br para
+gb.<raiz> pertence ao dia desse corte; não foi executada por esta retirada.
 
-## Estado da implementação (2026-09-26)
+## Registro histórico da implementação (ondas 2 a 4)
 
-| Lote   | Onde está                   | Provas                                                                                                                                                                                                                                                                                                                                                                            | Pendências                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| ------ | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0 a 4b | commit `da19f601`           | T1 e T2 (`packages/contracts/src/platform.test.ts`), T3 e T4 (`decide.test.ts`), T7 e T8 (`tests/security/tenant-request.test.ts`, `tenant-not-found.test.ts`), T15 (`architecture.test.ts`); gates do commit: `test:security` 455, `test:web` 109, `test:integration` 81 e `build:web` verdes. Detalhes em `docs/features/tenant-hosts-web.md` e `tenant-request-resolution.md`. | T5/T6 só com papel superuser/`BYPASSRLS` (sem prova do RLS); T16 só em `next start`, falta a Vercel (Lote 8); teste visual do primeiro modelo 3D sem zoom não executado.                                                                                                                                                                                                                                                   |
-| 6      | commit `be859915` (onda 3)  | T9 e T10 em `tests/identity/multi-host.integration.test.ts` pelo caminho real `lib/identity` → Better Auth → Prisma com borda assinada; `enroll.integration.test.ts`, `configuration.test.ts`, `legacy-credentials.integration.test.ts`, `zoho-oauth.test.ts` e testes de frontend do modo host; 22 mutações mortas, arquivos restaurados byte a byte.                            | Resolvidas: `/vincular` em `decide.visible-routes.test.ts` antes do commit `be859915`; links de e-mail de `forgot-password` e `register` na origem do host, `?token=` repassado pelas páginas `reset-password` e `cookiePrefix` no `expoClient` na onda 4 (commit `4b02f52f`, entrada 180). Decisões: U3 (tela de vínculo e LGPD), política do `PROFILE_CONFLICT`, rate limit do Better Auth pelo IP real antes do Lote 8. |
-| 7a     | árvore de trabalho (onda 3) | T13 em `tests/security/directory.test.ts` e persistência entre instâncias em `tests/security/auth-rate-limit.test.ts` (dois `PrismaClient`, 40 tentativas concorrentes, exatamente 3 permitidas); mutações de escape, opt-in, ACTIVE, `take`, segredo e classificação do modelo mortas.                                                                                           | Sem tela para ligar `directoryListed`; busca sem ignorar acentos. Decisões: produção sem `PLATFORM_RATE_LIMIT_SECRET` (hoje degrada para janela por instância e registra erro), balde único `unknown` sem IP confiável e o limite de 30 buscas por minuto (a confirmar com o Lote 7c).                                                                                                                                     |
+A tabela conserva commits, testes e pendências do registro original datado
+2026-09-26 e de suas emendas; não é o checklist final pós-F.
+
+| Lote   | Onde está                   | Provas                                                                                                                                                                                                                                                                                                                                                                                             | Pendências                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ------ | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0 a 4b | commit `da19f601`           | T1 e T2 (`packages/contracts/src/platform.test.ts`), T3 e T4 (`decide.test.ts`), T7 e T8 (`tests/security/tenant-request.test.ts`, `tenant-not-found.test.ts`), T15 (`architecture.test.ts`); gates do commit: `test:security` 455, `test:web` 109, `test:integration` 81 e `build:web` verdes. Detalhes em `docs/features/tenant-hosts-web.md` e `tenant-request-resolution.md`.                  | T5/T6 só com papel superuser/`BYPASSRLS` (sem prova do RLS); T16 só em `next start`, falta a Vercel (Lote 8); teste visual do primeiro modelo 3D sem zoom não executado.                                                                                                                                                                                                                                                   |
+| 6      | commit `be859915` (onda 3)  | T9 e T10 em `tests/identity/multi-host.integration.test.ts` pelo caminho então real da antiga `lib/identity` (aposentada no clone pós-F) → Better Auth → Prisma com borda assinada; `enroll.integration.test.ts`, `configuration.test.ts`, `legacy-credentials.integration.test.ts`, `zoho-oauth.test.ts` e testes de frontend do modo host; 22 mutações mortas, arquivos restaurados byte a byte. | Resolvidas: `/vincular` em `decide.visible-routes.test.ts` antes do commit `be859915`; links de e-mail de `forgot-password` e `register` na origem do host, `?token=` repassado pelas páginas `reset-password` e `cookiePrefix` no `expoClient` na onda 4 (commit `4b02f52f`, entrada 180). Decisões: U3 (tela de vínculo e LGPD), política do `PROFILE_CONFLICT`, rate limit do Better Auth pelo IP real antes do Lote 8. |
+| 7a     | árvore de trabalho (onda 3) | T13 em `tests/security/directory.test.ts` e persistência entre instâncias em `tests/security/auth-rate-limit.test.ts` (dois `PrismaClient`, 40 tentativas concorrentes, exatamente 3 permitidas); mutações de escape, opt-in, ACTIVE, `take`, segredo e classificação do modelo mortas.                                                                                                            | Sem tela para ligar `directoryListed`; busca sem ignorar acentos. Decisões: produção sem `PLATFORM_RATE_LIMIT_SECRET` (hoje degrada para janela por instância e registra erro), balde único `unknown` sem IP confiável e o limite de 30 buscas por minuto (a confirmar com o Lote 7c).                                                                                                                                     |
 
 Valores escolhidos no Lote 7a (a ADR não fixava): 30 buscas por minuto por IP;
 janelas fixas alinhadas ao relógio (na virada, até o dobro do limite); limpeza
@@ -712,26 +763,27 @@ as entradas 172, 176 e 180 de `docs/issues/known-issues.md`.
   isolamento vem da reescrita pelo proxy.
 - **Excluir arquivos por extensão no matcher.** `a.<raiz>/b/equipamentos/x.png`
   chegaria a `[locadora]=b` no host A.
-- **Modo de compatibilidade com o fluxo antigo.** O host web ainda não está em
-  produção e `*.localhost` funciona em dev.
-- **`AuthSession.tenantId`.** Sem ganho com cookie host-only e origem exata.
-- **Prisma e Better Auth dentro do host web agora.** Se adiantaria à
-  `adr-backend-extraction.md`; o gateway HTTP para o legado segue a ADR.
+- **Modo de compatibilidade com o fluxo antigo.** Foi rejeitado no desenho;
+  *.localhost é ambiente local e não certifica produção.
+- **AuthSession.tenantId.** Sem ganho com cookie host-only e origem exata.
+- **Prisma e Better Auth dentro do host web.** Continuam responsabilidades de
+  servidor. O gateway atual usa a API compartilhada; o transporte para a raiz
+  antiga foi aposentado no clone pós-F, preservando a fronteira desta ADR.
 
 ## Riscos
 
-| ID  | Risco                                                                                                              | Mitigação                                                                                                                                                                                 |
-| --- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| R1  | Headers sobrescritos pelo proxy podem não chegar ao destino do rewrite externo na Vercel                           | T16 nos Lotes 4b e 8. Sem eles, a borda ausente vira "sem host" e falha fechada.                                                                                                          |
-| R2  | Login CSRF na janela de 60 s do `oauth-proxy`                                                                      | Estado de uso único na estratégia `database`; registrar em `known-issues`.                                                                                                                |
-| R3  | No modo `legacy`, não há login de cliente em subdomínio                                                            | Aceito até o corte do Better Auth.                                                                                                                                                        |
-| R4  | Todos os subdomínios são o mesmo site: `SameSite` não isola locadoras                                              | Origem exata por requisição, `__Host-`, JSON-LD escapado, nunca injetar `customJs`; `gtmId` e pixel só por allowlist com CSP por host. Avaliar a Public Suffix List depois do lançamento. |
-| R5  | Enumeração de e-mail global no cadastro em outra locadora                                                          | Mensagens neutras e rate limit.                                                                                                                                                           |
-| R6  | `test-login`, `fix-storage` e `supabase-setup` continuam acessíveis no domínio legado                              | Verificar o fechamento em produção fora deste desenho.                                                                                                                                    |
-| R7  | Custo de renderização dinâmica até o Lote 9                                                                        | Medir; o ISR vem depois.                                                                                                                                                                  |
-| R8  | APIs experimentais (`unstable_doesMiddlewareMatch`, `proxyClientMaxBodySize`) e `/oauth-proxy-callback` depreciado | Usar só em testes ou fixar versão; usar `/callback/:id/oauth-proxy`.                                                                                                                      |
-| R9  | O otimizador de imagem busca caminhos internos                                                                     | Restringir `images.localPatterns` a caminhos de `public/`.                                                                                                                                |
-| R10 | Varredura de subdomínios gera uma consulta por slug                                                                | Cache de 60 s no perfil e regra do Vercel Firewall para rajadas de 404.                                                                                                                   |
+| ID  | Risco                                                                                                              | Mitigação                                                                                                                                                                                            |
+| --- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1  | Headers sobrescritos pelo proxy podem não chegar ao destino do rewrite externo na Vercel                           | T16 nos Lotes 4b e 8. Sem eles, a borda ausente vira "sem host" e falha fechada.                                                                                                                     |
+| R2  | Login CSRF na janela de 60 s do `oauth-proxy`                                                                      | Estado de uso único na estratégia `database`; registrar em `known-issues`.                                                                                                                           |
+| R3  | No modo `legacy`, não há login de cliente em subdomínio                                                            | Aceito até o corte do Better Auth.                                                                                                                                                                   |
+| R4  | Todos os subdomínios são o mesmo site: `SameSite` não isola locadoras                                              | Origem exata por requisição, `__Host-`, JSON-LD escapado, nunca injetar `customJs`; `gtmId` e pixel só por allowlist com CSP por host. Avaliar a Public Suffix List depois do lançamento.            |
+| R5  | Enumeração de e-mail global no cadastro em outra locadora                                                          | Mensagens neutras e rate limit.                                                                                                                                                                      |
+| R6  | O registro original apontava test-login, fix-storage e supabase-setup no domínio legado.                           | No clone, `apps/services/api/src/app/api/{test-login,fix-storage,supabase-setup}/route.ts` preservam 410 Endpoint retired sem integração. Fechamento em produção continua fora desta retirada local. |
+| R7  | Custo de renderização dinâmica até o Lote 9                                                                        | Medir; o ISR vem depois.                                                                                                                                                                             |
+| R8  | APIs experimentais (`unstable_doesMiddlewareMatch`, `proxyClientMaxBodySize`) e `/oauth-proxy-callback` depreciado | Usar só em testes ou fixar versão; usar `/callback/:id/oauth-proxy`.                                                                                                                                 |
+| R9  | O otimizador de imagem busca caminhos internos                                                                     | Restringir `images.localPatterns` a caminhos de `public/`.                                                                                                                                           |
+| R10 | Varredura de subdomínios gera uma consulta por slug                                                                | Cache de 60 s no perfil e regra do Vercel Firewall para rajadas de 404.                                                                                                                              |
 
 ## Decisões pendentes do usuário
 

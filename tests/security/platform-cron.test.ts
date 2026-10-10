@@ -3,17 +3,14 @@ const fixture = vi.hoisted(() => ({ run: vi.fn() }))
 vi.mock('@gb-locacoes/backend/runtime', () => ({
   runConfiguredPlatformJobs: fixture.run,
 }))
-import { GET as legacy } from '../../app/api/cron/platform/route'
+
 import { GET as api } from '../../apps/services/api/src/app/api/cron/platform/route'
 
 afterEach(() => {
   vi.unstubAllEnvs()
   fixture.run.mockReset()
 })
-describe.each([
-  ['legacy', legacy],
-  ['api', api],
-])('platform cron %s', (_name, get) => {
+describe.each([['api', api]])('platform cron %s', (_name, get) => {
   it.each([undefined, 'Bearer wrong'])(
     'denies %s before any platform pool or job',
     async (authorization) => {

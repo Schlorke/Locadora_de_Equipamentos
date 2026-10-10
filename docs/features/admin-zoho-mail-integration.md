@@ -22,13 +22,14 @@ Com a integração, o admin pode ler e gerenciar essa caixa sem sair do painel.
 
 ### OAuth 2.0
 
-Na API compartilhada e no legado, o callback recusa cookie cujo JSON seja null,
-array ou primitivo antes da consulta de state e da troca com o provedor.
-Responde 307 para estado inválido e limpa somente o cookie OAuth. State
-persistido e tokens existentes ficam intactos. Correção da onda 60 (2026-10-03,
-sem commit), com caracterização e provas HTTP nos dois motores de identidade;
-ver entrada 240 de known-issues e docs/features/shared-api-host.md. Política de
-desconexão e revogação externa continua inalterada.
+Na onda 60, API compartilhada e adapter antigo tinham a mesma recusa. O callback
+atual da API recusa cookie cujo JSON seja null, array ou primitivo antes da
+consulta de state e da troca com o provedor. Responde 307 para estado inválido e
+limpa somente o cookie OAuth. State persistido e tokens existentes ficam
+intactos. Correção da onda 60 (2026-10-03, sem commit), com caracterização e
+provas HTTP nos dois motores de identidade; ver entrada 240 de known-issues e
+docs/features/shared-api-host.md. Política de desconexão e revogação externa
+continua inalterada.
 
 - Conectar conta Zoho Mail (`/api/admin/zoho-mail/oauth/authorize`)
 - Callback com persistência segura de tokens
@@ -121,9 +122,11 @@ efetivamente marcadas como spam no servidor.
   entrada, Enviados, Rascunhos, Spam, Arquivado, Modelos, Lixeira, Recibos),
   ordem: Caixa de entrada → Enviados → Rascunhos → Spam → Arquivado → Modelos →
   Lixeira; pastas ocultas: Outbox, Newsletter, Notification, Snoozed
-  (`app/admin/email/page.tsx` — `normalizeEmailFolders`)
+  (`packages/frontend/src/features/correio/model/caixa.ts` — `normalizeFolders`,
+  consumido pelo modelo da página email-admin)
 - **Sanitização HTML**: Conteúdo de e-mail sanitizado com DOMPurify
-  (`lib/sanitize.ts`) antes de exibir no viewer.
+  (`packages/frontend/src/shared/lib/sanitize.web.ts`) antes de exibir no
+  viewer; o contrato de plataforma seleciona a variante própria.
 - **Mover para pasta**: disponível no visualizador e no modo seleção
 - **Atalhos**: dialog com lista de atalhos e hotkeys ativos
 
@@ -139,14 +142,25 @@ efetivamente marcadas como spam no servidor.
 
 ## 4. Arquitetura Técnica
 
-### Lib (`lib/zoho-mail/`)
+### Backend, contratos e composição atual
 
-- `constants.ts`: URLs base e escopos OAuth
-- `types.ts`: Interfaces TypeScript (ZohoMailAccount, ZohoMailFolder,
-  ZohoMailMessage, etc.)
-- `client.ts`: OAuth (authorize, exchange, refresh), wrapper
-  `makeZohoMailRequest`
-- `get-access-token.ts`: Obter token válido (renova automaticamente se expirado)
+- `packages/backend/src/modules/communications/zoho-constants.ts`: URLs base e
+  escopos OAuth.
+- `packages/contracts/src/zoho-mail.ts`: DTOs públicos de conta, pasta, mensagem
+  e anexos, sem tokens de servidor no cliente.
+- `packages/backend/src/modules/communications/zoho-client.ts`:
+  `createZohoMailClient`, operações OAuth e `makeZohoMailRequest`.
+- `packages/backend/src/modules/communications/zoho-tokens.ts`:
+  `createZohoMailTokenReader`; consulta/renova a chave composta tenant/user e
+  recusa datacenter incompatível.
+- `apps/services/api/src/host/zoho-oauth.ts`: composição OAuth do processo.
+- `apps/services/api/src/app/api/admin/zoho-mail`: adaptadores HTTP; acesso
+  privado exige o principal da locadora e a permissão do módulo.
+- `packages/frontend/src/pages/email-admin`: modelos compartilhados e
+  apresentações web/native; o host monta a entrada pública da slice.
+
+As fachadas antigas de Zoho da raiz foram retiradas em F. Os hosts web e API do
+workspace continuam; nenhum token ou cliente servidor entra no bundle de UI.
 
 ### Modelo de Dados (Prisma)
 
@@ -264,7 +278,10 @@ O app monta o redirect URI assim:
 ### Plataforma multi-host (onda 3, commit `be859915`)
 
 Com a plataforma por host configurada (ambiente válido e `PLATFORM_EDGE_SECRET`
-definido), `getZohoRedirectUri` (`lib/zoho-mail/client.ts`) usa sempre o
+definido), `getZohoRedirectUri` (no arquivo antigo `lib/zoho-mail/client.ts`,
+retirado em F) usava o callback abaixo. O mesmo contrato está hoje dentro de
+`createZohoMailClient`, em
+`packages/backend/src/modules/communications/zoho-client.ts`, e usa sempre o
 callback fixo do painel:
 `https://app.<raiz>/api/admin/zoho-mail/oauth/callback`. `ZOHO_REDIRECT_URI`
 deve ficar vazia ou igual a essa URL; valor diferente gera erro. Só esse

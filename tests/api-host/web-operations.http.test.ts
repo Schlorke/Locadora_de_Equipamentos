@@ -528,7 +528,7 @@ describe.each([
 
   it('keeps the API project as sole Vercel scheduler and protects manual job transport', async () => {
     // Bloco K (onda 135): the Vercel crons live in the API project, which this suite runs; the web project never
-    // schedules. The root vercel.json only serves the fallback-raiz project, deployed with its Cron Jobs disabled
+    // schedules. The former root vercel.json was retired in F; restoring the fallback uses the complete pre-deletion tag
     // (docs/operations/runbook-corte-raiz-legada.md).
     const api = JSON.parse(
       readFileSync('apps/services/api/vercel.json', 'utf8')

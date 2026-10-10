@@ -36,7 +36,7 @@ interface RateLimitResult {
  *   silent per-instance window. Outside production each process keys with
  *   its own random secret. "Production" is the platform's own criterion
  *   (`isPlatformProduction`, the one that requires PLATFORM_EDGE_SECRET).
- * Generic per-process request limiters remain in the legacy host.
+ * Generic per-process request limiters belong to `http/memory-rate-limit.ts`.
  */
 const MINUTE = 60 * 1000
 
@@ -549,8 +549,8 @@ export function createIdentityLimiters(dependencies: {
 
   /**
    * The one attempt guard of the legacy credential sign-in
-   * (`verifyLegacyCredential`), shared by NextAuth (`lib/auth.ts`) and the
-   * Better Auth coexistence login (`/api/auth/v2` through `lib/identity.ts`):
+   * (`verifyLegacyCredential`), shared by NextAuth composed in the API host and
+   * the Better Auth coexistence login (`/api/auth/v2` through this module's factory):
    * both read the client IP the same way and count in the same `sign-in`
    * windows of `platform_rate_limits`.
    */

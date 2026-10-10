@@ -1,7 +1,7 @@
+import type { createPrivateDocumentStorage } from '../modules/documents/private-documents'
 import {
   isOwnedDocumentPath,
   PRIVATE_DOCUMENT_URL_TTL,
-  type createPrivateDocumentStorage,
   type createRentalContracts,
 } from '../modules/documents/index'
 import type { TenantPrincipal } from '../modules/identity/index'

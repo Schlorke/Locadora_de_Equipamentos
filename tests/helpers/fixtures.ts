@@ -18,7 +18,7 @@ type TrackerKey =
 
 /**
  * O cliente do runtime do backend (o mesmo singleton que a API compartilhada usa), lido na hora da chamada e nunca no
- * import: as fixtures não dependem da fachada `@/lib/prisma` da raiz legada (onda 135, E4).
+ * import: a antiga fachada `@/lib/prisma` foi retirada em F; as fixtures usam a porta do backend (onda 135, E4).
  */
 const database = () => getDatabaseRuntime().prisma
 

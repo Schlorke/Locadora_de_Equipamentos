@@ -3,7 +3,6 @@ import { describe, expect, it, vi } from 'vitest'
 import { ENTITLEMENT_FEATURES } from '@gb-locacoes/contracts/entitlements'
 import { createPublicPlanCatalog } from '../../packages/backend/src/modules/subscriptions/public-catalog'
 import { createPublicPlansHandler } from '../../packages/backend/src/http/public-plans'
-import { GET as legacy } from '../../app/api/public/plans/route'
 import { GET as service } from '../../apps/services/api/src/app/api/public/plans/route'
 import { readConfiguredPublicPlans } from '../../packages/backend/src/runtime/platform-jobs'
 
@@ -133,7 +132,7 @@ describe('public SaaS plan catalog', () => {
   it('both hosts use the same runtime, without business database fallback', async () => {
     vi.stubEnv('PLATFORM_DATABASE_URL', '')
     try {
-      for (const read of [legacy, service, readConfiguredPublicPlans]) {
+      for (const read of [service, readConfiguredPublicPlans]) {
         const response = await read()
         expect(response.status).toBe(503)
         expect(await response.json()).toEqual({

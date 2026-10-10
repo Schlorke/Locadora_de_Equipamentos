@@ -8,35 +8,17 @@ const state = vi.hoisted(() => ({
   hideClientRental: vi.fn(),
   requestClientRentalAction: vi.fn(),
 }))
-vi.mock('@/lib/tenant', () => ({ resolveTenantPrincipal: state.principal }))
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: state.principal,
-}))
-vi.mock('@/lib/quote-request', () => ({
-  hideClientQuote: state.hideClientQuote,
-  readClientQuote: vi.fn(),
-}))
-vi.mock('@/lib/client-rental-requests', () => ({
-  ...state,
-  readClientRental: vi.fn(),
 }))
 vi.mock('../../apps/services/api/src/host/portal', () => ({
   ...state,
   readClientRental: vi.fn(),
   readClientQuote: vi.fn(),
 }))
-vi.mock('@/lib/rental-transaction', async () => {
-  const { RentalMutationError } = await import('@gb-locacoes/backend/rentals')
-  return { RentalMutationError }
-})
-
-import { DELETE as legacyQuote } from '@/app/api/quotes/[id]/route'
 import { DELETE as serviceQuote } from '../../apps/services/api/src/app/api/quotes/[id]/route'
-import { DELETE as legacyRental } from '@/app/api/client/rentals/[id]/route'
 import { DELETE as serviceRental } from '../../apps/services/api/src/app/api/client/rentals/[id]/route'
-import { POST as legacyPickup } from '@/app/api/client/rentals/[id]/request-pickup/route'
 import { POST as servicePickup } from '../../apps/services/api/src/app/api/client/rentals/[id]/request-pickup/route'
-import { POST as legacyExtension } from '@/app/api/client/rentals/[id]/request-extension/route'
 import { POST as serviceExtension } from '../../apps/services/api/src/app/api/client/rentals/[id]/request-extension/route'
 
 const principal = {
@@ -48,25 +30,25 @@ const principal = {
 const cases = [
   {
     name: 'hide quote',
-    methods: [legacyQuote, serviceQuote],
+    methods: [serviceQuote],
     call: state.hideClientQuote,
     method: 'DELETE',
   },
   {
     name: 'hide rental',
-    methods: [legacyRental, serviceRental],
+    methods: [serviceRental],
     call: state.hideClientRental,
     method: 'DELETE',
   },
   {
     name: 'request pickup',
-    methods: [legacyPickup, servicePickup],
+    methods: [servicePickup],
     call: state.requestClientRentalAction,
     method: 'POST',
   },
   {
     name: 'request extension',
-    methods: [legacyExtension, serviceExtension],
+    methods: [serviceExtension],
     call: state.requestClientRentalAction,
     method: 'POST',
   },
@@ -137,6 +119,18 @@ describe.each(cases)('$name keeps current policy in both hosts', (entry) => {
         'existing',
       ])
     }
-    expect(responses[0]).toEqual(responses[1])
+    expect(responses[0]).toEqual(
+      entry.name === 'hide quote'
+        ? { message: 'Orçamento removido do histórico com sucesso' }
+        : entry.name === 'hide rental'
+          ? { message: 'Locação removida do histórico com sucesso' }
+          : {
+              success: true,
+              message: 'Solicitação enviada à locadora',
+              note: 'Aguarde a confirmação da equipe.',
+              requestId: 'synthetic',
+              duplicate: false,
+            }
+    )
   })
 })

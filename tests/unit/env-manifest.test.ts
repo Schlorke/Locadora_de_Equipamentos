@@ -18,6 +18,7 @@ import { resolveFallbackSource } from '../helpers/fallback-source'
  */
 const ROOT = path.resolve(import.meta.dirname, '../..')
 const MANIFEST = 'docs/operations/manifesto-variaveis.md'
+// A .next antiga da raiz saiu em F; SKIP continua excluindo gerados dos hosts da leitura de fontes.
 const SKIP = new Set([
   'node_modules',
   '.next',
@@ -301,7 +302,7 @@ const PROJECTS = {
     ],
     example: 'apps/clients/web/.env.example',
   },
-  // O fallback-raiz é a raiz legada da tag de pré-exclusão, publicada sem domínio e sem agenda (runbook, 7.1-4).
+  // Fallback-raiz usa fontes da tag de pré-exclusão: os antigos proxy.ts e next.config.mjs foram retirados em F e são lidos somente nessa fotografia externa (runbook, 7.1-4).
   'fallback-raiz': {
     root: fallback.root,
     entries: [
@@ -410,6 +411,7 @@ describe('fonte do manifesto fallback-raiz', () => {
 })
 
 describe('fecho de imports da fonte selecionada', () => {
+  // Fixture descartável dos antigos app/ e lib/, retirados em F: withSourceFixture grava somente o root temporário para provar alias, fonte ausente e asset fora do fecho.
   function withSourceFixture(source: string, verify: (root: string) => void) {
     const root = fs.mkdtempSync(path.join(tmpdir(), 'locadora-env-closure-'))
     const files = [

@@ -37,20 +37,30 @@ secretaria/financeiro.
 
 ## 3. Entry Points
 
-- Route: `app/admin/financeiro/page.tsx`
-- APIs:
-  - `app/api/admin/financial/entries/route.ts`
-  - `app/api/admin/financial/entries/[id]/status/route.ts`
-  - `app/api/admin/financial/entries/[id]/due-date/route.ts`
-  - `app/api/admin/financial/calendar/route.ts`
-  - `app/api/admin/financial/revenue/route.ts`
-  - `app/api/admin/financial/aging/route.ts`
-  - `app/api/admin/financial/export/route.ts`
-  - `app/api/admin/financial/settings/route.ts`
-  - `app/api/admin/quotes/[id]/adjustments/route.ts` (GET/POST)
-  - `app/api/admin/quotes/[id]/adjustments/[adjustmentId]/route.ts` (DELETE)
-- Auth/guards:
-  - `middlewares/require-admin.ts` (`requireFinancialAccess`)
+- Tela: `packages/frontend/src/pages/financeiro/ui/FinanceiroPage.web.tsx` e
+  variante `FinanceiroPage.native.tsx`; o host web monta o export público
+  `AdminFinanceiroPageWrapper` em
+  `apps/clients/web/src/app/(admin)/admin/financeiro/page.tsx`.
+- API HTTP: `apps/services/api/src/app/api/admin/financial`, com GET de
+  entries/calendar/revenue/aging/export/settings; PATCH de settings e
+  entries/[id]/status/due-date; DELETE de entries/[id]; ofício de
+  [id]/pdf-oficio.
+- Reajustes: `apps/services/api/src/app/api/admin/quotes/[id]/adjustments`
+  (GET/POST e DELETE de [adjustmentId]); mantém a política QUOTES do próprio
+  adapter, não a substitui pelo guarda financeiro.
+- Guardas: `apps/services/api/src/host/permissions.ts` compõe
+  `createTenantPermissionResolver` com o principal de
+  `host/private-identity.ts`. Leituras financeiras exigem FINANCIAL/READ;
+  mutações usam a ação explícita da rota. ADMIN do vínculo dispensa lookup de
+  Permission, CLIENT é recusado e os demais papéis precisam da permissão
+  correspondente nesta locadora.
+- Composição das consultas em `host/financial-read.ts`, mutações e pedido de
+  reemissão em `host/financial-mutations.ts`; regras e transações ficam em
+  backend/billing. A navegação web continua passando pelo gate do bootstrap de
+  `packages/frontend/src/app/providers/RuntimeBootstrap.tsx`.
+
+O papel global da sessão não autoriza outra locadora. A resolução revalida
+membership/seleção e cada caso recebe o principal/tenant corrente.
 
 ## 4. Core Flow
 
@@ -61,7 +71,8 @@ secretaria/financeiro.
 4. Usuario filtra por status e/ou busca cliente/codigo.
 5. Usuario:
    - atualiza status financeiro de um lancamento, ou
-   - altera vencimento da cobranca (sincronizando no gateway), ou
+   - solicita reemissão para alterar vencimento; 202 indica pedido durável
+     pendente, sem mudar a data confirmada antes do worker, ou
    - ajusta aliquotas CPF/CNPJ/CNI, ou
    - exporta o relatorio em PDF.
 6. Na view Dashboard do Financeiro, os graficos de receita/aging usam os mesmos
@@ -71,20 +82,29 @@ secretaria/financeiro.
 
 ## 5. Components and Files
 
-- `app/admin/financeiro/page.tsx`
-- `packages/ui/src/web/StatusTooltip.web.tsx`
-- `packages/ui/src/status-definitions.ts`
-- `lib/financial.ts`
-- `packages/frontend/src/widgets/menu-admin/ui/BarraLateral.web.tsx`
-- `packages/frontend/src/widgets/menu-admin/ui/BarraLateralMobile.web.tsx`
-- `app/admin/layout.tsx`
+- `packages/frontend/src/pages/financeiro/ui/FinanceiroPage.web.tsx`,
+  `FinanceiroPage.native.tsx` e componentes da própria slice.
+- `pages/financeiro/model/carga.ts`, `carga.web.ts`, `detalhe.ts` e
+  `detalhe.web.ts`: modelos comuns e portas web; `api/financial.ts` e
+  `api/documents.ts`: transporte pelo HttpClient configurado.
+- `packages/ui/src/web/StatusTooltip.web.tsx` e
+  `packages/ui/src/status-definitions.ts`: apresentação compartilhada.
+- `packages/backend/src/modules/billing/financial-scope.ts`: builder único de
+  filtros, incluindo tenant e fallback de pagamentos convertidos.
+- `packages/backend/src/modules/billing/financial-mutations.ts` e
+  `boleto-reissue.ts`: snapshots, baixa e pedido de reemissão/outbox.
+- `apps/services/api/src/host/financial-read.ts`, `financial-mutations.ts` e
+  `permissions.ts`: composição do servidor.
+- `apps/clients/web/src/app/(admin)/layout.tsx` e
+  `packages/frontend/src/app/providers/AdminLayoutShell.web.tsx`: host fino e
+  shell visual; menu em `packages/frontend/src/widgets/menu-admin`.
 
-Ofício de lançamento: GET /api/admin/financial/entries/[id]/pdf-oficio composto
-nos dois hosts em 2026-10-02. Query, fallback, mapper, branding e renderer no
-backend compartilhado. FINANCIAL/READ, tenant, preview e valores preservados;
-autoria da Organization e falha inesperada sem detail. Evidências na onda 37 de
-[API compartilhada](shared-api-host.md). Emissão e alteração no gateway
-permanecem legadas.
+Ofício de lançamento: GET /api/admin/financial/entries/[id]/pdf-oficio usa
+query, fallback, mapper, branding e renderer de backend/documents.
+FINANCIAL/READ, tenant, preview e snapshots permanecem no servidor; autoria da
+Organization e falha inesperada sem detail. O registro da instalação nos dois
+hosts em 2026-10-02 está na onda 37 de [API compartilhada](shared-api-host.md).
+A existência da composição atual não prova emissão externa ou operação Asaas.
 
 ## 6. Data and State
 
@@ -98,12 +118,15 @@ permanecem legadas.
 
 ## 7. Constraints and Edge Cases
 
-- Apenas `ADMIN` e `FINANCIAL` podem acessar APIs/rota financeira.
+- A navegação mantém a política do papel do vínculo (FINANCIAL fora desta área é
+  redirecionado ao financeiro). APIs revalidam o principal e a Permission
+  FINANCIAL/ação; não usar o papel da sessão como bypass de tenant.
 - Busca deve considerar `quoteCode` e `legacyExternalCode`, nao apenas
   `quote.id`, com fallback de dados por `rental.quote` e `rental.users` para
   pagamentos convertidos.
 - As rotas financeiras devem compartilhar o mesmo builder de escopo em
-  `lib/financial-scope.ts` para evitar divergencia de filtros/agregacoes.
+  `packages/backend/src/modules/billing/financial-scope.ts` para evitar
+  divergencia de filtros/agregacoes.
 - Alteracao de aliquota afeta novos calculos; historico existente mantem
   snapshot.
 - `SETTLED` representa baixa operacional e nao necessariamente `PAID`.
@@ -142,9 +165,11 @@ permanecem legadas.
    em tabela, calendario e exportacao.
 8. Acao "Ver orçamento" deve abrir `/admin/orcamentos?search=<codigo>`
    preservando contexto da cobranca.
-9. Alterar vencimento deve persistir em `Payment.dueDate` e refletir no Asaas.
-10. Se o lancamento estava vencido, atualizar vencimento deve reabrir como
-    aguardando pagamento.
+9. Pedido de vencimento deve retornar 202, persistir a operação e conservar
+   `Payment.dueDate` confirmado até o worker provar cancelamento/substituição.
+10. Só após confirmação do worker verificar a nova data/estado; não usar 202
+    como prova de boleto pronto. DELETE de histórico responde 409
+    FINANCIAL_HISTORY_PRESERVED e não apaga Payment.
 11. Filtros identicos na tabela devem refletir os mesmos dados nos graficos da
     view Dashboard (receita/aging).
 
@@ -173,35 +198,49 @@ permanecem legadas.
   entries/totals, DebtorsTable com React.memo.
 - 2026-02-14: Dashboard financeiro passou a aplicar os mesmos filtros
   (search/status/periodo) em `revenue` e `aging`; backend alinhado por escopo
-  compartilhado (`lib/financial-scope.ts`) e cron de boleto sincronizando
-  `status` + `billingStatus`.
+  compartilhado (antiga fachada `lib/financial-scope.ts`, retirada em F, nesse
+  checkpoint; hoje `packages/backend/src/modules/billing/financial-scope.ts`) e
+  cron de boleto sincronizando `status` + `billingStatus`.
 
 ---
 
 ## Extração das consultas financeiras (2026-10-02)
 
-GET de aging/calendar/entries/export/revenue/settings disponível nos dois hosts.
-Filtros, transações, snapshots, agregações e perfil da locadora estão em
+Registro histórico da onda 38: GET de
+aging/calendar/entries/export/revenue/settings foi disponibilizado nos dois
+hosts. Filtros, transações, snapshots, agregações e perfil da locadora estão em
 packages/backend/src/modules/billing; renderers de PDF/XLSX/CSV em
 backend/documents. Clientes continuam na origem legada. PATCH de settings e
 demais mutações ainda eram legados na onda 38. Não alterar a origem antes de
 paridade operacional. Evidências e dívida anterior: onda 38 de
 [API compartilhada](shared-api-host.md) e entrada 238 de known-issues.
 
+Após a retirada da raiz, esses GETs pertencem aos adapters de
+`apps/services/api/src/app/api/admin/financial` e à composição
+`host/financial-read.ts`; o cliente configurado está na própria slice
+`pages/financeiro`. A origem legada descrita acima é do checkpoint da onda 38.
+
 ## Extração das mutações financeiras (2026-10-02)
 
-Onda 39: PATCH de settings/status/due-date e DELETE de entries/[id] disponíveis
-nos dois hosts sobre backend/billing. Schemas em contracts/financial; settings
-append-only, baixa e pedido durável de vencimento mantêm autorização, locadora,
-locks, outbox e rollback. Reemissão retorna 202 e somente o worker confirma
-cancelamento/substituição e muda a data; não é atualização síncrona. DELETE
-continua respondendo 409 FINANCIAL_HISTORY_PRESERVED, sem apagar dados. Esses
-contratos atuais prevalecem sobre os passos históricos de validação 9–10.
+Registro histórico da onda 39: PATCH de settings/status/due-date e DELETE de
+entries/[id] disponibilizados nos dois hosts sobre backend/billing. Schemas em
+contracts/financial; settings append-only, baixa e pedido durável de vencimento
+mantêm autorização, locadora, locks, outbox e rollback. Reemissão retorna 202 e
+somente o worker confirma cancelamento/substituição e muda a data; não é
+atualização síncrona. DELETE continua respondendo 409
+FINANCIAL_HISTORY_PRESERVED, sem apagar dados. Esses contratos preservam pedido
+pendente e confirmação do worker; os passos 9–10 acima já descrevem essa
+distinção.
 
 Emissão externa, workers/jobs e clientes continuam na composição/origem legada.
 Evidências nos dois motores e riscos na onda 39 de
 [API compartilhada](shared-api-host.md). Agregação/CSV (238) e texto da UI de
 exclusão permanecem dívidas explícitas, fora desta extração.
+
+O destino pós-retirada é `apps/services/api/src/host/financial-mutations.ts`
+sobre `@gb-locacoes/backend/billing`. Operação externa e configuração de
+scheduler/provedores exigem sua própria implantação; não são resultado desta
+atualização documental.
 
 ## Consumidor de boleto/ofício (onda 66, 2026-10-03)
 

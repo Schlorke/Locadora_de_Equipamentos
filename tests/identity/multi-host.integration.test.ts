@@ -1,6 +1,29 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  const { requireTestDatabase } = await import('../helpers/test-database')
+  if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
+    throw new Error('Disposable database opt-in required')
+  const { Pool } = await import('pg')
+  const { PrismaPg } = await import('@prisma/adapter-pg')
+  const { PrismaClient } = await import('@prisma/client')
+  const pool = new Pool({
+    connectionString: requireTestDatabase(process.env),
+    max: 4,
+  })
+  fPreparedDatabase.pool = pool
+  return {
+    prisma: new PrismaClient({ adapter: new PrismaPg(pool) }),
+    testPool: pool,
+  }
+}
+import { getDatabaseRuntime as getFPreparedDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 import { withTestPlatformTransaction } from '../helpers/platform-fixture'
 // T9 e T10 da ADR docs/architecture/adr-tenant-hosts.md: identidade multi-host pelo caminho real
-// (lib/identity.ts → Better Auth → Prisma no PostgreSQL descartável), com as requisições chegando ao backend
+// (identity do backend → Better Auth → Prisma no PostgreSQL descartável), com as requisições chegando ao backend
 // como o proxy do host web as entrega (URL do backend + contexto de borda assinado + Origin do navegador).
 // Achados 5, 6 e 8 da revisão da onda 4:
 // - 5: os endpoints nativos do motor que mandam e-mail a um endereço anônimo (cadastro, pedido de redefinição e
@@ -15,29 +38,33 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { PLATFORM, PLATFORM_EDGE_HEADER } from '@gb-locacoes/contracts/platform'
 
 const mocks = vi.hoisted(() => ({ send: vi.fn() }))
-vi.mock('@/lib/prisma', async () => {
-  const { requireTestDatabase } = await import('../helpers/test-database')
-  if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
-    throw new Error('Disposable database opt-in required')
-  const { Pool } = await import('pg')
-  const { PrismaPg } = await import('@prisma/adapter-pg')
-  const { PrismaClient } = await import('@prisma/client')
-  const pool = new Pool({
-    connectionString: requireTestDatabase(process.env),
-    max: 4,
-  })
+
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+  }))(importOriginal)
   return {
-    prisma: new PrismaClient({ adapter: new PrismaPg(pool) }),
-    testPool: pool,
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+    createResendClient: () =>
+      (() => ({
+        default: () => ({ emails: { send: mocks.send } }),
+      }))().default(),
   }
 })
-vi.mock('@/lib/resend', () => ({
-  default: () => ({ emails: { send: mocks.send } }),
-}))
 
 import bcrypt from 'bcryptjs'
-import { prisma } from '@/lib/prisma'
-import { getIdentity, handleIdentityRequest } from '@/lib/identity'
+const { prisma } = getFPreparedDatabaseRuntime()
+import {
+  getIdentity,
+  handleIdentityRequest,
+} from '../../apps/services/api/src/host/session'
 
 const EDGE_SECRET = 'fixture-edge-secret-with-more-than-32-chars'
 const ROOT = 'plataforma.example'
@@ -327,40 +354,51 @@ beforeAll(async () => {
   })
 })
 afterAll(async () => {
-  const tenants = { tenantId: { in: [tenantA, tenantB] } }
-  await prisma.auditLog.deleteMany({ where: tenants })
-  await prisma.membership.deleteMany({ where: tenants })
-  await prisma.organization.deleteMany({
-    where: { id: { in: [tenantA, tenantB] } },
-  })
-  await prisma.user.deleteMany({
-    where: {
-      email: {
-        in: [
-          ...linkedEmails,
-          ...nativeSignupEmails,
-          signupEmail,
-          appSignupEmail,
-          oauthEmail,
-          newOauthEmail,
-        ],
-      },
+  await runFPreparedCleanup(
+    async () => {
+      const tenants = { tenantId: { in: [tenantA, tenantB] } }
+      await prisma.auditLog.deleteMany({ where: tenants })
+      await prisma.membership.deleteMany({ where: tenants })
+      await prisma.organization.deleteMany({
+        where: { id: { in: [tenantA, tenantB] } },
+      })
+      await prisma.user.deleteMany({
+        where: {
+          email: {
+            in: [
+              ...linkedEmails,
+              ...nativeSignupEmails,
+              signupEmail,
+              appSignupEmail,
+              oauthEmail,
+              newOauthEmail,
+            ],
+          },
+        },
+      })
+      await prisma.authRateLimit.deleteMany({
+        where: { key: { contains: ipPrefix } },
+      })
+      await prisma.authVerification.deleteMany({
+        where: { createdAt: { gte: startedAt } },
+      })
     },
-  })
-  await prisma.authRateLimit.deleteMany({
-    where: { key: { contains: ipPrefix } },
-  })
-  // Estados OAuth e tokens de e-mail emitidos por estes casos (banco exclusivo, arquivos em série).
-  await prisma.authVerification.deleteMany({
-    where: { createdAt: { gte: startedAt } },
-  })
-  await prisma.$disconnect()
-  const { testPool } = (await import('@/lib/prisma')) as unknown as {
-    testPool: { end(): Promise<void> }
-  }
-  await testPool.end()
-  vi.unstubAllGlobals()
-  vi.unstubAllEnvs()
+    () => prisma.$disconnect(),
+    async () => {
+      const { testPool } = (await Promise.resolve(
+        fPreparedDatabase.value!
+      )) as unknown as {
+        testPool: { end(): Promise<void> }
+      }
+      await testPool.end()
+    },
+    () => {
+      vi.unstubAllGlobals()
+    },
+    () => {
+      vi.unstubAllEnvs()
+    }
+  )
 })
 
 describe('T9: sessão por host', () => {
@@ -1166,3 +1204,19 @@ describe('achado 8: links de e-mail na origem da locadora só para o cliente só
     expect(await resend('b')).toBe(APP)
   })
 })
+
+// Close all owned siblings and restore process state; cleanup errors stay fatal.
+async function runFPreparedCleanup(
+  ...steps: Array<() => unknown | Promise<unknown>>
+) {
+  const errors: unknown[] = []
+  for (const step of steps) {
+    try {
+      await step()
+    } catch (error) {
+      errors.push(error)
+    }
+  }
+  if (errors.length)
+    throw new AggregateError(errors, 'F fixture cleanup failed')
+}

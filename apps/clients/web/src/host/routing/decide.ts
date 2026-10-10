@@ -2,7 +2,7 @@
  * Decisão do proxy do host web (docs/architecture/adr-tenant-hosts.md, D1–D5 e tabela 4.2).
  *
  * Pura: recebe o ambiente já validado, a classe do Host (`classifyHost`) e o alvo da requisição, e devolve o que
- * fazer. Não lê cabeçalhos, cookies, ambiente, disco, banco nem rede; o `proxy.ts` só aplica a decisão.
+ * fazer. Não lê cabeçalhos, cookies, ambiente, disco, banco nem rede; `apps/clients/web/src/proxy.ts` só aplica a decisão.
  */
 import {
   isTenantSlug,
@@ -30,7 +30,10 @@ import {
 } from './route-table'
 
 /** Parte do ambiente que a decisão usa. */
-export type DecideEnv = Pick<PlatformEnv, 'rootDomain' | 'protocol' | 'publicPort' | 'labsEnabled'> & {
+export type DecideEnv = Pick<
+  PlatformEnv,
+  'rootDomain' | 'protocol' | 'publicPort' | 'labsEnabled'
+> & {
   /**
    * Modo de autenticação do host web (`NEXT_PUBLIC_AUTH_MODE`, `host/auth/mode.ts`). Decide se o host de locadora tem
    * login e área do cliente (fora do `legacy`, desenho 4.6) e em qual `basePath` do Better Auth a API de entrada do
@@ -48,7 +51,11 @@ export interface EdgeContext {
 
 export type Decision =
   | { readonly type: 'next' }
-  | { readonly type: 'rewrite'; readonly pathname: string; readonly search: string }
+  | {
+      readonly type: 'rewrite'
+      readonly pathname: string
+      readonly search: string
+    }
   | {
       readonly type: 'backend'
       readonly pathname: string
@@ -57,7 +64,11 @@ export type Decision =
       /** Remove `selected-tenant-id` do `Cookie` repassado (hosts de locadora). */
       readonly stripSelectionCookie: boolean
     }
-  | { readonly type: 'redirect'; readonly location: string; readonly status: 307 | 308 }
+  | {
+      readonly type: 'redirect'
+      readonly location: string
+      readonly status: 307 | 308
+    }
   | {
       readonly type: 'respond'
       readonly status: number
@@ -85,8 +96,15 @@ export function apiNotFound(): RespondDecision {
   return {
     type: 'respond',
     status: 404,
-    body: JSON.stringify({ error: 'Not Found', message: 'Endpoint não encontrado', code: 'NOT_FOUND' }),
-    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': NO_STORE },
+    body: JSON.stringify({
+      error: 'Not Found',
+      message: 'Endpoint não encontrado',
+      code: 'NOT_FOUND',
+    }),
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
+      'cache-control': NO_STORE,
+    },
   }
 }
 
@@ -95,8 +113,14 @@ export function tenantConflict(): RespondDecision {
   return {
     type: 'respond',
     status: 400,
-    body: JSON.stringify({ error: 'Seleção de locadora conflitante', code: 'TENANT_CONFLICT' }),
-    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': NO_STORE },
+    body: JSON.stringify({
+      error: 'Seleção de locadora conflitante',
+      code: 'TENANT_CONFLICT',
+    }),
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
+      'cache-control': NO_STORE,
+    },
   }
 }
 
@@ -126,7 +150,10 @@ export function appRobots(): RespondDecision {
     type: 'respond',
     status: 200,
     body: 'User-agent: *\nDisallow: /\n',
-    headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=3600' },
+    headers: {
+      'content-type': 'text/plain; charset=utf-8',
+      'cache-control': 'public, max-age=3600',
+    },
   }
 }
 
@@ -136,8 +163,14 @@ export function platformUnavailable(api: boolean): RespondDecision {
     ? {
         type: 'respond',
         status: 503,
-        body: JSON.stringify({ error: 'Plataforma indisponível', code: 'PLATFORM_UNAVAILABLE' }),
-        headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': NO_STORE },
+        body: JSON.stringify({
+          error: 'Plataforma indisponível',
+          code: 'PLATFORM_UNAVAILABLE',
+        }),
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+          'cache-control': NO_STORE,
+        },
       }
     : {
         type: 'respond',
@@ -145,7 +178,11 @@ export function platformUnavailable(api: boolean): RespondDecision {
         body:
           '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="robots" content="noindex">' +
           '<title>Indisponível</title></head><body><main><h1>Serviço indisponível</h1></main></body></html>',
-        headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': NO_STORE, 'x-robots-tag': 'noindex' },
+        headers: {
+          'content-type': 'text/html; charset=utf-8',
+          'cache-control': NO_STORE,
+          'x-robots-tag': 'noindex',
+        },
       }
 }
 
@@ -154,7 +191,9 @@ export function platformUnavailable(api: boolean): RespondDecision {
  * outra forma que a decisão: codificação malformada, `/` ou `\` codificados, NUL, `.` e `..`.
  * A decisão é tomada sobre o caminho canônico e o destino recebe esse mesmo caminho, reencodado.
  */
-export function canonicalPathname(raw: string): { readonly decoded: string; readonly encoded: string } | null {
+export function canonicalPathname(
+  raw: string
+): { readonly decoded: string; readonly encoded: string } | null {
   if (!raw.startsWith('/')) return null
   const decodedSegments: string[] = []
   const encodedSegments: string[] = []
@@ -165,12 +204,18 @@ export function canonicalPathname(raw: string): { readonly decoded: string; read
     } catch {
       return null
     }
-    const separatorOrNul = decoded.includes('/') || decoded.includes('\\') || decoded.includes(String.fromCharCode(0))
+    const separatorOrNul =
+      decoded.includes('/') ||
+      decoded.includes('\\') ||
+      decoded.includes(String.fromCharCode(0))
     if (separatorOrNul || decoded === '.' || decoded === '..') return null
     decodedSegments.push(decoded)
     encodedSegments.push(encodeURIComponent(decoded))
   }
-  return { decoded: '/' + decodedSegments.join('/'), encoded: '/' + encodedSegments.join('/') }
+  return {
+    decoded: '/' + decodedSegments.join('/'),
+    encoded: '/' + encodedSegments.join('/'),
+  }
 }
 
 /** Valores não vazios de um parâmetro de query. */
@@ -193,7 +238,10 @@ function withoutParam(search: string, name: string): string {
 }
 
 /** Remove um cookie do valor do cabeçalho `Cookie` (nome exato), preservando os demais na ordem original. */
-export function withoutCookie(cookieHeader: string | null, name: string): string {
+export function withoutCookie(
+  cookieHeader: string | null,
+  name: string
+): string {
   if (!cookieHeader) return ''
   const cookieName = (pair: string) => {
     const separator = pair.indexOf('=')
@@ -215,7 +263,11 @@ function isNextInternal(pathname: string): boolean {
   return pathname.startsWith('/_next/') || pathname.startsWith('/__nextjs')
 }
 
-export function decide(env: DecideEnv, host: HostClass, target: RequestTarget): Decision {
+export function decide(
+  env: DecideEnv,
+  host: HostClass,
+  target: RequestTarget
+): Decision {
   if (host.kind === 'invalid' || host.kind === 'reserved') {
     return isApiPath(target.pathname) ? apiNotFound() : pageNotFound()
   }
@@ -227,7 +279,11 @@ export function decide(env: DecideEnv, host: HostClass, target: RequestTarget): 
   const search = target.search
 
   if (host.kind === 'www') {
-    return { type: 'redirect', status: 308, location: platformOrigins(env, host).apex + encodedPath + search }
+    return {
+      type: 'redirect',
+      status: 308,
+      location: platformOrigins(env, host).apex + encodedPath + search,
+    }
   }
   if (api && isBlockedApi(pathname)) return apiNotFound()
   if (isNextInternal(pathname)) return { type: 'next' }
@@ -235,34 +291,63 @@ export function decide(env: DecideEnv, host: HostClass, target: RequestTarget): 
   if (host.kind === 'apex') {
     if (api) {
       if (!matchesAny(pathname, APEX_API_ROUTES)) return apiNotFound()
-      return backend(encodedPath, search, { hostKind: 'apex', tenantSlug: null, origin: host.origin }, false)
+      return backend(
+        encodedPath,
+        search,
+        { hostKind: 'apex', tenantSlug: null, origin: host.origin },
+        false
+      )
     }
-    const requested = new Set(explicitValues(new URLSearchParams(search), TENANT_QUERY_PARAM))
+    const requested = new Set(
+      explicitValues(new URLSearchParams(search), TENANT_QUERY_PARAM)
+    )
     const [only] = requested
     if (requested.size === 1 && only !== undefined && isTenantSlug(only)) {
       return {
         type: 'redirect',
         status: 308,
-        location: tenantOrigin(env, only, host) + encodedPath + withoutParam(search, TENANT_QUERY_PARAM),
+        location:
+          tenantOrigin(env, only, host) +
+          encodedPath +
+          withoutParam(search, TENANT_QUERY_PARAM),
       }
     }
     const wellKnown = /^\/\.well-known\/([^/]+)$/.exec(pathname)?.[1]
     if (wellKnown !== undefined && APEX_WELL_KNOWN.includes(wellKnown)) {
-      return { type: 'rewrite', pathname: '/plataforma/well-known/' + encodeURIComponent(wellKnown), search }
+      return {
+        type: 'rewrite',
+        pathname: '/plataforma/well-known/' + encodeURIComponent(wellKnown),
+        search,
+      }
     }
     if (isPublicPassthrough(pathname)) return { type: 'next' }
-    return { type: 'rewrite', pathname: internalPrefixed('/plataforma', encodedPath), search }
+    return {
+      type: 'rewrite',
+      pathname: internalPrefixed('/plataforma', encodedPath),
+      search,
+    }
   }
 
   if (host.kind === 'app') {
     if (api) {
       if (matchesAny(pathname, LOCAL_API_ROUTES)) return { type: 'next' }
-      return backend(encodedPath, search, { hostKind: 'app', tenantSlug: null, origin: host.origin }, false)
+      return backend(
+        encodedPath,
+        search,
+        { hostKind: 'app', tenantSlug: null, origin: host.origin },
+        false
+      )
     }
     // Labs antes do painel: /admin/teste-toast é laboratório, não painel.
-    if (matchesAny(pathname, LABS_PATHS)) return env.labsEnabled ? { type: 'next' } : pageNotFound()
+    if (matchesAny(pathname, LABS_PATHS))
+      return env.labsEnabled ? { type: 'next' } : pageNotFound()
     if (matchesAny(pathname, APP_HOST_PATHS)) return { type: 'next' }
-    if (pathname === '/') return { type: 'redirect', status: 307, location: host.origin + '/admin' + search }
+    if (pathname === '/')
+      return {
+        type: 'redirect',
+        status: 307,
+        location: host.origin + '/admin' + search,
+      }
     if (pathname === '/robots.txt') return appRobots()
     if (isPublicPassthrough(pathname)) return { type: 'next' }
     return pageNotFound()
@@ -273,7 +358,11 @@ export function decide(env: DecideEnv, host: HostClass, target: RequestTarget): 
   if (pathname === '/admin' || pathname.startsWith('/admin/')) {
     const params = new URLSearchParams(search)
     params.set(PANEL_TENANT_PARAM, slug)
-    return { type: 'redirect', status: 308, location: platformOrigins(env, host).app + encodedPath + searchOf(params) }
+    return {
+      type: 'redirect',
+      status: 308,
+      location: platformOrigins(env, host).app + encodedPath + searchOf(params),
+    }
   }
   const params = new URLSearchParams(search)
   const requested = explicitValues(params, TENANT_QUERY_PARAM)
@@ -282,22 +371,49 @@ export function decide(env: DecideEnv, host: HostClass, target: RequestTarget): 
     if (requested.some((value) => value !== slug)) return tenantConflict()
     let forwardedSearch = search
     const method = target.method.toUpperCase()
-    if ((method === 'GET' || method === 'HEAD') && requested.length === 0 && matchesAny(pathname, PUBLIC_TENANT_QUERY_ROUTES)) {
+    if (
+      (method === 'GET' || method === 'HEAD') &&
+      requested.length === 0 &&
+      matchesAny(pathname, PUBLIC_TENANT_QUERY_ROUTES)
+    ) {
       params.delete(TENANT_QUERY_PARAM)
       params.append(TENANT_QUERY_PARAM, slug)
       forwardedSearch = searchOf(params)
     }
-    return backend(encodedPath, forwardedSearch, { hostKind: 'tenant', tenantSlug: slug, origin: host.origin }, true)
+    return backend(
+      encodedPath,
+      forwardedSearch,
+      { hostKind: 'tenant', tenantSlug: slug, origin: host.origin },
+      true
+    )
   }
   if (requested.length > 0) {
     if (requested.some((value) => value !== slug)) return pageNotFound()
-    return { type: 'redirect', status: 308, location: host.origin + encodedPath + withoutParam(search, TENANT_QUERY_PARAM) }
+    return {
+      type: 'redirect',
+      status: 308,
+      location:
+        host.origin + encodedPath + withoutParam(search, TENANT_QUERY_PARAM),
+    }
   }
   if (isPublicPassthrough(pathname)) return { type: 'next' }
-  if (betterAuthBasePath(env.authMode) === null && matchesAny(pathname, TENANT_ACCOUNT_PATHS)) return pageNotFound()
-  return { type: 'rewrite', pathname: internalPrefixed('/' + slug, encodedPath), search }
+  if (
+    betterAuthBasePath(env.authMode) === null &&
+    matchesAny(pathname, TENANT_ACCOUNT_PATHS)
+  )
+    return pageNotFound()
+  return {
+    type: 'rewrite',
+    pathname: internalPrefixed('/' + slug, encodedPath),
+    search,
+  }
 }
 
-function backend(pathname: string, search: string, edge: EdgeContext, stripSelectionCookie: boolean): Decision {
+function backend(
+  pathname: string,
+  search: string,
+  edge: EdgeContext,
+  stripSelectionCookie: boolean
+): Decision {
   return { type: 'backend', pathname, search, edge, stripSelectionCookie }
 }

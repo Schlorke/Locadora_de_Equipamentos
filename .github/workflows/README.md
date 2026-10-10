@@ -1,6 +1,6 @@
 # Workflows do GitHub Actions
 
-Dois workflows, cada um com uma responsabilidade. Os antigos `test.yml`,
+Três workflows, cada um com uma responsabilidade. Os antigos `test.yml`,
 `ci-fallback.yml`, `ci-simple.yml` e os `*.disabled` foram aposentados: usavam
 Node 20 (fora de `engines`) e `pnpm db:push`, e duplicavam o CI.
 
@@ -9,12 +9,18 @@ Node 20 (fora de `engines`) e `pnpm db:push`, e duplicavam o CI.
 Roda em push e pull request para `main` e `develop`. Node vem de `.node-version`
 (24.21.0) e o pnpm vem de `packageManager`.
 
-| Job            | O que prova                                                                                                                                                                                                                                                                                                                                                                   |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `architecture` | `pnpm arch`, `pnpm tokens`, `pnpm lint:css`, `pnpm check:test-names`, `pnpm ratchet:guard` (baselines ancoradas no commit base), `pnpm hygiene` (arquivos, exports e dependências sem uso pelo knip, e saídas de ferramenta), `pnpm test:gates`, `pnpm test:visual-tools`, `pnpm docs:validate` e `pnpm check:tokens` (bate com `tools/token-propagation-expectations.json`). |
-| `tests`        | PostgreSQL descartável com `prisma migrate deploy`; `test:unit`, `test:security`, `test:contract`, `test:identity`, `test:platform`, `test:mobile`, `test:web`, `test:integration`, `type-check`, `typecheck` e `lint`.                                                                                                                                                       |
-| `builds`       | Build do host da raiz (`next build`), do host web de destino (`pnpm build:web`) e bundle dos dois alvos nativos (`pnpm bundle:mobile`).                                                                                                                                                                                                                                       |
-| `docker`       | `docker build` do `Dockerfile` e `GET /api/health` = 200 no container, que roda como usuário não-root.                                                                                                                                                                                                                                                                        |
+| Job            | O que prova                                                                                                                                                                                                                                          |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `architecture` | Gates `arch`, `tokens`, `lint:css`, nomes de teste, ratchet, hygiene, `test:gates`, `test:visual-tools`, `docs:validate` e `check:tokens`. Os limites de propagação dos tokens continuam explícitos nas expectations.                                |
+| `tests`        | PostgreSQL 18 descartável, migrations com `prisma migrate deploy`, suítes unit/security/contract/identity/platform/mobile/web/HTTP API/integration, tipos e lint. O HTTP API exercita os motores legacy e Better Auth sem iniciar a raiz aposentada. |
+| `builds`       | Build da API (`pnpm build:api`), build web (`pnpm build:web`) e bundles Android/iOS (`pnpm bundle:mobile`).                                                                                                                                          |
+| `api-docker`   | Build de `apps/services/api/Dockerfile` com contexto no workspace; `GET /api/health` = 200 e usuário não-root no container local do job.                                                                                                             |
+
+O antigo job de imagem do servidor da raiz foi aposentado com o host antigo. Os
+jobs atuais não enviam imagens a um registry, não publicam aplicação e não
+executam migrations em banco hospedado. O primeiro commit da história limpa usa
+`HEAD` como base do ratchet somente quando não há pai nem SHA anterior; commits
+seguintes usam a base de push/PR como descrito abaixo.
 
 ### Catracas e o guard
 
@@ -45,8 +51,17 @@ base e exceção nova ou escopo a menos no `knip.jsonc` sem aprovação em
 
 ## `cron-dispatch.yml` — crons da aplicação
 
-Agendado (e manual). Chama as rotas de cron com `CRON_SECRET`, sem instalar o
-projeto.
+Agendado e manual, sem instalar o projeto. Só chama as rotas quando o
+repositório é `Schlorke/Locadora_de_Equipamentos` e a variável
+`CRON_DISPATCH_ENABLED` vale exatamente `true`. A origem e a credencial vêm de
+`CRON_BASE_URL` e `CRON_SECRET`; não há destino GB embutido. Mantenha o
+dispatcher desligado até existir um destino próprio autorizado.
+
+## `api-container.yml` — prova manual do container da API
+
+Executado somente por `workflow_dispatch`. Usa PostgreSQL 18 descartável e
+`apps/services/api/Dockerfile`; verifica health e usuário não-root. O teardown
+`always()` tenta encerrar o container do próprio job. Não faz deploy.
 
 ## Rodar localmente
 

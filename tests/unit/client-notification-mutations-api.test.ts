@@ -14,24 +14,6 @@ const state = vi.hoisted(() => ({
     },
   },
 }))
-vi.mock('@/lib/tenant', async () => {
-  const { withTenantTransaction } =
-    await import('@gb-locacoes/backend/identity')
-  return {
-    resolveTenantPrincipal: state.principal,
-    withTenantTransaction: (context: { tenantId: string }, operation: never) =>
-      withTenantTransaction(
-        { $transaction: state.transaction } as never,
-        context,
-        operation
-      ),
-  }
-})
-import {
-  PATCH as legacyPatch,
-  DELETE as legacyDelete,
-} from '@/app/api/client/notifications/[id]/route'
-import { POST as legacyAll } from '@/app/api/client/notifications/mark-all-read/route'
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: state.principal,
 }))
@@ -66,10 +48,7 @@ const row = {
   createdAt: new Date('2026-01-01T00:00:00.000Z'),
 }
 const context = () => ({ params: Promise.resolve({ id: row.id }) })
-const handlers = [
-  ['legacy', legacyPatch, legacyDelete, legacyAll],
-  ['service', servicePatch, serviceDelete, serviceAll],
-] as const
+const handlers = [['service', servicePatch, serviceDelete, serviceAll]] as const
 beforeEach(() => {
   vi.resetAllMocks()
   vi.useFakeTimers({ toFake: ['Date'] })

@@ -192,6 +192,7 @@ const MODE_KEYS = new Set(['NODE_ENV'])
  * @next/env lê os .env de lá; as pastas de projeto abaixo têm as chaves neutralizadas (raiz, fonte e standalone).
  */
 export const INTEGRATION_API_PROJECT = join('apps', 'services', 'api')
+// A .next antiga da raiz saiu em F; esta saída é apps/services/api/.next, do build standalone do host API.
 export const INTEGRATION_API_SERVER = join(
   INTEGRATION_API_PROJECT,
   '.next',

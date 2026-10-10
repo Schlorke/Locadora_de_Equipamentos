@@ -8,22 +8,6 @@ const mocks = vi.hoisted(() => ({
   conversations: { findMany: vi.fn(), findFirst: vi.fn(), count: vi.fn() },
   messages: { findMany: vi.fn() },
 }))
-vi.mock('@/middlewares/require-admin', () => ({
-  requireAdminOrOperator: mocks.gate,
-}))
-vi.mock('@/lib/meta-whatsapp', () => ({ sendTextMessage: mocks.send }))
-vi.mock('@/lib/tenant', () => ({
-  withTenantTransaction: async (
-    scope: unknown,
-    operation: (_tx: unknown) => Promise<unknown>
-  ) => {
-    mocks.context(scope)
-    return operation({
-      whatsAppConversation: mocks.conversations,
-      whatsAppMessage: mocks.messages,
-    })
-  },
-}))
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
 vi.mock(
@@ -33,9 +17,7 @@ vi.mock(
       requireAdminOrOperator: mocks.gate,
     }))()) as Record<
       string,
-      (
-        request?: unknown
-      ) => Promise<{
+      (request?: unknown) => Promise<{
         success: boolean
         principal?: unknown
         error?: string
@@ -71,9 +53,7 @@ vi.mock(
       requireAdminOrOperator: mocks.gate,
     }))()) as Record<
       string,
-      (
-        request?: unknown
-      ) => Promise<{
+      (request?: unknown) => Promise<{
         success: boolean
         principal?: unknown
         error?: string
@@ -131,22 +111,11 @@ vi.mock(
     }))()),
   })
 )
-import * as legacyRoute0 from '@/app/api/admin/whatsapp/conversations/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/admin/whatsapp/conversations/route'
-import * as legacyRoute1 from '@/app/api/admin/whatsapp/conversations/[conversationId]/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/admin/whatsapp/conversations/[conversationId]/route'
-import * as legacyRoute2 from '@/app/api/admin/whatsapp/conversations/[conversationId]/messages/route'
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/admin/whatsapp/conversations/[conversationId]/messages/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      list: legacyRoute0.GET,
-      detail: legacyRoute1.GET,
-      messages: legacyRoute2.GET,
-    },
-  ],
   [
     'service',
     {

@@ -25,7 +25,10 @@ Explain the business goal and why this feature exists.
   `packages/frontend/src/pages/...`
 - Components: `packages/frontend/src/{widgets,features,entities}/...` and
   `packages/ui/src/...`
-- APIs: `app/api/...`
+- APIs: `apps/services/api/src/app/api/...` (thin HTTP host)
+- Backend: public entrypoint of `packages/backend` and its owning
+  `src/{http,modules,runtime}/...` responsibility; shared schemas belong to
+  `packages/contracts` and domain rules to `packages/domain`.
 
 ## 4. Core Flow
 
@@ -37,8 +40,9 @@ Explain the business goal and why this feature exists.
 
 - `packages/frontend/src/...`
 - `packages/ui/src/...`
-- `app/api/...`
-- `lib/...`
+- `apps/services/api/src/app/api/...`
+- `packages/backend/src/{http,modules,runtime}/...`
+- `packages/contracts/src/...` / `packages/domain/src/...` when applicable
 
 ## 6. Data and State
 
@@ -76,4 +80,4 @@ Explain the business goal and why this feature exists.
 
 ---
 
-_Template version: 2026-01-20_
+_Template version: 2026-10-09_

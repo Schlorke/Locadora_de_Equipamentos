@@ -1,6 +1,8 @@
 # Consultas e documentos de orçamento por locadora
 
-> Status: implementação local validada; publicação não realizada.
+> Status: o piloto abaixo registrou validação local antes da publicação. A
+> primeira etapa foi publicada em `978ceb9244c81c7cb2888b798fad8ce90edad25e`; a
+> retirada F está no clone de revalidação, com provas finais pendentes.
 
 ## 1. Purpose
 
@@ -20,7 +22,9 @@ GET /api/admin/quotes; POST /api/admin/quotes/[id]/calculate-late-fee; GET
 /api/admin/quotes/[id]/adjustments/download; GET /api/quotes/[id]/download.
 
 GET /api/admin/quotes/[id]/pdf-oficio e GET
-/api/admin/financial/entries/[id]/pdf-oficio também estão nos dois hosts.
+/api/admin/financial/entries/[id]/pdf-oficio estão no host API. Os dois adapters
+do registro da onda37 eram a API compartilhada e a raiz antiga, retirada em F;
+não são os hosts web e API atuais.
 
 ## 4. Core Flow
 
@@ -38,13 +42,15 @@ própria.
 
 ## 5. Components and Files
 
-- lib/quote-document.ts: fachada legada de autorização e composição.
-- apps/services/api/src/host/documents.ts: composição do serviço parcial.
+- apps/services/api/src/host/documents.ts: composição atual por factories
+  públicas de documents e marca da locadora. A fachada antiga
+  `lib/quote-document.ts` foi retirada em F.
 - backend/documents: snapshot, queries, mapper e PDFKit compartilhados.
 - backend/communications/tenant-branding: identidade/branding da locadora.
 - design-tokens/documents: cores canônicas e geometria A4 em pontos.
 - packages/backend/src/modules/documents: renderizadores PDFKit.
-- app/api/admin/quotes/route.ts: listagem e agregados sob o mesmo tenant.
+- apps/services/api/src/app/api/admin/quotes/route.ts: listagem e agregados sob
+  o mesmo tenant.
 - tests/unit/quote-admin-database.test.ts: regressões com PostgreSQL.
 
 ## 6. Data and State
@@ -78,12 +84,12 @@ tecnologia assistiva ainda não foram certificadas.
 
 ## 10. Tests and Validation
 
-Sete testes reais passaram: listagem/agregados A/B; IDs externos; papel e
-permissão vigentes; cálculo sem mutação; PDF real com autor correto;
-titular/soft delete; reajustes. Amostras fictícias renderizadas com Poppler e
-conferidas visualmente. Cenário de 160 repetições de justificativa preservou
-palavras em cinco páginas, verificado por extração pypdf. Isso não valida dados
-históricos reais.
+No piloto de consultas/documentos, sete testes reais passaram:
+listagem/agregados A/B; IDs externos; papel e permissão vigentes; cálculo sem
+mutação; PDF real com autor correto; titular/soft delete; reajustes. Amostras
+fictícias renderizadas com Poppler e conferidas visualmente. Cenário de 160
+repetições de justificativa preservou palavras em cinco páginas, verificado por
+extração pypdf. Isso não valida dados históricos reais.
 
 Onda 37 (2026-10-02, sem commit): 36 testes de adapter, 60 casos HTTP reais nos
 dois modos de identidade, dois testes dos valores impressos e 21 fiscais.
@@ -91,7 +97,8 @@ Rodadas e rechecagens em [API compartilhada](shared-api-host.md). Paridade
 binária normaliza somente CreationDate e ID do PDFKit. Ofício mantém seu
 truncamento histórico; reajustes preservam todas as palavras. Author usa a
 locadora, 500 inesperado fica genérico sem detail. Sem mutação financeira,
-cutover ou publicação; legado ativo.
+cutover ou publicação naquele corte; o legado estava ativo então. Não é
+resultado novo após F nem instrução para restaurar a raiz antiga.
 
 ## 11. Related Docs
 

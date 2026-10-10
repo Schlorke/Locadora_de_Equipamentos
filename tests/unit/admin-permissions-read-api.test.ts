@@ -7,11 +7,6 @@ const state = vi.hoisted(() => ({
   permissions: vi.fn(),
   trace: [] as string[],
 }))
-vi.mock('@/lib/tenant', () => ({
-  resolveTenantPrincipal: state.principal,
-  withTenantTransaction: state.transaction,
-}))
-import { GET as legacy } from '@/app/api/admin/permissions/route'
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: state.principal,
 }))
@@ -64,10 +59,7 @@ beforeEach(() => {
   })
 })
 
-describe.each([
-  ['legacy', legacy],
-  ['service', service],
-] as const)(
+describe.each([['service', service]] as const)(
   '%s administrative permissions read characterization',
   (_host, GET) => {
     const request = (query = '') =>

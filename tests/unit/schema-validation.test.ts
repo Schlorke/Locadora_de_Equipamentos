@@ -6,14 +6,19 @@
  */
 
 import {
-  CategoryPublicSchema,
-  EquipmentPublicSchema,
-  ErrorSchema,
+  PublicCategoryList,
+  PublicEquipmentList,
+  PublicApiError,
+} from '@gb-locacoes/contracts/openapi'
+import {
+  ContactSchema,
   QuoteRequestSchema,
-} from '@/lib/validations'
-// O contrato dos dois hosts, sem a reexportação da raiz legada (onda 135, C5).
-import { ContactSchema } from '@gb-locacoes/contracts/quotations'
+} from '@gb-locacoes/contracts/quotations'
 import { describe, expect, test } from 'vitest'
+
+// Os mesmos schemas públicos são elementos dos contratos já publicados; não copiar nem ampliar o OpenAPI.
+const CategoryPublicSchema = PublicCategoryList.element
+const EquipmentPublicSchema = PublicEquipmentList.element
 
 describe('🔍 Zod Schema Validation', () => {
   describe('📱 Equipment Schema', () => {
@@ -245,16 +250,17 @@ describe('🔍 Zod Schema Validation', () => {
     })
   })
 
-  describe('❌ Error Schema', () => {
+  describe('❌ Public API Error Schema', () => {
     test('should validate standard error format', () => {
       const validError = {
         error: 'Something went wrong',
-        code: '500',
-        details: { additional: 'info' },
+        code: 'INVALID_INPUT',
+        field: 'customerEmail',
       }
 
-      const result = ErrorSchema.safeParse(validError)
+      const result = PublicApiError.safeParse(validError)
       expect(result.success).toBe(true)
+      if (result.success) expect(result.data).toEqual(validError)
     })
 
     test('should validate minimal error format', () => {
@@ -262,7 +268,7 @@ describe('🔍 Zod Schema Validation', () => {
         error: 'Error message',
       }
 
-      const result = ErrorSchema.safeParse(minimalError)
+      const result = PublicApiError.safeParse(minimalError)
       expect(result.success).toBe(true)
     })
 
@@ -272,7 +278,7 @@ describe('🔍 Zod Schema Validation', () => {
         // Missing required 'error' field
       }
 
-      const result = ErrorSchema.safeParse(invalidError)
+      const result = PublicApiError.safeParse(invalidError)
       expect(result.success).toBe(false)
     })
   })

@@ -24,18 +24,6 @@ const { verifyPaymentMock, processPaymentMock } = vi.hoisted(() => ({
   processPaymentMock: vi.fn(),
 }))
 
-vi.mock('@/lib/security/tenant-boleto-verification', () => ({
-  verifyTenantBoleto: verifyPaymentMock,
-}))
-
-vi.mock('@/lib/payment-processor', () => ({
-  processPayment: processPaymentMock,
-}))
-
-vi.mock('@/lib/quote-payment-conversion', () => ({
-  convertPaidQuotePayment: vi.fn(),
-}))
-
 // Contraparte da API compartilhada (onda 135, E5): a mesma rota de cron montada pelo serviço, com o mesmo verificador
 // de boleto e processador como dublês (`host/payment-webhooks`) e o mesmo banco descartável. A metade legada sai no F.
 vi.mock(
@@ -51,10 +39,6 @@ vi.mock(
 
 const { prisma } = getDatabaseRuntime()
 const HOSTS = [
-  {
-    name: 'legacy root',
-    route: () => import('@/app/api/cron/verify-boleto-payments/route'),
-  },
   {
     name: 'service',
     route: () =>

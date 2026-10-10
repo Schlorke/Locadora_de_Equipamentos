@@ -32,14 +32,14 @@ describe('carregamento das rotas do painel no host web', () => {
     expect(route).toContain(`return <${component} />`)
   })
 
-  it('o spinner da listagem é o mesmo do loading.tsx de categorias da raiz legada', () => {
-    const legacy = read('../../../../../../app/admin/categorias/loading.tsx')
-    const legacyClasses = classesOf(legacy, 'className')
-    expect(legacyClasses).toHaveLength(2)
+  it('desenha o spinner preservado da listagem de categorias e orçamentos', () => {
+    // Values characterized from the preserved root snapshot; no live root read after F.
     expect(
       classesOf(renderToStaticMarkup(<AdminQuotesLoading />), 'class')
-    ).toEqual(legacyClasses)
-    // Mesma rotação contínua do framer-motion.
+    ).toEqual([
+      'h-screen w-full overflow-hidden bg-gray-50 flex items-center justify-center',
+      'w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full',
+    ])
     const source = read('./CarregandoLista.web.tsx')
     for (const animation of [
       'animate={{ rotate: 360 }}',
@@ -47,7 +47,6 @@ describe('carregamento das rotas do painel no host web', () => {
       'repeat: Number.POSITIVE_INFINITY,',
       "ease: 'linear',",
     ]) {
-      expect(legacy).toContain(animation)
       expect(source).toContain(animation)
     }
   })

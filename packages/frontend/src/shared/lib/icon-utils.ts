@@ -1,4 +1,4 @@
-// lib/icon-utils.ts
+// Portado da antiga lib/icon-utils.ts, retirada em F; o mapa de nomes continua neste utilitário do frontend.
 import { ALL_ICONS, type AllIconNames } from './constants/all-icons'
 
 const LEGACY_ICON_MAP: Record<string, AllIconNames> = {

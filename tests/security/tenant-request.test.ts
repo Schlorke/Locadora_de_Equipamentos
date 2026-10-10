@@ -1,3 +1,45 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  if (process.env.TEST_DATABASE_URL) {
+    const { requireTestDatabase } = await import('../helpers/test-database')
+    const { Pool } = await import('pg')
+    const { PrismaClient } = await import('@prisma/client')
+    const { PrismaPg } = await import('@prisma/adapter-pg')
+    const pool = new Pool({
+      connectionString: requireTestDatabase(process.env),
+      max: 4,
+    })
+    fPreparedDatabase.pool = pool
+    return {
+      prisma: (fixtureDatabase.prisma = new PrismaClient({
+        adapter: new PrismaPg(pool),
+      })),
+      testPool: pool,
+    }
+  }
+  return {
+    prisma: (fixtureDatabase.prisma = {
+      organization: {
+        findUnique: async ({ where }: { where: { slug: string } }) => {
+          state.lookups.push(where.slug)
+          const organization = state.organizations.get(where.slug)
+          return organization ? { ...organization } : null
+        },
+      },
+      $transaction: async () => {
+        state.transactions += 1
+        throw new Error(
+          'database writes are not available without TEST_DATABASE_URL'
+        )
+      },
+    }),
+  }
+}
+import { getDatabaseRuntime as getFPreparedDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 /**
  * T7 (ADR docs/architecture/adr-tenant-hosts.md, desenho 4.13): num host de
  * locadora, a locadora vem somente da borda validada. `tenantSlug` na query,
@@ -32,63 +74,16 @@ const state = vi.hoisted(() => ({
 }))
 
 const fixtureDatabase = vi.hoisted(() => ({ prisma: undefined as unknown }))
-vi.mock('@/lib/prisma', async () => {
-  if (process.env.TEST_DATABASE_URL) {
-    const { requireTestDatabase } = await import('../helpers/test-database')
-    const { Pool } = await import('pg')
-    const { PrismaClient } = await import('@prisma/client')
-    const { PrismaPg } = await import('@prisma/adapter-pg')
-    const pool = new Pool({
-      connectionString: requireTestDatabase(process.env),
-      max: 4,
-    })
-    return {
-      prisma: (fixtureDatabase.prisma = new PrismaClient({
-        adapter: new PrismaPg(pool),
-      })),
-      testPool: pool,
-    }
-  }
-  return {
-    prisma: (fixtureDatabase.prisma = {
-      organization: {
-        findUnique: async ({ where }: { where: { slug: string } }) => {
-          state.lookups.push(where.slug)
-          const organization = state.organizations.get(where.slug)
-          return organization ? { ...organization } : null
-        },
-      },
-      $transaction: async () => {
-        state.transactions += 1
-        throw new Error(
-          'database writes are not available without TEST_DATABASE_URL'
-        )
-      },
-    }),
-  }
-})
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () =>
-    state.userId ? { user: { id: state.userId } } : null,
-}))
-vi.mock('@/lib/rate-limit', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/lib/rate-limit')>()),
-  checkRateLimit: () => ({ allowed: true }),
-}))
-vi.mock('@/lib/resend', () => ({
-  default: () => ({
-    emails: { send: async () => ({ data: { id: 'test' }, error: null }) },
-  }),
-}))
 
 import { NextRequest } from 'next/server'
-import { isTrustedMutationOrigin } from '@/lib/security/mutation-origin'
+import { isTrustedMutationOrigin } from '../../apps/services/api/src/host/mutation-origin'
 import { readPublicTenantCard } from '@gb-locacoes/backend/directory'
 import type { PrismaClient } from '@prisma/client'
 // As fixtures (tests/helpers/fixtures.ts) leem o banco pelo runtime do backend (onda 135, E4): o mesmo cliente que a
-// fábrica de `@/lib/prisma` acima cria, guardado no momento da criação (sem import cruzado entre os dois dublês).
-import { prisma } from '@/lib/prisma'
-import { publicCacheHeaders, withTenantTransaction } from '@/lib/tenant'
+// composição simulada do runtime fornece, guardado no momento da criação (sem import cruzado entre os dublês).
+const { prisma } = getFPreparedDatabaseRuntime()
+import { withTenantTransaction } from '../../apps/services/api/src/host/tenant-transaction'
+import { publicCacheHeaders } from '@gb-locacoes/backend/identity'
 import { readPlatformEdgeContext } from '../../packages/backend/src/modules/identity/platform-edge'
 import {
   cleanupTestData,
@@ -98,24 +93,38 @@ import {
   ensureTestTenant,
 } from '../helpers/fixtures'
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
-// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  // As fixtures e as rotas do serviço leem o mesmo cliente (real ou simulado) que a fábrica de `@/lib/prisma` cria.
-  getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
-  ...(await (async () => {
-    const F = await (() => ({
-      default: () => ({
-        emails: { send: async () => ({ data: { id: 'test' }, error: null }) },
-      }),
-    }))()
-    return { createResendClient: () => F.default() }
-  })()),
-}))
+// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade da raiz foi retirada no bloco F.
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    // As fixtures e as rotas do serviço leem o mesmo cliente (real ou simulado) fornecido pelo runtime do backend.
+    getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
+    ...(await (async () => {
+      const F = await (() => ({
+        default: () => ({
+          emails: { send: async () => ({ data: { id: 'test' }, error: null }) },
+        }),
+      }))()
+      return { createResendClient: () => F.default() }
+    })()),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 vi.mock(
   '../../apps/services/api/src/host/rate-limit',
   async (importOriginal) => ({
-    ...(await importOriginal<typeof import('@/lib/rate-limit')>()),
+    ...(await importOriginal<
+      typeof import('../../apps/services/api/src/host/rate-limit')
+    >()),
     checkRateLimit: () => ({ allowed: true }),
   })
 )
@@ -128,47 +137,30 @@ vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
       state.userId ? { user: { id: state.userId } } : null,
   }))()),
 }))
-import * as legacyRoute0 from '@/app/api/quotes/route'
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/quotes/route'
-import * as legacyRoute1 from '@/app/api/contact/route'
+
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/contact/route'
-import * as legacyRoute2 from '@/app/api/orcamentos/route'
+
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/orcamentos/route'
-import * as legacyRoute3 from '@/app/api/categories/route'
+
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/categories/route'
-import * as legacyRoute4 from '@/app/api/equipments/route'
+
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/equipments/route'
-import * as legacyRoute5 from '@/app/api/equipamentos/search/route'
+
 import * as serviceRoute5 from '../../apps/services/api/src/app/api/equipamentos/search/route'
-import * as legacyRoute6 from '@/app/api/equipments/[id]/availability/route'
+
 import * as serviceRoute6 from '../../apps/services/api/src/app/api/equipments/[id]/availability/route'
-import * as legacyRoute7 from '@/app/api/settings/public/route'
+
 import * as serviceRoute7 from '../../apps/services/api/src/app/api/settings/public/route'
-import * as legacyRoute8 from '@/app/api/equipments/[id]/route'
+
 import * as serviceRoute8 from '../../apps/services/api/src/app/api/equipments/[id]/route'
-import * as legacyRoute9 from '@/app/api/public/tenants/[slug]/route'
+
 import * as serviceRoute9 from '../../apps/services/api/src/app/api/public/tenants/[slug]/route'
-import * as legacyRoute10 from '@/app/api/auth/organizations/current/route'
+
 import * as serviceRoute10 from '../../apps/services/api/src/app/api/auth/organizations/current/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      listQuotes: legacyRoute0.GET,
-      postQuote: legacyRoute0.POST,
-      postContact: legacyRoute1.POST,
-      postOrcamento: legacyRoute2.POST,
-      categories: legacyRoute3.GET,
-      equipments: legacyRoute4.GET,
-      search: legacyRoute5.GET,
-      availability: legacyRoute6.GET,
-      settings: legacyRoute7.GET,
-      equipmentDetail: legacyRoute8.GET,
-      tenantCard: legacyRoute9.GET,
-      currentOrganization: legacyRoute10.GET,
-    },
-  ],
   [
     'service',
     {
@@ -1233,3 +1225,13 @@ describe.each(HOSTS)(
     )
   }
 )
+
+// Close the fixture-created Prisma and Pool after original row cleanup.
+afterAll(async () => {
+  if (!fPreparedDatabase.pool) return
+  try {
+    await getFPreparedDatabaseRuntime().prisma.$disconnect()
+  } finally {
+    await fPreparedDatabase.pool.end()
+  }
+})

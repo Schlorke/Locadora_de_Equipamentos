@@ -42,16 +42,7 @@ describe('Página de notificações', () => {
     )
     expect(source).toContain('pt-[84px]')
     expect(source).toContain('#f9fafb')
-    const route = readFileSync(
-      new URL(
-        '../../../../../../app/area-cliente/notificacoes/page.tsx',
-        import.meta.url
-      ),
-      'utf8'
-    )
-    expect(route).toContain("from '@gb-locacoes/frontend/pages/notificacoes'")
-    expect(route).toContain('return <NotificacoesPage />')
-    // Onda 135 (A8): a mesma página no host web; a asserção sobre a raiz sai no bloco F.
+    // A rota do host web mantém a composição compartilhada.
     const webRoute = readFileSync(
       new URL(
         '../../../../../../apps/clients/web/src/app/(public)/[locadora]/(account)/area-cliente/notificacoes/page.tsx',

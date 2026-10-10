@@ -15,32 +15,6 @@ const state = vi.hoisted(() => ({
   createDelivery: vi.fn(),
   updateDelivery: vi.fn(),
 }))
-vi.mock('@/lib/tenant-permissions', () => ({
-  requireTenantPermission: state.permission,
-}))
-vi.mock('@/lib/tenant', () => ({ resolveTenantPrincipal: state.principal }))
-vi.mock('@/lib/catalog', async () => {
-  const { CatalogError } = await import('@gb-locacoes/backend/catalog')
-  return {
-    CatalogError,
-    readEquipment: vi.fn(),
-    updateEquipment: state.updateEquipment,
-    deleteEquipment: state.deleteEquipment,
-  }
-})
-vi.mock('@/lib/vehicles', async () => {
-  const { VehicleError } = await import('@gb-locacoes/backend/operations')
-  return {
-    VehicleError,
-    listVehicles: state.listVehicles,
-    createVehicle: state.createVehicle,
-  }
-})
-vi.mock('@/lib/logistics', () => ({
-  listDeliveries: state.listDeliveries,
-  createDelivery: state.createDelivery,
-  updateDelivery: state.updateDelivery,
-}))
 vi.mock('../../apps/services/api/src/host/permissions', () => ({
   requireTenantPermission: state.permission,
 }))
@@ -60,30 +34,17 @@ vi.mock('../../apps/services/api/src/host/operations', () => ({
   updateDelivery: state.updateDelivery,
 }))
 import {
-  PUT as oldEquipmentPUT,
-  DELETE as oldEquipmentDELETE,
-} from '@/app/api/admin/equipments/[id]/route'
-import {
   PUT as apiEquipmentPUT,
   DELETE as apiEquipmentDELETE,
 } from '../../apps/services/api/src/app/api/admin/equipments/[id]/route'
-import {
-  GET as oldVehiclesGET,
-  POST as oldVehiclesPOST,
-} from '@/app/api/admin/vehicles/route'
 import {
   GET as apiVehiclesGET,
   POST as apiVehiclesPOST,
 } from '../../apps/services/api/src/app/api/admin/vehicles/route'
 import {
-  GET as oldDeliveriesGET,
-  POST as oldDeliveriesPOST,
-} from '@/app/api/admin/logistics/route'
-import {
   GET as apiDeliveriesGET,
   POST as apiDeliveriesPOST,
 } from '../../apps/services/api/src/app/api/admin/logistics/route'
-import { PATCH as oldDeliveryPATCH } from '@/app/api/admin/logistics/[id]/route'
 import { PATCH as apiDeliveryPATCH } from '../../apps/services/api/src/app/api/admin/logistics/[id]/route'
 
 const principal = {
@@ -118,7 +79,7 @@ const cases = [
     method: 'PUT',
     path: 'equipments',
     use: 'updateEquipment',
-    handlers: [oldEquipmentPUT, apiEquipmentPUT],
+    handlers: [apiEquipmentPUT],
     action: 'WRITE',
     module: 'EQUIPMENTS',
     body: true,
@@ -130,7 +91,7 @@ const cases = [
     method: 'DELETE',
     path: 'equipments',
     use: 'deleteEquipment',
-    handlers: [oldEquipmentDELETE, apiEquipmentDELETE],
+    handlers: [apiEquipmentDELETE],
     action: 'DELETE',
     module: 'EQUIPMENTS',
     body: false,
@@ -142,7 +103,7 @@ const cases = [
     method: 'GET',
     path: 'vehicles',
     use: 'listVehicles',
-    handlers: [oldVehiclesGET, apiVehiclesGET],
+    handlers: [apiVehiclesGET],
     action: 'READ',
     module: 'LOGISTICS',
     body: false,
@@ -154,7 +115,7 @@ const cases = [
     method: 'POST',
     path: 'vehicles',
     use: 'createVehicle',
-    handlers: [oldVehiclesPOST, apiVehiclesPOST],
+    handlers: [apiVehiclesPOST],
     action: 'WRITE',
     module: 'LOGISTICS',
     body: true,
@@ -166,7 +127,7 @@ const cases = [
     method: 'GET',
     path: 'logistics',
     use: 'listDeliveries',
-    handlers: [oldDeliveriesGET, apiDeliveriesGET],
+    handlers: [apiDeliveriesGET],
     action: null,
     module: null,
     body: false,
@@ -178,7 +139,7 @@ const cases = [
     method: 'POST',
     path: 'logistics',
     use: 'createDelivery',
-    handlers: [oldDeliveriesPOST, apiDeliveriesPOST],
+    handlers: [apiDeliveriesPOST],
     action: null,
     module: null,
     body: true,
@@ -190,7 +151,7 @@ const cases = [
     method: 'PATCH',
     path: 'logistics',
     use: 'updateDelivery',
-    handlers: [oldDeliveryPATCH, apiDeliveryPATCH],
+    handlers: [apiDeliveryPATCH],
     action: null,
     module: null,
     body: true,

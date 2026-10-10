@@ -27,59 +27,41 @@ guards.
 
 ## 3. Entry Points
 
-- Auth/session:
-  - `lib/auth.ts`
-  - `types/next-auth.d.ts`
-- Guards:
-  - `middlewares/require-admin.ts`
-  - `lib/tenant-permissions.ts`
-  - `packages/backend/src/modules/identity/tenant-permission.ts`
-  - `apps/services/api/src/host/permissions.ts`
-- Permissoes:
-  - `lib/permissions.ts`
-  - `app/api/admin/permissions/route.ts`
-  - `apps/services/api/src/app/api/admin/permissions/route.ts` (GET e PUT)
-  - `packages/backend/src/modules/identity/tenant-permissions-read.ts`
-  - `packages/backend/src/modules/identity/tenant-permissions-write.ts`
-  - `packages/backend/src/http/permissions-write.ts`
-  - `packages/contracts/src/permissions.ts`
-  - `app/admin/permissions/page.tsx`
-- Navegacao:
-  - `app/admin/layout.tsx` (raiz legada)
-  - `packages/frontend/src/features/entrar-admin/model/redirect.ts`
-    (`resolveAdminRoleRedirect`, onda 135) e
-    `packages/frontend/src/app/providers/RuntimeBootstrap.tsx`
-    (`PrivateAreaGate`, portão do painel no host web)
-  - `packages/frontend/src/widgets/menu-admin/ui/BarraLateral.web.tsx`
-  - `packages/frontend/src/widgets/menu-admin/ui/BarraLateralMobile.web.tsx`
+- Identidade: `apps/services/api/src/host/session.ts` e
+  `host/private-identity.ts`, sobre backend/identity. O cliente recebe o
+  SessionAdapter do host; sessão autentica identidade, não substitui membership.
+- Política granular:
+  `packages/backend/src/modules/identity/tenant-permission.ts` e
+  `apps/services/api/src/host/permissions.ts`.
+- Matriz: `apps/services/api/src/app/api/admin/permissions/route.ts` (GET/PUT),
+  `host/permission-rows.ts`, backend/identity/tenant-permissions-read e
+  tenant-permissions-write, backend/http/permissions-write e
+  `packages/contracts/src/permissions.ts`.
+- Tela: `packages/frontend/src/pages/permissoes`, variantes web/native; wrapper
+  web em `apps/clients/web/src/app/(admin)/admin/permissions/page.tsx`.
+- Navegação: `apps/clients/web/src/app/(admin)/layout.tsx` compõe
+  AppHostProviders e AdminLayoutShell. `RuntimeBootstrap.tsx` contém o
+  PrivateAreaGate e chama `features/entrar-admin/model/redirect.ts`. Sidebars
+  continuam em `packages/frontend/src/widgets/menu-admin`.
 
 ## 4. Core Flow
 
 1. Sessão autentica a identidade; o principal da locadora revalida membership
    ACTIVE e organização ACTIVE a cada requisição. `User.role` não autoriza o
    acesso à locadora.
-2. Layout admin valida role permitida do vínculo.
-3. Se role for `FINANCIAL`, layout redireciona para `/admin/financeiro`. Na raiz
-   legada, `app/admin/admin-layout-client.tsx`; `/admin/settings` só abre para
-   ADMIN (`app/admin/settings/layout.tsx`, os outros papéis voltam a `/admin`).
-   No host web (onda 135, A6), o portão do painel (`PrivateAreaGate`, que segue
-   a rota) aplica a mesma regra com o papel do vínculo com a locadora
-   selecionada (`resolveAdminRoleRedirect`): a rota não monta, aparece
-   "Redirecionando..." e a troca substitui a entrada do histórico. As telas do
-   app mobile (portão com `privateArea` informado) não trocam de rota pelo
-   papel. A recusa de papéis fora de ADMIN/OPERATOR/FINANCIAL que o layout
-   legado fazia (`/admin/login?error=unauthorized`) não foi recriada: no web, a
-   API recusa e o menu fica vazio (decisão pendente, relatório do lote A da onda
-   135).
-4. APIs utilizam helpers centralizados:
-   - `requireRoles([...])`
-   - `requirePermission(module, action)`
-   - `requireFinancialAccess()`
-   - `requireTenantPermission(request, module, action)`: política compartilhada
-     pela raiz e pelo serviço. CLIENT é recusado; ADMIN da membership passa sem
-     consultar Permission; FINANCIAL/OPERATOR exigem uma concessão exata por
-     tenantId, role, module e action. A consulta roda em withTenantTransaction,
-     sem cache de concessão ou fallback para linhas sem locadora.
+2. O portão web segue a rota e o papel do vínculo: FINANCIAL fora do financeiro
+   vai para /admin/financeiro; /admin/settings só abre para ADMIN. A rota
+   recusada não monta e a navegação substitui a entrada do histórico. No mobile,
+   o portão recebe privateArea e não troca de rota pelo papel. A recusa de todos
+   os papéis fora da equipe que o layout legado fazia não foi recriada: a API
+   recusa e o menu fica vazio; conservar a decisão pendente da onda 135, sem
+   prometer redirect inexistente.
+3. Cada API resolve o principal e trata a falha antes de dados/efeitos. Rotas
+   por allowlist comparam principal.role; por exemplo GET/PUT da matriz exigem
+   ADMIN. `requireTenantPermission(request, module, action)` resolve a política
+   granular: CLIENT é recusado; ADMIN da membership passa sem lookup;
+   FINANCIAL/OPERATOR exigem concessão tenantId + role + module + action, em
+   withTenantTransaction, sem cache ou fallback para linhas sem locadora.
 
 As restrições de navegação por papel e os helpers de allowlist não substituem
 essa política granular. Ela preserva o comportamento observado do legado: uma
@@ -89,11 +71,15 @@ menus ou ampliou acesso de um papel.
 
 ## 5. Components and Files
 
-- `middlewares/require-admin.ts`
-- `lib/permissions.ts`
-- `app/admin/layout.tsx`
-- `app/admin/permissions/page.tsx`
-- `app/api/admin/permissions/route.ts`
+- `apps/services/api/src/host/private-identity.ts`, `permissions.ts` e
+  `permission-rows.ts`: composição, autorização e consulta/mutação.
+- `packages/backend/src/modules/identity/tenant-permission.ts` e
+  `tenant-permissions-{read,write}.ts`: política e transações por locadora.
+- `packages/frontend/src/pages/permissoes`: matriz e ciclo de transporte.
+- `packages/frontend/src/app/providers/RuntimeBootstrap.tsx` e
+  `AdminLayoutShell.web.tsx`: portão e shell, sem autoridade de banco.
+- `apps/clients/web/src/app/(admin)/layout.tsx` e `admin/permissions/page.tsx`:
+  wrappers finos.
 
 ## 6. Data and State
 
@@ -113,7 +99,8 @@ menus ou ampliou acesso de um papel.
   locadora atual: lock transacional por tenantId + papel, deleteMany, createMany
   com skipDuplicates e leitura final. O corpo aceita de 1 a 100 entradas de um
   único papel e descarta campos extras; tenantId vem do principal. Transação,
-  RLS e consultas ficam no backend compartilhado, com composição nos dois hosts.
+  RLS e consultas ficam no backend compartilhado, com composição no host API. A
+  montagem nos dois hosts é o registro histórico da extração.
 - JSON malformado conserva 500 genérico; violações do schema conservam 400 com
   issues do Zod. A extração não introduz validação estrita, nova ordenação,
   auditoria ou notificações. A conexão única do runtime pode atrasar requisições
@@ -131,7 +118,8 @@ menus ou ampliou acesso de um papel.
 
 - 401: sessao ausente
 - 403: role sem permissao
-- Redirect no layout para `/admin/login?error=unauthorized` quando necessario
+- O portão web conserva os redirects FINANCIAL/settings descritos no fluxo; não
+  promete o redirect de papéis fora da equipe do antigo layout.
 
 ## 9. Performance and Accessibility
 
@@ -211,9 +199,12 @@ menus ou ampliou acesso de um papel.
 
 ## 13. Guarda estrutural por rota (API)
 
-`tests/security/route-auth-inventory.test.ts` (`pnpm test:security`) varre todo
-`app/api/**/route.ts` e as árvores HTTP dos hosts web e API compartilhada.
-Exige, para cada metodo exportado, uma destas saidas:
+`tests/security/route-auth-inventory.test.ts` (`pnpm test:security`) examina as
+árvores HTTP `apps/services/api/src/app/api/**/route.ts` e
+`apps/clients/web/src/app/**/route.ts`. A varredura da antiga raiz
+`app/api/**/route.ts` pertence às provas históricas anteriores à retirada; no
+clone pós-F essa árvore está ausente e não fornece cobertura atual. Exige, para
+cada metodo exportado, uma destas saidas:
 
 - **Helper aprovado (`GUARDS`)** cujo resultado seja retornado ou testado com
   saida (`return`/`throw`) em todo caminho, antes de qualquer acesso a dados ou
@@ -246,8 +237,11 @@ Padroes aceitos: `if (!access.ok) return access.response`,
 `access.ok ? ... : access.response`, `if (!context) return 404` e
 `if (!session?.user?.id)`. So as chamadas de `PRE_AUTH` podem vir antes da
 guarda (`next/server`, `zod`, `decimal.js`, `isTrustedMutationOrigin`,
-`identityMode`, `lib/rate-limit` e os construtores de resposta de
-`lib/api-response`); qualquer outra chamada importada conta como acesso a dados.
+`identityMode`, o limitador em memória de
+`apps/services/api/src/host/rate-limit.ts` e as factories de resposta
+explicitamente cadastradas em PRE_AUTH); qualquer outra chamada importada conta
+como acesso a dados. As fachadas `lib/rate-limit` e `lib/api-response` eram o
+endereço histórico antes da retirada da raiz, não imports para novos handlers.
 Um bloco `catch` e avaliado a partir do estado anterior a guarda.
 
 Em `/api/admin`, `resolveTenantPrincipal` so autoriza depois de comparar o papel
@@ -287,11 +281,13 @@ Passagem CSRF (onda 5, entrada 196 de `docs/issues/known-issues.md`): com as
 mesmas regras de fluxo, toda mutacao autenticada por cookie precisa passar pelo
 guard de mesma origem (`rejectCrossOriginMutation`/`isSameOriginMutation`, que
 podem vir antes da guarda, como `isTrustedMutationOrigin`) antes de qualquer
-efeito. O teste confere no codigo que os helpers centrais carregam o guard:
-primeira instrucao de `resolveTenantPrincipal` e `method: null` nos middlewares
-de `requireAdmin`, o que cobre as mutacoes de `/api/admin/**` no host `app`.
-Duas listas exatas, que reprovam entrada obsoleta: `OWN_CSRF_DEFENCE` (NextAuth
-e Better Auth, com defesa propria) e `CSRF_PENDING` (vazia).
+efeito. O teste confere no codigo que os helpers centrais carregam o guard: a
+recusa de origem no resolver compartilhado de principal, alcançado por
+`host/private-identity.ts`. Os middlewares antigos de requireAdmin com method:
+null eram parte da caracterização legada; os adapters atuais seguem a mesma
+obrigação antes de efeito. A navegação não substitui CSRF. Duas listas exatas,
+que reprovam entrada obsoleta: `OWN_CSRF_DEFENCE` (NextAuth e Better Auth, com
+defesa propria) e `CSRF_PENDING` (vazia).
 
 Após o corte 14, requireTenantPermission só conta quando a composição das
 fachadas delega o Request, módulo e ação originais ao resolver aprovado. A
@@ -307,12 +303,13 @@ não faz I/O ao ser criada. O escopo novo do helper no serviço é somente
 
 ## Atualização de permissões no serviço (onda 54, 2026-10-02, sem commit)
 
-PUT composto nos dois hosts sobre o mesmo schema, transação e advisory lock. 41
-caracterizações antes e 82 depois, mais 30 regressões da leitura existente;
-paridade HTTP nos dois motores, rollback SQL e concorrência entre hosts. O
-inventário rejeita remoção da guarda ADMIN em ambos os adaptadores. A API legada
-segue ativa e o pool anterior foi preservado. Evidências, contagem atual e
-limites na [onda 54 da API compartilhada](shared-api-host.md).
+Registro histórico da onda 54: PUT foi composto nos dois hosts sobre o mesmo
+schema, transação e advisory lock. 41 caracterizações antes e 82 depois, mais 30
+regressões da leitura existente; paridade HTTP nos dois motores, rollback SQL e
+concorrência entre hosts. O inventário rejeita remoção da guarda ADMIN em ambos
+os adaptadores. A API legada segue ativa e o pool anterior foi preservado.
+Evidências, contagem atual e limites na
+[onda 54 da API compartilhada](shared-api-host.md).
 
 ## Ciclo do consumidor (onda 70, 2026-10-03, sem commit)
 

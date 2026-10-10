@@ -1,12 +1,13 @@
+import { getDatabaseRuntime as getFPreparedDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 // Achado 8, regressão da primeira correção: o link de verificação consulta os vínculos da conta
 // (`accountLinkOrigin`), e o cadastro do Better Auth chama o envio DENTRO da transação que cria o usuário
 // (`runWithTransaction` do `/sign-up/email`), que segura uma conexão do pool até o fim. A consulta, pelo cliente
-// global, esperava outra conexão; o pool de `lib/prisma.ts` tem 1 (2 no transaction pooler :6543). Resultado no host
+// global, esperava outra conexão; a antiga `lib/prisma.ts`, retirada em F, montava um pool de 1 (2 no transaction pooler :6543). Resultado no host
 // de locadora: a transação expirava em 5 s, a conta não nascia, e o e-mail com o link saía assim mesmo, para uma
 // conta que não existe. A resposta neutra (202) escondia tudo do cliente.
 // Agora o envio (consulta + e-mail) espera o COMMIT: roda com a conexão já devolvida e só para conta confirmada.
-// Caminho real: rota /api/auth/register → lib/identity → Better Auth → o módulo de produção `lib/prisma.ts` (com o
-// pool que ele cria) apontado para o PostgreSQL descartável.
+// Caminho real: rota /api/auth/register do host API → identity do backend → Better Auth → runtime/database do backend
+// (com o pool que ele cria, max 1 fora do :6543) apontado para o PostgreSQL descartável.
 import { randomUUID } from 'node:crypto'
 import { NextRequest } from 'next/server'
 import {
@@ -27,17 +28,7 @@ const mocks = vi.hoisted(() => ({
   pending: [] as Array<() => unknown>,
   databaseUrl: undefined as string | undefined,
 }))
-vi.mock('@/lib/prisma', async (importOriginal) => {
-  const { requireTestDatabase } = await import('../helpers/test-database')
-  // O módulo de produção, sem dublê: o pool é o que ele monta para a URL (max 1 fora do :6543).
-  const target = requireTestDatabase(process.env)
-  mocks.databaseUrl = process.env.DATABASE_URL
-  process.env.DATABASE_URL = target
-  return importOriginal()
-})
-vi.mock('@/lib/resend', () => ({
-  default: () => ({ emails: { send: mocks.send } }),
-}))
+
 vi.mock('next/server', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next/server')>()),
   after: (task: () => unknown) => {
@@ -45,29 +36,31 @@ vi.mock('next/server', async (importOriginal) => ({
   },
 }))
 
-import { prisma } from '@/lib/prisma'
+const { prisma } = getFPreparedDatabaseRuntime()
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
-// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  // O banco é o runtime real do backend (o mesmo singleton que a fachada usa), sobre o banco descartável.
-  ...(await (async () => {
-    const F = await (() => ({
-      default: () => ({ emails: { send: mocks.send } }),
-    }))()
-    return { createResendClient: () => F.default() }
-  })()),
-}))
-import * as legacyRoute0 from '@/app/api/auth/register/route'
+// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade da raiz foi retirada no bloco F.
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  const { requireTestDatabase } = await import('../helpers/test-database')
+  // O módulo de produção, sem dublê: o pool é o que ele monta para a URL (max 1 fora do :6543).
+  const target = requireTestDatabase(process.env)
+  mocks.databaseUrl = process.env.DATABASE_URL
+  process.env.DATABASE_URL = target
+
+  return (async (importOriginal: <T = unknown>() => Promise<T>) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    // O banco é o runtime real do backend, sobre o banco descartável, sem fachada da raiz.
+    ...(await (async () => {
+      const F = await (() => ({
+        default: () => ({ emails: { send: mocks.send } }),
+      }))()
+      return { createResendClient: () => F.default() }
+    })()),
+  }))(importOriginal)
+})
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/auth/register/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      register: legacyRoute0.POST,
-    },
-  ],
   [
     'service',
     {
@@ -194,18 +187,31 @@ afterEach(() => {
   logged.mockRestore()
 })
 afterAll(async () => {
-  vi.restoreAllMocks()
-  await dropRefuseCommit()
-  await prisma.user.deleteMany({ where: { email: { in: addresses } } })
-  await prisma.organization.deleteMany({ where: { id: tenantId } })
-  await prisma.$disconnect()
-  // Nada do módulo de produção fica para trás no processo (pool e cliente globais).
-  await productionGlobals.__pool?.end()
-  delete productionGlobals.__pool
-  delete productionGlobals.__prisma
-  if (mocks.databaseUrl === undefined) delete process.env.DATABASE_URL
-  else process.env.DATABASE_URL = mocks.databaseUrl
-  vi.unstubAllEnvs()
+  await runFPreparedCleanup(
+    async () => {
+      vi.restoreAllMocks()
+      await dropRefuseCommit()
+      await prisma.user.deleteMany({ where: { email: { in: addresses } } })
+      await prisma.organization.deleteMany({ where: { id: tenantId } })
+    },
+    () => prisma.$disconnect(),
+    async () => {
+      await productionGlobals.__pool?.end()
+    },
+    () => {
+      delete productionGlobals.__pool
+    },
+    () => {
+      delete productionGlobals.__prisma
+    },
+    () => {
+      if (mocks.databaseUrl === undefined) delete process.env.DATABASE_URL
+      else process.env.DATABASE_URL = mocks.databaseUrl
+    },
+    () => {
+      vi.unstubAllEnvs()
+    }
+  )
 })
 
 // O pool e o cliente de produção são do processo: os ganchos acima ficam no nível do arquivo e cada host roda o cadastro.
@@ -285,3 +291,19 @@ describe.each(HOSTS)('%s', (_host, { register }) => {
     }, 30_000)
   })
 })
+
+// Close all owned siblings and restore process state; cleanup errors stay fatal.
+async function runFPreparedCleanup(
+  ...steps: Array<() => unknown | Promise<unknown>>
+) {
+  const errors: unknown[] = []
+  for (const step of steps) {
+    try {
+      await step()
+    } catch (error) {
+      errors.push(error)
+    }
+  }
+  if (errors.length)
+    throw new AggregateError(errors, 'F fixture cleanup failed')
+}

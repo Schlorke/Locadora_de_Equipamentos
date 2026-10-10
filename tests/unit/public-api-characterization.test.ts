@@ -7,13 +7,6 @@ const db = vi.hoisted(() => ({
   transaction: vi.fn(),
   tenantSetting: vi.fn(),
 }))
-vi.mock('@/lib/prisma', () => ({
-  prisma: {
-    organization: { findUnique: db.organization },
-    $transaction: db.transaction,
-  },
-}))
-vi.mock('@/lib/application-session', () => ({ getServerSession: vi.fn() }))
 vi.mock('@gb-locacoes/backend/runtime', () => ({
   getDatabaseRuntime: () => ({
     prisma: {
@@ -23,7 +16,6 @@ vi.mock('@gb-locacoes/backend/runtime', () => ({
   }),
 }))
 
-import { GET as legacy } from '@/app/api/categories/route'
 import { GET as service } from '../../apps/services/api/src/app/api/categories/route'
 
 const secret = 'characterization-edge-secret-0123456789'
@@ -167,53 +159,56 @@ beforeEach(() => {
 })
 afterEach(() => vi.unstubAllEnvs())
 
-describe.each([
-  ['legado', legacy],
-  ['serviço', service],
-] as const)('GET /api/categories — %s', (_name, handler) => {
-  it.each(cases)('$name', async (scenario) => {
-    const response = await handler(
-      new Request('https://backend.internal/api/categories' + scenario.query, {
-        headers: 'headers' in scenario ? scenario.headers : {},
-      })
-    )
-    expect(response.status).toBe(scenario.status)
-    expect(response.headers.get('content-type')).toBe('application/json')
-    expect(await response.json()).toEqual(scenario.body)
-    expect(db.organization).toHaveBeenCalledTimes(scenario.lookup ? 1 : 0)
-    if (scenario.status === 200) {
-      expect(db.transaction).toHaveBeenCalledTimes(1)
-      expect(db.tenantSetting.mock.calls[0]?.[1]).toBe('tenant-alfa')
-      expect(db.categories.mock.calls[0]?.[0].where).toEqual({
-        tenantId: 'tenant-alfa',
-      })
-      const viaHost =
-        'headers' in scenario && 'x-platform-edge-auth' in scenario.headers
-      expect(response.headers.get('cache-control')).toBe(
-        viaHost
-          ? 'public, max-age=60'
-          : 'public, max-age=60, stale-while-revalidate=300'
-      )
-      expect(response.headers.get('vary')).toBe(viaHost ? 'Host' : null)
-      expect(response.headers.get('cdn-cache-control')).toBeNull()
-    } else {
-      expect(response.headers.get('cache-control')).toBe('no-store')
-      expect(db.transaction).not.toHaveBeenCalled()
-    }
-  })
-
-  it.each(['organization', 'categories'] as const)(
-    'preserva o 500 genérico em falha de %s',
-    async (dependency) => {
-      db[dependency].mockRejectedValue(new Error('private-database-detail'))
+describe.each([['serviço', service]] as const)(
+  'GET /api/categories — %s',
+  (_name, handler) => {
+    it.each(cases)('$name', async (scenario) => {
       const response = await handler(
-        new Request('https://backend.internal/api/categories?tenantSlug=alfa')
+        new Request(
+          'https://backend.internal/api/categories' + scenario.query,
+          {
+            headers: 'headers' in scenario ? scenario.headers : {},
+          }
+        )
       )
-      expect(response.status).toBe(500)
-      expect(await response.json()).toEqual({
-        error: 'Erro ao buscar categorias',
-      })
-      expect(response.headers.get('cache-control')).toBeNull()
-    }
-  )
-})
+      expect(response.status).toBe(scenario.status)
+      expect(response.headers.get('content-type')).toBe('application/json')
+      expect(await response.json()).toEqual(scenario.body)
+      expect(db.organization).toHaveBeenCalledTimes(scenario.lookup ? 1 : 0)
+      if (scenario.status === 200) {
+        expect(db.transaction).toHaveBeenCalledTimes(1)
+        expect(db.tenantSetting.mock.calls[0]?.[1]).toBe('tenant-alfa')
+        expect(db.categories.mock.calls[0]?.[0].where).toEqual({
+          tenantId: 'tenant-alfa',
+        })
+        const viaHost =
+          'headers' in scenario && 'x-platform-edge-auth' in scenario.headers
+        expect(response.headers.get('cache-control')).toBe(
+          viaHost
+            ? 'public, max-age=60'
+            : 'public, max-age=60, stale-while-revalidate=300'
+        )
+        expect(response.headers.get('vary')).toBe(viaHost ? 'Host' : null)
+        expect(response.headers.get('cdn-cache-control')).toBeNull()
+      } else {
+        expect(response.headers.get('cache-control')).toBe('no-store')
+        expect(db.transaction).not.toHaveBeenCalled()
+      }
+    })
+
+    it.each(['organization', 'categories'] as const)(
+      'preserva o 500 genérico em falha de %s',
+      async (dependency) => {
+        db[dependency].mockRejectedValue(new Error('private-database-detail'))
+        const response = await handler(
+          new Request('https://backend.internal/api/categories?tenantSlug=alfa')
+        )
+        expect(response.status).toBe(500)
+        expect(await response.json()).toEqual({
+          error: 'Erro ao buscar categorias',
+        })
+        expect(response.headers.get('cache-control')).toBeNull()
+      }
+    )
+  }
+)

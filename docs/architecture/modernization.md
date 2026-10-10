@@ -1,24 +1,48 @@
 # Modernização da plataforma de locação de equipamentos
 
+## Estrutura local depois da retirada
+
+A raiz legada app/ e lib/, middlewares/require-admin.ts,
+schemas/settings.schema.ts, types/global.d.ts, types/google-maps-ecl.d.ts,
+proxy.ts, next.config.mjs, vercel.json, Dockerfile e components.json da raiz
+foram retirados no Bloco F local. Os auxiliares antigos scripts/patch-prisma.js,
+scripts/fix-prisma-imports.js e scripts/patch-next-env-for-typecheck.cjs também
+saíram. O retorno usa um clone completo da tag de pré-exclusão, nunca uma
+fachada na árvore atual. Os hosts apps/services/api e apps/clients/web,
+packages, public, Prisma e types/next-auth.d.ts permanecem.
+
+O código compartilhado segue em packages/frontend (FSD), UI e tokens;
+domínio/contratos/backend mantêm responsabilidades separadas. Google
+Merchant/storage portados em scripts/ops ficam preservados, sem apagar
+quarentenas ou ativar serviços externos. M7 precisa da classificação real de
+consumidores no clone. Aplicação deste candidato não declara instalação, gates,
+builds, Docker, mutações ou P2/F aprovados; essas provas pertencem aos registros
+reais da fonte final. O fallback completo fica fixado à tag real, sem pais
+secretos publicados ou facade de retorno.
+
+## Histórico e decisões anteriores
+
 Onda 135 — decisão vigente de 2026-10-09: o dono aceitou a interface e
 autorizou, após a validação da fonte final, o commit e o push da primeira etapa
 para o novo repositório público vazio `Schlorke/Locadora_de_Equipamentos`.
 Depois, a modernização continua até a aposentadoria do app antigo, seguindo
 P0/P1/P2 e F; essa autorização não declara essas fases concluídas.
 
-A publicação terá história inicial limpa, sem pais do histórico antigo. O
-histórico anterior e suas referências ficam no arquivo local de preservação; não
-publicar commits, tags ou ramos antigos que transportem segredos. Não alterar
-nem revogar credenciais reais: elas podem ser compartilhadas com a GB. O backend
-nesta etapa usa PostgreSQL local descartável. Infraestrutura, provedores, banco
-de produção e corte operacional ficam para etapas posteriores.
+A primeira etapa C foi publicada em 2026-10-09 no commit
+`978ceb9244c81c7cb2888b798fad8ce90edad25e`, com a tag
+`checkpoint/onda-135-pre-exclusao`, em história inicial limpa, sem pais antigos.
+O histórico anterior e suas referências ficam no arquivo local de preservação;
+não publicar commits, tags ou ramos antigos que transportem segredos. Não
+alterar nem revogar credenciais reais: elas podem ser compartilhadas com a GB. O
+backend nesta etapa usa PostgreSQL local descartável. Infraestrutura,
+provedores, banco de produção e corte operacional ficam para etapas posteriores.
 
 A fonte atual do frontend tem zero ocorrências de `UNIVERSAL-DOM-JSX` e
-`UNIVERSAL-WEB-LIB`. O gate de arquitetura ainda registra 43 ocorrências em 16
-arquivos, todas do legado; passar a catraca não encerra a retirada. F será
-aplicado primeiro em clone independente da referência imutável de pré-exclusão,
-após a preservação e as provas exigidas, antes de importar e revalidar o
-resultado. Não apagar a raiz do checkout atual antes desse clone.
+`UNIVERSAL-WEB-LIB`. O gate anterior à retirada registrou 43 ocorrências em 16
+arquivos legados; essa medição não pertence à árvore final. F foi aplicada
+primeiro no clone independente da referência imutável de pré-exclusão. A
+importação no checkout principal e a publicação final dependem da consolidação
+das provas desse clone.
 
 Evidências desta retomada: `%TEMP%/locadora-wave135-finish-20261009` (`FINISH`),
 incluindo `arch.log`, `visual-human-acceptance.json`, o bundle local de
@@ -208,9 +232,9 @@ de isolamento entre locadoras.
   do usuário em 2026-09-30). Categories/health e equipamentos/busca/settings
   públicos, disponibilidade, detalhe, cartão, diretório e leitura autenticada
   dos vínculos, seleção, vínculo do host, motoristas, endereços, categorias e
-  unidades físicas administrativas instalados localmente; transferência completa
-  e cutover pendentes. `app/api` permanece ativo até o substituto passar pela
-  validação.
+  unidades físicas administrativas estão no serviço. A antiga `app/api` foi
+  retirada no clone F. Consolidação pós-F e cutover operacional são etapas
+  distintas; infraestrutura e produção continuam para decisão posterior.
 - Paridade final de site, área do cliente e administração. Preservar identidade
   visual e o comportamento do primeiro modelo 3D sem zoom.
 - UPFRONT/ON_DELIVERY reservam após confirmação do pagamento; AT_END na
@@ -239,6 +263,10 @@ de isolamento entre locadoras.
   9").
 
 ## Baseline e acompanhamento
+
+> Fotografia das ondas 1–9 de setembro de 2026: a antiga app/api citada neste
+> inventário foi retirada depois no clone F. Contagens e estados abaixo
+> pertencem a essa coleta, não à consolidação de 2026-10-09.
 
 O ponto de partida tem 1.150 entradas alteradas/não rastreadas no Git sobre
 `eb4c0098`. Essas alterações são anteriores à implementação e devem ser
@@ -457,6 +485,10 @@ arquivos de rota e 193 endpoints.
 
 ## Revisão adversarial da onda 1
 
+> Registro da revisão da onda 1: as antigas lib/auth.ts e lib/rate-limit.ts
+> foram posteriormente retiradas em F. A tabela conserva os arquivos e desfechos
+> daquela revisão.
+
 A revisão de 2026-09-26 registrou 24 achados: 22 confirmados e 2 refutados. Na
 onda 2, todos os confirmados que eram defeitos do código receberam correção com
 teste que falha quando a correção é revertida.
@@ -633,6 +665,11 @@ e 123 a 127 (resíduos da onda 8, onda 9).
 
 ## Pendências registradas pela onda 2
 
+> Pendências daquela onda: o antigo Dockerfile e o antigo next.config.mjs da
+> raiz foram retirados no clone F. A imagem vigente pertence a
+> apps/services/api/Dockerfile; as tarefas abaixo não instruem reconstruir a
+> raiz.
+
 - Resolvidas antes do commit `da19f601`: transferência das três páginas de auth
   (`tools/ratchet-transfers.json`) e fixtures de slug (known-issues 158).
 - Validações sem execução: teste visual do primeiro modelo 3D sem zoom,
@@ -738,6 +775,10 @@ min) e a suíte `tests/contract/**` (sem config).
    variante sem agrupamento.
 
 ## Onda 4 (commit `4b02f52f`)
+
+> Registro do commit histórico 4b02f52f: as antigas lib/quote-boleto.ts e
+> lib/payment-request.ts foram retiradas depois em F. As resoluções e pendências
+> abaixo conservam a fotografia da onda 4.
 
 Lotes executados em paralelo em 2026-09-26 sobre `be859915`, com escopos
 disjuntos: a correção dos 28 achados da revisão da onda 3 (seção "Revisão
@@ -853,6 +894,10 @@ C3 relataram comparação sem diferença não aprovada) e o e2e dos hosts.
    com DOM (o teste do `_layout` roda em jsdom e não é prova de aparelho).
 
 ## Onda 5 (árvore de trabalho, sem commit)
+
+> Registro da onda 5: a antiga .next da raiz foi retirada em F; as saídas dos
+> hosts ficam em apps/services/api/.next e apps/clients/web/.next. A trava
+> relatada abaixo pertence à execução daquela época.
 
 Lotes executados em paralelo em 2026-09-29 sobre `4b02f52f`, com escopos
 disjuntos: o endurecimento de segurança pendente da onda 4, a conciliação de
@@ -988,6 +1033,10 @@ seção "Ondas 6 a 9".
    onda 8 (known-issues 204 e 219).
 
 ## Ondas 6 a 9 (árvore de trabalho, commit local de 2026-09-30)
+
+> Fotografia de 2026-09-30: o antigo components.json da raiz e o antigo
+> _config.yml foram retirados depois no clone F. Esta lista conserva decisões e
+> pendências anteriores, sem reinstalar estruturas retiradas.
 
 Lotes executados em paralelo em 2026-09-29 e 2026-09-30 sobre a árvore da onda
 5, com escopos disjuntos e um PostgreSQL descartável por lote. Cada lote
@@ -1588,6 +1637,10 @@ de jobs ainda legadas; sem cutover, publicação ou produção.
 
 ## Onda 40 — pedidos de cobrança e PDF do provedor (2026-10-02, sem commit)
 
+> Fotografia da onda 40: a antiga app/ ainda existia naquela execução e foi
+> retirada depois no clone F. Resultados e restrições abaixo pertencem a
+> 2026-10-02.
+
 Cinco métodos nos dois hosts: pedido PIX, geração/regeneração de boleto, geração
 administrativa e leitura privada do PDF. Obrigação, pedido, consulta ao
 provedor, emissão e reconciliação em billing; credenciais env em runtime e
@@ -1741,6 +1794,10 @@ Relatório e limites da paridade:
 
 ## Onda 51 — manutenção e auditoria (2026-10-02, sem commit)
 
+> Fotografia da onda 51: a antiga app/ ainda existia naquela execução e foi
+> retirada depois no clone F. A contagem abaixo conserva a cobertura histórica,
+> sem afirmar conclusão do SaaS.
+
 Sete métodos operacionais montados no serviço e mantidos no legado. Lifecycle,
 automação preventiva e consulta/contagem de auditoria únicos em
 backend/operations; schemas existentes em contracts/operations e adapters em
@@ -1777,6 +1834,10 @@ isolamento. Identidade, scheduler, SaaS/mobile e retirada autorizada da raiz
 continuam pendentes. Sem commit, push, deploy ou produção.
 
 ## Onda 53 — dashboard, KPIs e endpoints aposentados (2026-10-02, sem commit)
+
+> Fotografia das ondas 53–60: a antiga app/ ainda existia nas comparações
+> daquela execução e foi retirada depois no clone F. Os resultados e bloqueios
+> abaixo são dessas ondas, não uma instrução atual para recriar fachadas.
 
 Quatro GETs adicionais no serviço: dashboard/KPIs com FINANCIAL/READ e cálculo
 único em backend/billing; analytics/security preservados como 410 inerte. Rotas
@@ -2591,6 +2652,10 @@ scheduler real continuam ativos; ~60% geral é estimativa de esforço.
 
 ## Onda 115 — comando de publicação pelo dono (2026-10-04, sem commit)
 
+> Fotografia da onda 115: a antiga app/ ainda existia naquele incremento e foi
+> retirada depois no clone F. Provas de 2026-10-04 não substituem a consolidação
+> pós-F.
+
 POST /api/admin/site/publish disponível em paralelo nos dois hosts; regras e
 composição permanecem no backend. Dono atual, e-mail, FULL e inventário da
 própria locadora revalidados. Lock comum de catálogo/locação, contagem no papel
@@ -2643,10 +2708,10 @@ denominador medido.
 Os hosts montam registro mínimo, leitura autenticada de confirmação e reenvio
 sobre uma única composição de identidade. O contexto interno permite o passo
 nome/e-mail/senha do dono sem remover telefone/documento do cadastro de
-clientes. Registro conserva admissão app/origem/configuração/publicação,
-orçamento persistente, captcha e verificação limitada de senha comprometida.
-Leitura usa o fato do banco; reenvio somente para a própria conta, limitado e
-neutro.
+clientes. Registro conserva admissão pelo host app, origem, configuração e
+publicação, orçamento persistente, captcha e verificação limitada de senha
+comprometida. Leitura usa o fato do banco; reenvio somente para a própria conta,
+limitado e neutro.
 
 298 casos distintos passaram, quatro skips preexistentes de limitadores ficam
 sem certificação. O motor real no banco descartável cria conta sem empresa,

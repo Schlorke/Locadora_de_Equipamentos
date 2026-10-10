@@ -6,7 +6,7 @@ import {
 } from '../../scripts/ops/storage-utils'
 
 /**
- * scripts/ops/storage-utils.ts: porte de lib/storage-utils.ts (onda 135, D9 = portar; quarentena COD-03 transferida)
+ * scripts/ops/storage-utils.ts: porte da antiga lib/storage-utils.ts, retirada em F (onda 135, D9 = portar; quarentena COD-03 transferida)
  * usado por scripts/cleanup-orphaned-images.ts (docs/features/storage-image-cleanup.md). Importar o módulo não cria
  * o cliente administrativo; ele vem de `createSupabaseAdminClient` do backend, só quando um arquivo é removido.
  */

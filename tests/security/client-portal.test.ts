@@ -1,3 +1,11 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return { prisma: {} }
+}
 import { NextRequest } from 'next/server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 const mocks = vi.hoisted(() => {
@@ -36,33 +44,30 @@ const mocks = vi.hoisted(() => {
     },
   }
 })
-vi.mock('@/lib/tenant', () => ({
-  resolveTenantPrincipal: async () =>
-    mocks.denied
-      ? { ok: false, response: Response.json({}, { status: mocks.denied }) }
-      : { ok: true, principal: mocks.principal },
-  withTenantTransaction: async (
-    context: unknown,
-    callback: (_tx: unknown) => unknown
-  ) => {
-    mocks.scope(context)
-    return callback(mocks.tx)
-  },
-}))
-vi.mock('@/lib/prisma', () => ({ prisma: {} }))
-vi.mock('@/middlewares/require-admin', () => ({
-  requireAdmin: async () =>
-    mocks.denied || mocks.principal.role !== 'ADMIN'
-      ? { success: false, error: 'Forbidden', status: mocks.denied || 403 }
-      : { success: true, principal: mocks.principal },
-}))
-import { createAdminNotifications } from '@/lib/notification-service'
+
+import { createAdminNotificationService } from '../../packages/backend/src/modules/communications/admin-notifications'
+import { withTenantTransaction as notificationTenantTransaction } from '../../apps/services/api/src/host/tenant-transaction'
+const { createAdminNotifications } = createAdminNotificationService({
+  withTenantTransaction: notificationTenantTransaction,
+})
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: {} }),
-}))
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({ prisma: {} }),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 vi.mock(
   '../../apps/services/api/src/host/private-identity',
   async (importOriginal) => ({
@@ -118,56 +123,34 @@ vi.mock('@gb-locacoes/backend/identity', async (importOriginal) => ({
     return callback(mocks.tx)
   },
 }))
-import * as legacyRoute0 from '@/app/api/client/rentals/route'
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/client/rentals/route'
-import * as legacyRoute1 from '@/app/api/client/rentals/[id]/route'
+
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/client/rentals/[id]/route'
-import * as legacyRoute2 from '@/app/api/client/rentals/[id]/request-pickup/route'
+
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/client/rentals/[id]/request-pickup/route'
-import * as legacyRoute3 from '@/app/api/client/rentals/[id]/request-extension/route'
+
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/client/rentals/[id]/request-extension/route'
-import * as legacyRoute4 from '@/app/api/client/notifications/route'
+
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/client/notifications/route'
-import * as legacyRoute5 from '@/app/api/client/notifications/stats/route'
+
 import * as serviceRoute5 from '../../apps/services/api/src/app/api/client/notifications/stats/route'
-import * as legacyRoute6 from '@/app/api/client/notifications/mark-all-read/route'
+
 import * as serviceRoute6 from '../../apps/services/api/src/app/api/client/notifications/mark-all-read/route'
-import * as legacyRoute7 from '@/app/api/client/notifications/[id]/route'
+
 import * as serviceRoute7 from '../../apps/services/api/src/app/api/client/notifications/[id]/route'
-import * as legacyRoute8 from '@/app/api/client/activities/route'
+
 import * as serviceRoute8 from '../../apps/services/api/src/app/api/client/activities/route'
-import * as legacyRoute9 from '@/app/api/user/profile/route'
+
 import * as serviceRoute9 from '../../apps/services/api/src/app/api/user/profile/route'
-import * as legacyRoute10 from '@/app/api/quotes/[id]/route'
+
 import * as serviceRoute10 from '../../apps/services/api/src/app/api/quotes/[id]/route'
-import * as legacyRoute11 from '@/app/api/quotes/[id]/download/route'
+
 import * as serviceRoute11 from '../../apps/services/api/src/app/api/quotes/[id]/download/route'
-import * as legacyRoute12 from '@/app/api/admin/notifications/sync/route'
+
 import * as serviceRoute12 from '../../apps/services/api/src/app/api/admin/notifications/sync/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      listRentals: legacyRoute0.GET,
-      readRental: legacyRoute1.GET,
-      deleteRental: legacyRoute1.DELETE,
-      pickup: legacyRoute2.POST,
-      extension: legacyRoute3.POST,
-      listNotifications: legacyRoute4.GET,
-      notificationStats: legacyRoute5.GET,
-      markAll: legacyRoute6.POST,
-      markOne: legacyRoute7.PATCH,
-      deleteNotification: legacyRoute7.DELETE,
-      activities: legacyRoute8.GET,
-      getProfile: legacyRoute9.GET,
-      putProfile: legacyRoute9.PUT,
-      readQuote: legacyRoute10.GET,
-      deleteQuote: legacyRoute10.DELETE,
-      downloadQuote: legacyRoute11.GET,
-      syncNotifications: legacyRoute12.POST,
-    },
-  ],
   [
     'service',
     {

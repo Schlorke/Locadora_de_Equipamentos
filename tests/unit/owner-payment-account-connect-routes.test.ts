@@ -4,12 +4,8 @@ const mock = vi.hoisted(() => ({
   connect: vi.fn(),
   session: vi.fn(),
 }))
-vi.mock('../../lib/tenant', () => ({ resolveTenantPrincipal: mock.gate }))
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: mock.gate,
-}))
-vi.mock('../../lib/application-session', () => ({
-  getServerSession: mock.session,
 }))
 vi.mock('../../apps/services/api/src/host/session', () => ({
   getServerSession: mock.session,
@@ -17,7 +13,6 @@ vi.mock('../../apps/services/api/src/host/session', () => ({
 vi.mock('@gb-locacoes/backend/runtime', () => ({
   handleConfiguredPaymentAccountConnection: mock.connect,
 }))
-import { POST as legacy } from '../../app/api/admin/payment-account/connect/route'
 import { POST as api } from '../../apps/services/api/src/app/api/admin/payment-account/connect/route'
 const principal = {
   tenantId: 'alfa',
@@ -32,10 +27,7 @@ beforeEach(() => {
     Response.json({ accepted: true }, { status: 202 })
   )
 })
-it.each([
-  ['legacy', legacy],
-  ['api', api],
-] as const)(
+it.each([['api', api]] as const)(
   '%s guards identity and role before connecting; delegates verified session getter',
   async (_name, route) => {
     const request = () =>

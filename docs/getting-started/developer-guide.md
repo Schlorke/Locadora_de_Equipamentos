@@ -2,55 +2,65 @@
 
 > **Target**: Human Developers (Frontend, Backend, Full-Stack)  
 > **Project**: GB Locações Equipment Rental Platform  
-> **Updated**: January 2025
+> **Scope**: Development after local retirement of the old root host. The
+> January 2025 component examples are kept as historical notes, not current
+> contracts.
 
 ## 🎯 **Quick Start for New Developers**
 
 ### **Prerequisites**
 
-- Node.js 18+
-- npm (not pnpm - causes Prisma conflicts)
+- Node.js 24.21.0 (`.node-version`; engines >=24.21.0 <25)
+- pnpm 10.27.0 (`packageManager` and `pnpm-lock.yaml`)
 - PostgreSQL database
 - Git
 
 ### **Setup**
 
 ```bash
-# Clone and install
-git clone [repository-url]
-cd GB-Locacoes
-pnpm install
-
-# Environment setup
-cp .env.example .env
-# Edit .env with your database credentials
-
-# Database setup
+git clone https://github.com/Schlorke/Locadora_de_Equipamentos.git
+cd Locadora_de_Equipamentos
+pnpm install --frozen-lockfile
 pnpm db:generate
-pnpm exec prisma migrate deploy  # migrations with RLS; never db push
-
-# Start development
+# Configure a local database belonging to this product before this command:
+pnpm exec prisma migrate deploy
 pnpm dev
 ```
+
+Use os templates de cada host: `apps/services/api/.env.example`,
+`apps/clients/web/.env.example` e `apps/clients/mobile/.env.example`. Os
+arquivos privados não são versionados. Configure apenas o ambiente local deste
+produto e um PostgreSQL próprio; nunca reutilize conexões, indicadores de deploy
+ou credenciais da GB. Banco hospedado e provedores serão escolhidos em uma etapa
+posterior. Mantenha as integrações desligadas conforme os templates; não execute
+seed ou scripts operacionais como parte do setup.
+
+The old root `app/`, `lib/`, `middlewares/` and `schemas/` were retired. Use
+`apps/services/api/src/app/api` and `src/host` for HTTP composition,
+`packages/backend/src/modules` for server modules and workspace contracts.
 
 ### **Essential Commands**
 
 ```bash
-pnpm dev          # Start development server
-pnpm build        # Build for production
-pnpm type-check   # Check TypeScript
-pnpm lint         # Check ESLint
-pnpm db:studio    # Open Prisma Studio
-pnpm storybook    # View component library
+pnpm dev                   # API em 3002 e web em 3001
+pnpm --filter @gb-locacoes/mobile start
+pnpm build                 # Build web + API; não publica
+pnpm bundle:mobile         # Export Android + iOS
+pnpm test:all              # Suítes listadas no package.json; não captura E2E/visual
+pnpm type-check
+pnpm typecheck
+pnpm lint
+pnpm storybook
 ```
 
 ## 🧩 **Component Library Overview**
 
 ### **New Components (January 2025)**
 
-> Os caminhos abaixo foram atualizados para a estrutura atual (packages/ui e as
-> fatias de packages/frontend); o inventário vivo é
-> [COMPONENT_INVENTORY.md](../COMPONENT_INVENTORY.md).
+> Registro histórico dos exemplos de janeiro de 2025, anteriores à consolidação
+> das APIs dos componentes. Não copie props nem dados empresariais deste
+> registro para uma locadora nova. O contrato vivo está nos `index.ts` das
+> fatias e em [COMPONENT_INVENTORY.md](../COMPONENT_INVENTORY.md).
 
 #### **QuoteForm** - Multi-step form system
 
@@ -208,66 +218,32 @@ import { DEFAULT_LOCAL_BUSINESS } from "../../../entities/configuracao"
 
 ### **SEO Features**
 
-#### **Dynamic Metadata** - Automatic SEO optimization
+#### **Dynamic Metadata**
 
-```tsx
-// Location: app/equipamentos/[id]/page.tsx (pattern)
-// Usage: All pages should have generateMetadata
+The live equipment route is
+`apps/clients/web/src/app/(public)/[locadora]/(vitrine)/equipamentos/[id]/page.tsx`.
+It exports `generateMetadata`, awaits
+`params: Promise<{ locadora: string; id: string }>` and reads equipment, site
+and store data through the server API composition. `buildEquipmentSeo` is
+exported by `@gb-locacoes/frontend/pages/equipamento-detalhe`; canonical, site
+name, authorship and image URLs use the selected store. No fixed GB name or
+domain may act as a fallback for another tenant. A site that is not indexable
+keeps `noindex` in the route metadata.
 
-export async function generateMetadata({ params }): Promise<Metadata> {
-  // Fetch data based on params
-  const data = await fetchPageData(params)
+#### **Dynamic Sitemap and Robots**
 
-  return {
-    title: `${data.name} | GB Locações`,
-    description: `${data.description} Solicite seu orçamento em Porto Alegre!`,
-    keywords: [
-      `aluguel ${data.name.toLowerCase()}`,
-      "equipamentos construção civil",
-      "gb locações"
-    ],
-    alternates: {
-      canonical: `https://locacoesgb.com.br${pathname}`
-    },
-    openGraph: {
-      title: data.name,
-      description: data.description,
-      url: `https://locacoesgb.com.br${pathname}`,
-      siteName: "GB Locações",
-      images: [
-        {
-          url: data.image,
-          width: 1200,
-          height: 630,
-          alt: `${data.name} - GB Locações`
-        }
-      ]
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: data.name,
-      description: data.description,
-      images: [data.image]
-    }
-  }
-}
-```
+- Sitemap owner:
+  `apps/clients/web/src/app/(public)/[locadora]/sitemap.xml/route.ts`.
+- Robots owner:
+  `apps/clients/web/src/app/(public)/[locadora]/robots.txt/route.ts`.
+- Contract and tests:
+  [seo-e-medicao-da-vitrine.md](../features/seo-e-medicao-da-vitrine.md), route
+  tests and `(vitrine)/seo.test.ts`.
 
-#### **Dynamic Sitemap** - Automatic URL generation
-
-```tsx
-// Location: app/sitemap.ts
-// Auto-generated - includes all equipment and category URLs
-// Accessible at: /sitemap.xml
-```
-
-#### **Optimized Robots.txt** - Search engine guidance
-
-```
-# Location: public/robots.txt
-# Pre-configured for optimal crawling
-# Blocks admin areas, allows equipment pages
-```
+These routes use the tenant host and publication/indexing policy. The old root
+`app/sitemap.ts` is retired; a shared static robots file is not the source of
+tenant policy. Read the bundled Next.js file-convention and metadata guides
+before changing these routes.
 
 ## 🎨 **Design System**
 
@@ -349,244 +325,82 @@ import { motion } from 'framer-motion'
 
 ## 🛢️ **Database Patterns**
 
-### **Prisma Usage**
+### **Server composition and tenant transactions**
 
-```tsx
-// Server components only (app router)
-async function getPrisma() {
-  const { prisma } = await import("@/lib/prisma")
-  return prisma
-}
+`getDatabaseRuntime` is exported by `@gb-locacoes/backend/runtime`. The API
+composition in `apps/services/api/src/host/runtime.ts` supplies the Prisma
+dependency to backend factories. Private handlers resolve the session and tenant
+principal; module queries use `withTenantTransaction` from
+`@gb-locacoes/backend/identity`, which sets the transaction-local
+`app.tenant_id`. Public catalogue queries also use an explicit tenant.
 
-// Query patterns
-const equipment = await prisma.equipment.findUnique({
-  where: { id: params.id },
-  include: {
-    category: {
-      select: {
-        name: true,
-        slug: true,
-        icon: true
-      }
-    }
-  }
-})
+The former `@/lib/prisma` was retired in F. Use the tenant-scoped backend owner.
+Do not query a global equipment list from a Server Component or infer
+authorization from `ADMIN` alone. The web Server Component consumes
+`apps/clients/web/src/host/server/public-api.ts`; Prisma and secrets remain on
+the API/backend side.
 
-// Handle Prisma Decimal types
-const price = Number(equipment.pricePerDay)
-```
-
-### **Common Queries**
-
-```tsx
-// Get available equipment with category
-const availableEquipment = await prisma.equipment.findMany({
-  where: { available: true },
-  include: { category: true },
-  orderBy: { name: "asc" }
-})
-
-// Get equipment by category
-const equipmentByCategory = await prisma.equipment.findMany({
-  where: {
-    categoryId: categoryId,
-    available: true
-  },
-  include: { category: true }
-})
-
-// Search equipment
-const searchResults = await prisma.equipment.findMany({
-  where: {
-    AND: [
-      { available: true },
-      {
-        OR: [
-          { name: { contains: query, mode: "insensitive" } },
-          { description: { contains: query, mode: "insensitive" } }
-        ]
-      }
-    ]
-  },
-  take: 10
-})
-```
+Use the schemas in `packages/contracts` and pricing rules in `packages/domain`;
+follow [quote-system.md](../features/quote-system.md) for monetary obligations.
+Migrations are applied with `prisma migrate deploy`, never `db push`;
+operational repair is a separate runbook action against a known owned target.
 
 ## 🎯 **Business Logic Patterns**
 
-### **Pricing Calculations**
+### **Pricing and freight**
 
-```tsx
-// Standard pricing logic
-export const calculateRentalPrice = (
-  basePrice: number,
-  days: number,
-  discounts?: {
-    weekly?: number
-    monthly?: number
-  }
-) => {
-  const weeklyDiscount = discounts?.weekly || 0.9
-  const monthlyDiscount = discounts?.monthly || 0.8
+Use the public `@gb-locacoes/domain/orcamento` contract, including
+`buildQuotePricing`, `quoteItemsAndFreight`, `quoteObligation`,
+`calculateFreight` and `calculateLateFee`. Their implementations are in
+`packages/domain/src/orcamento`. Do not reintroduce the illustrative
+floating-point discount formula formerly shown here.
 
-  if (days >= 30) {
-    return basePrice * days * monthlyDiscount
-  }
-  if (days >= 7) {
-    return basePrice * days * weeklyDiscount
-  }
-  return basePrice * days
-}
+### **Availability**
 
-// Usage
-const totalPrice = calculateRentalPrice(
-  Number(equipment.pricePerDay),
-  rentalDays,
-  { weekly: 0.9, monthly: 0.75 }
-)
-```
+The authoritative rental availability service is `createRentalAvailability` from
+`@gb-locacoes/backend/rentals`
+(`packages/backend/src/modules/rentals/availability.ts`), composed by
+`apps/services/api/src/host/rentals.ts`. Catalogue visibility is not a stock
+reservation or an authorization decision.
 
-### **Availability Checks**
+### **Images and structured data**
 
-```tsx
-// Handle different availability field names
-const isEquipmentAvailable = (equipment: Equipment) => {
-  return equipment.available ?? equipment.isAvailable ?? true
-}
-
-// Check availability with stock
-const checkAvailability = (equipment: Equipment, requestedQuantity: number) => {
-  if (!isEquipmentAvailable(equipment)) return false
-  if (equipment.maxStock && requestedQuantity > equipment.maxStock) return false
-  return true
-}
-```
-
-### **Image Handling**
-
-```tsx
-// Standard image URL processing
-export const getImageUrl = (
-  imageUrl?: string,
-  fallback = "/placeholder.jpg"
-) => {
-  if (!imageUrl) return fallback
-
-  // If already full URL, return as-is
-  if (imageUrl.startsWith("http")) return imageUrl
-
-  // If relative URL, make absolute
-  return `https://locacoesgb.com.br${imageUrl}`
-}
-
-// Get primary image from equipment
-export const getPrimaryImage = (equipment: Equipment) => {
-  const primaryImage = equipment.images?.[0] || equipment.imageUrl
-  return getImageUrl(primaryImage)
-}
-```
+The equipment entity exports `buildEquipmentImageUrl`, `buildEquipmentSeo` and
+`buildEquipmentProductStructuredData` from
+`packages/frontend/src/entities/equipamento/index.ts`. Hosts consume the page
+entry point, while frontend slices respect FSD layer boundaries. Image and
+canonical origins belong to the selected tenant; do not concatenate a fixed GB
+production origin as a default.
 
 ## 📱 **API Patterns**
 
 ### **API Route Structure**
 
-```tsx
-// app/api/[endpoint]/route.ts
-import { NextRequest, NextResponse } from "next/server"
-import { z } from "zod"
+```typescript
+// apps/services/api/src/app/api/equipments/route.ts (composição existente)
+import { publicEquipments } from "../../../host/runtime"
 
-// Request validation schema
-const RequestSchema = z.object({
-  name: z.string().min(1),
-  email: z.string().email()
-})
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json()
-
-    // Validate input
-    const validatedData = RequestSchema.parse(body)
-
-    // Business logic
-    const result = await processData(validatedData)
-
-    // Success response
-    return NextResponse.json({
-      success: true,
-      data: result,
-      message: "Operação realizada com sucesso"
-    })
-  } catch (error) {
-    console.error("API Error:", error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Dados inválidos",
-          details: error.errors
-        },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Erro interno do servidor"
-      },
-      { status: 500 }
-    )
-  }
-}
+export const dynamic = "force-dynamic"
+export const runtime = "nodejs"
+export const revalidate = 0
+export const GET = publicEquipments
 ```
+
+This is the actual public route composition; `tenantSlug` is required.
+Validation, private identity and permissions stay in the owning host and backend
+modules. For a private write, examine
+`apps/services/api/src/app/api/admin/settings/route.ts`: it resolves
+`SETTINGS/WRITE`, checks mutation origin and validates `SettingsSchema` before
+calling `host/branding`.
 
 ### **Client-side API Usage**
 
-```tsx
-// Using SWR for data fetching (recommended)
-import useSWR from "swr"
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
-
-export const useEquipmentData = (id: string) => {
-  const { data, error, isLoading } = useSWR(`/api/equipamentos/${id}`, fetcher)
-
-  return {
-    equipment: data?.data,
-    loading: isLoading,
-    error: error || (data && !data.success)
-  }
-}
-
-// Form submission pattern
-const submitQuote = async (formData: QuoteFormData) => {
-  try {
-    const response = await fetch("/api/orcamentos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData)
-    })
-
-    const result = await response.json()
-
-    if (result.success) {
-      toast({ title: "Sucesso!", description: result.message })
-      return result.data
-    } else {
-      throw new Error(result.error)
-    }
-  } catch (error) {
-    toast({
-      title: "Erro",
-      description: "Erro ao enviar orçamento. Tente novamente.",
-      variant: "destructive"
-    })
-    throw error
-  }
-}
-```
+Use `useApiClient` or `useScopedApiClient` from the frontend `shared/api` public
+entry point inside allowed FSD layers. The concrete transport is
+`packages/frontend/src/shared/api/http-client.ts`; hosts configure its origin
+and credentials. A scoped consumer invalidates work when tenant or session
+changes. Do not invent `/api/equipamentos` endpoints or retain the old root
+action imports from illustrative snippets.
 
 ## 🧪 **Testing Patterns**
 
@@ -607,53 +421,51 @@ describe("Button", () => {
 
 ### **API Testing**
 
-```tsx
-// exemplo: tests/api/<rota>.test.ts
-import { testApiHandler } from "next-test-api-route-handler"
-import * as appHandler from "@/app/api/equipamentos/route"
+Real host tests live in `tests/api-host/*.http.test.ts` with setup in
+`tests/api-host/global-setup.ts`. They exercise a real API host and an owned
+PostgreSQL fixture; the retired root host is not a test dependency. Backend
+factory tests and pure contract/domain tests remain independent of HTTP. Keep
+literal fixture DTOs and negative tenant/permission cases; checking only “an
+array was returned” does not characterize the contract.
 
-describe("/api/equipamentos", () => {
-  it("returns equipment list", async () => {
-    await testApiHandler({
-      appHandler,
-      test: async ({ fetch }) => {
-        const res = await fetch({ method: "GET" })
-        const data = await res.json()
-
-        expect(res.status).toBe(200)
-        expect(data.success).toBe(true)
-        expect(Array.isArray(data.data)).toBe(true)
-      }
-    })
-  })
-})
+```bash
+pnpm test:unit
+pnpm test:web
+pnpm test:api   # Only with the disposable DB/build prerequisites configured
 ```
+
+See [testing.md](../guides/testing.md) for coherent auth builds, ownership and
+teardown. Browser journeys and visual acceptance remain separate proofs.
 
 ## 🚀 **Deployment & Production**
 
 ### **Build Process**
 
 ```bash
-# Pre-build checks
-pnpm type-check    # TypeScript validation
-pnpm lint         # ESLint checks
-npm test             # Run tests
-
-# Build
-pnpm build        # Production build
-npm start            # Start production server
+pnpm type-check
+pnpm typecheck
+pnpm lint
+pnpm test:all
+pnpm build
+pnpm bundle:mobile
+pnpm build-storybook
 ```
+
+Build and packaging are local artifacts; these commands do not authorize deploy,
+production migrations or provider calls. Start hosts separately with
+`pnpm --filter @gb-locacoes/api start` and
+`pnpm --filter @gb-locacoes/web start --port 3001` only against the intended
+owned environment, and stop the processes you started.
 
 ### **Environment Variables**
 
-```bash
-# .env.local (production)
-DATABASE_URL="postgresql://..."
-NEXTAUTH_SECRET="your-secret"
-NEXTAUTH_URL="https://locacoesgb.com.br"
-RESEND_API_KEY="your-resend-key"
-VERCEL_ANALYTICS_ID="your-analytics-id"
-```
+Use os templates de cada host: `apps/services/api/.env.example`,
+`apps/clients/web/.env.example` e `apps/clients/mobile/.env.example`. Os
+arquivos privados não são versionados. Configure apenas o ambiente local deste
+produto e um PostgreSQL próprio; nunca reutilize conexões, indicadores de deploy
+ou credenciais da GB. Banco hospedado e provedores serão escolhidos em uma etapa
+posterior. Mantenha as integrações desligadas conforme os templates; não execute
+seed ou scripts operacionais como parte do setup.
 
 ### **Performance Monitoring**
 
@@ -689,9 +501,9 @@ pnpm type-check
 #### **Components not updating**
 
 ```bash
-# Next.js cache: delete the generated .next folder only after checking it has
-# no link (find .next -type l prints nothing); never delete node_modules by hand
-find .next -type l
+# Inspect the generated cache of the intended host before removing exact files.
+# Never recursively traverse junctions/symlinks or delete node_modules by hand.
+# Host caches are apps/clients/web/.next and apps/services/api/.next.
 pnpm dev
 ```
 
@@ -758,5 +570,6 @@ Welcome to the GB Locações development team! 🚀
 
 ---
 
-_Last updated: January 2025_  
+_Original guide: January 2025. Current instructions describe the workspace after
+local root retirement; clone validation is recorded separately._  
 _For questions, check the documentation or reach out to the team_

@@ -2,10 +2,15 @@
 
 ## Propósito e escopo
 
+Ponteiros pós-F revistos em 2026-10-09; os checkpoints das ondas permanecem
+datados nas próprias seções.
+
 Drivers, logística, manutenção e auditoria mantêm as URLs e DTOs do painel, com
 seleção explícita de locadora e membership ADMIN ativa. Não usam User.role como
 autorização. OPERATOR, FINANCIAL e CLIENT não ganham permissões novas neste
-lote. A interface, cores, filtros visuais e nomes de rotas não foram alterados.
+lote. Veículos conservam a política distinta LOGISTICS/READ ou WRITE via
+`requireTenantPermission`; ela não é substituída pela lista ADMIN dessas outras
+operações. A interface, cores, filtros visuais e nomes de rotas não mudam.
 
 ## Fluxo e dados
 
@@ -24,15 +29,18 @@ lote. A interface, cores, filtros visuais e nomes de rotas não foram alterados.
   preservando a regra anterior. As regras preventivas por horas ainda usam o
   cálculo simplificado legado; não se afirma haver histórico de horímetro por
   manutenção que o schema não possui.
-- Auditoria: listagem e contagem usam tenantId. Os dois helpers de log exigem
-  contexto; middleware resolve principal em vez de extrair User.role global.
+- Auditoria: listagem e contagem usam tenantId. A rota atual resolve principal e
+  confere ADMIN da membership; backend/operations recebe a transação tenant. Os
+  dois helpers de escrita com contexto eram parte da caracterização do
+  isolamento original, não uma autorização por User.role global.
 
 ## Fronteiras de integrações
 
 WhatsApp/send usa o transport Meta tenant já implementado e só retorna sucesso
 com providerMessageId confirmado. Ausência de configuração retorna503; timeout
-ou erro mantém envio não confirmado. Templates requerem adapter/configuração
-específicos e recebem503, sem ignorar silenciosamente templateId/variables.
+ou erro mantém envio não confirmado. No próprio envio, templateId ou variables
+retornam503 WHATSAPP_TEMPLATE_UNAVAILABLE em backend/http/whatsapp-send.ts; não
+há rota separada de template nem descarte silencioso desses campos.
 
 Melhor Envio/calculate preserva o contrato de entrada e saída. Requer exatamente
 uma TenantIntegration MELHOR_ENVIO ativa, credentialRef explícita e CEP da
@@ -62,23 +70,42 @@ estão no [bloqueio Merchant](../issues/modernization-merchant-blocker.md).
 
 ## Arquivos e erros
 
-Entradas:
-app/api/admin/{drivers,logistics,maintenance,audit-logs,google-merchant} e
-app/api/integrations/{whatsapp,melhor-envio}. Serviços:
-packages/backend/src/modules/operations/maintenance-automation.ts,
-lib/maintenance-http.ts, lib/logistics.ts, lib/audit-log.ts,
-lib/audit-logger.ts, lib/meta-whatsapp.ts. 401 sem sessão,409 sem seleção,403
-sem membership/papel permitido e404 para recurso fora do escopo. Dados inválidos
-retornam400. Nenhuma consulta de recurso precede a autorização.
+Entradas atuais em `apps/services/api/src/app/api/admin`: `drivers`, `vehicles`,
+`logistics`, `maintenance`, `audit-logs` e `google-merchant`; integrações em
+`apps/services/api/src/app/api/integrations/{whatsapp,melhor-envio}`.
+
+- `apps/services/api/src/host/operations.ts`: compõe createDriverService,
+  createVehicleService e createDeliveryService de backend/operations.
+- `apps/services/api/src/host/maintenance.ts`: compõe manutenção e leitura de
+  auditoria com backend/operations, handlers backend/http e transações tenant/
+  locação; automação fica em operations/maintenance-automation.ts.
+- `apps/services/api/src/host/shipping.ts` e `whatsapp-write.ts`: injetam
+  transação tenant e resolução de credencial server-side; os casos de uso ficam
+  em backend/operations e backend/communications, com adapters backend/http.
+- Merchant usa merchantUnavailableResponse de backend/http após o principal
+  ADMIN; não compõe a factory global bloqueada.
+
+As entradas `app/api/*` e fachadas `lib/maintenance-http.ts`,
+`lib/logistics.ts`, `lib/audit-log.ts`, `lib/audit-logger.ts` e
+`lib/meta-whatsapp.ts` pertenciam ao lote inicial e foram aposentadas no
+checkout pós-F; não devem ser restauradas para operar o serviço.
+
+401 sem sessão,409 sem seleção,403 sem membership/papel permitido e404 para
+recurso fora do escopo. Os 400 dependem do parser de cada operação; manutenção
+preserva os filtros inválidos que chegam ao Prisma e geram500, como detalhado na
+onda51. Nenhuma consulta de recurso precede a autorização.
 
 ## Validação e limites
 
-58 testes isolados em tests/security/operations-tenancy.test.ts exercitam os 18
-métodos deste bloco com mocks. Oito testes de handlers com Prisma/PostgreSQL em
+No checkpoint inicial de isolamento, 58 testes em
+tests/security/operations-tenancy.test.ts exercitaram os 18 métodos deste bloco
+com mocks. Oito testes de handlers com Prisma/PostgreSQL em
 tests/identity/operations-database.test.ts validam isolamento e transações. As
 suites compartilhadas fecharam278 testes de segurança/10 arquivos e31 de
 identidade+PG/4 arquivos com exit0. Banco descartável explícito, fixtures
-próprias, sem provider real ou alteração de produção.
+próprias, sem provider real ou alteração de produção. São resultados daquela
+rodada, não uma reexecução pós-F; os resultados/limites da retomada estão em
+`docs/guides/wave135-base-validation.md`.
 
 Ainda não foram validados OAuth real, configuração de conta Merchant/Melhor
 Envio, envio real de WhatsApp, aparelho nativo ou rollout em produção.
@@ -107,9 +134,10 @@ isolamento por RLS desse registro. A escolha de credenciais A/B foi verificada
 pelo payload recebido pelo provedor local.
 
 Contratos, comandos, resultados e riscos estão na
-[onda 52 do host compartilhado](shared-api-host.md). A API legada e o scheduler
-continuam ativos. Paridade local não certifica conta Melhor Envio real, Merchant
-funcional ou implantação.
+[onda 52 do host compartilhado](shared-api-host.md). Naquele checkpoint, API
+legada e scheduler continuavam ativos. A fachada legada foi aposentada no
+checkout pós-F; essa retirada local não habilita cron de produção. Paridade
+local não certifica conta Melhor Envio real, Merchant funcional ou implantação.
 
 ## Extração de drivers
 
@@ -145,16 +173,18 @@ auditoria conserva 400 para paginação/data inválidas, página 1/50 e limite 1
 DTOs e projeção original de user na auditoria permanecem iguais.
 
 Provas e resultados consolidados na
-[onda 51 da API compartilhada](shared-api-host.md). Clientes, proxy e scheduler
-continuam no legado. Nenhum job ou dado de produção foi alterado.
+[onda 51 da API compartilhada](shared-api-host.md). Naquele checkpoint,
+clientes, proxy e scheduler continuavam no legado; os adapters da raiz foram
+aposentados no checkout pós-F. Nenhum job ou dado de produção foi alterado.
 
 ### Onda de veículos e logística (2026-10-02, sem commit)
 
 GET/POST admin/vehicles e GET/POST admin/logistics, mais PATCH por id, têm
 adapters nos dois hosts. A lógica saiu dos handlers para createVehicleService e
 createDeliveryService em backend/operations; schemas existentes em
-contracts/operations. lib/vehicles e lib/logistics são facades de composição,
-preservando consumidores antigos. Não há dependência de Next ou da raiz no
+contracts/operations. lib/vehicles e lib/logistics eram facades de composição na
+extração de 2026-10-02, aposentadas no checkout pós-F; a composição atual é
+host/operations.ts do serviço API. Não há dependência de Next ou da raiz no
 módulo compartilhado.
 
 Veículos conservam LOGISTICS/READ ou WRITE, transação de locação com lock,
@@ -173,17 +203,19 @@ humana. Não há cutover ou mudança de origem dos clientes. Resultados finais e
 GET/POST admin/drivers preservam ACL, URLs, DTOs e validação, mas delegam
 leitura/criação ao módulo `@gb-locacoes/backend/operations`, com
 `createDriverService(prisma)` e transação tenant da API identity.
-`lib/drivers.ts` faz somente composição. O módulo não depende da raiz ou de
-Next. A rodada após extração passou 58 testes HTTP com mocks e 9 testes
-PostgreSQL de operações (um novo cenário de criação de motorista sem mass
-assignment entre locadoras), ambos com exit 0. Os totais agregados acima
-representam a rodada anterior.
+`lib/drivers.ts` era a fachada de composição nesse corte, aposentada no checkout
+pós-F; hoje os handlers delegam a `host/operations.ts` do serviço. O módulo não
+depende da raiz ou de Next. A rodada após extração passou 58 testes HTTP com
+mocks e 9 testes PostgreSQL de operações (um novo cenário de criação de
+motorista sem mass assignment entre locadoras), ambos com exit 0. Os totais
+agregados acima representam a rodada anterior.
 
 ### Host HTTP compartilhado (corte 27, 2026-10-02, sem commit)
 
-GET e POST /api/admin/drivers também estão montados em apps/services/api; o
-legado continua ativo e os clientes conservam a origem anterior. POST compõe o
-createDriver existente, sem novo caso de uso ou concessão de papel.
+No corte27, GET e POST /api/admin/drivers foram montados em apps/services/api; o
+legado ainda estava ativo e os clientes conservavam a origem anterior. Essa
+descrição é histórica: no checkout pós-F o adapter da raiz foi aposentado. POST
+compõe o createDriver existente, sem novo caso de uso ou concessão de papel.
 CreateDriverSchema foi movido, sem mudança, para contracts/drivers e é usado
 pelos dois adapters. Status ausente vira ACTIVE; os outros valores aceitos são
 INACTIVE e ON_LEAVE. O schema descarta chaves extras, incluindo id/tenantId;
@@ -195,8 +227,9 @@ explicitamente introduzido. Repetir o POST cria outro registro. Validação Zod
 mantém 400 com details; JSON malformado mantém 500 genérico. Recusas do
 principal são encaminhadas sem mudança, antes do parsing e da escrita. Global
 User.role ADMIN não autoriza criação sem membership ADMIN ativa na locadora
-atual. O principal compartilhado exige mesma origem em mutações com borda
-validada; chamada mobile direta conserva o comportamento anterior.
+atual. O principal compartilhado exige mesma origem nas mutações de navegador,
+com a borda validada ou WEB_PUBLIC_ORIGIN/origem da requisição na sua ausência;
+chamada mobile direta sem headers de navegador conserva o contrato anterior.
 
 Caracterização anterior: 38 unitários e 35 HTTP no legado. Depois, 76 unitários
 exercitam os dois adapters com o backend real e banco simulado. A matriz de 41
@@ -235,5 +268,6 @@ e Agendar Manutenção mantêm o aviso anterior de desenvolvimento. Calendário
 native funcional por recurso/dia não certifica grade/Gantt/gestos.
 
 76 focados/62 Expo/183 web e gates/builds/exports locais aprovados. Aparelho,
-visual e operação pendentes; API legada/scheduler ativos.
+visual e operação pendentes naquele checkpoint; API legada/scheduler então
+ativos, sem que a aposentadoria local do adapter em F habilite operação real.
 [Provas e limites](shared-api-host.md), onda 82; entrada 265 de issues.

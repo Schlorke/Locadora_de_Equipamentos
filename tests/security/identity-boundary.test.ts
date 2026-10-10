@@ -1,3 +1,17 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return {
+    prisma: {
+      user: { findUnique: mocks.userFind, update: mocks.userUpdate },
+      verificationToken: { findUnique: mocks.tokenFind },
+      $transaction: mocks.transaction,
+    },
+  }
+}
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
 import { NextRequest } from 'next/server'
 import {
@@ -23,26 +37,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('next-auth', () => ({ getServerSession: mocks.getLegacySession }))
 vi.mock('next-auth/jwt', () => ({ getToken: mocks.getToken }))
 vi.mock('next/headers', () => ({ headers: async () => new Headers() }))
-vi.mock('@/lib/auth', () => ({
-  authOptions: {},
-  findAccountsByEmail: mocks.findAccountsByEmail,
-}))
-vi.mock('@/lib/identity', async () => {
-  const config =
-    await import('../../packages/backend/src/modules/identity/configuration')
-  return {
-    ...config,
-    getIdentity: mocks.getIdentity,
-    handleIdentityRequest: mocks.handleIdentityRequest,
-  }
-})
-vi.mock('@/lib/prisma', () => ({
-  prisma: {
-    user: { findUnique: mocks.userFind, update: mocks.userUpdate },
-    verificationToken: { findUnique: mocks.tokenFind },
-    $transaction: mocks.transaction,
-  },
-}))
+
 // Contraparte da API compartilhada (onda 135, E27a): o leitor de sessão e o reset de senha do serviço, sobre os mesmos
 // dublês do motor novo e do banco. O "proxy ignora o JWT" não tem contraparte no proxy do serviço (ele só repassa,
 // `apps/services/api/src/proxy.ts`): o portão do painel mora no host web (`apps/clients/web/src/host/auth/client.test.ts`).
@@ -53,27 +48,34 @@ vi.mock('@gb-locacoes/backend/identity', async (importOriginal) => ({
     handleIdentityRequest: mocks.handleIdentityRequest,
   }),
 }))
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({
-    prisma: {
-      user: { findUnique: mocks.userFind, update: mocks.userUpdate },
-      verificationToken: { findUnique: mocks.tokenFind },
-      $transaction: mocks.transaction,
-    },
-  }),
-  createResendClient: () => null,
-}))
-import { getServerSession as legacyRootSession } from '@/lib/application-session'
-import proxy from '@/proxy'
-import { POST as legacyRootResetPassword } from '@/app/api/auth/reset-password/route'
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({
+      prisma: {
+        user: { findUnique: mocks.userFind, update: mocks.userUpdate },
+        verificationToken: { findUnique: mocks.tokenFind },
+        $transaction: mocks.transaction,
+      },
+    }),
+    createResendClient: () => null,
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
+
 import { getServerSession as serviceSession } from '../../apps/services/api/src/host/session'
 import { POST as serviceResetPassword } from '../../apps/services/api/src/app/api/auth/reset-password/route'
 
-const HOSTS = [
-  ['legacy root', legacyRootSession, legacyRootResetPassword],
-  ['service', serviceSession, serviceResetPassword],
-] as const
+const HOSTS = [['service', serviceSession, serviceResetPassword]] as const
 
 beforeEach(() => {
   vi.resetAllMocks()
@@ -177,16 +179,7 @@ describe.each(HOSTS)(
     })
   }
 )
-describe('legacy root proxy (sai no bloco F; o portão do painel do host web tem a prova própria)', () => {
-  it('proxy ignores the legacy JWT after cutover', async () => {
-    vi.stubEnv('AUTH_MODE', 'better-auth')
-    mocks.getSession.mockResolvedValue(null)
-    const response = await proxy(new NextRequest('http://localhost/admin'))
-    expect(response.status).toBe(307)
-    expect(response.headers.get('location')).toContain('/admin/login')
-    expect(mocks.getToken).not.toHaveBeenCalled()
-  })
-})
+
 describe('rollout configuration and preflight', () => {
   const env = {
     BETTER_AUTH_URL: 'http://localhost:3000',

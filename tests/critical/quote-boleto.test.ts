@@ -1,7 +1,9 @@
-import { randomUUID } from 'node:crypto'
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-
-vi.mock('@/lib/prisma', async () => {
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
   if (!process.env.TEST_DATABASE_URL) return { prisma: undefined }
   const { requireTestDatabase } = await import('../helpers/test-database')
   if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
@@ -13,26 +15,40 @@ vi.mock('@/lib/prisma', async () => {
     connectionString: requireTestDatabase(process.env),
     max: 12,
   })
+  fPreparedDatabase.pool = pool
   return {
     prisma: new PrismaClient({ adapter: new PrismaPg(pool) }),
     testPool: pool,
   }
+}
+import { getDatabaseRuntime as getFPreparedDatabaseRuntime } from '@gb-locacoes/backend/runtime'
+import { randomUUID } from 'node:crypto'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
 })
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => null,
-}))
-import { prisma } from '@/lib/prisma'
-import { ensureQuoteBoletoPayment as legacyEnsureQuoteBoletoPayment } from '@/lib/quote-boleto'
+
+const { prisma } = getFPreparedDatabaseRuntime()
+
 import { ensureQuoteBoletoPayment as serviceEnsureQuoteBoletoPayment } from '../../apps/services/api/src/host/payments'
 
 // Contraparte da API compartilhada (onda 135, E5): a mesma regra pela composição do serviço
 // (`apps/services/api/src/host/*`), sobre o mesmo banco descartável (`getDatabaseRuntime`). A fachada da raiz legada
 // sai no bloco F; a do serviço fica.
 const HOSTS = [
-  {
-    name: 'legacy root',
-    ensureQuoteBoletoPayment: legacyEnsureQuoteBoletoPayment,
-  },
   {
     name: 'service',
     ensureQuoteBoletoPayment: serviceEnsureQuoteBoletoPayment,
@@ -199,7 +215,9 @@ describe.skipIf(!process.env.TEST_DATABASE_URL).each(HOSTS)(
 afterAll(async () => {
   if (!process.env.TEST_DATABASE_URL) return
   await prisma.$disconnect()
-  const mocked = (await import('@/lib/prisma')) as unknown as {
+  const mocked = (await Promise.resolve(
+    fPreparedDatabase.value!
+  )) as unknown as {
     testPool: { end(): Promise<void> }
   }
   await mocked.testPool.end()

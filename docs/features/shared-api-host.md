@@ -1,29 +1,53 @@
 # API compartilhada — extração incremental
 
-## Decisão vigente — base preparada, serviços posteriores (2026-10-09)
+## Decisão vigente — primeira etapa publicada, F em clone local (2026-10-09)
 
-O usuário aceitou a interface e autorizou testes, commit e push da primeira
-etapa para `Schlorke/Locadora_de_Equipamentos`, seguidos da aposentadoria
-controlada da raiz no plano P0/P1/P2/F. O destino é separado de GB-Locações;
-nenhuma alteração ou publicação é dirigida ao projeto legado. O histórico antigo
-permanece localmente e em arquivo de recuperação; a publicação inicial usa
-história limpa para não transportar credenciais antigas de terceiros.
+O usuário aceitou a interface e autorizou a primeira etapa no destino separado
+`Schlorke/Locadora_de_Equipamentos`. O commit
+`978ceb9244c81c7cb2888b798fad8ce90edad25e` foi publicado em `main`, com a tag
+`checkpoint/onda-135-pre-exclusao` apontando para esse mesmo snapshot. A
+publicação usa um único commit inicial, sem os parents antigos; o arquivo de
+recuperação do histórico fica local. Não houve deploy de provedor nem envio de
+refs do projeto GB-Locações, conforme `stage1-publication-receipt.json` da
+evidência externa de fechamento.
 
-Hospedagem, contratação de banco e ativação de serviços ficam para uma etapa
-posterior. PostgreSQL nas validações é descartável e local. Crons herdados
-exigem tanto o repositório correto quanto `CRON_DISPATCH_ENABLED=true` antes de
-executar. Não revogar credenciais possivelmente compartilhadas com GB-Locações
-sem comprovar que a ação é segura para aquele projeto.
+F está aplicado somente no clone independente de P2: os antigos adapters da raiz
+`app/`, as fachadas `lib/` e o middleware `middlewares/require-admin.ts` saíram
+desse clone. As rotas HTTP canônicas estão em `apps/services/api/src/app/api`; a
+composição fica em `apps/services/api/src/host` e em
+`packages/backend/src/runtime`. Os casos de uso continuam em
+`packages/backend/src/modules`, com domínio e contratos universais nos pacotes
+próprios. A árvore publicada de 978ceb é o retorno pré-exclusão; não usar uma
+fachada na árvore sem raiz como fallback.
 
-A revisão dos testes retirou duplicações de imposto, upload e cálculo puro de
-multa; schemas sem HTTP passaram para a suíte unitária. A integração de multa
-agora verifica efeito persistido, valores e resultado explícito, inclusive datas
-determinísticas. Os registros abaixo são históricos; o fechamento da revisão
-corrente depende das validações posteriores às mudanças.
+As provas finais desse clone ainda não estão fechadas. A rodada existente
+`p2-validation/test-unit.log` terminou com 245 passes, duas falhas, seis
+arquivos aprovados e um reprovado (247 casos; 56,75s; exit 1). Uma falha é o
+inventário de citações vivas dos artefatos retirados; a outra reúne dois
+controles negativos do leitor. Esses resultados não são a suíte unitária
+integral nem certificam as correções documentais e de M7 preparadas depois
+daquela rodada.
+
+Hospedagem, banco contratado, KMS, homologação e ativação de provedores ficam
+para a etapa posterior. PostgreSQL de validação é local e descartável, com
+papéis próprios. `.github/workflows/cron-dispatch.yml` só despacha com o
+repositório exato e `CRON_DISPATCH_ENABLED=true`; o despacho herdado está
+desligado quando a variável está ausente. A retirada local não liga uma agenda
+nem autoriza alterar ou revogar credenciais possivelmente compartilhadas com
+GB-Locações.
+
+A revisão da primeira etapa retirou duplicações de imposto, upload e cálculo
+puro de multa; schemas sem HTTP passaram para a suíte unitária. A integração de
+multa preserva efeito persistido, valores explícitos e datas determinísticas. As
+ondas abaixo conservam seus resultados e limites da época. A evidência de
+fechamento portátil está em `docs/guides/wave135-base-validation.md`; ela não
+substitui o aceite e as provas pós-F do clone.
 
 ## Onda 135 — continuidade local após a recuperação de contexto (2026-10-08, sem commit)
 
-A raiz permanece presente. Esta etapa fecha provas antes do aceite P0/P1/P2:
+Na recuperação de 2026-10-08, a antiga raiz permanecia presente. Esta fotografia
+registrou as provas e pendências anteriores ao aceite humano e à publicação de
+978ceb em 2026-10-09; as contagens abaixo pertencem àquela retomada:
 
 - A0: seis dependências reconciliadas nos importers, sem alterar versões ou
   snapshots. Instalação offline travada e builds de produção da raiz, API e web
@@ -134,16 +158,17 @@ universal nem altera a política de logs. M7 formal continua pendente do clone P
 e da análise após retirar a raiz nesse clone.
 
 C2/materialização passaram 51 casos, incluindo inventário pré-tag, referências
-inválidas, SHA fixo apesar de tag movida e Git replacement refs. A tag real de
-pré-exclusão ainda está ausente. As jornadas usam HTTPS local, sessão/cookies
-reais, seleção e logout. O harness neutralizava `NEXTAUTH_URL_INTERNAL` como
-string vazia: o fallback `??` do NextAuth não a substitui e o SSR falhava em
-`new URL('')`. A URL interna passou a acompanhar a URL sintética NextAuth, com
-origens/segredos compartilhados entre API/web. A rodada legacy pré-ampliação de
-J1 passou seis casos e dois skips em oito, em 22,41s; log
-`journeys-legacy-pre-J1-green.log` e evidência em
-`%TEMP%/locadora-journeys-TQYWBS`. A rodada legacy ampliada passou sete casos e
-dois skips em nove, em 29,34s (`journeys-legacy.log`, evidência em
+inválidas, SHA fixo apesar de tag movida e Git replacement refs. Naquele ensaio
+a tag real de pré-exclusão ainda estava ausente; a publicação posterior de
+978ceb materializou `checkpoint/onda-135-pre-exclusao` (recibo na decisão
+vigente). As jornadas usam HTTPS local, sessão/cookies reais, seleção e logout.
+O harness neutralizava `NEXTAUTH_URL_INTERNAL` como string vazia: o fallback
+`??` do NextAuth não a substitui e o SSR falhava em `new URL('')`. A URL interna
+passou a acompanhar a URL sintética NextAuth, com origens/segredos
+compartilhados entre API/web. A rodada legacy pré-ampliação de J1 passou seis
+casos e dois skips em oito, em 22,41s; log `journeys-legacy-pre-J1-green.log` e
+evidência em `%TEMP%/locadora-journeys-TQYWBS`. A rodada legacy ampliada passou
+sete casos e dois skips em nove, em 29,34s (`journeys-legacy.log`, evidência em
 `%TEMP%/locadora-journeys-z86UIe`). J1 visitante confirmou um orçamento DELIVERY
 Standard, item 200 + frete local sintético 30 = total 230, e carrinho vazio após
 recarregar. Express é somente estimativa de UI; não há homologação do provedor
@@ -201,9 +226,9 @@ skips, em 5,86s. Builds: API `zWY7S7AvPwHTl8TUb4CeS`, web Better Auth
 zero erros de página e de captura, sem fabricar respostas ou autenticação.
 `tenant-hosts-better-auth-a99ccdf7a6/completion.json` confirma sucesso, término
 observado dos filhos e limpeza concluída, sem banco/papéis preservados; a
-captura do navegador antecede seu fechamento original. O aceite visual continua
-pendente; T5/T6 não certifica jornadas de identidade, carrossel 3D nem
-alterações posteriores.
+captura do navegador antecede seu fechamento original. Naquela rodada o aceite
+visual ainda estava pendente; o aceite humano posterior não amplia T5/T6 a
+jornadas de identidade, carrossel 3D ou alterações posteriores.
 
 P1/A10 está parcial, com o loader validado no escopo local de rede normal. O
 percentual agora é DOM React irmão do Canvas, confirmado por URL carregada,
@@ -257,18 +282,21 @@ devolve relações brutas de equipamento/orçamento. Não foram corrigidos
 silenciosamente nem aprovados como regras novas. Ver testes financeiros,
 dashboard e portal e as notas locais de evidência.
 
-Evidências desta retomada: `%TEMP%/locadora-wave135-resume-20261008/`. Os quatro
-registros v2 e as duas comparações B11 estão concluídos. O aceite integral
-P0/P1/P2 conserva as pendências acima e não autoriza retirar a raiz.
+Evidências desta retomada: `%TEMP%/locadora-wave135-resume-20261008/`. Naquela
+retomada os quatro registros v2 e as duas comparações B11 estavam concluídos,
+mas não autorizavam retirar a antiga raiz. A autorização humana posterior levou
+ao clone de P2; a evidência v2 pré-F permanece histórica e não certifica
+mudanças nesse clone.
 
-O saldo corrente está no handoff, §§8–9: **4,5–18 h ativas** de triagem/aceite
-visual, A10 e fechamento local; a captura/composição já executada não entra
-novamente. Docker **1–4 h** após desbloqueio; Git/P2/F **18,5–46 h** somente
-após autorização e aceites. Total condicionado **24–68 h**, confiança baixa, sem
-espera externa ou reparos ainda desconhecidos. Os **59–158 h** anteriores são
-históricos. HTTP v2, jornadas e T5/T6 fechados não entram como nova repetição
-geral; baterias do clone/P2 e pós-F pertencem a estados futuros sem raiz. O
-backlog SaaS amplo não foi reestimado de forma exaustiva.
+O saldo estimado no handoff daquela retomada, §§8–9, era: **4,5–18 h ativas** de
+triagem/aceite visual, A10 e fechamento local; a captura/composição já executada
+não entra novamente. Docker **1–4 h** após desbloqueio; Git/P2/F **18,5–46 h**
+somente após autorização e aceites, condições históricas anteriores à decisão
+humana de 2026-10-09 e à publicação inicial. Total condicionado **24–68 h**,
+confiança baixa, sem espera externa ou reparos ainda desconhecidos. Os **59–158
+h** anteriores são históricos. HTTP v2, jornadas e T5/T6 fechados não entram
+como nova repetição geral; baterias do clone/P2 e pós-F pertencem a estados
+futuros sem raiz. O backlog SaaS amplo não foi reestimado de forma exaustiva.
 
 A auditoria executada antes deste fechamento documental,
 `final-audit-before-checkpoint/audit.json`, terminou exit 0: as 478 entradas
@@ -278,16 +306,17 @@ conhecidos ao HEAD nas fontes de paridade explicam a diferença do inventário:
 506 arquivos dirty e 31 adições fora do baseline. HEAD `873d8fbc` e `.expo`
 original preservados. `cleanupComplete=true`, zero recursos próprios
 pendentes/não confirmados e `auditProblems=[]`; PostgreSQL próprio parado com
-exit 0 e dados preservados. Essa prova antecede a última atualização Markdown; o
-coordenador renovará sua atestação depois da documentação, sem reabrir toda a
-auditoria como inexistente. Gates de arquitetura/tokens/nomes/CSS/higiene, lint
-global e tipagem ampla (14 tarefas) terminaram exit 0.
+exit 0 e dados preservados. Essa prova antecede a última atualização Markdown; a
+renovação da atestação era o próximo passo daquele checkpoint documental; esse
+registro não atesta o clone pós-F. Gates de
+arquitetura/tokens/nomes/CSS/higiene, lint global e tipagem ampla (14 tarefas)
+terminaram exit 0.
 
 ## Onda 134 — conta de recebimentos com faturamento exato e conteúdo da vitrine por locadora (2026-10-07, sem commit)
 
 ### Lote S9 — criação da conta de recebimentos
 
-**Rotas.** `app/api/admin/payment-account/create/route.ts` e
+**Rotas.** `app/api/admin/payment-account/create/route.ts` (caminho antigo) e
 `apps/services/api/src/app/api/admin/payment-account/create/route.ts` seguem a
 forma de `recovery`: `resolveTenantPrincipal`, 403 `OWNER_REQUIRED` para quem
 não é ADMIN, `GET`/`POST` explícitos, `private, no-store` +
@@ -539,8 +568,9 @@ primeiro e pelo último valor) e exige host e porta escritos no
 `TEST_DATABASE_URL`; o servidor de integração recebe vazias as chaves dos `.env`
 que o shell não define; a catraca de paleta conta `var()` de paleta em fallback,
 `color-mix`, gradiente, sombra, `theme()` e `--theme()`; `@source not` para
-`proxy.ts`, `host/routing`, `host/server` e as Route Handlers do host web.
-Limites aceitos (modelo de erro acidental, não adversário): grafias como
+`apps/clients/web/src/proxy.ts`, `apps/clients/web/src/host/routing`,
+`apps/clients/web/src/host/server` e as Route Handlers do host web. Limites
+aceitos (modelo de erro acidental, não adversário): grafias como
 `bg-[VAR(_--color-…)]` ainda fogem da catraca, e URLs `socket:` com porta na
 autoridade divergem da leitura do pg na guarda.
 
@@ -779,7 +809,7 @@ escopo aprovado, legado/agenda continuam ativos, flags reais off e nenhuma
 publicação/cutover foi realizada. A contagem 168/212 descreve fontes, não o
 percentual geral.
 
-## Objetivo e limites
+## Objetivo e limites do desenho incremental (fotografia até 2026-10-02)
 
 `apps/services/api` é o host HTTP compartilhado de destino. Next.js 16.3.6
 permanece o adapter, conforme a ADR; não foi introduzido outro framework. O
@@ -804,8 +834,8 @@ corte 28 monta POST de categorias administrativas sobre catalog/createCategory e
 compartilha o schema estrito legado em contracts/categories. O corte 29 monta
 PUT/DELETE por id, delegando aos mesmos casos de uso do catálogo. O corte 30
 monta POST de unidades físicas sobre catalog/createUnit, com o schema legado
-comum em contracts/equipment-units. Os clientes continuam finos e não têm
-mudança de URL/base configurada.
+comum em contracts/equipment-units. Naquele corte os clientes continuavam finos
+e sua URL/base não havia sido alterada.
 
 O corte 31 acrescenta PATCH/DELETE de unidades por id, delegando a
 catalog/updateUnit e deleteUnit. Schema de atualização também compartilhado;
@@ -815,8 +845,9 @@ O corte 32 monta POST /api/admin/equipments sobre catalog/createEquipment, sem
 alteração do handler legado ou do caso de uso. Limitador antes de WRITE,
 normalização, categoria da locadora, DTO e erros por ambiente preservados.
 
-O serviço atende 52 GETs: `/api/categories`, `/api/health`, `/api/equipments`,
-`/api/equipamentos/search`, `/api/settings/public`, `/api/equipments/[id]`,
+Na fotografia incremental desta seção, o serviço atendia 52 GETs:
+`/api/categories`, `/api/health`, `/api/equipments`, `/api/equipamentos/search`,
+`/api/settings/public`, `/api/equipments/[id]`,
 `/api/equipments/[id]/availability`, `/api/public/tenants/[slug]`,
 `/api/public/tenants?q=`, `/api/auth/organizations`,
 `/api/auth/organizations/selection`, `/api/auth/organizations/current`,
@@ -865,12 +896,13 @@ O ciclo de locação grava cobranças e eventos usando o backend existente; emis
 externa, assinatura, arquivo, crons e login continuam executados pelo legado.
 Efeitos de assinatura, reconciliação e arquivo e adapter ZapSign têm
 implementação compartilhada na onda 43; o scheduler continua único no legado.
-Recepção de pagamento e ZapSign é compartilhada. Não há fallback, redirect ou
-proxy para a API legada no serviço: uma rota não migrada continua disponível
-**no legado**, que permanece a autoridade configurada dos clientes e do
-scheduler.
+Recepção de pagamento e ZapSign já era compartilhada. Nesta fotografia não havia
+fallback, redirect ou proxy para a antiga API legada, e a rota ainda não migrada
+permanecia **no legado** então configurado para clientes e scheduler. Essa
+arquitetura de dois hosts explica a prova incremental, não o destino operacional
+pós-F.
 
-## Caracterização do runtime atual
+## Caracterização do runtime da época (fotografia incremental até 2026-10-02)
 
 **Onda 33 (2026-10-02):** sete operações implementadas em conjunto, antes da
 validação consolidada: PUT/DELETE de equipamentos, GET/POST de veículos e
@@ -890,28 +922,28 @@ consultas de orçamentos/atividades pertencem a quotations/customers. Composiç�
 real de disponibilidade, documentos, conversão, lifecycle e administração, sem
 implementar regras no host. Evidências e limites na seção da onda 35.
 
-| Aspecto            | Evidência no código e decisão deste corte                                                                                                                                                                                                                                                                                                                                                    |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Entrypoints        | Inventário: raiz com 149 `route.ts` e 193 métodos declarados; serviço com 130 rotas e 170 métodos (77 GETs e 93 mutações); web/mobile com zero handlers de backend. HEAD/OPTIONS automáticos não entram na contagem.                                                                                                                                                                         |
-| Composição         | `lib/catalog.ts` liga `createCatalogService` ao banco/lock de locação; `lib/tenant.ts` liga identidade/sessão. O serviço compõe catálogo público, disponibilidade, cartão, busca/rate limit, resolução pública, probe SQL e sessão real, principal privado e leituras de motoristas, endereços, categorias, unidades físicas e detalhe administrativo de equipamento com permissão granular. |
-| Dependências       | Next/React já usados no workspace; runtime Prisma 7.10, adapter pg e pg 8.23 declarados em backend. Nenhum provedor ou framework novo.                                                                                                                                                                                                                                                       |
-| Middleware         | `middlewares/require-admin.ts` resolve principal a partir de `next/headers` e aplica papel/permissão. Continua no legado. Proxy próprio do serviço impede captura do proxy de páginas da raiz pelo Turbopack.                                                                                                                                                                                |
-| Autenticação       | NextAuth ou Better Auth são compostos pelas factories compartilhadas, sem fallback entre modos. O serviço usa sessão real para vínculos/seleção; login, callbacks, POST/DELETE de seleção e demais endpoints de identidade continuam legados.                                                                                                                                                |
-| Autorização/tenant | Público exige slug explícito ou borda autenticada; organização ACTIVE. Privado revalida membership e contexto; o guard central de mutação é compartilhado, com recusa antes da sessão.                                                                                                                                                                                                       |
-| Isolamento         | `withTenantTransaction` mantém `set_config('app.tenant_id', ..., true)` e filtro de tenant. Sem locadora padrão, com RLS FORCE e runtime sem bypass/ownership.                                                                                                                                                                                                                               |
-| Scheduler          | Nove rotas em `app/api/cron`; `vercel.json` da raiz agenda quatro. Outbox mantém autorização cron, orçamento e `maxDuration=300`. O novo `vercel.json` não agenda jobs.                                                                                                                                                                                                                      |
-| Env/config         | O serviço lê seu ambiente; `.env.example` próprio sem credenciais. Banco continua composto por processo. `PLATFORM_*` valida a borda; `WEB_API_ORIGIN` pertence ao web e não foi alterada.                                                                                                                                                                                                   |
-| Proxy              | O web já encaminha APIs com headers de borda e allowlist. O proxy raiz protege páginas admin. Ambos preservados; nenhuma configuração de cliente aponta automaticamente ao serviço parcial.                                                                                                                                                                                                  |
-| Deploy             | Legado conserva Next/Vercel/Docker e crons. Destino tem config Next standalone, Vercel sem crons e Dockerfile com contexto na raiz. Nenhum deploy executado.                                                                                                                                                                                                                                 |
-| Consumidores       | Catálogo, Hero, configuração pública, diretório e bootstrap usam os contratos existentes; mobile mantém `EXPO_PUBLIC_API_URL` e seleção explícita. URLs/base dos clientes continuam apontando ao legado; DTOs, preços, ordenação e erros preservados.                                                                                                                                        |
-| Testes             | `catalog-http`, `tenant-request`, `public-surface`, inventário estrutural e suites de identidade/segurança. Nova caracterização executada antes de mover; nova suíte compara os hosts por HTTP real.                                                                                                                                                                                         |
+| Aspecto            | Evidência no código e decisão deste corte                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Entrypoints        | Inventário: raiz com 149 `route.ts` e 193 métodos declarados; serviço com 130 rotas e 170 métodos (77 GETs e 93 mutações); web/mobile com zero handlers de backend. HEAD/OPTIONS automáticos não entram na contagem.                                                                                                                                                                                               |
+| Composição         | A antiga `lib/catalog.ts` ligava `createCatalogService` ao banco/lock de locação; a antiga `lib/tenant.ts` ligava identidade/sessão. O serviço compõe catálogo público, disponibilidade, cartão, busca/rate limit, resolução pública, probe SQL e sessão real, principal privado e leituras de motoristas, endereços, categorias, unidades físicas e detalhe administrativo de equipamento com permissão granular. |
+| Dependências       | Next/React já usados no workspace; runtime Prisma 7.10, adapter pg e pg 8.23 declarados em backend. Nenhum provedor ou framework novo.                                                                                                                                                                                                                                                                             |
+| Middleware         | O antigo `middlewares/require-admin.ts` resolvia principal a partir de `next/headers` e aplica papel/permissão. Continuava no legado naquele corte. Proxy próprio do serviço impede captura do proxy de páginas da raiz pelo Turbopack.                                                                                                                                                                            |
+| Autenticação       | NextAuth ou Better Auth são compostos pelas factories compartilhadas, sem fallback entre modos. O serviço usa sessão real para vínculos/seleção; login, callbacks, POST/DELETE de seleção e demais endpoints de identidade continuam legados.                                                                                                                                                                      |
+| Autorização/tenant | Público exige slug explícito ou borda autenticada; organização ACTIVE. Privado revalida membership e contexto; o guard central de mutação é compartilhado, com recusa antes da sessão.                                                                                                                                                                                                                             |
+| Isolamento         | `withTenantTransaction` mantém `set_config('app.tenant_id', ..., true)` e filtro de tenant. Sem locadora padrão, com RLS FORCE e runtime sem bypass/ownership.                                                                                                                                                                                                                                                     |
+| Scheduler          | Nove rotas nos antigos `app/api/cron`; o antigo `vercel.json` da raiz agendava quatro. Outbox mantém autorização cron, orçamento e `maxDuration=300`. O `apps/services/api/vercel.json` não agendava jobs.                                                                                                                                                                                                         |
+| Env/config         | O serviço lê seu ambiente; `.env.example` próprio sem credenciais. Banco continua composto por processo. `PLATFORM_*` valida a borda; `WEB_API_ORIGIN` pertence ao web e não foi alterada.                                                                                                                                                                                                                         |
+| Proxy              | O web já encaminha APIs com headers de borda e allowlist. O proxy raiz protege páginas admin. Ambos preservados; nenhuma configuração de cliente aponta automaticamente ao serviço parcial.                                                                                                                                                                                                                        |
+| Deploy             | Legado conserva Next/Vercel/Docker e crons. O destino já tinha config Next standalone, Vercel sem crons e `apps/services/api/Dockerfile` com contexto de build no monorepo. Nenhum deploy executado.                                                                                                                                                                                                               |
+| Consumidores       | Catálogo, Hero, configuração pública, diretório e bootstrap usam os contratos existentes; mobile mantém `EXPO_PUBLIC_API_URL` e seleção explícita. URLs/base dos clientes continuam apontando ao legado; DTOs, preços, ordenação e erros preservados.                                                                                                                                                              |
+| Testes             | `catalog-http`, `tenant-request`, `public-surface`, inventário estrutural e suites de identidade/segurança. Nova caracterização executada antes de mover; nova suíte compara os hosts por HTTP real.                                                                                                                                                                                                               |
 
-## Responsabilidades e movimentos
+## Responsabilidades e movimentos do primeiro incremento (2026-09-30)
 
 | Código                                       | Destino/estado                                                                                                                                                                                            |
 | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Regras de resolução pública de locadora      | Movidas de `lib/tenant.ts` para factory `identity/public-tenant.ts`; facade legada preserva nomes e assinaturas usadas. Lookup de organização é injetado.                                                 |
-| Prisma/pool por processo                     | Movidos de `lib/prisma.ts` para `backend/runtime/database.ts`; flags, tamanhos e timeouts preservados. Facade legada continua expondo `prisma` e seu probe.                                               |
+| Regras de resolução pública de locadora      | Movidas de `lib/tenant.ts` (caminho antigo) para factory `identity/public-tenant.ts`; facade legada preserva nomes e assinaturas usadas. Lookup de organização é injetado.                                |
+| Prisma/pool por processo                     | Movidos de `lib/prisma.ts` (caminho antigo) para `backend/runtime/database.ts`; flags, tamanhos e timeouts preservados. Facade legada continua expondo `prisma` e seu probe.                              |
 | Catálogo e transação                         | Continuam em `packages/backend`; `createPublicCatalog` agora tem export público consumido pelo serviço. Nenhuma regra foi copiada ao host.                                                                |
 | Adapters HTTP                                | Adapters legados permanecem com seus guards visíveis ao inventário. O serviço declara rotas finas e usa factories de `backend/http` para mapear Request/Response. A equivalência de transporte é testada. |
 | Sessão e vínculos privados                   | Leitor real composto no serviço e consulta compartilhada em backend/identity; emissão de sessão, callbacks e POST/DELETE de seleção permanecem legados.                                                   |
@@ -930,7 +962,7 @@ São pontos de composição deste incremento autorizado; o pacote permanece
 server-only, a dívida continua medida e não se adicionou tolerância às
 baselines.
 
-## Contratos preservados
+## Contratos preservados pelo primeiro incremento (2026-09-30)
 
 - Categories: array, seleção de campos, ordenação por nome e
   `_count.equipments`.
@@ -965,94 +997,100 @@ baselines.
 - Busca e settings conservam seus cabeçalhos existentes, sem aplicar a eles a
   política de cache de categories/equipments.
 
-## Execução local e validação
+## Execução local e validação no clone sem raiz
+
+Os clients continuam finos. `WEB_API_ORIGIN` do web e `EXPO_PUBLIC_API_URL` do
+mobile apontam para o serviço compartilhado no ambiente local aprovado; os
+assets continuam no host web, separados da API. Os exemplos dos hosts não contêm
+credenciais. Configurar apenas ambiente sintético ou um banco local descartável
+próprio; não reutilizar `.env` de operação real.
 
 ```powershell
 pnpm install --frozen-lockfile --ignore-scripts
 pnpm db:generate
 pnpm build:api
-# Configurar DATABASE_URL/PLATFORM_* no ambiente ou no .env.local do serviço.
-pnpm --filter @gb-locacoes/api start
-```
-
-Porta padrão do serviço: 3002. Manter `WEB_API_ORIGIN` e `EXPO_PUBLIC_API_URL`
-apontando ao runtime atual enquanto o serviço for parcial. O Dockerfile usa
-contexto na raiz:
-`docker build -f apps/services/api/Dockerfile -t locadora-api .`. A imagem e
-deploy remoto exigem validação própria; build Next não certifica Docker.
-
-```powershell
-# URL local descartável diferente de DATABASE_URL e DIRECT_URL do processo de teste.
-$env:TEST_DATABASE_URL = "postgresql://test:test@127.0.0.1:5432/test_api"
-$env:TEST_DATABASE_DISPOSABLE = "true"
-# Aplicar migrations no banco de teste antes desta suíte, como no CI.
-$env:API_HOST_MODE = "production"
-pnpm build:api
 pnpm build:web
+# Shell local com TEST_DATABASE_URL descartável próprio, já migrado.
+$env:TEST_DATABASE_DISPOSABLE = "true"
+$env:API_HOST_MODE = "production"
+$env:API_LEGACY_MODE = "absent"
+$env:API_AUTH_MODE = "legacy"
+pnpm test:api
+$env:API_AUTH_MODE = "better-auth"
 pnpm test:api
 ```
 
-`test:api` inicia dois servidores próprios em portas livres: legado em dev e
-artefato standalone do serviço quando `API_HOST_MODE=production` (dev quando
-ausente). `API_LEGACY_MODE=production` usa `next start` sobre um build legado
-prévio (`pnpm build`), permitindo preservar um dev já aberto. O entrypoint de
-produção do serviço é o mesmo `server.js` do Dockerfile. Exige banco
-descartável, não reutiliza servidor externo nem contorna guards. Cria fixtures
-identificadas e um papel temporário NOLOGIN/NOBYPASSRLS, sem ownership, com
-SELECT nas tabelas de negócio e SELECT/INSERT/UPDATE apenas no contador global
-`platform_rate_limits`; ambos os hosts usam esse papel via opções da conexão. A
-suíte compara corpo/status/headers e prova RLS em categories, equipments e
-settings com consultas **sem WHERE**; reservas, itens, cobranças e orçamentos
-também são verificados sem filtro em seus testes RLS. Encerra seus processos e
-remove apenas suas fixtures e grants/papel temporário; logs ficam em
-`%TEMP%/locadora-api-parity-*`, fora do repositório.
+Esses comandos descrevem o perfil vigente de `.github/workflows/ci.yml`, não uma
+execução já concluída no clone. A CI aplica `prisma migrate deploy` ao
+PostgreSQL descartável antes das suítes; jamais `db push` ou reset do banco
+principal. Cada modo público de UI exige seu próprio rebuild web; mudar
+`API_AUTH_MODE` da suíte HTTP não recompila o client nem certifica sua jornada.
 
-O job CI já aplica migrations ao PostgreSQL descartável, compila o serviço e
-executa `test:api` em modo produção. O estado local e os resultados são
-registrados na ADR de extração; CI remoto ainda não foi executado.
+`tests/api-host/global-setup.ts` inicia somente a API própria quando
+`API_LEGACY_MODE=absent`. O modo `production` do serviço usa o standalone
+`server.js` construído por `apps/services/api/next.config.mjs`; o modo dev não é
+prova de cookies Secure ou de envelopes de erro de produção. A suíte mantém
+expectativas explícitas, sucessos reais, exceções contratuais por motor e RLS
+com o papel NOLOGIN/NOBYPASSRLS temporário. As fixtures de plataforma usam seus
+bancos/papéis próprios, sem herdar `PLATFORM_DATABASE_URL` do operador.
 
-### Resultados do primeiro incremento (2026-09-30)
+O teardown observa o término dos processos criados pela fixture e tenta os
+recursos irmãos. Falha de lifecycle impede SQL de limpeza destrutiva e a
+conclusão de paridade. `finishRecord` só sela a rodada depois do estado final do
+Vitest e da cobertura; evidência ausente, vazia, parcial, falha ou com
+fingerprint/motor/perfil diferentes não constitui sucesso. Os logs e registros
+ficam em `%TEMP%/locadora-api-parity-*`, fora do checkout.
 
-| Verificação                                                                  | Resultado                                                            |
-| ---------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Caracterização antes de mover código                                         | 112 testes aprovados                                                 |
-| Matriz pública nos dois adapters e catálogo                                  | 128 testes aprovados                                                 |
-| Suíte unitária completa (inclui gates e regressões de billing/locação)       | 57 arquivos, 819 testes aprovados                                    |
-| Identidade completa                                                          | 13 arquivos, 134 testes aprovados                                    |
-| Contratos de provedores, somente dublês                                      | 106 testes aprovados                                                 |
-| Host web                                                                     | 182 aprovados, 7 casos anteriores pulados                            |
-| Segurança completa                                                           | 27 arquivos, 660 aprovados, 18 condicionais pulados; sem novos skips |
-| HTTP real contra artefato standalone e legado, PostgreSQL RLS                | 20 testes aprovados                                                  |
-| Build API, build legado e build web                                          | Exit 0 nos três                                                      |
-| Tipos de todos os pacotes/hosts e raiz, lint, arquitetura, ratchet e higiene | Exit 0; baselines intactas                                           |
-| Nomes dos testes colocados                                                   | 430 testes; 3 exceções anteriores válidas, nenhum órfão novo         |
+O serviço usa a porta 3002 por padrão (`apps/services/api/package.json`). Para
+iniciar manualmente o serviço local: `pnpm --filter @gb-locacoes/api start`.
+Para imagem Linux, o contexto é o monorepo:
+`docker build -f apps/services/api/Dockerfile -t locadora-api .`. A configuração
+é `apps/services/api/Dockerfile`, sem dependência do antigo Dockerfile da raiz.
+Build Next local não prova imagem, health/nonroot nem deploy; consultar a prova
+real de `.github/workflows/api-container.yml` antes de declarar Docker aprovado.
 
-O build legado foi feito com conexão fictícia: o sitemap registrou P1001 e usou
-seu fallback existente. A paridade HTTP foi feita com banco local real; esse
-fallback de build não é uma prova de SEO nem de conectividade em produção. Os
-avisos de consultas concorrentes do pg já aparecem nas suítes existentes;
-nenhuma versão de dependência foi atualizada neste incremento.
+### Resultados do primeiro incremento (registro histórico, 2026-09-30)
 
-### Arquivos do primeiro incremento
+| Verificação                                 | Resultado naquele incremento                                         |
+| ------------------------------------------- | -------------------------------------------------------------------- |
+| Caracterização antes de mover código        | 112 testes aprovados                                                 |
+| Matriz pública nos dois adapters e catálogo | 128 testes aprovados                                                 |
+| Suíte unitária completa                     | 57 arquivos, 819 testes aprovados                                    |
+| Identidade completa                         | 13 arquivos, 134 testes aprovados                                    |
+| Contratos de provedores, somente dublês     | 106 testes aprovados                                                 |
+| Host web                                    | 182 aprovados, 7 casos anteriores pulados                            |
+| Segurança completa                          | 27 arquivos, 660 aprovados, 18 condicionais pulados; sem novos skips |
+| HTTP standalone/legado e PostgreSQL RLS     | 20 testes aprovados                                                  |
+| Builds API, legado e web                    | Exit 0 nos três                                                      |
+| Tipos, lint, arquitetura, ratchet e higiene | Exit 0; baselines intactas                                           |
+| Nomes colocados                             | 430 testes; 3 exceções anteriores válidas; nenhum órfão novo         |
 
-- Host: `apps/services/api/package.json`, `next.config.mjs`, `tsconfig.json`,
-  `.env.example`, `vercel.json`, `Dockerfile`, `src/proxy.ts`,
-  `src/host/runtime.ts`, `src/app/api/categories/route.ts` e
-  `src/app/api/health/route.ts`.
-- Backend: `modules/identity/public-tenant.ts`,
-  `http/{categories,health,index}.ts` e `runtime/{database,index}.ts` sob
-  `packages/backend/src`; exports explícitos de identity/catalog e manifesto do
-  pacote. Fachadas: `lib/tenant.ts` e `lib/prisma.ts`.
+O build legado da época usou conexão fictícia e fallback de sitemap P1001; o
+HTTP usou banco local real. Isso não provava SEO, conectividade externa ou
+produção. Os avisos concorrentes de pg já existiam; nenhuma dependência foi
+atualizada nesse incremento.
+
+### Arquivos do primeiro incremento (registro histórico, 2026-09-30)
+
+- Host: `apps/services/api/package.json`, `apps/services/api/next.config.mjs`,
+  `apps/services/api/tsconfig.json`, `apps/services/api/.env.example`,
+  `apps/services/api/vercel.json`, `apps/services/api/Dockerfile`,
+  `apps/services/api/src/proxy.ts`, `apps/services/api/src/host/runtime.ts` e os
+  handlers categories/health.
+- Backend: `packages/backend/src/modules/identity/public-tenant.ts`,
+  `packages/backend/src/http/{categories,health,index}.ts` e
+  `packages/backend/src/runtime/{database,index}.ts`. As antigas fachadas
+  `lib/tenant.ts` e `lib/prisma.ts` delegavam a esses owners e saíram em F.
 - Testes: `tests/unit/public-api-characterization.test.ts`,
   `tests/unit/database-runtime.test.ts`, `tests/api-host/global-setup.ts`,
   `tests/api-host/categories.http.test.ts`, `vitest.api.config.ts`; expansão de
   `public-surface.test.ts` e `eslint-runtime-rewrite.test.ts`.
-- Integração: manifesto/lockfile/workspace da raiz, `.env.example`, Dockerfile
-  legado (manifesto do novo importer), CI, inventário de modernização, escopo do
-  lint e registro dos dois exports em `ratchet-transfers.json`.
-- Documentação: ADR de extração, modernização, visão geral, esta especificação,
-  resolução de tenant, boot/mapa/índice de IA, índice de features, entrada 231
-  dos known issues e changelog Unreleased. O handoff canônico foi preservado.
+- Integração: manifesto/lockfile/workspace e `.env.example` da raiz; o antigo
+  Dockerfile da raiz recebeu o manifesto do importer. CI, inventário, escopo de
+  lint e dois exports registrados em `ratchet-transfers.json`.
+- Documentação: ADR de extração, modernização, overview, esta especificação,
+  resolução de tenant, boot/mapa/índice, índice de features, entrada 231 e
+  changelog Unreleased; handoff canônico preservado.
 
 ## Segundo incremento: catálogo público (2026-09-30)
 
@@ -1106,9 +1144,10 @@ estados finais, orçamento AT_END, pagamento pendente e histórico REFUNDED.
 O detalhe foi caracterizado com seis testes unitários e 15 HTTP no legado. Sua
 consulta e projeção saíram da rota para `catalog/public-detail.ts`, publicadas
 pelo `createPublicCatalog.getPublicEquipment`. A rota antiga mantém guard,
-validação de ID, cache e erros, e chama a fachada `lib/catalog.ts`. O serviço
-usa `http/equipment-detail.ts`; não há uma segunda consulta/DTO no host. Os 96
-testes anteriores do catálogo continuam protegendo seus métodos.
+validação de ID, cache e erros, e chama a fachada `lib/catalog.ts` (caminho
+antigo). O serviço usa `http/equipment-detail.ts`; não há uma segunda
+consulta/DTO no host. Os 96 testes anteriores do catálogo continuam protegendo
+seus métodos.
 
 O cartão foi caracterizado com 11 testes unitários e 17 HTTP no legado antes da
 nova rota. O serviço usa `readPublicTenantCard`, já existente em directory,
@@ -1120,7 +1159,7 @@ Arquivos novos desses cortes:
 
 - `packages/backend/src/http/{equipment-availability,equipment-detail,tenant-card}.ts`.
 - `packages/backend/src/modules/catalog/public-detail.ts`; método ligado em
-  `catalog/public.ts` e fachada `lib/catalog.ts`.
+  `catalog/public.ts` e fachada `lib/catalog.ts` (caminho antigo).
 - Rotas correspondentes em `apps/services/api/src/app/api`, ligadas por
   `apps/services/api/src/host/runtime.ts` e exports explícitos em
   `backend/http`.
@@ -1152,13 +1191,13 @@ Antes da adaptação, passaram 15 casos unitários novos, 47 testes existentes d
 diretório/limitadores e 353 testes HTTP, com a busca ainda só no legado. Os
 corpos de `clientIpFromHeaders`, `isPlatformProduction` e
 `identityRateLimitSecret` foram movidos sem alterações para os módulos
-identity/directory de backend; `lib/rate-limit.ts` importa e reexporta IP e
-segredo para preservar os consumidores antigos. O critério de produção e o
-primitivo de segredo deixaram de ser reexportados por fachadas sem consumidores
-de produção; seus testes continuam nos módulos donos, com as mesmas asserções. O
-teste estrutural de segredo continua exigindo um único chamador, agora
-`directory/security-env.ts`, e passa a varrer também o serviço. Nenhuma proteção
-ou baseline foi afrouxada.
+identity/directory de backend; `lib/rate-limit.ts` (caminho antigo) importa e
+reexporta IP e segredo para preservar os consumidores antigos. O critério de
+produção e o primitivo de segredo deixaram de ser reexportados por fachadas sem
+consumidores de produção; seus testes continuam nos módulos donos, com as mesmas
+asserções. O teste estrutural de segredo continua exigindo um único chamador,
+agora `directory/security-env.ts`, e passa a varrer também o serviço. Nenhuma
+proteção ou baseline foi afrouxada.
 
 `http/directory-search.ts` preserva a validação antes do consumo, os erros,
 cache e Retry-After. A composição do host liga o adapter aos serviços existentes
@@ -1178,8 +1217,8 @@ as linhas identificadas pelos HMACs dessa execução.
 Arquivos: `backend/http/directory-search.ts`,
 `backend/modules/identity/client-ip.ts`,
 `backend/modules/directory/security-env.ts`, seus exports explícitos e a fachada
-`lib/rate-limit.ts`; rota/composição/env em `apps/services/api`; testes
-`tests/unit/public-directory-api.test.ts`,
+`lib/rate-limit.ts` (caminho antigo); rota/composição/env em
+`apps/services/api`; testes `tests/unit/public-directory-api.test.ts`,
 `tests/api-host/directory.http.test.ts`, fixtures/grants de `global-setup.ts` e
 o inventário estrutural em `tests/security/directory.test.ts`.
 
@@ -1207,13 +1246,13 @@ O build legado usou conexão fictícia e o fallback de sitemap já existente; o
 HTTP usou PostgreSQL real descartável. Docker, CI remoto, implantação e paridade
 integral continuam sem validação neste corte.
 
-## Riscos restantes e próximo corte
+## Riscos restantes e próximo corte da fotografia de 2026-09-30
 
-Este host parcial não pode assumir toda a origem `/api`. A autenticação e seus
-cookies/CSRF/OAuth, a composição dos efeitos, o cache do host web e a execução
-exclusiva do scheduler precisam de provas próprias antes do cutover. O ciclo de
-shutdown do pool em um host com jobs longos também exige validação; o corte
-atual é leitura e usa o lifecycle do Next.
+Naquele corte, o host parcial ainda não podia assumir toda a origem `/api`. A
+autenticação e seus cookies/CSRF/OAuth, a composição dos efeitos, o cache do
+host web e a execução exclusiva do scheduler precisam de provas próprias antes
+do cutover. O ciclo de shutdown do pool em um host com jobs longos também exige
+validação; o corte atual é leitura e usa o lifecycle do Next.
 
 O inventário estrutural de autorização ainda protege a raiz legada. Antes de
 instalar rotas privadas no serviço, sua verificação precisa abranger também o
@@ -1236,10 +1275,12 @@ continuam exercitando as fachadas reais após a extração.
   declarada pelo backend, sem atualização de biblioteca.
 - `identity/runtime.ts`: lifecycle e política HTTP do Better Auth, assunto da
   plataforma, origem validada da borda, falha fechada e logs redigidos.
-  `lib/identity.ts` fornece as dependências reais de banco, e-mail e janelas.
-- `lib/auth.ts`, `lib/application-session.ts`, `lib/identity.ts` e
-  `types/next-auth.d.ts`: composição/compatibilidade. A rota NextAuth continua
-  intacta e conserva o wrapper de disponibilidade e sua defesa CSRF.
+  `lib/identity.ts` (caminho antigo) fornece as dependências reais de banco,
+  e-mail e janelas.
+- `lib/auth.ts` (caminho antigo), `lib/application-session.ts` (caminho antigo),
+  `lib/identity.ts` (caminho antigo) e `types/next-auth.d.ts`:
+  composição/compatibilidade. A rota NextAuth continua intacta e conserva o
+  wrapper de disponibilidade e sua defesa CSRF.
 - `tests/unit/{application-session,legacy-auth-composition,identity-runtime}.test.ts`:
   caracterização de opções, cabeçalhos, fallback, erro, projeção, cache e
   e-mail. Testes existentes de segurança continuam com as mesmas asserções;
@@ -1248,9 +1289,9 @@ continuam exercitando as fachadas reais após a extração.
 
 A higiene detectou exports que ficaram sem consumidor após a mudança de dono.
 Foram enxugados apenas os reexports internos sem uso. O default de `lib/auth.ts`
-criava uma segunda instância de NextAuth sem consumidor: removido esse código,
-saiu apenas a sua entrada da baseline de higiene (COD-27). Nenhuma tolerância,
-allowlist ou proteção de teste aumentou.
+(caminho antigo) criava uma segunda instância de NextAuth sem consumidor:
+removido esse código, saiu apenas a sua entrada da baseline de higiene (COD-27).
+Nenhuma tolerância, allowlist ou proteção de teste aumentou.
 
 Resultados locais deste corte:
 
@@ -1294,15 +1335,18 @@ Arquivos/responsabilidades:
   raiz ou do host. O contador é carregado lazily, uma vez para chamadas
   concorrentes; falhas de carga podem ser repetidas. Segredo é resolvido antes
   do contador, conforme o contrato existente.
-- `lib/rate-limit.ts`: composição do contador Prisma real, leitor de segredo e
-  IP confiável; fachadas mantêm os caminhos das rotas. Os limitadores genéricos
-  em memória permanecem nesse arquivo, com o inventário estrutural intacto.
+- `lib/rate-limit.ts` (caminho antigo): composição do contador Prisma real,
+  leitor de segredo e IP confiável; fachadas mantêm os caminhos das rotas. Os
+  limitadores genéricos em memória permanecem nesse arquivo, com o inventário
+  estrutural intacto.
 - `packages/backend/src/runtime/mail.ts`: cliente Resend com prazo de 15
   segundos, incluindo envio com chave de idempotência e sinal de cancelamento do
-  chamador. `lib/resend.ts` conserva a API e lê a configuração a cada chamada.
+  chamador. `lib/resend.ts` (caminho antigo) conserva a API e lê a configuração
+  a cada chamada.
 - `packages/backend/src/modules/identity/mail.ts`: payload e erros de e-mail por
-  `createIdentityMailSender`. `lib/identity.ts` fornece cliente/remetente reais.
-  A marca e o assunto continuam no runtime de identidade compartilhado.
+  `createIdentityMailSender`. `lib/identity.ts` (caminho antigo) fornece
+  cliente/remetente reais. A marca e o assunto continuam no runtime de
+  identidade compartilhado.
 - Entrypoints/manifest/lockfile: Resend 6.30.0 existente declarado no backend;
   reexports de primitivas internas sem consumidor removidos. Testes importam
   seus módulos donos sem remover casos/assertivas. Nenhuma baseline, allowlist
@@ -1366,8 +1410,8 @@ serviço/backend. Importar a composição não abre banco nem envia e-mail.
 
 - `packages/backend/src/modules/identity/organization-memberships.ts` e
   `identity/index.ts`: leitura compartilhada e export público explícito.
-- `app/api/auth/organizations/route.ts`: adapter legado, mesma sessão/recusa e
-  transporte; consulta delegada ao módulo.
+- `app/api/auth/organizations/route.ts` (caminho antigo): adapter legado, mesma
+  sessão/recusa e transporte; consulta delegada ao módulo.
 - `apps/services/api/src/host/session.ts` e
   `src/app/api/auth/organizations/route.ts`: composição e adapter HTTP privado.
 - `apps/services/api/src/host/runtime.ts`: callbacks lazy para as factories
@@ -1456,8 +1500,9 @@ teste sem listener. Logs permanecem somente no diretório temporário externo.
 Ativa, sem redirect/cutover. Mantém 149 rotas/193 métodos declarados, clientes,
 login/callbacks, seleção, pagamentos, uploads e jobs. Serviço parcial com dez
 GETs; nenhum segundo scheduler ou caminho autoritativo de escrita foi criado. A
-pasta `app/` externa é o host legado e só será retirada depois da paridade e
-troca operacional; `src/app` nos hosts e `frontend/src/app` continuam legítimos.
+pasta `app/` (caminho antigo) externa é o host legado e só será retirada depois
+da paridade e troca operacional; `src/app` nos hosts e `frontend/src/app`
+continuam legítimos.
 
 ### Dívida/risco restante
 
@@ -1468,7 +1513,7 @@ definidos nas ADRs. O serviço ainda não atende o guard central das operações
 negócio nem seleção/callbacks. Baselines de arquitetura/higiene permanecem
 dívida existente, sem nova tolerância; nenhuma proteção foi relaxada.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Compartilhar a adaptação da preferência de locadora e a leitura
 `GET /api/auth/organizations/selection`, com sessão real e revalidação de
@@ -1482,10 +1527,10 @@ preferência, nunca autorização, e provar origem/CSRF antes dos writes.
 
 `GET /api/auth/organizations/selection` instalado no serviço com a sessão real
 já compartilhada. A política de leitura foi movida de
-`lib/organization-selection.ts` para backend/identity, junto do parser e do
-formatter da preferência. A consulta e a projeção do vínculo continuam no
-backend. Os dois adapters exigem identidade antes de consultar dados e delegam à
-mesma implementação. Não há regra copiada ao host.
+`lib/organization-selection.ts` (caminho antigo) para backend/identity, junto do
+parser e do formatter da preferência. A consulta e a projeção do vínculo
+continuam no backend. Os dois adapters exigem identidade antes de consultar
+dados e delegam à mesma implementação. Não há regra copiada ao host.
 
 ### Arquivos criados/modificados
 
@@ -1494,11 +1539,11 @@ mesma implementação. Não há regra copiada ao host.
   vínculo atual; `identity/index.ts`: exports públicos explícitos.
 - `packages/backend/src/http/organization-selection.ts` e `http/index.ts`:
   transporte Response compartilhado, sem consulta ou efeito de negócio.
-- `lib/organization-selection.ts`: adapter legado, com POST/DELETE e origem/JSON
-  preservados. `lib/tenant.ts`: principal continua usando o parser
-  compartilhado; dois exports da fachada sem consumidor de produto foram
-  removidos, sem acrescentar tolerância à higiene. O nome canônico do cookie
-  está em contracts.
+- `lib/organization-selection.ts` (caminho antigo): adapter legado, com
+  POST/DELETE e origem/JSON preservados. `lib/tenant.ts` (caminho antigo):
+  principal continua usando o parser compartilhado; dois exports da fachada sem
+  consumidor de produto foram removidos, sem acrescentar tolerância à higiene. O
+  nome canônico do cookie está em contracts.
 - `apps/services/api/src/app/api/auth/organizations/selection/route.ts`: somente
   GET, com sessão/consulta lazy e 503 genérico.
 - `tests/unit/organization-selection-read.test.ts` e
@@ -1593,13 +1638,13 @@ central de principal e as mutações ainda exigem cortes próprios; a futura tro
 de autoridade depende de origem/borda/CSRF e paridade completa. A preferência
 nunca pode virar fonte de papel ou autorizar acesso sem vínculo atual.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 `GET /api/auth/organizations/current`, com resolução do host pela borda
 validada, recusas neutras e vínculo atual. Depois, compartilhar a composição do
 principal privado antes de instalar operações de negócio e writes. `app/`
-externo só sai quando o substituto estiver completo e a troca operacional
-estiver comprovada.
+(caminho antigo) externo só sai quando o substituto estiver completo e a troca
+operacional estiver comprovada.
 
 ## Corte 11 — vínculo da locadora do host (2026-10-01, sem commit)
 
@@ -1620,8 +1665,9 @@ escritas continuam sob a autoridade legada.
   explícito da consulta.
 - `packages/backend/src/http/organization-current.ts` e `http/index.ts`:
   resposta privada, sem consulta nem efeito de negócio.
-- `app/api/auth/organizations/current/route.ts` e `lib/tenant.ts`: fachada e
-  adapter legados delegando às implementações compartilhadas.
+- `app/api/auth/organizations/current/route.ts` (caminho antigo) e
+  `lib/tenant.ts` (caminho antigo): fachada e adapter legados delegando às
+  implementações compartilhadas.
 - `apps/services/api/src/app/api/auth/organizations/current/route.ts` e
   `host/runtime.ts`: adapter GET e composição lazy da resolução do host.
 - `tests/unit/current-organization-read.test.ts`: caracterização executada antes
@@ -1720,10 +1766,11 @@ Paridade local não comprova entrega de cookies host-only pelo navegador a uma
 nova origem, dispositivo mobile, Docker ou deploy. Guard central de principal,
 permissões privadas, mutações, pagamentos, callbacks, uploads e scheduler ainda
 exigem cortes próprios. O serviço não faz fallback nem autoriza rotas ainda
-ausentes. A pasta `app/` externa só sai após cobertura completa e troca
-operacional comprovada; `src/app` dos hosts e a camada FSD continuam legítimos.
+ausentes. A pasta `app/` (caminho antigo) externa só sai após cobertura completa
+e troca operacional comprovada; `src/app` dos hosts e a camada FSD continuam
+legítimos.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Compartilhar a composição do principal privado com sessão real, preferências,
 borda e vínculo atual, protegendo conflitos de locadora e mesma origem. Em
@@ -1758,8 +1805,9 @@ pública. A criação da factory é conferida como livre de I/O.
 - Backend: `modules/identity/tenant-request-principal.ts` novo e exports
   explícitos em `modules/identity/index.ts`; a lógica de principal e a consulta
   de motoristas já existentes permanecem no pacote.
-- Legado: `lib/tenant.ts` delega à factory com os leitores reais. O arquivo
-  `app/api/admin/drivers/route.ts` não foi alterado.
+- Legado: `lib/tenant.ts` (caminho antigo) delega à factory com os leitores
+  reais. O arquivo `app/api/admin/drivers/route.ts` (caminho antigo) não foi
+  alterado.
 - Serviço: `src/host/private-identity.ts` e `src/host/operations.ts` novos,
   `src/host/runtime.ts` com resolução pública usada na composição, e
   `src/app/api/admin/drivers/route.ts` novo (GET).
@@ -1825,8 +1873,9 @@ registro legado sem locadora. O setup limpa seus servidores, roles e fixtures.
 149 arquivos de rota/193 métodos declarados continuam na raiz. Serviço parcial
 com 13 rotas/13 GETs; web sem handlers de backend. Não houve remoção ou
 desativação de endpoint legado, alteração de cliente/proxy, push, deploy,
-migration ou mudança de autoridade de escrita. A pasta `app/` externa continua
-necessária até a paridade e a operação do substituto serem provadas.
+migration ou mudança de autoridade de escrita. A pasta `app/` (caminho antigo)
+externa continua necessária até a paridade e a operação do substituto serem
+provadas.
 
 ### Dívida/risco restante
 
@@ -1836,7 +1885,7 @@ operacional permanecem legados. Builds locais e replay de cookies não provam
 browser, Expo, Docker, staging multi-host ou produção. As dívidas preexistentes
 dos gates continuam visíveis; este corte não conclui toda a modernização.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Instalar a leitura privada de endereços do cliente, reutilizando o principal e o
 serviço customers já existentes, com prova de propriedade por usuário e
@@ -1933,9 +1982,9 @@ extração preservou esse contrato. Não adiciona cache explícito. Qualquer mud
 desses contratos exige um corte funcional próprio. Cookies reproduzidos em HTTP
 local não provam navegador, Expo, Docker ou origem de produção. Os demais
 adapters privados, permissões, mutações, pagamentos, uploads e jobs seguem
-pendentes. A pasta `app/` externa permanece necessária nessa transição.
+pendentes. A antiga pasta `app/` permanecia necessária naquela transição.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Compartilhar a composição granular de permissões e instalar uma leitura
 administrativa que a utilize, preservando overrides do vínculo, políticas de
@@ -1956,7 +2005,8 @@ regra de negócio foi copiada ao host, e o adapter legado não foi removido.
 ### Arquivos criados/modificados
 
 - Backend: novo `identity/tenant-permission.ts`, com export explícito em
-  `identity/index.ts`; `lib/tenant-permissions.ts` passa a delegar à factory.
+  `identity/index.ts`; `lib/tenant-permissions.ts` (caminho antigo) passa a
+  delegar à factory.
 - Host: novas composições `src/host/permissions.ts` e `src/host/catalog.ts` e
   adapter `src/app/api/admin/categories/route.ts`.
 - Caracterização: `tenant-permission-request.test.ts` e
@@ -2048,7 +2098,7 @@ atomicidade entre revogação concorrente de membership/grant e uma operação j
 iniciada. Mutações, login/callbacks, pagamentos, arquivos, jobs e composição
 operacional ainda dependem do legado, e a modernização completa segue pendente.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Instalar leituras administrativas de unidades físicas, reutilizando catalog e o
 resolver granular agora compartilhado. Caracterizar filtros, parâmetros,
@@ -2150,10 +2200,10 @@ SHA-256 do handoff canônico permanece idêntico.
 ### Estado da API legada
 
 149 rotas/193 métodos declarados da raiz preservados; 17 rotas/17 GETs no
-serviço parcial e zero handlers de backend no cliente web. A pasta `app/` da
-raiz continua transitória e necessária. Clientes, proxy, cookies, scheduler,
-escritas e autoridade configurada permanecem legados. Sem commit, push, deploy
-ou alteração de produção.
+serviço parcial e zero handlers de backend no cliente web. A pasta `app/`
+(caminho antigo) da raiz continua transitória e necessária. Clientes, proxy,
+cookies, scheduler, escritas e autoridade configurada permanecem legados. Sem
+commit, push, deploy ou alteração de produção.
 
 ### Dívida/risco restante
 
@@ -2165,7 +2215,7 @@ extração. Mutações, identidade de escrita, efeitos, pagamentos, arquivos, jo
 operação/cutover continuam pendentes. O incremento não conclui a modernização
 inteira nem autoriza remover a raiz.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Detalhe administrativo de equipamento (`GET /api/admin/equipments/[id]`), que
 reutiliza a composição catalog e EQUIPMENTS/READ. A lista administrativa deve
@@ -2273,7 +2323,8 @@ Logs/sondas externos ao repositório. Handoff canônico intacto.
 149 rotas/193 métodos declarados da raiz preservados; serviço parcial com 18
 rotas/18 GETs; zero handlers de backend no cliente web. Clientes, cookies,
 proxy, scheduler e autoridade de escrita continuam legados. Sem commit, push,
-deploy ou alteração de produção. A raiz app/ continua necessária.
+deploy ou alteração de produção. A antiga raiz app/ ainda era necessária naquele
+corte.
 
 ### Dívida/risco restante
 
@@ -2285,7 +2336,7 @@ silenciosamente essa política. Escritas, identidade de escrita, pagamentos,
 arquivos, jobs e cutover continuam pendentes. Modernização inteira ainda não
 concluída.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Extrair o limitador genérico compartilhável para backend, conservando os stores
 por escopo/instância, limites, relógio, IP confiável, formatos de 429 e headers
@@ -2307,10 +2358,10 @@ consulta preservada. Nenhum login, write, callback, pagamento ou job instalado.
 
 - packages/backend/src/http/memory-rate-limit.ts e index.ts: store limitado,
   factories, quatro janelas e formatação de 429, sem Next/Prisma/I/O.
-- lib/rate-limit.ts: fachada NextRequest dos consumidores administrativos e
-  estritos; composição persistente da identidade preservada. Seis pontes sem
-  consumidores de produção foram retiradas; os testes do store e das factories
-  passam a importar sua implementação dona no backend.
+- lib/rate-limit.ts (caminho antigo): fachada NextRequest dos consumidores
+  administrativos e estritos; composição persistente da identidade preservada.
+  Seis pontes sem consumidores de produção foram retiradas; os testes do store e
+  das factories passam a importar sua implementação dona no backend.
 - apps/services/api/src/host/rate-limit.ts e catalog.ts: ligação ao leitor real
   de IP e ao catalog compartilhado, sem consulta/regra duplicada no host.
 - apps/services/api/src/app/api/admin/equipments/route.ts: adapter GET fino.
@@ -2384,9 +2435,10 @@ API_LEGACY_MODE=production, sem adaptar expectativas ou timeouts ao perfil
 incorreto. Essa rodada dev não constitui prova de paridade em produção local.
 
 Higiene passou após retirar os exports sem uso; sua baseline perdeu somente a
-entrada obsoleta de lib/rate-limit.ts:consumeRateLimit. Nenhuma exceção nova foi
-adicionada. As provas anteriores do limitador continuam na implementação dona,
-com dois casos adicionais dos consumidores reais da fachada legada.
+entrada obsoleta de lib/rate-limit.ts (caminho antigo):consumeRateLimit. Nenhuma
+exceção nova foi adicionada. As provas anteriores do limitador continuam na
+implementação dona, com dois casos adicionais dos consumidores reais da fachada
+legada.
 
 Lint, arch, check:test-names, hygiene, ratchet:guard, markdownlint e validação
 dos índices/links da documentação passaram. Os gates não ganharam tolerância.
@@ -2394,10 +2446,11 @@ dos índices/links da documentação passaram. Os gates não ganharam tolerânci
 ### Estado da API legada
 
 149 rotas/193 métodos declarados ativos. Serviço parcial com 19 rotas/19 GETs;
-cliente web sem handlers de backend. app/ na raiz continua necessário; src/app/
-dos hosts Next e app/ do frontend FSD são responsabilidades diferentes.
-Clientes/proxies/jobs/cookies e autoridade de escrita continuam legados. Sem
-commit, push, deploy, produção ou mudança de base URL.
+cliente web sem handlers de backend. a antiga raiz app/ ainda era necessária
+naquele corte; `apps/services/api/src/app` e `apps/clients/web/src/app` dos
+hosts Next e `packages/frontend/src/app` do frontend FSD são responsabilidades
+diferentes. Clientes/proxies/jobs/cookies e autoridade de escrita continuam
+legados. Sem commit, push, deploy, produção ou mudança de base URL.
 
 ### Dívida/risco restante
 
@@ -2408,7 +2461,7 @@ comportamento. Paridade local não certifica browser, Expo, Docker, staging,
 produção nem cutover. Escritas, documentos, comunicações, jobs e identidade de
 escrita continuam pendentes. A modernização inteira não está concluída.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Caracterizar GET /api/admin/permissions e extrair sua consulta para identidade
 compartilhada, mantendo ADMIN do vínculo como condição explícita antes de ler
@@ -2430,8 +2483,9 @@ a withTenantTransaction, sem SQL ou regra nova no adapter.
 - packages/backend/src/modules/identity/tenant-permissions-read.ts e index.ts.
 - apps/services/api/src/host/permission-rows.ts e
   src/app/api/admin/permissions/route.ts.
-- app/api/admin/permissions/route.ts: somente import e delegação do SELECT do
-  GET. PUT, schema, lock e atualização permanecem intactos.
+- app/api/admin/permissions/route.ts (caminho antigo): somente import e
+  delegação do SELECT do GET. PUT, schema, lock e atualização permanecem
+  intactos.
 - tests/unit/admin-permissions-read-api.test.ts; organizations.http.test.ts.
 - Esta página, ADR, modernization, overview, boot, admin-system, permissões e
   CHANGELOG. Handoff canônico preservado.
@@ -2486,8 +2540,8 @@ páginas mobile. Logs de validação fora do repositório, prefixo codex-cut18.
 
 149 rotas/193 métodos declarados continuam ativos; serviço parcial com vinte
 rotas/vinte GETs. Clientes e jobs mantêm a configuração e a autoridade legadas.
-app/ na raiz continua necessário durante a migração. Sem commit, push, deploy,
-produção ou troca de base URL.
+a antiga raiz app/ ainda era necessária naquele corte durante a migração. Sem
+commit, push, deploy, produção ou troca de base URL.
 
 ### Dívida/risco restante
 
@@ -2496,7 +2550,7 @@ de escrita da matriz continua no legado, com seu lock e transação; as demais
 escritas, callbacks, pagamentos, arquivos, comunicações e jobs também dependem
 de cortes próprios. A modernização inteira permanece incompleta.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Caracterizar e instalar GET /api/user/profile usando o CustomerProfileService
 existente. Preservar o perfil comercial por usuário e locadora, o 404 sem perfil
@@ -2576,9 +2630,9 @@ hash.
 
 149 rotas/193 métodos declarados preservados; serviço parcial com 21 GETs.
 GET/PUT de perfil da raiz e o serviço de clientes original permanecem intactos.
-Clientes, base URL, login/callbacks e scheduler continuam legados. app/ na raiz
-continua necessário durante a transferência. Sem commit, push, deploy ou
-produção.
+Clientes, base URL, login/callbacks e scheduler continuam legados. app/ (caminho
+antigo) na raiz continua necessário durante a transferência. Sem commit, push,
+deploy ou produção.
 
 ### Dívida/risco restante
 
@@ -2588,7 +2642,7 @@ local não certifica browser, Expo, Docker, staging, produção ou cutover.
 Escritas, pagamentos, arquivos, comunicações, callbacks e jobs continuam
 pendentes; a modernização inteira não está concluída.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Caracterizar GET /api/client/notifications: listagem paginada, filtros,
 contagens e estatísticas possuem SELECTs ainda no adapter legado. Extrair a
@@ -2615,8 +2669,9 @@ banco, sem SQL/regra de negócio ou segundo pool no host.
   entrypoint ./notifications.
 - apps/services/api/src/host/tenant-transaction.ts e
   src/app/api/client/notifications/route.ts.
-- app/api/client/notifications/route.ts: delegação ao parser/consulta
-  compartilhados, mantendo o adapter e sua autorização/transação.
+- app/api/client/notifications/route.ts (caminho antigo): delegação ao
+  parser/consulta compartilhados, mantendo o adapter e sua
+  autorização/transação.
 - apps/services/api/package.json e pnpm-lock.yaml: consumo workspace de
   contracts. Resolução do entrypoint conferida a partir do diretório do host,
   sem nova dependência externa.
@@ -2687,7 +2742,8 @@ repositório, prefixo codex-cut20. Handoff canônico mantém seu hash.
 Adapter GET legado permanece ativo usando a implementação compartilhada. Stats,
 PATCH/DELETE, mark-all-read, sync, fan-out, login/callbacks, clientes e
 scheduler continuam legados. Sem mudança de origem, schema, migration, produção,
-commit, push ou deploy. app/ na raiz ainda participa do runtime configurado.
+commit, push ou deploy. app/ (caminho antigo) na raiz ainda participa do runtime
+configurado.
 
 ### Dívida/risco restante
 
@@ -2697,7 +2753,7 @@ ainda só compartilham essa leitura; não se afirma que jobs, canais ou escritas
 foram migrados. Paridade local não certifica browser, Expo, Docker, staging,
 produção ou cutover. A modernização completa permanece em andamento.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 GET /api/client/notifications/stats: seus quatro SELECTs por destinatário e
 locadora e agregados de tipo/prioridade ainda estão no adapter legado. Movê-los
@@ -2724,8 +2780,9 @@ host. Esta é uma etapa intermediária da extração, não sua conclusão.
   index.ts: agregados por tenant/destinatário e export nomeado.
 - apps/services/api/src/app/api/client/notifications/stats/route.ts: adapter GET
   fino com principal, transação e transporte existentes.
-- app/api/client/notifications/stats/route.ts: adapter ativo delegando ao módulo
-  compartilhado; assinatura, ordem de autorização e tratamento de erro mantidos.
+- app/api/client/notifications/stats/route.ts (caminho antigo): adapter ativo
+  delegando ao módulo compartilhado; assinatura, ordem de autorização e
+  tratamento de erro mantidos.
 - tests/unit/client-notification-stats-api.test.ts: caracterização anterior e
   posterior dos dois adapters, incluindo consultas e precedência.
 - tests/api-host/notifications.http.test.ts: onze casos novos e asserções de
@@ -2790,8 +2847,8 @@ Handoff canônico conserva o hash original.
 Todas as 149 rotas/193 métodos continuam presentes e configurados. GET stats
 permanece ativo, delegando à implementação compartilhada. PATCH/DELETE,
 mark-all-read, sync, fan-out, login/callbacks, clientes e scheduler continuam
-legados. Nenhum fallback no serviço, troca de origem, remoção do app/ da raiz,
-schema, migration, produção, commit, push ou deploy.
+legados. Nenhum fallback no serviço, troca de origem, remoção do app/ (caminho
+antigo) da raiz, schema, migration, produção, commit, push ou deploy.
 
 ### Dívida/risco restante
 
@@ -2801,7 +2858,7 @@ certifica browser, Expo, Docker, staging ou produção. A ausência original de
 cache header e as queries ignoradas são compatibilidade observada; alterações
 funcionais desses contratos exigem um corte específico.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Marcação/exclusão das notificações do próprio usuário: PATCH/DELETE de [id] e
 mark-all-read, com caracterização anterior de ownership, CSRF, validação,
@@ -2827,8 +2884,9 @@ migração completa.
   index.ts: funções de marcação individual, exclusão e marcação de não lidas.
 - apps/services/api/src/app/api/client/notifications/[id]/route.ts e
   mark-all-read/route.ts: adapters finos de PATCH/DELETE e POST.
-- app/api/client/notifications/[id]/route.ts e mark-all-read/route.ts: delegação
-  ao módulo compartilhado, mantendo os handlers ativos e a política original.
+- app/api/client/notifications/[id]/route.ts (caminho antigo) e
+  mark-all-read/route.ts: delegação ao módulo compartilhado, mantendo os
+  handlers ativos e a política original.
 - tests/unit/client-notification-mutations-api.test.ts: caracterização antes e
   depois; testes usam o runner RLS real com transaction client controlado.
 - tests/api-host/notifications.http.test.ts: 119 casos novos de escritas/efeitos
@@ -2911,8 +2969,8 @@ fora do repositório, prefixo codex-cut22.
 149 rotas/193 métodos continuam ativos/configurados. Os três handlers de escrita
 legados usam o mesmo módulo compartilhado; os clientes continuam apontando à
 origem legada. Fan-out, sync, login/callbacks, demais writes, pagamentos e
-scheduler permanecem legados. Sem fallback no serviço, remoção do app/ externo,
-cutover, produção, schema, migration, commit, push ou deploy.
+scheduler permanecem legados. Sem fallback no serviço, remoção do app/ (caminho
+antigo) externo, cutover, produção, schema, migration, commit, push ou deploy.
 
 ### Dívida/risco restante
 
@@ -2923,7 +2981,7 @@ canais externos. Evidência HTTP local não comprova browser, Expo, Docker,
 staging, produção ou mudança de origem. Baselines existentes continuam dívida
 medida, não certificado de conformidade final.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 POST/PATCH/DELETE de endereços do cliente, concluindo o fluxo já iniciado pelo
 GET. O serviço de customers e os contratos de addresses já existem; compor os
@@ -3043,7 +3101,7 @@ contrato exige um corte funcional próprio. Runtime de escrita usa o mesmo banco
 somente no ensaio local; nenhuma autoridade de produção foi transferida.
 Baselines existentes continuam dívida medida, não conformidade final.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 GET/POST /api/cart/sync e POST /api/cart/merge: customers/cart e fachada legada
 já existem. Caracterizar antes parsing, papel CLIENT, substituição/mescla,
@@ -3078,8 +3136,9 @@ a rota de perfil, preservando a análise de catch pelo inventário de auth.
 - Cart-pricing-sync, ADR, modernização, overview, boot/context-map, índices,
   known-issues 233 e CHANGELOG atualizados. Handoff canônico preservado.
 
-app/api/cart, lib/cart-service e backend/customers/cart ficaram intactos. Não
-houve pacote, dependência, schema, migration ou regra nova de domínio.
+app/api/cart, (caminho antigo) lib/cart-service (caminho antigo) e
+backend/customers/cart ficaram intactos. Não houve pacote, dependência, schema,
+migration ou regra nova de domínio.
 
 ### Contratos preservados
 
@@ -3159,7 +3218,7 @@ pricing exigem cortes próprios, sem mudança silenciosa neste lote. Paridade
 local não certifica navegador, Expo, Docker, staging ou produção; baselines
 restantes não representam conformidade final.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 PUT /api/user/profile: updateCustomerProfile já existe em customers e a leitura
 está no serviço. Caracterizar parsing estrito, CSRF, normalização, ownership,
@@ -3188,8 +3247,9 @@ validação. GET/PUT legados continuam atendendo.
   foram alterados neste corte.
 - apps/services/api/src/host/customers.ts e
   apps/services/api/src/app/api/user/profile/route.ts: composição e adapter PUT.
-- app/api/user/profile/route.ts: import do schema compartilhado em lugar da
-  declaração local; lógica, composição, erros e endpoint preservados.
+- app/api/user/profile/route.ts (caminho antigo): import do schema compartilhado
+  em lugar da declaração local; lógica, composição, erros e endpoint
+  preservados.
 - Novos tests/unit/customer-profile-update-api.test.ts e
   tests/api-host/profile-update.http.test.ts; profiles.http.test.ts atualiza a
   prova de OPTIONS/405 para a presença do PUT. global-setup.ts acrescenta UPDATE
@@ -3262,7 +3322,7 @@ etapas separadas. Gate arch verde continua contendo 1.050 violações antigas; a
 higiene também conserva dívida registrada. Paridade local não certifica a
 conclusão geral.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 POST /api/client/enroll, já apoiado em customers/enroll: caracterizar antes os
 guards de host/origem, consentimento estrito, identidade global, vínculo CLIENT,
@@ -3290,8 +3350,9 @@ consumido pelos dois hosts. Nenhuma regra de negócio foi copiada para o host.
 - apps/services/api/src/app/api/client/enroll/route.ts: adapter POST que compõe
   customers/enroll, sessão e transação existentes. host/runtime.ts expõe somente
   a delegação para o resolvedor público compartilhado.
-- app/api/client/enroll/route.ts: substituição da declaração local pelo import
-  do schema comum; comportamento e composição legados preservados.
+- app/api/client/enroll/route.ts (caminho antigo): substituição da declaração
+  local pelo import do schema comum; comportamento e composição legados
+  preservados.
 - tests/unit/customer-enrollment-api.test.ts e
   tests/api-host/enrollment.http.test.ts: caracterização e paridade.
   global-setup concede INSERT apenas nas tabelas necessárias ao papel temporário
@@ -3356,7 +3417,8 @@ Aviso anterior de client.query do pg continua registrado como dívida.
 Serviço parcial: 29 rotas/34 métodos, 24 GETs e dez mutações, zero páginas.
 Cobertura estrutural da API: 17,6%; faltam 159 operações nessa contagem. Isso
 não mede esforço, progresso do produto inteiro nem autorização para excluir
-app/. Clientes, origem/base URL, cookies, autenticação e scheduler não mudaram.
+app/. (caminho antigo) Clientes, origem/base URL, cookies, autenticação e
+scheduler não mudaram.
 
 ### Dívida/risco restante
 
@@ -3369,7 +3431,7 @@ schema são comuns. Arch conserva 1.050 violações antigas; higiene conserva 94
 achados em 272 entradas anteriores, sem aumento neste corte. Modernização geral
 incompleta.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 POST /api/admin/drivers, cujo createDriver já pertence a backend/operations.
 Caracterizar primeiro ADMIN da membership atual, principal/CSRF, parsing e erros
@@ -3393,8 +3455,8 @@ framework ou mudança de versão.
 
 - packages/contracts/src/drivers.ts e package.json: schema puro e ponto público
   explícito, sem wildcard ou import de servidor.
-- app/api/admin/drivers/route.ts: apenas troca do schema local por import
-  compartilhado; handlers legados preservados.
+- app/api/admin/drivers/route.ts (caminho antigo): apenas troca do schema local
+  por import compartilhado; handlers legados preservados.
 - apps/services/api/src/host/operations.ts e src/app/api/admin/drivers/route.ts:
   composição do caso de uso e adapter POST. package.json e pnpm-lock.yaml:
   declaração da dependência já existente.
@@ -3461,8 +3523,9 @@ handoff canônico permanece o mesmo.
 29 rotas/35 métodos, 24 GETs e onze mutações, zero páginas. Os 35 métodos
 coincidem com métodos legados; nenhum endpoint extra. Cobertura por contagem:
 18,1%, faltando 158 métodos. Essa proporção não mede esforço, progresso do
-produto inteiro ou prontidão para remover app/. Clientes e scheduler mantêm sua
-autoridade configurada no legado; sem cutover, redirect ou deploy.
+produto inteiro ou prontidão para remover app/. (caminho antigo) Clientes e
+scheduler mantêm sua autoridade configurada no legado; sem cutover, redirect ou
+deploy.
 
 ### Dívida/risco restante
 
@@ -3475,7 +3538,7 @@ serviço parcial. A modernização geral segue incompleta. Arch conserva as 1.05
 violações antigas e higiene os 946 achados em 272 entradas anteriores, sem
 aumento neste corte.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 POST /api/admin/categories: o createCategory já está no catálogo compartilhado e
 o GET já está no serviço. Caracterizar antes a permissão EQUIPMENTS/WRITE,
@@ -3498,8 +3561,8 @@ e a autoridade configurada. Nenhuma regra ou dependência foi duplicada.
 
 - packages/contracts/src/categories.ts e package.json: schema puro de criação e
   export explícito, sem Prisma ou runtime.
-- app/api/admin/categories/route.ts: import do schema comum, sem retirar
-  GET/POST.
+- app/api/admin/categories/route.ts (caminho antigo): import do schema comum,
+  sem retirar GET/POST.
 - apps/services/api/src/host/catalog.ts e src/app/api/admin/categories/route.ts:
   composição de createCategory e adapter POST, com o mesmo erro CatalogError do
   entrypoint público.
@@ -3576,8 +3639,8 @@ SHA256.
 configurados. Serviço parcial: 29 rotas/36 métodos, 24 GETs e doze mutações,
 zero páginas. Os 36 coincidem com operações legadas, sem endpoint extra. Por
 contagem são 18,7%, faltando 157 métodos. Esse percentual não mede esforço,
-progresso geral ou autorização para excluir app/. Sem cutover, redirect,
-desativação, mudança de cliente/scheduler ou deploy.
+progresso geral ou autorização para excluir app/. (caminho antigo) Sem cutover,
+redirect, desativação, mudança de cliente/scheduler ou deploy.
 
 ### Dívida/risco restante
 
@@ -3590,7 +3653,7 @@ Arch conserva 1.050 violações antigas; higiene conserva 946 achados em 272
 entradas anteriores, sem aumento deste corte. A modernização geral permanece
 incompleta.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 PUT/DELETE /api/admin/categories/[id], usando os casos de uso já existentes em
 backend/catalog. Caracterizar antes EQUIPMENTS/WRITE, autorização antes de
@@ -3691,9 +3754,11 @@ diretórios destas execuções: zero. Handoff canônico conserva o mesmo SHA256.
 149 rotas/193 métodos declarados e 46 páginas continuam preservados e
 configurados. Serviço parcial: 30 rotas/38 métodos, 24 GETs e catorze mutações,
 zero páginas. As 38 operações coincidem com as legadas, sem endpoint extra:
-19,7% por contagem; faltam 155 métodos. Essa proporção não mede esforço ou
-progresso geral e não autoriza excluir app/. Clientes, scheduler, identidade
-configurada e origem permanecem iguais; sem cutover, redirect ou deploy.
+19,7% por contagem; faltavam 155 métodos naquele corte de 2026-10-02. Essa
+proporção não media esforço ou progresso geral e não autorizava excluir a antiga
+raiz app/, depois retirada somente no clone F. Clientes, scheduler, identidade
+configurada e origem permaneciam iguais; sem cutover, redirect ou deploy nessa
+rodada.
 
 ### Dívida/risco restante
 
@@ -3705,7 +3770,7 @@ webhooks e jobs seguem fora do serviço. Arch conserva 1.050 violações antigas
 higiene conserva 946 achados em 272 entradas, sem aumento. A modernização geral
 permanece incompleta.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 POST /api/admin/equipment-units: createUnit já pertence ao catálogo
 compartilhado e o GET já está composto. Caracterizar primeiro EQUIPMENTS/WRITE,
@@ -3728,8 +3793,8 @@ alteração de regra, estoque, cliente, banco ou scheduler.
 - packages/contracts/src/equipment-units.ts e package.json: schema Zod de
   criação e export explícito ./equipment-units. Continua removendo campos
   extras, sem trim ou validação adicional.
-- app/api/admin/equipment-units/route.ts: importa o mesmo schema compartilhado;
-  funções GET/POST conservam o conteúdo anterior.
+- app/api/admin/equipment-units/route.ts (caminho antigo): importa o mesmo
+  schema compartilhado; funções GET/POST conservam o conteúdo anterior.
 - apps/services/api/src/host/catalog.ts e
   src/app/api/admin/equipment-units/route.ts: composição do createUnit e adapter
   POST com a política granular existente.
@@ -3814,8 +3879,8 @@ conserva seu SHA256.
 configurados. Serviço parcial: 30 rotas/39 métodos, 24 GETs e quinze mutações,
 zero páginas. Os 39 coincidem com operações legadas, sem endpoint extra: 20,2%
 por contagem, faltando 154 métodos. Esse percentual não mede esforço, progresso
-geral ou autorização para excluir app/. Sem cutover, redirect, desativação,
-mudança de cliente/scheduler, publicação ou push.
+geral ou autorização para excluir app/. (caminho antigo) Sem cutover, redirect,
+desativação, mudança de cliente/scheduler, publicação ou push.
 
 ### Dívida/risco restante
 
@@ -3828,7 +3893,7 @@ auth/callbacks, pagamentos, webhooks e jobs continuam fora do serviço. Arch
 conserva 1.050 violações antigas; higiene conserva 946 achados em 272 entradas,
 sem aumento. A modernização geral permanece incompleta.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 PATCH/DELETE /api/admin/equipment-units/[id]: updateUnit/deleteUnit já estão no
 catálogo compartilhado e o GET está composto. Caracterizar primeiro ações
@@ -3850,8 +3915,8 @@ permanecem iguais. Não há mudança de estoque, cliente, banco ou scheduler.
 - packages/contracts/src/equipment-units.ts: UpdateEquipmentUnitSchema com os
   mesmos campos, enum, validação e descarte de extras do adapter legado. Sem
   novo export de pacote, dependência ou validação de negócio.
-- app/api/admin/equipment-units/[id]/route.ts: importa somente o schema comum;
-  funções GET/PATCH/DELETE conservam o conteúdo anterior.
+- app/api/admin/equipment-units/[id]/route.ts (caminho antigo): importa somente
+  o schema comum; funções GET/PATCH/DELETE conservam o conteúdo anterior.
 - apps/services/api/src/host/catalog.ts e
   src/app/api/admin/equipment-units/[id]/route.ts: composição de updateUnit e
   deleteUnit e adapters com WRITE/DELETE distintos.
@@ -3942,8 +4007,9 @@ conserva seu SHA256.
 configurados. Serviço parcial: 30 rotas/41 métodos, 24 GETs e dezessete
 mutações, zero páginas. Os 41 coincidem com operações legadas, sem endpoint
 extra: 21,2% por contagem, faltando 152 métodos. Esse percentual não mede
-esforço, progresso geral ou autorização para excluir app/. Sem cutover,
-redirect, desativação, mudança de cliente/scheduler, publicação ou push.
+esforço, progresso geral ou autorização para excluir app/. (caminho antigo) Sem
+cutover, redirect, desativação, mudança de cliente/scheduler, publicação ou
+push.
 
 ### Dívida/risco restante
 
@@ -3956,7 +4022,7 @@ continuam fora do serviço. Arch conserva 1.050 violações antigas; higiene
 conserva 946 achados em 272 entradas, sem aumento. A modernização geral
 permanece incompleta.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 POST /api/admin/equipments: createEquipment já está no catálogo compartilhado e
 o GET já está composto. Caracterizar primeiro o limitador antes da permissão,
@@ -4063,9 +4129,10 @@ markdownlint, índices de documentação e git diff --check aprovados.
 149 rotas/193 métodos declarados e 46 páginas conservados. Serviço parcial: 30
 rotas/42 métodos, 24 GETs e dezoito mutações, zero páginas. As 42 operações
 coincidem com operações legadas, sem endpoint extra: 21,8% por contagem e 151
-métodos restantes. Esse percentual não mede esforço, progresso geral ou
-autorização para excluir app/. Sem cutover, redirect, desativação, mudança de
-cliente/scheduler, publicação ou push.
+métodos restantes naquele corte de 2026-10-02. Esse percentual não media
+esforço, progresso geral ou autorização para excluir a antiga raiz app/,
+retirada depois no clone F. Nesse corte não houve cutover, redirect,
+desativação, mudança de cliente/scheduler, publicação ou push.
 
 ### Dívida/risco restante
 
@@ -4078,7 +4145,7 @@ auth/callbacks, pagamentos, webhooks e jobs ainda são legados. Arch conserva
 Paridade local não prova deploy, tráfego, aparelho nativo ou rollback
 operacional. A modernização geral permanece incompleta.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 PUT/DELETE /api/admin/equipments/[id]: updateEquipment e deleteEquipment já
 estão no catálogo. Caracterizar antes WRITE/DELETE, validação/posse, categoria,
@@ -4111,8 +4178,9 @@ durante a implementação continua permitido; nenhuma prova é presumida.
 
 - backend/operations: vehicles.ts, deliveries.ts, types.ts e index.ts;
   contracts/operations.ts e export explícito no package.json.
-- lib/vehicles.ts e lib/logistics.ts: facades de composição, sem segunda
-  implementação. Helpers sem consumidores deixaram de ser reexportados.
+- lib/vehicles.ts (caminho antigo) e lib/logistics.ts (caminho antigo): facades
+  de composição, sem segunda implementação. Helpers sem consumidores deixaram de
+  ser reexportados.
 - Serviço: host/operations.ts, host/catalog.ts e os adapters admin/equipments
   por id, admin/vehicles, admin/logistics e admin/logistics por id. Os três
   adapters legados de operações também passam a delegar.
@@ -4183,9 +4251,10 @@ conserva seu SHA256; não houve commit ou push.
 149 rotas/193 métodos e 46 páginas conservados. Serviço: 33 rotas/49 métodos, 26
 GETs e 23 mutações, zero páginas. Todos os 49 coincidem com operações legadas;
 zero endpoint adicional. Cobertura por contagem: 25,4%; restam 144 métodos. Esse
-percentual não mede esforço nem conclusão geral e não autoriza excluir app/. Sem
+percentual não media esforço nem conclusão geral e, na onda 33 de 2026-10-02,
+não autorizava excluir a antiga raiz app/, retirada depois no clone F. Não houve
 mudança de cliente/scheduler, cutover, redirect, desativação, push, deploy ou
-operação de produção.
+operação de produção nessa onda.
 
 ### Dívida/risco restante
 
@@ -4195,7 +4264,7 @@ Pagamentos, webhooks, callbacks, uploads e jobs ainda exigem seus próprios
 cortes. Paridade local não prova tráfego, aparelho nativo ou rollback
 operacional. A modernização geral permanece incompleta.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Uma onda do portal de locações/orçamentos, começando pelas consultas e ações
 locais já implementadas em backend/rentals e backend/quotations. Conferir
@@ -4295,7 +4364,7 @@ pagamentos, documentos, callbacks, webhooks e jobs ainda têm cortes pendentes.
 Provas locais não certificam deploy, tráfego, dispositivo ou rollback
 operacional. O projeto segue intermediário, com a raiz necessária à migração.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Outra onda de consultas relacionadas: administração de locações e atividades do
 cliente, seguida da listagem de orçamentos do cliente. Extrair consultas ainda
@@ -4329,9 +4398,10 @@ customers/activities. As fachadas antigas delegam aos mesmos módulos.
   dependência declarada e lock atualizado por instalação offline sem scripts.
   Registro correspondente em ratchet-transfers.json.
 - Backend: customers/activities.ts, customers/client-documents.ts e seu index;
-  quotations/client-portal.ts. Fachadas lib/client-activities.ts e
-  lib/quote-request.ts; adapters legados de atividades, lista de orçamentos e
-  cinco rotas que passam a consumir os schemas comuns.
+  quotations/client-portal.ts. Fachadas lib/client-activities.ts (caminho
+  antigo) e lib/quote-request.ts (caminho antigo); adapters legados de
+  atividades, lista de orçamentos e cinco rotas que passam a consumir os schemas
+  comuns.
 - rental-cycle-api.test.ts, rental-cycle.http.test.ts e global-setup.ts. O papel
   temporário recebeu apenas as capacidades necessárias para executar o ciclo,
   com REVOKEs e limpeza correspondentes. Nenhum ACL de produção alterado.
@@ -4414,7 +4484,7 @@ outbox, mas não assume seu consumo. Provas locais não certificam tráfego real
 deploy ou recuperação operacional. Não há autorização técnica para retirar a
 raiz app antes de concluir a paridade e a migração operacional.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Onda das mutações administrativas de orçamentos já apoiadas em quotations,
 incluindo conversão para locação. Separar emissão externa, documentos e jobs nos
@@ -4442,8 +4512,8 @@ provedor.
   a exportação do strictRateLimit na fachada já existente.
 - contracts/quotations.ts e package.json: quatro schemas existentes movidos, com
   transformações Date, defaults, trim, mensagens e descarte de extras
-  preservados. lib/validations/index.ts conserva seu export e tipo públicos.
-  Três adapters legados passam a importar o contrato comum.
+  preservados. lib/validations/index.ts (caminho antigo) conserva seu export e
+  tipo públicos. Três adapters legados passam a importar o contrato comum.
 - DELETE legado e novo: falha inesperada mantém 500 genérico e não publica
   error.message. Sucesso e erros de negócio não mudam. Entrada 235 de
   known-issues.
@@ -4546,7 +4616,7 @@ consumidores da outbox e demais rotas seguem legados. Provas locais não
 certificam produção, entrega real de mensagens ou gateways. O serviço não assume
 scheduler nem consumo de eventos. A raiz app ainda não pode ser retirada.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Documentos de orçamento (downloads e exportação de reajustes), usando o módulo
 documents e os contratos existentes, com paridade de bytes, ownership,
@@ -4575,9 +4645,10 @@ detail/error.message nos dois hosts.
 - backend/communications/tenant-branding e index;
   backend/http/quote-pdf-response e index; service/host/documents e cinco
   adapters finos.
-- lib/quote-document, email-branding e lib/pdf conservam fachadas legadas.
-  Tipos/estilos internos de lib/pdf movidos; nenhuma rota removida. Dois
-  adapters legados de ofício usam queries compartilhadas.
+- lib/quote-document, (caminho antigo) email-branding e lib/pdf (caminho antigo)
+  conservam fachadas legadas. Tipos/estilos internos de lib/pdf (caminho antigo)
+  movidos; nenhuma rota removida. Dois adapters legados de ofício usam queries
+  compartilhadas.
 - design-tokens/documents: cores da paleta canônica e geometria A4 em pontos
   idênticas às anteriores, com dois testes. Entry ./documents puro e explícito,
   registrado no ratchet.
@@ -4652,7 +4723,7 @@ permanecem pendentes. Estes GETs não assumem scheduler/gateway. A raiz app aind
 não pode ser retirada. O truncamento do ofício continua histórico; alterá-lo
 exige um lote funcional/visual próprio.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Consultas administrativas financeiras (aging, calendar, entries, export, revenue
 e settings), extraindo suas consultas para billing e separando leitura de
@@ -4681,13 +4752,14 @@ PDFKit. Não houve instalação ou mudança de versão.
   financial-export, financial-report-types e index explícito.
 - backend/documents: financial-report-pdf, financial-report-xlsx,
   financial-report-csv e index explícito.
-- lib/financial-read e service/host/financial-read compõem as mesmas factories;
-  os seis adapters legados e os seis novos adapters fazem autorização e
-  resposta.
-- lib/financial-scope mantém somente o builder ainda consumido por dashboard.
-  Fachadas sem consumidores lib/financial, lib/tax-engine e
-  lib/financial-customers retiradas; customers-http importa o módulo real.
-  Nenhuma rota legada foi removida.
+- lib/financial-read (caminho antigo) e service/host/financial-read compõem as
+  mesmas factories; os seis adapters legados e os seis novos adapters fazem
+  autorização e resposta.
+- lib/financial-scope (caminho antigo) mantém somente o builder ainda consumido
+  por dashboard. Fachadas sem consumidores lib/financial, (caminho antigo)
+  lib/tax-engine (caminho antigo) e lib/financial-customers (caminho antigo)
+  retiradas; customers-http importa o módulo real. Nenhuma rota legada foi
+  removida.
 - design-tokens/documents e teste: cores originais do calendário, paletas dos
   relatórios, margens e fontes em pontos, com valores anteriores preservados.
 - Manifest do backend, lockfile, configuração do serviço, testes
@@ -4759,7 +4831,8 @@ Somente PostgreSQL descartável local foi usado.
 ### Dívida/risco restante
 
 PATCH de settings, baixa/vencimento/exclusão, emissão/cancelamento externo,
-consumidores e scheduler ainda legados. Não retirar app/ nem trocar a origem.
+consumidores e scheduler ainda legados. A decisão desse corte foi manter a
+antiga raiz app/ e a origem então configurada.
 
 Compatibilidade preserva uma inconsistência anterior demonstrada no fixture: o
 agregado usa SUM(grossAmount) ou SUM(amount) para a coluna inteira; quando há
@@ -4768,7 +4841,7 @@ linha. CSV conserva entradas começando com = sem neutralização. Ambos precisa
 de correção própria e provas de comportamento, não foram escondidos por gate ou
 alterados silenciosamente nesta extração (entrada 238).
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Transferir o bloco de mutações financeiras e contratos de settings/status/
 vencimento, mantendo outbox, idempotência, provas do provedor e histórico.
@@ -4793,8 +4866,9 @@ worker ainda é executado pelos jobs legados.
   settings, status e vencimento, sem mudança de validação.
 - backend/billing: financial-mutations, payment-errors, payment-processor,
   boleto-reissue e index explícito. PaymentRequestError tem uma única definição;
-  lib/payment-obligation reexporta a mesma classe.
-- lib/financial-mutations, lib/payment-processor, lib/payment-reissue e
+  lib/payment-obligation (caminho antigo) reexporta a mesma classe.
+- lib/financial-mutations, (caminho antigo) lib/payment-processor, (caminho
+  antigo) lib/payment-reissue (caminho antigo) e
   service/host/financial-mutations compõem as dependências. Quatro adapters em
   cada host, sem SQL ou regra financeira duplicada no serviço.
 - Testes financial-mutations-api, financial-mutations.http e grants mínimos de
@@ -4877,13 +4951,13 @@ legada configurada. Sem cutover, commit, push, deploy ou alteração de produç�
 ### Dívida/risco restante
 
 Emissão, cancelamento externo, callbacks, webhooks, consumidores e scheduler
-ainda dependem da composição legada. app/ não pode ser retirado. Entrada 238
-(agregado parcialmente nulo e CSV com prefixo de fórmula) permanece pendente,
-sem mudança funcional nesta extração. A UI de exclusão ainda promete apagar
-permanentemente, embora o contrato da API preserve o histórico com 409; o
-desalinhamento anterior exige um lote de produto específico.
+ainda dependem da composição legada. app/ (caminho antigo) não pode ser
+retirado. Entrada 238 (agregado parcialmente nulo e CSV com prefixo de fórmula)
+permanece pendente, sem mudança funcional nesta extração. A UI de exclusão ainda
+promete apagar permanentemente, embora o contrato da API preserve o histórico
+com 409; o desalinhamento anterior exige um lote de produto específico.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Compartilhar a composição da obrigação/pedido de pagamento e montar seus
 handlers de solicitação, preservando centavos, tentativas, idempotência e prova
@@ -4916,9 +4990,9 @@ agendado no serviço.
 - packages/contracts/src/payments.ts, manifest e ratchet-transfers: schema de
   pedido já existente, consumido pelos dois adapters. Sem dependência nova ou
   tolerância adicional.
-- lib/payment-obligation, payment-request, payment-issuance, payment-documents e
-  security/tenant-webhook: composição das dependências reais existentes.
-  Autenticação e consumidores de webhook permanecem legados.
+- lib/payment-obligation, (caminho antigo) payment-request, payment-issuance,
+  payment-documents e security/tenant-webhook: composição das dependências reais
+  existentes. Autenticação e consumidores de webhook permanecem legados.
 - apps/services/api/src/host/payments e os cinco adapters correspondentes em
   src/app/api. No legado, PIX/boleto usam o contrato comum e PDF delega a
   leitura compartilhada; geração/regeneração permanecem com seus contratos
@@ -5011,7 +5085,7 @@ pelas provas HTTP locais: elas mantêm saída externa bloqueada e usam o contrat
 fake para as falhas do provedor. Entrada 238 e demais lotes SaaS/mobile
 continuam pendentes; a contagem de métodos não certifica a modernização inteira.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Extrair o bloco de verificação e recepção durável de eventos de pagamento,
 preservando autenticação do webhook, assinatura, tenant, inbox, deduplicação,
@@ -5039,15 +5113,18 @@ Não existe segundo scheduler no serviço.
 ### Arquivos criados/modificados
 
 - packages/backend/src/modules/identity: webhook-auth, tenant-webhook e index.
-  lib/security/external-request-auth e tenant-webhook compõem/reexportam somente
-  o que tem consumidor produtivo. Autorização dos crons preservada.
+  lib/security/external-request-auth (caminho antigo) e tenant-webhook
+  compõem/reexportam somente o que tem consumidor produtivo. Autorização dos
+  crons preservada.
 - packages/backend/src/modules/outbox/webhook-inbox e index; a fachada
-  lib/security/webhook-inbox conserva a seleção lazy dos quatro consumidores.
+  lib/security/webhook-inbox (caminho antigo) conserva a seleção lazy dos quatro
+  consumidores.
 - packages/backend/src/modules/billing: pix-webhook, boleto-webhook,
   boleto-verification e index; as fachadas correspondentes em lib/security
-  delegam com suas dependências reais. Parser/leitor Asaas seguem internos ao
-  módulo; a fachada lib/payment-gateways/asaas, que só reexportava funções sem
-  consumidor produtivo, saiu. Nenhum endpoint legado saiu.
+  (caminho antigo) delegam com suas dependências reais. Parser/leitor Asaas
+  seguem internos ao módulo; a fachada lib/payment-gateways/asaas, (caminho
+  antigo) que só reexportava funções sem consumidor produtivo, saiu. Nenhum
+  endpoint legado saiu.
 - packages/contracts/src/payments: schemas existentes de verificação e dos dois
   eventos movidos, sem alterar validações, parsing de datas ou extras.
 - apps/services/api/src/host: webhook-authentication e payment-webhooks;
@@ -5145,9 +5222,10 @@ execução operacional no provedor real e migração de crons ainda não. Creden
 permanecem no resolver env estabelecido, sem antecipar o vault SaaS. Política de
 organização suspensa, entrypoints de identidade, demais integrações e contratos
 continuam exigindo cortes próprios. Entrada 238 e lotes SaaS/mobile pendentes
-não foram alterados. Não retirar app/ com base em contagem ou builds.
+não foram alterados. A decisão desse corte foi manter a antiga raiz app/:
+contagens e builds não provavam cutover.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Extrair geração, assinatura e documentos de contrato com a recepção durável
 ZapSign, reutilizando a identidade/inbox já compartilhadas. Caracterizar
@@ -5176,13 +5254,14 @@ arquivo permanecem nos jobs legados, sem scheduler concorrente.
   em packages/design-tokens/src/documents. Transferência do entrypoint contracts
   registrada na catraca, sem tolerância de violação.
 - apps/services/api/src/host/contracts e payment-webhooks; seis adapters novos
-  nos caminhos correspondentes a app/api/contracts e
+  nos caminhos correspondentes a app/api/contracts (caminho antigo) e
   admin/rentals/[id]/contract.
-- lib/contracts/service, lib/security/private-documents,
-  lib/security/webhook-consumers/zapsign e lib/supabase-admin conservam
-  composição/fachadas. Generate/sign legados usam schemas compartilhados;
-  download delega ao adapter comum. Renderer legado sem consumidor produtivo
-  retirado; nenhum handler legado removido.
+- lib/contracts/service, (caminho antigo) lib/security/private-documents,
+  (caminho antigo) lib/security/webhook-consumers/zapsign (caminho antigo) e
+  lib/supabase-admin (caminho antigo) conservam composição/fachadas.
+  Generate/sign legados usam schemas compartilhados; download delega ao adapter
+  comum. Renderer legado sem consumidor produtivo retirado; nenhum handler
+  legado removido.
 - tests/api-host/rental-contracts.http.test, private-storage e global-setup;
   documents-contracts acompanha o renderer canônico. Inventário de autorização
   reconhece somente os caminhos exatos do webhook, a resposta inerte 410 e o
@@ -5275,11 +5354,12 @@ produção.
 
 Efeitos de assinatura, reconciliação/arquivo, adapter ZapSign, uploads e demais
 integrações/jobs precisam de seus cortes. ZapSign/Supabase reais e migração
-operacional não certificados por testes locais; não retirar app/ por contagem.
-Texto jurídico, política de organização suspensa, entrada 238 e lotes
-SaaS/mobile pendentes não foram modificados nesta extração.
+operacional não certificados por testes locais; a decisão daquele corte era
+manter a antiga raiz app/: contagens não bastavam. Texto jurídico, política de
+organização suspensa, entrada 238 e lotes SaaS/mobile pendentes não foram
+modificados nesta extração.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Mover efeitos de assinatura/arquivo e adapter ZapSign para factories do backend,
 mantendo idempotência, reconciliação, credenciais e storage privado. Provar
@@ -5316,10 +5396,12 @@ timeouts, limites e dados jurídicos não foram alterados.
 - packages/backend/src/http/client-document-upload.ts e http/index.ts.
 - packages/contracts/src/client-documents.ts, package.json de contracts e
   transferência exata de entrypoint em tools/ratchet-transfers.json.
-- lib/contract-signature-effects.ts, lib/zapsign.ts,
-  lib/client-document-upload.ts e lib/security/private-documents.ts:
-  composição/fachadas, com reexports sem consumidores retirados.
-- app/api/admin/rentals/[id]/client-documents/route.ts: adapter fino ativo.
+- lib/contract-signature-effects.ts, (caminho antigo) lib/zapsign.ts, (caminho
+  antigo) lib/client-document-upload.ts (caminho antigo) e
+  lib/security/private-documents.ts (caminho antigo): composição/fachadas, com
+  reexports sem consumidores retirados.
+- app/api/admin/rentals/[id]/client-documents/route.ts (caminho antigo): adapter
+  fino ativo.
 - apps/services/api/src/host/{client-documents,document-storage,contracts}.ts e
   as duas rotas novas sob src/app/api/admin.
 - packages/backend/package.json, package.json e pnpm-lock.yaml: DOMPurify no
@@ -5412,10 +5494,10 @@ UNKNOWN ainda não tem consumidor operacional; ativá-la exige fluxo de
 recuperação explícito. Compensação de upload não garante uma transação
 distribuída se a remoção no storage também falhar. Demais integrações, login,
 jobs e endpoints restantes precisam de extração/paridade; a retirada do app/
-depende da migração operacional. Política de suspensão, entrada 238 e lotes
-SaaS/mobile permanecem pendentes, sem alterações nessa onda.
+(caminho antigo) depende da migração operacional. Política de suspensão, entrada
+238 e lotes SaaS/mobile permanecem pendentes, sem alterações nessa onda.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Upload público de imagens e endpoints administrativos correlatos, agrupando
 validação, transformação e storage no backend com adapters finos. Caracterizar
@@ -5450,10 +5532,11 @@ registra a causa e a prova.
 - packages/backend/src/http/{image-upload,index}.ts e
   runtime/{document-storage,index}.ts: upload HTTP e cliente Supabase lazy.
 - packages/contracts/src/settings.ts e package.json: schema puro e tipos usados.
-  schemas/settings.schema.ts e model/settings.schema.ts da página configuracoes
-  são fachadas.
-- app/api/admin/settings/actions.ts, app/api/upload/route.ts e
-  lib/{image-upload,image-upload-handler}.ts: fachadas/composição anteriores.
+  schemas/settings.schema.ts (caminho antigo) e model/settings.schema.ts da
+  página configuracoes são fachadas.
+- app/api/admin/settings/actions.ts, (caminho antigo) app/api/upload/route.ts
+  (caminho antigo) e lib/{image-upload,image-upload-handler}.ts (caminho
+  antigo): fachadas/composição anteriores.
 - apps/services/api/src/host/branding.ts e rotas upload/admin/settings: adapters
   finos sobre as mesmas factories.
 - apps/clients/mobile/tsconfig.json: inclusão de augmentação sem uso retirada,
@@ -5553,7 +5636,7 @@ check:tokens corresponde às expectativas existentes; ainda não prova resoluç�
 de estilo web, render web ou export mobile. Esses três níveis estão explicitados
 na saída, sem ampliar expectativas nesta onda.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Comunicações administrativas e contadores correlatos: inventariar badges,
 notifications sync e integrações, extrair regras para communications e compor
@@ -5578,15 +5661,16 @@ também passam a factories compartilhadas; as fachadas legadas continuam ligadas
   packages/backend/src/modules/communications.
 - Serviço: src/host/communications.ts e os dois adapters HTTP em
   apps/services/api/src/app/api/admin.
-- Legado: os dois route.ts originais, lib/notification-service.ts e fachadas
-  lib/zoho-mail/client.ts, constants.ts e get-access-token.ts.
+- Legado: os dois route.ts originais, lib/notification-service.ts (caminho
+  antigo) e fachadas lib/zoho-mail/client.ts, (caminho antigo) constants.ts e
+  get-access-token.ts.
 - Provas: tests/unit/admin-communications.test.ts,
   tests/unit/zoho-shared-client.test.ts,
   tests/api-host/admin-communications.http.test.ts e global-setup.ts.
-- Dois reexports de tipos sem consumidor saíram de lib/zoho-mail/index.ts; o DTO
-  OAuth que só servia à implementação antiga saiu de types.ts. Duas tolerâncias
-  obsoletas removidas de tools/hygiene-baseline.json, sem adicionar exceção. Os
-  DTOs HTTP e demais consumidores legados continuam.
+- Dois reexports de tipos sem consumidor saíram de lib/zoho-mail/index.ts
+  (caminho antigo); o DTO OAuth que só servia à implementação antiga saiu de
+  types.ts. Duas tolerâncias obsoletas removidas de tools/hygiene-baseline.json,
+  sem adicionar exceção. Os DTOs HTTP e demais consumidores legados continuam.
 
 ### Contratos preservados
 
@@ -5668,7 +5752,7 @@ consumidor, entrada 238, política de suspensão e lotes SaaS/mobile. As três
 camadas de prova de tokens ainda não certificadas na onda 44 permanecem
 pendentes; nenhuma mudança de CSS nesta onda.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Rotas administrativas Zoho: inventariar contas/pastas/leitura de mensagens e
 OAuth por locadora, reaproveitar o transporte e leitor compartilhados, provar
@@ -5691,10 +5775,13 @@ factories depois do guard. Nenhuma regra ou consulta de token foi duplicada.
 - Backend/http: zoho-mail-read.ts, zoho-message-read.ts, zoho-mail-content.ts e
   index.ts. Backend/communications: zoho-address.ts.
 - Serviço: host/communications.ts e seis route.ts sob api/admin/zoho-mail.
-- Legado: accounts, folders, messages, messages/[messageId], attachments/[id] e
-  inline; lib/zoho-mail/index.ts. normalize-address.ts foi retirado após perder
-  todos os consumidores de produção; sua implementação permanece única no
-  backend. O entrypoint que só testes usavam também saiu.
+- Inventário legado da onda 46 (2026-10-02): accounts, folders, messages,
+  messages/[messageId], attachments/[id] e inline; a antiga fachada
+  lib/zoho-mail/index.ts, depois retirada em F, compunha esses leitores.
+  normalize-address.ts foi retirado naquela onda após perder todos os
+  consumidores de produção; a implementação única permanece em
+  packages/backend/src/modules/communications/zoho-address.ts. O entrypoint que
+  só testes usavam também saiu naquela onda.
 - Provas: tests/unit/zoho-mail-read-api.test.ts,
   tests/api-host/zoho-mail-read.http.test.ts e zoho-mail-provider.ts.
   global-setup.ts compõe o provedor local e seu preload isolado nos filhos. O
@@ -5773,7 +5860,7 @@ jobs. Continuam pendentes entrada 238, reconciliação UNKNOWN, política de
 suspensão, SaaS/mobile e três camadas de prova de tokens não certificadas na
 onda 44.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Extrair as ações Zoho de mensagem/rascunho/anexo no mesmo módulo e preservar
 ownership, schemas, plainTextToHtml, multipart, status e erros. Depois compor
@@ -5806,7 +5893,8 @@ foram substituídos por dublês no produto. Nenhum cliente ou scheduler mudou.
   o adapter importa o mesmo SendEmailSchema como ReplyEmailSchema, sem nova
   validação. Ratchet-transfers registra somente esse entrypoint autorizado.
 - Serviço: host/communications.ts e seis route.ts correspondentes. Legado: seis
-  route.ts, fachadas lib/idempotency.ts e lib/logger.ts e index Zoho.
+  route.ts, fachadas lib/idempotency.ts (caminho antigo) e lib/logger.ts
+  (caminho antigo) e index Zoho.
 - schemas.ts, plain-text-to-html.ts e sanitize.ts da raiz saíram após perderem
   consumidores de produção. Pino 10.3.1 passou da declaração da raiz para
   backend; isomorphic-dompurify 4.4.0 já estava no backend e deixou de ser
@@ -5899,7 +5987,7 @@ certificação de caixa Zoho real, DNS, credenciais ou entrega de produção.
 Persistem cache entre hosts, entrada 238, reconciliação UNKNOWN, suspensão,
 SaaS/mobile e três camadas de prova de tokens ainda não certificadas.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Extrair autorização, callback e desconexão OAuth Zoho, preservando state
 vinculado a tenant/user, callback fixo, cookies, datacenter e transações. Manter
@@ -5924,8 +6012,8 @@ scheduler, configuração de produção ou callback público foi transferido.
   metadado interno opcional, além da mesma Response. Isso permite o redirect
   OAuth sem ler um corpo de resposta após o guard; status e JSON não mudaram.
 - Serviço: host/zoho-oauth.ts e os três route.ts correspondentes. Legado: os
-  três handlers delegam às factories e lib/zoho-mail/oauth-cookies.ts adapta
-  somente Response/cookie para NextResponse.
+  três handlers delegam às factories e lib/zoho-mail/oauth-cookies.ts (caminho
+  antigo) adapta somente Response/cookie para NextResponse.
 - Provas: zoho-oauth-api.test.ts, zoho-oauth.http.test.ts,
   tenant-principal-request.test.ts, route-auth-inventory.test.ts,
   global-setup.ts e zoho-mail-provider.ts. A fixture ganha grants/revokes
@@ -6008,10 +6096,10 @@ pendente (entrada 240); endurecimento é uma mudança funcional separada.
 
 Continuam idempotência por processo, cache entre hosts, entrada 238,
 reconciliação UNKNOWN, suspensão, SaaS/mobile e provas de tokens não
-certificadas. A paridade local não autoriza remover app/ ou transferir o
-scheduler.
+certificadas. A paridade local não autoriza remover app/ (caminho antigo) ou
+transferir o scheduler.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Compartilhar as três leituras administrativas de conversas/mensagens WhatsApp,
 preservando DTOs, cursores, papel por vínculo, ownership e RLS. Tratar envio e
@@ -6033,7 +6121,7 @@ Meta.
 
 - Backend: modules/communications/whatsapp-read.ts e seu index.ts;
   http/whatsapp-read.ts e seu index.ts.
-- Composição: lib/whatsapp-read.ts e
+- Composição: lib/whatsapp-read.ts (caminho antigo) e
   apps/services/api/src/host/whatsapp-read.ts.
 - Legado e serviço: os três route.ts de conversations, [conversationId] e
   [conversationId]/messages. O corpo do POST legado de envio foi preservado.
@@ -6122,7 +6210,7 @@ mídia. Permanecem os riscos operacionais anteriores, SaaS/mobile, reconciliaç�
 UNKNOWN, cache entre hosts e corte definitivo da origem. Handoff canônico
 preservado.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Extrair envio WhatsApp e recepção/verificação de webhooks em bloco próprio, com
 transporte simulado local, credencial por locadora, ownership, persistência e
@@ -6152,8 +6240,9 @@ a conta e o SQL não foram copiados para o serviço.
 - Contratos: contracts/src/whatsapp.ts e export explícito no package.json,
   registrado no ratchet-transfers com motivo da extração autorizada, sem
   baseline nova ou tolerância de teste.
-- Composição: lib/whatsapp-write.ts, lib/meta-whatsapp.ts e a fachada legada do
-  consumidor; service/host/whatsapp-write.ts, webhook-authentication.ts e
+- Composição: lib/whatsapp-write.ts, (caminho antigo) lib/meta-whatsapp.ts
+  (caminho antigo) e a fachada legada do consumidor;
+  service/host/whatsapp-write.ts, webhook-authentication.ts e
   payment-webhooks.ts. Registro WHATSAPP liga o consumidor à inbox
   compartilhada; nenhum worker ou cron novo foi iniciado.
 - Rotas: POST integration/send e conversation/messages nos dois hosts; dois
@@ -6244,8 +6333,9 @@ inalterado.
 
 149 rotas/193 métodos/90 GETs e 46 páginas continuam ativos. Serviço parcial:
 111 rotas/142 métodos (66 GETs/76 mutações), zero páginas ou métodos extras; 51
-métodos restantes. A contagem mede cobertura HTTP, sem equivaler a progresso
-geral, paridade operacional ou autorização para apagar app/.
+métodos restantes na onda 50 de 2026-10-02. A contagem media cobertura HTTP, sem
+equivaler a progresso geral, paridade operacional ou autorização para apagar a
+antiga raiz app/, depois retirada somente no clone F.
 
 Clientes, proxy, webhook público, callbacks e scheduler conservam a configuração
 legada. Não houve commit, push, deploy, produção ou cutover. O checkpoint
@@ -6266,7 +6356,7 @@ correção separada protegida por testes dos demais provedores. A presença do
 consumidor no serviço não muda o scheduler único do legado. Persistem as demais
 dívidas de identidade/SaaS/mobile, cache entre processos e cutover.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Caracterizar e compartilhar leituras operacionais de manutenção e auditoria, com
 autorização granular, query/DTO, ownership e RLS. Manter os jobs no legado;
@@ -6289,12 +6379,14 @@ o mesmo principal; nenhuma regra duplicada nos hosts.
 
 - Backend: operations/maintenance.ts, maintenance-automation.ts, audit-read.ts e
   index.ts; http/maintenance.ts e index.ts. Automação foi movida integralmente
-  de lib/maintenance-automation.ts; a facade antiga sem consumidores foi
-  retirada. A API legada continua implementada pelos adapters ativos.
+  de lib/maintenance-automation.ts (caminho antigo); a facade antiga sem
+  consumidores foi retirada. A API legada continua implementada pelos adapters
+  ativos.
 - Contrato: quatro schemas e tipos de entrada em contracts/src/operations.ts,
   sem pacote, export de package.json ou dependência novos.
-- Legado: lib/maintenance-http.ts, lib/audit-log.ts e os seis route.ts. A
-  escrita logAuditAction e lib/audit-logger.ts permanecem intactas.
+- Legado: lib/maintenance-http.ts, (caminho antigo) lib/audit-log.ts (caminho
+  antigo) e os seis route.ts. A escrita logAuditAction e lib/audit-logger.ts
+  (caminho antigo) permanecem intactas.
 - Serviço: host/maintenance.ts e seis route.ts correspondentes; somente
   composição, ACL e tradução de erros.
 - Provas: tests/unit/maintenance-audit-api.test.ts,
@@ -6385,7 +6477,7 @@ transferi-los exige caracterização e composição próprias. Restam outros mé
 paridade operacional, dívida de identidade/SaaS/mobile e retirada autorizada da
 raiz. A concorrência da inbox (entrada 241) permanece fora deste bloco.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Caracterizar as integrações operacionais restantes (cálculo de frete e endpoints
 Merchant bloqueados), compartilhando transporte/validação e os stubs atuais sem
@@ -6414,8 +6506,9 @@ dependência, regra de domínio ou UI novos.
   exceções inesperadas mantêm o catch genérico anterior no host.
 - Contrato: ShippingCalculationSchema e seu tipo de saída em
   packages/contracts/src/operations.ts, sem entrypoint de pacote novo.
-- Composição: lib/shipping.ts e apps/services/api/src/host/shipping.ts, com
-  transação tenant e resolver de credenciais já existentes.
+- Composição: lib/shipping.ts (caminho antigo) e
+  apps/services/api/src/host/shipping.ts, com transação tenant e resolver de
+  credenciais já existentes.
 - Rotas: os quatro route.ts acima na raiz e seus correspondentes em
   apps/services/api/src/app/api. Guards e modos dynamic/runtime do Merchant
   permanecem visíveis e idênticos.
@@ -6527,7 +6620,7 @@ Conta/token/provedor reais, proxy/DNS público e rollout não certificados. Jobs
 continuam em um único host legado. Inbox concorrente da entrada 241, identidade,
 SaaS/mobile e aposentadoria da raiz permanecem fora desta onda e pendentes.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Caracterizar e compartilhar analytics/dashboard/kpis administrativos como um
 bloco de leituras: preservar filtros, agregações, papéis e isolamento, sem
@@ -6554,15 +6647,16 @@ proteção existente exige código inerte; ela não contém regras de negócio.
 - backend/billing: kpi-calculations.ts, financial-metrics.ts, dashboard-read.ts
   e export explícito da factory no index.ts; backend/http: dashboard-read.ts e
   index.
-- Composição: lib/dashboard-read.ts e
+- Composição: lib/dashboard-read.ts (caminho antigo) e
   apps/services/api/src/host/dashboard-read.ts.
-- Adaptadores: app/api/admin/dashboard/route.ts e kpis/route.ts; quatro rotas
-  homônimas no serviço (dashboard, kpis, analytics, security).
-  Analytics/security da raiz não foram alterados.
-- lib/kpi-calculations.ts e lib/financial-calculations.ts foram movidos, sem
-  consumidores remanescentes. A fachada lib/financial-scope.ts e seu reexport
-  público sem uso foram removidos; o builder interno existente permanece usado
-  por todos os módulos financeiros, incluindo estas consultas.
+- Adaptadores: app/api/admin/dashboard/route.ts (caminho antigo) e
+  kpis/route.ts; quatro rotas homônimas no serviço (dashboard, kpis, analytics,
+  security). Analytics/security da raiz não foram alterados.
+- lib/kpi-calculations.ts (caminho antigo) e lib/financial-calculations.ts
+  (caminho antigo) foram movidos, sem consumidores remanescentes. A fachada
+  lib/financial-scope.ts (caminho antigo) e seu reexport público sem uso foram
+  removidos; o builder interno existente permanece usado por todos os módulos
+  financeiros, incluindo estas consultas.
 - Caracterização em tests/unit/dashboard-kpis-api.test.ts, prova HTTP/SQL em
   tests/api-host/dashboard-kpis.http.test.ts. Inventário de segurança estendido
   com duas entradas de serviço sob a MESMA invariante RETIRED, sem alterar seus
@@ -6663,7 +6757,7 @@ scheduler, paridade SaaS/mobile e operação/cutover. Inbox concorrente da entra
 241 continua pendente. Analytics/security não devem voltar a expor dados
 globais.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Compor PUT de permissões e preservação dos endpoints operacionais aposentados e
 do catch-all neutro, mantendo a invariante inerte. Depois, finalizar mutações
@@ -6692,8 +6786,9 @@ literal, inclusive a repetição, sem corrigir comportamento durante a extraçã
   baseline.
 - packages/backend/src/modules/identity/tenant-permissions-write.ts e index;
   packages/backend/src/http/permissions-write.ts e index.
-- lib/permission-rows.ts e apps/services/api/src/host/permission-rows.ts;
-  adaptadores de admin/permissions na raiz e no serviço.
+- lib/permission-rows.ts (caminho antigo) e
+  apps/services/api/src/host/permission-rows.ts; adaptadores de
+  admin/permissions na raiz e no serviço.
 - Novas rotas no serviço: admin/seed-admin (GET/POST), test-login (POST),
   fix-storage (POST), supabase-setup (GET/POST) e [...rest] (cinco métodos). Os
   quatro endpoints operacionais e o catch-all legados não foram alterados.
@@ -6784,7 +6879,7 @@ continuam pendentes. A limitação do pool (242) e a recepção concorrente da i
 (241) exigem diagnóstico/correção próprios; esta extração não as resolve.
 Aposentados não devem voltar a executar provisionamento global.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Compor seleção POST/DELETE e mutações públicas usando os módulos existentes,
 seguido dos endpoints de identidade e assets. Depois migrar os jobs em bloco,
@@ -6815,17 +6910,17 @@ retiradas; os símbolos internos usados pelo produto permanecem.
 
 ### Arquivos criados/modificados
 
-- packages/contracts/src/quotations.ts e lib/validations/index.ts: schema
-  anterior e fachada compatível.
+- packages/contracts/src/quotations.ts e lib/validations/index.ts (caminho
+  antigo): schema anterior e fachada compatível.
 - packages/backend/src/modules/quotations/contact.ts e index.ts: transação única
   de contato com outbox.
 - packages/backend/src/http/organization-selection-handler.ts,
   legacy-auth-response.ts, drei-assets.ts, success-response.ts e index.ts:
   factories e envelopes compartilhados.
-- lib/organization-selection.ts, contact-request.ts, auth.ts e quote-code.ts;
-  app/api/contact/route.ts e drei-proxy/[...path]/route.ts: composição legada
-  sobre o código compartilhado. Index de identity remove somente reexportações
-  sem consumidor de produção.
+- lib/organization-selection.ts, (caminho antigo) contact-request.ts, auth.ts e
+  quote-code.ts; app/api/contact/route.ts (caminho antigo) e
+  drei-proxy/[...path]/route.ts: composição legada sobre o código compartilhado.
+  Index de identity remove somente reexportações sem consumidor de produção.
 - apps/services/api/src/host/organization-selection.ts, mutation-origin.ts,
   contact-request.ts, session.ts e payments.ts; adaptadores dos dez métodos
   acima: dependências reais, sem imports de implementação do cliente.
@@ -6930,9 +7025,9 @@ composição/paridade. Também faltam cutover operacional, validação integral 
 consumidores, SaaS, mobile e aposentadoria segura da estrutura antiga. As
 limitações de concorrência da inbox (241) e do pool (242) permanecem; montar os
 engines no novo host não as corrige. Não há autorização implícita para trocar o
-scheduler ou remover `app/api` ao atingir a contagem total.
+scheduler ou remover `app/api` (caminho antigo) ao atingir a contagem total.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Compor register, forgot-password, reset-password e verify-email sobre os
 serviços existentes, preservando tokens, budgets, anti-enumeração, transações,
@@ -6958,7 +7053,7 @@ recusam antes do corpo e dos efeitos. Não há fallback entre motores.
 - `packages/backend/src/http/credential-accounts.ts`: parsing, mensagens
   neutras, status e redirecionamentos. Factories exportadas pelos entrypoints
   existentes.
-- `lib/credential-accounts.ts`,
+- `lib/credential-accounts.ts` (caminho antigo),
   `apps/services/api/src/host/credential-accounts.ts` e composição de sessão:
   dependências reais. Quatro adapters em cada host.
 - Testes de unidade/HTTP, inventário de autorização e mocks antigos para as
@@ -7036,7 +7131,7 @@ conferido pela integração com transporte local. Limites concorrentes de
 inbox/pool das entradas 241/242 permanecem. Instalar rotas não autoriza retirar
 o legado ou criar outro scheduler.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Compartilhar a composição dos nove jobs: autenticação de cron, escopo por
 locadora, locks, outbox, tentativas e efeitos dos provedores. Instalar adapters
@@ -7056,8 +7151,9 @@ Autorização por CRON_SECRET e comparação constante vivem em backend/http, ju
 do runner HTTP de tenants e seu orçamento de execução. Operações de negócio
 ficam em billing, operations, communications e outbox. Os hosts injetam a
 conexão única, transações RLS e os serviços já existentes; o serviço não importa
-lib/ da raiz. Nenhuma nova agenda foi instalada. vercel.json permanece byte a
-byte igual, com seus quatro jobs legados configurados.
+lib/ (caminho antigo) da raiz. Nenhuma nova agenda foi instalada. O antigo
+vercel.json permanecia byte a byte igual naquele corte, com seus quatro jobs
+legados configurados.
 
 Os quatro efeitos de e-mail da outbox e os cinco renderizadores HTML foram
 movidos para communications com portas explícitas. As fachadas da raiz mantêm as
@@ -7067,8 +7163,9 @@ internas e suas provas permanecem, importadas diretamente pelos testes.
 
 ### Arquivos criados/modificados
 
-- Nove adapters em apps/services/api/src/app/api/cron e os adapters legados
-  correspondentes em app/api/cron. Quarentena de Merchant conservada.
+- Na onda 57 de 2026-10-02, nove adapters em apps/services/api/src/app/api/cron
+  e os correspondentes da antiga raiz app/api/cron, depois retirada em F.
+  Quarentena de Merchant conservada.
 - backend/http: cron-authorization, tenant-cron e os três wrappers de jobs cujas
   operações de negócio já eram compartilhadas; runtime/scheduled-job guarda os
   tipos de transação, orçamento e resultado sem dependência do Next.
@@ -7078,9 +7175,10 @@ internas e suas provas permanecem, importadas diretamente pelos testes.
   backend/outbox: scheduled-dispatch.
 - Composição de tenant-cron, outbox e notification-effects no host, com novos
   consumidores dos serviços existentes de pagamentos, contratos e orçamentos.
-- Fachadas de lib/security e lib/*-effects, lib/email-templates e
-  lib/email-branding; tipo ValidatedContactData em contracts/quotations. A
-  fachada de tipo lib/validations/contact-types perdeu seu único consumidor e
+- Fachadas de lib/security (caminho antigo) e lib/*-effects, (caminho antigo)
+  lib/email-templates (caminho antigo) e lib/email-branding (caminho antigo);
+  tipo ValidatedContactData em contracts/quotations. A fachada de tipo
+  lib/validations/contact-types (caminho antigo) perdeu seu único consumidor e
   foi removida; a implementação do contrato permanece no pacote universal.
 - Caracterização cron-jobs-api, prova HTTP cron-jobs.http, inventário de
   segurança e global-setup HTTP; imports dos testes de componentes internos
@@ -7169,7 +7267,7 @@ real. SaaS, mobile e limites de inbox/pool das entradas 241/242 permanecem
 pendentes. Dois schedulers não podem operar simultaneamente. Os jobs com canais
 ainda não ligados e o Merchant em quarentena continuam assim.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Validar a composição integral dos consumidores web/mobile e seus proxies, com
 troca reversível e explícita do destino em ambiente local/descartável.
@@ -7200,7 +7298,8 @@ exemplo da raiz conserva o legado; não foram editados ambientes existentes.
   tests/api-host/web-consumer.ts e web-consumers.http.test.ts.
 - Modificados: web/next.config.mjs e next.config.d.mts; web/src/proxy.ts e
   host/routing/route-table.ts (comentários); next-config.test.ts;
-  mobile/src/host/auth/client.ts e app/(public)/equipamentos.tsx; .env.example,
+  apps/clients/mobile/src/host/auth/client.ts e
+  apps/clients/mobile/app/(public)/equipamentos.tsx; .env.example,
   API/.env.example, .github/workflows/ci.yml e tests/api-host/global-setup.ts
   (limpeza exclusiva dos registros da fixture depois de encerrar os hosts).
 - Documentação: esta feature, tenant-hosts-web.md, ADRs de hosts/backend,
@@ -7262,9 +7361,10 @@ O ensaio de transporte não certifica navegação renderizada completa, storage 
 aparelho, OAuth social/provider real ou DNS/TLS de staging. Uploads, PDFs,
 webhooks, callbacks, cache/revalidação entre hosts e execução única dos jobs
 exigem aceite operacional integrado. Pendências SaaS/mobile e 241/242 continuam.
-Não é autorização para remover app/ nem para ativar outro scheduler.
+Não é autorização para remover app/ (caminho antigo) nem para ativar outro
+scheduler.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Preparar o aceite operacional local dos consumidores: uploads e downloads,
 callbacks/webhooks, cache e composição das credenciais de identidade, com
@@ -7351,14 +7451,14 @@ dinâmica/no-store vigente; ISR/revalidação não foi implantado. Docker/stagin
 DNS/TLS, observabilidade/capacidade e execução em dispositivos exigem provas
 próprias. Issues 240–242, pendências SaaS/mobile e aceite comercial permanecem.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Avançar o aceite dos fluxos renderizados e os problemas de recuperação e
 concorrência existentes, conforme
 [roteiro operacional](../guides/shared-api-acceptance.md). Antes da retirada da
 raiz, revisar todos os consumidores/entrypoints e obter provas de callbacks e da
 autoridade única de jobs no ambiente. Nenhuma igualdade de inventário ou ensaio
-local autoriza excluir app/ antecipadamente.
+local autoriza excluir app/ (caminho antigo) antecipadamente.
 
 ## Onda 60 — recuperação da inbox e cookie OAuth (2026-10-03, sem commit)
 
@@ -7441,13 +7541,15 @@ ambiente e prova de carga. A desconexão/revogação Zoho (parte restante da 240
 aceite interativo, dispositivos, operação externa e etapas SaaS/mobile continuam
 pendentes.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
-Avançar os fluxos interativos dos clientes e a recuperação sob carga,
-conservando o roteiro de aceite e rollback. Resolver o dimensionamento com
-evidência do ambiente antes de transferir a autoridade de jobs ou retirar app/.
-Não tratar estes testes locais como publicação ou conclusão geral da
-modernização.
+Na recomendação da onda 60 (2026-10-03), avançar os fluxos interativos dos
+clientes e a recuperação sob carga, conservando o roteiro de aceite e rollback;
+resolver o dimensionamento com evidência do ambiente antes de transferir a
+autoridade de jobs ou retirar a antiga raiz app/, depois aposentada apenas no
+clone F. Os testes locais daquela onda não eram publicação nem conclusão geral
+da modernização; capacidade e autoridade de jobs em ambiente externo continuam
+exigindo prova própria.
 
 ## Onda 61 — integração do carrinho dos consumidores (2026-10-03, sem commit)
 
@@ -7457,7 +7559,7 @@ O hook antigo, sem chamador e com payload incorreto, foi substituído por uma
 implementação universal consumida pelo RuntimeBootstrap através dos índices
 web/native da feature. Só inicia HTTP para CLIENT confirmado, com escopo local
 pronto e vínculo correspondente à locadora da rota. O cliente captura a seleção
-no app/mobile; host de locadora não envia x-tenant-id.
+no host apps/clients/mobile; host de locadora não envia x-tenant-id.
 
 Primeira mesclagem usa localCartItems e aplica a resposta completa; aparelho
 vazio usa GET. Depois da carga, alterações e remoções usam items em POST sync,
@@ -7485,8 +7587,9 @@ strings decimais, zero e datas/opções locais; os totais permanecem no domínio
 - features/carrinho/model/carrinho.ts: metadata de sincronização persistida,
   confirmação da escrita e token de escopo; index.ts/index.native.ts compõem o
   mesmo hook.
-- app/providers/RuntimeBootstrap.tsx e RuntimeBootstrap.cart.test.tsx, no
-  frontend compartilhado: composição, gate inicial e aviso/tentativa.
+- packages/frontend/src/app/providers/RuntimeBootstrap.tsx e
+  RuntimeBootstrap.cart.test.tsx, no frontend compartilhado: composição, gate
+  inicial e aviso/tentativa.
 - tests/api-host/cart-consumer.http.test.ts: consumidor real conectado aos dois
   hosts com cookies e PostgreSQL RLS. A perda de resposta é simulada depois que
   a API real confirma a gravação, sem mock do handler ou da autenticação.
@@ -7548,9 +7651,10 @@ semântica de substituição vigente, sem novo controle de versão do servidor.
 Datas/opções locais não foram acrescentadas ao contrato remoto. Aceite
 interativo completo do orçamento, dispositivos e fluxos em outras telas ainda
 faltam; capacidade/issue 242, revogação Zoho e demais etapas SaaS/mobile também.
-O inventário montado não certifica conclusão geral nem permite excluir app/.
+Na onda 61 de 2026-10-03, o inventário montado não certificava conclusão geral
+nem permitia excluir a antiga raiz app/, depois retirada no clone F.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Avançar consumidores de orçamento/perfil/endereços/locações usando o cliente
 HTTP e o escopo explícito, com prova interativa quando disponível. Conservar
@@ -7647,12 +7751,13 @@ inclusive validações que exigem um corte próprio. Aceite visual/dispositivos,
 capacidade (issue 242), revogação Zoho, etapas SaaS e retirada da raiz continuam
 no escopo geral. Presença de rota ou build verde não representa conclusão total.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Conectar perfil e área do cliente ao mesmo transporte configurado e ao escopo
 explícito; completar os consumidores de endereços/orçamentos/locações e suas
-provas de navegação. Continuar paridade mobile e SaaS; só retirar app/ após
-composição, consumidores, callbacks/jobs e aceite operacional comprovados.
+provas de navegação. Continuar paridade mobile e SaaS; só retirar app/ (caminho
+antigo) após composição, consumidores, callbacks/jobs e aceite operacional
+comprovados.
 
 ## Onda 63 — consumidores de perfil e endereços (2026-10-03, sem commit)
 
@@ -7714,7 +7819,7 @@ uma gravação confirmada.
 
 - pnpm exec vitest run --config vitest.platform.config.ts, focando shared/api,
   entities/cliente, pages/perfil, pages/enderecos, pages/orcamento e
-  app/providers: 55 arquivos, 197 casos aprovados.
+  packages/frontend/src/app/providers: 55 arquivos, 197 casos aprovados.
 - pnpm exec vitest run --config vitest.api.config.ts com
   customer-consumer.http.test.ts e quote-consumer.http.test.ts: quatro casos por
   motor, todos aprovados em legacy e Better Auth. API_HOST_MODE e
@@ -7752,10 +7857,10 @@ usar o transporte e o ciclo de escopo compartilhados. As telas nativas de
 perfil, endereços e orçamento ainda precisam de paridade e aceite. Status de
 verificação e botões de senha do perfil conservam os placeholders anteriores;
 este corte não certifica esses fluxos. Aceite interativo/operacional, issues
-238/240/241/242, etapas SaaS e retirada de app/ continuam pertencendo ao escopo
-geral.
+238/240/241/242, etapas SaaS e retirada de app/ (caminho antigo) continuam
+pertencendo ao escopo geral.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Conectar a visão geral da área do cliente e os consumidores do histórico de
 locações/orçamentos ao transporte configurado, preservando polling, refresh,
@@ -7818,9 +7923,9 @@ promete desfazer uma escrita já recebida pelo servidor.
 - pnpm exec vitest run --config vitest.platform.config.ts em shared/api,
   entities/cliente, entities/locacao, entities/orcamento, pages/area-cliente,
   pages/historico, pages/perfil, pages/enderecos, pages/orcamento e
-  app/providers: 77 arquivos, 261 casos aprovados. A primeira rodada revelou
-  duas consultas incorretas nas fixtures e um toast incompleto; corrigidas sem
-  mudar o produto.
+  packages/frontend/src/app/providers: 77 arquivos, 261 casos aprovados. A
+  primeira rodada revelou duas consultas incorretas nas fixtures e um toast
+  incompleto; corrigidas sem mudar o produto.
 - pnpm exec vitest run --config vitest.api.config.ts com
   history-consumer.http.test.ts, customer-consumer.http.test.ts e
   quote-consumer.http.test.ts: seis casos por motor aprovados em legacy e Better
@@ -7849,8 +7954,8 @@ promete desfazer uma escrita já recebida pelo servidor.
 
 Ativa: 149 rotas/193 métodos e 46 páginas da raiz. Serviço compartilhado mantém
 149/193 sem páginas; não houve cutover, mudança de origem/callback, scheduler,
-commit, push, deploy ou operação de produção. Handoff canônico e vercel.json
-conservam os hashes anteriores. Nenhuma implementação legada foi removida.
+commit, push, deploy ou operação de produção. O handoff e o antigo vercel.json
+conservavam os hashes anteriores. Nenhuma implementação legada foi removida.
 
 ### Dívida/risco restante
 
@@ -7860,10 +7965,11 @@ nativas completas, SaaS, aceite interativo/operacional e issues 238/240/241/242
 continuam no objetivo geral. Textos de confirmação existentes falam em exclusão
 permanente, embora o backend faça soft delete; esta onda preserva os textos e a
 regra anterior. A chave local de atividades permanece compartilhada no
-navegador, como antes. Não confundir bundles gerados ou inventário igual com
-paridade visual/funcional completa ou autorização para retirar app/.
+navegador, como antes. Na onda 64 de 2026-10-03, bundles gerados ou inventário
+igual não provavam paridade visual/funcional completa nem autorizavam retirar a
+antiga raiz app/, depois aposentada no clone F.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Conectar o detalhe e as ações do histórico ao transporte compartilhado,
 respeitando diferenças entre request-extension e extend, mensagens, polling,
@@ -7982,7 +8088,7 @@ repetidas.
 ### Estado da API legada
 
 Ativa: 149 rotas/193 métodos e 46 páginas na raiz. Serviço mantém 149/193 sem
-páginas. Handoff canônico e vercel.json conservam seus hashes. Não houve
+páginas. O handoff e o antigo vercel.json conservavam seus hashes. Não houve
 cutover, commit, push, deploy, operação em produção, mudança de scheduler ou
 retirada de implementação legada. Nenhuma baseline, allowlist ou proteção foi
 ampliada.
@@ -7997,12 +8103,13 @@ contratos. Renderização simulou navegação/toasts/settings, enquanto HTTP uso
 cookies, servidores e banco reais com storage externo substituído localmente.
 CORS, SDKs e links externos em navegador/aparelho real continuam no aceite.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Conectar a página de pagamentos e os consumidores restantes de documentos ao
 transporte capturado, preservando emissão/verificação/segunda via e ownership.
 Depois avançar a paridade nativa e os lotes SaaS/operacionais. Não aposentar
-app/ antes do aceite completo dos consumidores, identidade, callbacks e jobs.
+app/ (caminho antigo) antes do aceite completo dos consumidores, identidade,
+callbacks e jobs.
 
 ## Onda 66 — pagamentos e documentos administrativos (2026-10-03, sem commit)
 
@@ -8102,12 +8209,12 @@ Popup/PDF em navegador real, load ausente e revogação de URL, provedores/CORS,
 dispositivos, telas nativas, SaaS e operação continuam no objetivo geral. Issues
 238/240/242, reconciliação UNKNOWN e política de suspensão permanecem.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Migrar o restante de financeiro/orçamentos como bloco relacionado, preservando
 filtros, datas, locks, status e processamento; depois demais consumidores
-administrativos, paridade nativa e SaaS. app/ só sai após aceite completo de
-consumidores, identidade, callbacks e jobs.
+administrativos, paridade nativa e SaaS. app/ (caminho antigo) só sai após
+aceite completo de consumidores, identidade, callbacks e jobs.
 
 ## Onda 67 — financeiro e orçamentos administrativos (2026-10-03, sem commit)
 
@@ -8210,8 +8317,9 @@ alteração posterior; casos fora do filtro HTTP não foram executados.
 ### Estado da API legada
 
 Ativa: 149 rotas/193 métodos e 46 páginas; serviço mantém 149/193, sem páginas.
-Handoff canônico e vercel.json conservam hashes. Nenhum commit, push, deploy,
-cutover, scheduler ou produção alterado. app/ não foi retirado.
+O handoff e o antigo vercel.json conservavam hashes. Nenhum commit, push,
+deploy, cutover, scheduler ou produção alterado. app/ (caminho antigo) não foi
+retirado.
 
 ### Dívida/risco restante
 
@@ -8226,12 +8334,12 @@ continuam pendentes, assim como outros consumidores administrativos, SaaS e
 retirada segura da raiz. Progresso geral ~60% é estimativa de esforço, não
 percentual certificado pelo inventário de rotas.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Conectar o catálogo administrativo e depois os demais consumidores ao transporte
 compartilhado, em blocos relacionados com validação consolidada. Prosseguir com
-paridade nativa, SaaS e aceite operacional antes de retirar app/ e sua
-composição legada.
+paridade nativa, SaaS e aceite operacional antes de retirar app/ (caminho
+antigo) e sua composição legada.
 
 ## Onda 68 — consumidores do catálogo administrativo (2026-10-03, sem commit)
 
@@ -8316,8 +8424,8 @@ ou mudanças posteriores:
 
 Ativa: 149 rotas/193 métodos e 46 páginas; serviço mantém 149/193, sem páginas.
 Composição e handlers não alterados neste bloco. Sem commit, push, deploy,
-cutover, scheduler ou mudança em produção. Handoff canônico e vercel.json
-preservados. app/ não foi retirado.
+cutover, scheduler ou mudança em produção. O handoff e o antigo vercel.json
+estavam preservados. app/ (caminho antigo) não foi retirado.
 
 ### Dívida/risco restante
 
@@ -8333,12 +8441,13 @@ de rollback entre adicionar e excluir registros. Abort não desfaz efeito remoto
 Percentual geral ~60% é estimativa de esforço, não cobertura certificada de
 rotas.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Tratar a representação textual dos medidores no renderizador e conectar os
 consumidores de dashboard, manutenção e logística ao transporte, como bloco
 relacionado. Depois comunicações/configuração, paridade nativa, SaaS e aceite
-operacional; retirar app/ apenas após paridade e cutover comprovados.
+operacional; a retirada da antiga raiz app/ era condicionada à paridade e ao
+cutover naquele corte.
 
 ## Onda 69 — dashboard, manutenção, logística e medidores (2026-10-03, sem commit)
 
@@ -8408,7 +8517,8 @@ ficam em TEMP.
 
 Ativa e intacta neste bloco: 149 rotas/193 métodos e 46 páginas. Serviço
 compartilhado conserva 149/193. Sem commit, push, deploy, cutover, alteração de
-produção ou agenda. Handoff canônico e vercel.json preservados; app/ permanece.
+produção ou agenda. O handoff e o antigo vercel.json estavam preservados; A
+antiga raiz app/ permanecia presente naquele corte.
 
 ### Dívida/risco restante
 
@@ -8474,12 +8584,12 @@ publicação controlada. Backoffice, hierarquia comercial para troca e homologa�
 externa continuam necessários. Ver [onboarding-locadora](onboarding-locadora.md)
 e o refinamento S10 no [ADR](../architecture/adr-saas-subscription.md).
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Conectar comunicações e configurações administrativas ao mesmo transporte em uma
 onda relacionada, preservar contratos e validar ao final. Depois continuar
-paridade nativa/SaaS/operação. Retirar app/ somente com paridade e cutover
-provados.
+paridade nativa/SaaS/operação. Retirar app/ (caminho antigo) somente com
+paridade e cutover provados.
 
 ## Onda 70 — comunicações, configurações e permissões (2026-10-03, sem commit)
 
@@ -8558,8 +8668,10 @@ onda. Nenhum banco ou servidor HTTP iniciado; snapshots/exports ficam em TEMP.
 ### Estado da API legada
 
 Ativa: 149 rotas/193 métodos e 46 páginas. Serviço permanece 149/193. Sem
-commit, push, deploy, cutover, mudança de produção ou agenda. Handoff canônico e
-vercel.json conservam os hashes anteriores. app/ permanece ativo.
+commit, push, deploy, cutover, mudança de produção ou agenda naquele corte de
+2026-10-03. O handoff canônico e o antigo vercel.json da raiz conservaram os
+hashes anteriores nessa onda 70; esse arquivo foi retirado no clone F, sem
+ativar uma agenda externa. A antiga raiz app/ permanecia ativa naquele corte.
 
 ### Dívida/risco restante
 
@@ -8574,12 +8686,13 @@ seguem pendentes. Este bloco não cria telas nativas de correio, WhatsApp ou
 settings. Conclusão geral continua aproximadamente 60%, estimativa de esforço,
 não porcentagem certificada por contagem de rotas.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Inventariar os consumidores administrativos residuais e as rotas mobile ainda
 UnavailableArea; iniciar paridade nativa pelo menor conjunto com contratos já
-protegidos. Depois fechar SaaS e aceite operacional. Retirar app/ somente após
-paridade e cutover comprovados; conservar cadência de validação por onda.
+protegidos. Depois fechar SaaS e aceite operacional. Retirar app/ (caminho
+antigo) somente após paridade e cutover comprovados; conservar cadência de
+validação por onda.
 
 ## Onda 71 — entradas pós-login nativas (2026-10-03, sem commit)
 
@@ -8669,7 +8782,8 @@ Snapshots e exports ficaram em TEMP; nenhum banco ou servidor HTTP iniciado.
 
 Ativa: 149 rotas/193 métodos e 46 páginas da raiz. Serviço mantém 149/193. Sem
 commit, push, deploy, cutover, mudança de origem/callback, scheduler ou
-produção. Handoff canônico e vercel.json preservados; app/ continua necessário.
+produção. O handoff e o antigo vercel.json estavam preservados; A antiga raiz
+app/ ainda era necessária naquele corte.
 
 ### Dívida/risco restante
 
@@ -8689,13 +8803,13 @@ SaaS, provedores reais, carga/pool de autenticação, aparelhos, operação e
 retirada segura do legado continuam pendentes. Progresso geral permanece cerca
 de 60%, estimativa de esforço, não percentual certificado por rotas ou arquivos.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Completar destinos nativos do fluxo do cliente em uma onda relacionada:
 orçamento/detalhe de catálogo e histórico/lista/detalhe, reutilizando os modelos
 e transportes existentes. Depois destinos administrativos, lotes SaaS e aceite
-operacional. Consolidar provas ao fechar a onda; retirar app/ somente após
-paridade e cutover comprovados.
+operacional. Consolidar provas ao fechar a onda; retirar app/ (caminho antigo)
+somente após paridade e cutover comprovados.
 
 ## Onda 72 — histórico e detalhes nativos (2026-10-03, sem commit)
 
@@ -8784,7 +8898,8 @@ mudaram. Artefatos ficaram em TEMP; nenhum servidor HTTP/banco iniciado.
 
 Ativa: 149 rotas/193 métodos e 46 páginas da raiz; serviço mantém 149/193.
 Scheduler, clientes configurados, callbacks, handoff canônico e produção
-preservados. Sem commit, push, deploy ou cutover. app/ continua necessário.
+preservados. Sem commit, push, deploy ou cutover. A antiga raiz app/ ainda era
+necessária naquele corte.
 
 ### Dívida/risco restante
 
@@ -8798,12 +8913,13 @@ administrativos, imagens do carrinho, gráficos, SaaS e operação continuam
 pendentes. Conclusão geral permanece aproximadamente 60%, estimativa de esforço,
 não cobertura certificada por arquivos/rotas.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Completar orçamento e detalhe do catálogo nativos, reaproveitando modelos e
 transportes existentes. Depois demais destinos do cliente/admin, lotes SaaS e
-aceite operacional. Consolidar validação ao fechar cada onda relacionada;
-retirar app/ somente após paridade e cutover comprovados.
+aceite operacional. Consolidar validação ao fechar cada onda relacionada; a
+retirada da antiga raiz app/ era condicionada à paridade e ao cutover naquele
+corte.
 
 ## Onda 73 — detalhe de catálogo e preços nativos (2026-10-03, sem commit)
 
@@ -8880,7 +8996,8 @@ fora do repositório; nenhum servidor iniciado.
 
 Ativa: 149 rotas/193 métodos e 46 páginas da raiz; serviço conserva 149/193.
 Origem dos clientes, scheduler, callbacks, produção e handoff canônico intactos.
-Sem commit, push, deploy ou cutover. app/ continua necessário.
+Sem commit, push, deploy ou cutover. A antiga raiz app/ ainda era necessária
+naquele corte.
 
 ### Dívida/risco restante
 
@@ -8894,13 +9011,14 @@ perfil/endereços/notificações, destinos administrativos, SaaS e operação se
 pendentes. Conclusão geral continua ~60%, estimativa de esforço; esse incremento
 não prova paridade final nem permite retirar o legado.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Extrair o modelo atual da página de orçamento e montar a variante native:
 itens/quantidade/dias, atualização de preço, disponibilidade, dados/documentos,
 retirada/entrega/frete/endereço, termos e diálogos de confirmação/salvamento.
 Preservar POST /api/quotes e validações existentes. Depois demais destinos, SaaS
-e aceite operacional; app/ só sai após paridade/cutover comprovados.
+e aceite operacional; A antiga raiz app/ só poderia sair após paridade/cutover
+comprovados naquele corte.
 
 ## Onda 74 — orçamento nativo compartilhado (2026-10-03, sem commit)
 
@@ -8993,8 +9111,8 @@ Artefatos e logs estão em TEMP; nenhum servidor ou navegador novo iniciado.
 
 Ativa: 149 rotas/193 métodos e 46 páginas da raiz; serviço mantém 149/193.
 Origem configurada dos clientes, scheduler, callbacks, produção e checkpoint
-canônico preservados. Sem commit, push, deploy ou cutover. app/ ainda
-necessário.
+canônico preservados. Sem commit, push, deploy ou cutover. app/ (caminho antigo)
+ainda necessário.
 
 ### Dívida/risco restante
 
@@ -9010,12 +9128,13 @@ Perfil/endereços/notificações, destinos administrativos, gráficos, SaaS e
 operação continuam pendentes. Progresso geral permanece ~60%, estimativa de
 esforço; testes e inventário de rotas não provam conclusão geral.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Completar os destinos nativos do cliente (perfil, endereços e notificações)
 usando seus modelos/transportes existentes; consolidar provas de leitura/edição,
 escopo e ciclos. Depois destinos administrativos, lotes SaaS e aceite
-operacional. app/ só sai após paridade e cutover comprovados.
+operacional. A antiga raiz app/ só poderia sair após paridade e cutover
+comprovados naquele corte.
 
 ## Onda 75 — perfil, endereços e notificações Expo (2026-10-03, sem commit)
 
@@ -9099,7 +9218,8 @@ source maps e bundles em TEMP. Nenhum servidor/navegador iniciado nesta onda.
 
 Ativa: 149 rotas/193 métodos e 46 páginas na raiz. Serviço com 149/193. Origem
 configurada dos clientes, scheduler, callbacks e produção preservados. Sem
-commit, push, deploy ou cutover. app/ permanece necessário até aceite.
+commit, push, deploy ou cutover. A antiga raiz app/ permanecia necessária até o
+aceite daquele corte.
 
 ### Dívida/risco restante
 
@@ -9115,12 +9235,12 @@ aparelho e fidelidade visual não certificados. Destinos administrativos, SaaS e
 aceite operacional continuam pendentes. Geral ~60% é estimativa de esforço;
 contagem de rotas/testes não significa conclusão geral.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Montar os destinos administrativos nativos sobre os modelos/transportes
 existentes, agrupando catálogo/equipamentos/unidades e suas ações em uma onda.
 Depois operações/financeiro/comunicações, lotes SaaS e aceite operacional.
-Retirar app/ somente após paridade e cutover comprovados.
+Retirar app/ (caminho antigo) somente após paridade e cutover comprovados.
 
 ## Onda 76 — catálogo administrativo e unidades no Expo (2026-10-03, sem commit)
 
@@ -9202,7 +9322,8 @@ logs e snapshot ficaram em TEMP. Nenhum servidor/navegador persistente criado.
 
 API legada ativa, com 149 rotas/193 métodos e 46 páginas da raiz; serviço também
 possui 149/193. Origens configuradas, scheduler, autenticação, callbacks e
-produção preservados. Sem commit, push, deploy ou cutover. app/ permanece.
+produção preservados. Sem commit, push, deploy ou cutover. A antiga raiz app/
+permanecia presente naquele corte.
 
 ### Dívida/risco restante
 
@@ -9216,12 +9337,13 @@ Aceite em aparelhos/fidelidade visual, demais telas administrativas, SaaS,
 operação e retirada do legado continuam pendentes. Geral ~60% permanece
 estimativa de esforço, não certificação por contagem de rotas ou testes.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Implementar criação/edição de equipamento e categorias no Expo com modelos
 compartilhados, incluindo imagem/upload, preços por período, estoque/perdas e
 configuração de ícones. Depois operações/financeiro/comunicações, SaaS e aceite
-operacional. Retirar app/ somente depois de comprovar paridade e cutover.
+operacional. A retirada da antiga raiz app/ era condicionada à paridade e ao
+cutover naquele corte.
 
 ## Onda 77 — cadastro e edição de equipamento no Expo (2026-10-03, sem commit)
 
@@ -9306,7 +9428,8 @@ navegador persistente iniciado.
 
 Legado ativo: 149 rotas/193 métodos e 46 páginas da raiz. Serviço mantém
 149/193. Origens, scheduler, autenticação, pagamentos e produção preservados.
-Sem commit, push, deploy ou cutover. app/ permanece.
+Sem commit, push, deploy ou cutover. A antiga raiz app/ permanecia presente
+naquele corte.
 
 ### Dívida/risco restante
 
@@ -9318,10 +9441,10 @@ prova. O parser histórico de data ISO e a política de quantidade não foram
 redefinidos.
 
 Geral continua aproximadamente 60%, estimativa de esforço, não medição exata ou
-certificação de conclusão por rotas/testes. Excluir app/ depende de paridade,
-cutover e rollback operacionais comprovados.
+certificação de conclusão por rotas/testes. Excluir app/ (caminho antigo)
+depende de paridade, cutover e rollback operacionais comprovados.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Completar categorias administrativas e configuração de ícones no Expo, depois
 operações/financeiro/comunicações, lotes SaaS e aceite operacional. Preservar o
@@ -9396,7 +9519,7 @@ não certificam execução, teclado/gestos/SVG nem imagem em aparelho.
 
 Legado/scheduler ativos; raiz preserva 149 rotas/193 métodos e 46 páginas.
 Serviço mantém 149/193. Sem commit, push, deploy, produção ou cutover. app/
-permanece até paridade e rollback operacionais comprovados.
+(caminho antigo) permanece até paridade e rollback operacionais comprovados.
 
 ### Dívida/risco restante
 
@@ -9408,7 +9531,7 @@ certifica sanitização completa nem se muda essa política silenciosamente.
 
 Geral ~60% permanece estimativa de esforço, não medição/certificação.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Completar orçamento/locação administrativos no Expo com modelos comuns; depois
 operações/financeiro/comunicações, SaaS e aceite operacional. Preservar legado
@@ -9499,8 +9622,8 @@ Logs/snapshots/exports só em TEMP; nenhum servidor persistente iniciado.
 
 Ativa e intacta: 149 rotas/193 métodos e 46 páginas na raiz; serviço mantém
 149/193. Scheduler não mudou. Sem commit, push, deploy, produção ou cutover.
-app/ só pode sair após paridade, aceite dos consumidores/jobs e rollback
-operacionais comprovados.
+app/ (caminho antigo) só pode sair após paridade, aceite dos consumidores/jobs e
+rollback operacionais comprovados.
 
 ### Dívida/risco restante
 
@@ -9514,7 +9637,7 @@ do backend.
 ~60% geral continua estimativa de esforço, sem denominador medido ou
 certificação.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Compartilhar modelos de orçamentos administrativos com Expo, mantendo boleto,
 reajustes/valores, aprovação/rejeição e isolamento. Depois concluir demais
@@ -9595,8 +9718,8 @@ Logs/snapshots/exports apenas em TEMP; nenhum servidor persistente iniciado.
 
 149 rotas/193 métodos e 46 páginas da raiz permanecem. Serviço conserva o mesmo
 inventário de rotas/métodos. Scheduler, origens, callbacks, produção e bancos
-não mudaram. Sem commit, push, deploy ou cutover. app/ depende do aceite
-operacional dos substitutos e rollback antes da retirada.
+não mudaram. Sem commit, push, deploy ou cutover. app/ (caminho antigo) depende
+do aceite operacional dos substitutos e rollback antes da retirada.
 
 ### Dívida/risco restante
 
@@ -9612,7 +9735,7 @@ Demais admins, SaaS, integrações/provedores e operação continuam no objetivo
 geral. ~60% continua estimativa de esforço, sem denominador medido ou
 certificação.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Consumidor administrativo financeiro no Expo sobre os modelos/adapters comuns,
 com documentos, vencimento, boleto e recusas preservados; depois operações/
@@ -9701,8 +9824,9 @@ não repetidos: handlers, transações, schema e migrations não mudaram.
 
 149 rotas em cada host continuam presentes. API legada, scheduler, origens,
 callbacks, produção e bancos não mudaram. Sem commit, push, deploy ou cutover. A
-retirada de app/ continua dependendo do aceite operacional e do rollback do
-substituto, além de sua paridade. Não há autorização para remover o legado.
+retirada de app/ (caminho antigo) continua dependendo do aceite operacional e do
+rollback do substituto, além de sua paridade. Não há autorização para remover o
+legado.
 
 ### Dívida/risco restante
 
@@ -9718,7 +9842,7 @@ agregados parcialmente nulos/CSV e política final de exclusão permanecem
 registradas, sem correção silenciosa. ~60% geral é estimativa de esforço, sem
 denominador medido ou certificação.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Operações administrativas no Expo: logística/manutenção sobre contratos e
 modelos existentes; depois demais admins, SaaS e aceite operacional antes da
@@ -9803,7 +9927,7 @@ backend; nenhuma regra de negócio foi duplicada no host.
 
 Inventário atual continua com 149 rotas em cada host. API legada, scheduler,
 origens/callbacks, dados e produção permanecem ativos e inalterados neste bloco.
-Sem commit, push, deploy, cutover ou retirada de app/.
+Sem commit, push, deploy, cutover ou retirada de app/. (caminho antigo)
 
 ### Dívida/risco restante
 
@@ -9819,7 +9943,7 @@ reais exigem aparelho e aceite. Demais admins, SaaS, provedores e operação
 continuam pendentes. Geral ~60% permanece estimativa de esforço, sem denominador
 medido; esse bloco não certifica a conclusão do produto.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Configurações/permissões administrativas e comunicações no Expo, com portas de
 host para capacidades locais e modelos compartilhados. Depois SaaS e aceite
@@ -9908,7 +10032,7 @@ locais. Não são prova de uso em aparelho, upload real ou autorização concedi
 
 Ativa: contagem atual de 149 rotas em cada host. Este bloco não muda handlers,
 backend, banco, scheduler, origens, callbacks ou produção. Sem commit, push,
-deploy, cutover ou retirada da pasta app/.
+deploy, cutover ou retirada da pasta app/. (caminho antigo)
 
 ### Dívida/risco restante
 
@@ -9921,7 +10045,7 @@ Comunicações nativas, demais pendências SaaS, provedores e aceite operacional
 rollback seguem pendentes. Geral ~60% continua estimativa de esforço, sem
 denominador medido; este bloco não certifica conclusão geral.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Comunicações administrativas Expo (e-mail/WhatsApp), mantendo modelos, contratos
 e recusas existentes e isolando capacidades locais no host. Depois concluir os
@@ -10021,7 +10145,8 @@ visual.
 
 Ativa: contagem atual de 149 rotas em cada host. Nenhum handler HTTP, contrato
 server, banco, scheduler, segredo, origem operacional ou callback foi trocado
-por este bloco. Sem commit, push, deploy, cutover ou retirada de app/.
+por este bloco. Sem commit, push, deploy, cutover ou retirada de app/. (caminho
+antigo)
 
 ### Dívida/risco restante
 
@@ -10032,7 +10157,7 @@ SaaS e aceite operacional/rollback. Geral ~60% continua estimativa de esforço,
 sem denominador medido; não é conclusão geral nem autorização para retirar
 legado.
 
-### Próximo corte recomendado
+### Próximo corte recomendado naquela onda
 
 Inventariar os lotes SaaS restantes pelos consumidores reais e executar o
 próximo bloco implementável, mantendo pendências de aparelho/provedor e aceite
@@ -10176,8 +10301,8 @@ S2 ainda exige composição do pool/transação de plataforma, outbox e runner/c
 sem scheduler duplicado. Os dados do cofre não são um cofre operante;
 assinatura, onboarding, acesso/limites e backoffice continuam nos próximos
 lotes. Não houve cutover, scheduler, ambiente, commit, push, deploy ou retirada
-de app/. A API legada permanece ativa. Este é avanço local intermediário da
-modernização geral.
+de app/. (caminho antigo) A API legada permanece ativa. Este é avanço local
+intermediário da modernização geral.
 
 ## Onda 86 — runtime isolado de plataforma (2026-10-03, sem commit)
 
@@ -10347,7 +10472,8 @@ explícita de userAgent; falha fechado, enquanto ENV mantém seu contrato. Não 
 rotas/telas para armazenar ou revelar segredos, onboarding, assinatura ou contas
 provisionadas. KMS/IAM/OIDC, rotação real no provedor, aparelhos e operação não
 estão certificados. API legada/scheduler continuam ativos; sem cutover, commit,
-push, produção ou retirada de app/. Geral ~60% continua estimativa de esforço.
+push, produção ou retirada de app/. (caminho antigo) Geral ~60% continua
+estimativa de esforço.
 
 O próximo corte é completar S7 com importação assistida idempotente, conferência
 do plano e do fingerprint e testes de rollback, antes de começar as contas de
@@ -10436,13 +10562,15 @@ WhatsApp exige também VERIFY_TOKEN. Divergência de ambiente/referência ou
 provider não suportado deixa o ramo ENV_REF funcionando. MELHOR_ENVIO continua
 recusado enquanto não houver origem persistida do userAgent.
 
-API legada e agenda atual continuam ativas. Nenhuma migration/credencial real
-foi aplicada fora do banco descartável; nenhum commit, push, deploy, cutover ou
-remoção de app/. O plano aprovado localmente não certifica AWS, permissões reais
-ou provedor. S7 ainda exige a adaptação de Melhor Envio, rotação de HMAC e
-regras de inbound durante suspensão; contas de recebimento/assinaturas/telas e
-aceite em aparelhos/operação também continuam pendentes. Geral ~60% continua
-estimativa de esforço, sem denominador medido.
+Na onda 88 de 2026-10-03, a API da antiga raiz app/ e a agenda então configurada
+continuavam ativas; a retirada dessa raiz ocorreu depois apenas no clone F.
+Nenhuma migration/credencial real foi aplicada fora do banco descartável nessa
+onda; nenhum commit, push, deploy, cutover ou remoção da raiz. O plano aprovado
+localmente não certificava AWS, permissões reais ou provedor. S7 ainda exige a
+adaptação de Melhor Envio, rotação de HMAC e regras de inbound durante
+suspensão; contas de recebimento/assinaturas/telas e aceite em
+aparelhos/operação também continuam pendentes. Geral ~60% continua estimativa de
+esforço, sem denominador medido.
 
 Validação consolidada local:
 
@@ -10524,12 +10652,14 @@ Validação consolidada local, PostgreSQL 18 e valores fictícios:
   hygiene foi impedida pelo sandbox ao iniciar knip; com execução local
   autorizada passou, sem alteração na guarda. Docs, índices e diff verificados.
 
-API legada/agenda atual continuam funcionando. Não houve commit, push, deploy,
-migração ou troca de segredo em produção, redirecionamento definitivo ou remoção
-de app/. Processos/bancos/arquivos de fixture próprios foram encerrados ou
-removidos pelo teardown. KMS/OIDC/BaaS/Asaas/Melhor Envio reais e aceite
-operacional permanecem não certificados. Geral ~60% é estimativa de esforço, sem
-denominador medido; não equivale à porcentagem de rotas copiadas.
+Na onda 89 de 2026-10-03, a API da antiga raiz app/ e a agenda então configurada
+continuavam funcionando; essa raiz foi retirada depois somente no clone F. Não
+houve commit, push, deploy, migração ou troca de segredo em produção,
+redirecionamento definitivo ou remoção da raiz nessa onda.
+Processos/bancos/arquivos de fixture próprios foram encerrados ou removidos pelo
+teardown. KMS/OIDC/BaaS/Asaas/Melhor Envio reais e aceite operacional permanecem
+não certificados. Geral ~60% é estimativa de esforço, sem denominador medido;
+não equivale à porcentagem de rotas copiadas.
 
 Próximo corte: entrada durável/classificada de Asaas e consumidores comerciais
 de plataforma (S5/S6/S9), mantendo a inbox de clientes e o legado; fiscalizar
@@ -10582,11 +10712,12 @@ operação em produção.
 
 - Backend focado: cinco arquivos, 55 testes únicos passaram, cobrindo token de
   raiz/integração, HMAC legado, classificação, redução de payload e worker.
-- Banco real: 15 testes passaram com papéis app/platform separados. Corridas,
-  referências sub:/inv:/conta, identidade por integração, conflito, rollback,
-  isolamento, worker terminal, conflito durante consumo sem apagar o alerta ou
-  reter a lease e os dois adapters de raiz com persistência real. O caso novo
-  foi executado isoladamente após os 14 anteriores.
+- Banco real: 15 testes passaram com papéis PostgreSQL
+  app_runtime/platform_runtime separados. Corridas, referências sub:/inv:/conta,
+  identidade por integração, conflito, rollback, isolamento, worker terminal,
+  conflito durante consumo sem apagar o alerta ou reter a lease e os dois
+  adapters de raiz com persistência real. O caso novo foi executado isoladamente
+  após os 14 anteriores.
 - HTTP real em builds de produção, modo legacy: 87 testes passaram. Incluem
   todos os 75 casos anteriores e novas provas de fila sem baixa imediata,
   duplicidade, token estrito, ignorados, bloqueio e falha fechada de plataforma
@@ -10614,11 +10745,13 @@ evento original antes de receber um conflito posterior; o alerta permanece e
 exige conciliação. Não há atomicidade entre efeito remoto e recepção de uma
 segunda mensagem contraditória.
 
-API legada e scheduler continuam ativos, sem cutover, commit, push, deploy,
-produção, segredos reais ou remoção de app/. ~60% geral permanece estimativa de
-esforço, sem denominador medido. Próximo: consumidor comercial S6 e saúde de
-conta S9, recuperação de UNROUTED, depois unificar a URL antiga somente com
-provas; fiscalização comercial S8 continua obrigatória antes de self-service.
+Na onda 90 de 2026-10-03, a API da antiga raiz app/ e o scheduler continuavam
+ativos, sem cutover, commit, push, deploy, produção, segredos reais ou remoção;
+essa raiz foi retirada depois somente no clone F. ~60% geral era estimativa de
+esforço, sem denominador medido. Próximo corte recomendado naquela onda:
+consumidor comercial S6 e saúde de conta S9, recuperação de UNROUTED, depois
+unificar a URL antiga somente com provas; fiscalização comercial S8 continua
+obrigatória antes de self-service.
 
 Fonte oficial conferida para entrega repetida, token e confirmação após
 persistência:
@@ -10692,8 +10825,9 @@ Próximo corte: consumidor comercial S6, com confirmação no provedor e projeç
 derivada de faturas, antes de self-service e fiscalização S8.
 
 URLs, API legada e scheduler permanecem ativos; nenhum commit, push, deploy,
-produção ou retirada de app/. Processos e bancos de fixture próprios têm
-teardown. Geral ~60% continua estimativa de esforço, sem denominador medido.
+produção ou retirada de app/. (caminho antigo) Processos e bancos de fixture
+próprios têm teardown. Geral ~60% continua estimativa de esforço, sem
+denominador medido.
 
 Fontes oficiais conferidas:
 [situação cadastral](https://docs.asaas.com/reference/consultar-situacao-cadastral-da-conta),
@@ -10753,10 +10887,10 @@ reconciliação diária, cancelamento no provedor e notificações faltam, assim
 S8/onboarding e aceite externo. Preços/planos continuam decisão do dono; testes
 usam valores sintéticos. Asaas/BaaS/KMS reais e aparelhos não foram
 certificados. URLs, API legada e scheduler permanecem ativos. Nenhum commit,
-push, produção ou retirada de app/. Geral ~60% é estimativa de esforço, sem
-denominador medido. Próximo corte: reconciliação periódica e execução segura de
-subscriptions.provider-deactivate, sem DELETE de assinatura e preservando
-cobranças/histórico existentes.
+push, produção ou retirada de app/. (caminho antigo) Geral ~60% é estimativa de
+esforço, sem denominador medido. Próximo corte: reconciliação periódica e
+execução segura de subscriptions.provider-deactivate, sem DELETE de assinatura e
+preservando cobranças/histórico existentes.
 
 Fontes oficiais:
 [consulta da cobrança](https://docs.asaas.com/reference/recuperar-uma-unica-cobranca)
@@ -10805,8 +10939,8 @@ S6 continua parcial: emissão, eventos SUBSCRIPTION, notificações/régua e sa�
 diária do webhook faltam; UNKNOWN sem correspondência permanece pendente de
 conciliação. S8, onboarding, backoffice, provedores reais, aparelhos e aceite
 operacional também faltam. Sem produção, commit, push ou retirada de app/.
-Estimativa geral continua ~60% de esforço; contagens de testes não medem
-produto.
+(caminho antigo) Estimativa geral continua ~60% de esforço; contagens de testes
+não medem produto.
 
 Próximo corte: processamento de eventos SUBSCRIPTION e régua/notificações,
 seguido por criação comercial quando planos/preços estiverem explicitamente
@@ -10859,10 +10993,10 @@ separadamente; a compilação não certifica provedores reais.
 
 S6 permanece parcial: emissão, notificações/régua e saúde diária do webhook
 faltam; S8, onboarding, backoffice e aceite de provedores/aparelhos também. Sem
-nova agenda, mudança de URL, produção, commit, push ou retirada de app/. Geral
-~60% continua estimativa de esforço, sem denominador medido. Próximo corte:
-consumidor de notificações/régua, preservando a configuração de comunicação e
-sem inventar planos/preços comerciais.
+nova agenda, mudança de URL, produção, commit, push ou retirada de app/.
+(caminho antigo) Geral ~60% continua estimativa de esforço, sem denominador
+medido. Próximo corte: consumidor de notificações/régua, preservando a
+configuração de comunicação e sem inventar planos/preços comerciais.
 
 ## Onda 95 — avisos comerciais na outbox existente (2026-10-03, sem commit)
 
@@ -11052,10 +11186,10 @@ webhooks e conciliação não foram submetidos a esse gate de request. Não ativ
 on ou aposentar o legado com base nesses testes.
 
 Legado/scheduler e configurações reais preservados; sem migration, produção,
-commit, push, deploy ou retirada de app/. Progresso geral ~60% continua
-estimativa de esforço, sem denominador medido. Próximo corte: revalidação
-transacional de módulos e obrigações financeiras, sem bloquear efeitos já
-aceitos.
+commit, push, deploy ou retirada de app/. (caminho antigo) Progresso geral ~60%
+continua estimativa de esforço, sem denominador medido. Próximo corte:
+revalidação transacional de módulos e obrigações financeiras, sem bloquear
+efeitos já aceitos.
 
 ## Onda 98 — admissão transacional (2026-10-04, sem commit)
 
@@ -11640,9 +11774,9 @@ Lint, arch, tokens, nomes, higiene, ratchet 55763c1e, markdownlint, índices e
 diff check aprovados. A única exceção de higiene retirada é normalizarDocumento,
 agora consumido pelo adapter; 845 achados/243 entradas, sem novo baseline ou
 relaxamento do checker. Não há migração nova, commit, push, deploy, ativação em
-produção, troca de tráfego ou alteração da fiscalização real off. app/api, proxy
-e scheduler legados permanecem ativos. Logs/sondas só em TEMP e processos
-próprios encerrados.
+produção, troca de tráfego ou alteração da fiscalização real off. O antigo
+app/api, seu proxy e scheduler permaneciam ativos naquele corte. Logs/sondas só
+em TEMP e processos próprios encerrados.
 
 S6/S11b continuam parciais: faltam consumidor web da ativação, troca/reativação,
 onboarding/backoffice e conciliação assistida de estados em quarentena; planos,
@@ -11706,13 +11840,14 @@ tokens, nomes, higiene, ratchet 55763c1e, Markdown/índices e diff check
 passaram. Saídas somente em TEMP e servidores/navegador próprios encerrados.
 
 Não há migração, alteração de env real/enforcement, cutover, commit, push,
-deploy ou produção. app/api, proxy e scheduler continuam configurados/ativos;
-dois hosts reutilizam o backend instalado anteriormente. S6/S11b permanecem
-parciais: troca de plano/reativação, onboarding/backoffice, comunicação de
-quarentena e aceites jurídicos/comerciais, provedor e operação reais faltam. A
-pendência Tailwind 287 continua. Próximo corte: comandos de troca/reativação com
-planos persistidos e histórico protegido, conforme a ADR, antes de seus
-consumidores e provisionamento. Progresso geral continua estimativa de esforço.
+deploy ou produção. O antigo app/api, seu proxy e scheduler continuavam
+configurados/ativos naquele corte; dois hosts reutilizam o backend instalado
+anteriormente. S6/S11b permanecem parciais: troca de plano/reativação,
+onboarding/backoffice, comunicação de quarentena e aceites jurídicos/comerciais,
+provedor e operação reais faltam. A pendência Tailwind 287 continua. Próximo
+corte: comandos de troca/reativação com planos persistidos e histórico
+protegido, conforme a ADR, antes de seus consumidores e provisionamento.
+Progresso geral continua estimativa de esforço.
 
 ## Onda 110 — reativação durável pelo dono (2026-10-04, sem commit)
 
@@ -11766,12 +11901,13 @@ saíram: planejarReativacao agora tem consumidores de produção. Nenhum
 checker/tolerância aumentou.
 
 Sem nova migration, dependência, scheduler, alteração de env real/enforcement,
-produção, cutover, commit ou push. app/api continua ativo. Interface web de
-reativação, onboarding/backoffice e homologação real ainda pendentes. A
-classificação upgrade/downgrade precisa de decisão comercial: a ADR não define
-hierarquia e sortOrder é apresentação; não foi usada uma regra de preço ou ordem
-visual silenciosamente. Próximo corte independente: confirmação web de
-reativação com escolha de oferta persistida; depois troca de plano.
+produção, cutover, commit ou push. O antigo app/api continuava ativo naquele
+corte. Interface web de reativação, onboarding/backoffice e homologação real
+ainda pendentes. A classificação upgrade/downgrade precisa de decisão comercial:
+a ADR não define hierarquia e sortOrder é apresentação; não foi usada uma regra
+de preço ou ordem visual silenciosamente. Próximo corte independente:
+confirmação web de reativação com escolha de oferta persistida; depois troca de
+plano.
 
 ## Onda 111 — reativação confirmada no web (2026-10-04, sem commit)
 
@@ -11834,7 +11970,7 @@ estimativa de esforço.
 
 ## Onda 113 — HTTP autenticado e checklist de onboarding (2026-10-04, sem commit)
 
-Três adaptadores paralelos em app/api/onboarding e
+Três adaptadores paralelos em app/api/onboarding (caminho antigo) e
 apps/services/api/src/app/api/onboarding instalam POST organizations, GET
 slug-availability e GET status. A criação reutiliza o núcleo atômico da onda 112
 e a única composição de plataforma em runtime/platform-jobs. As fachadas de
@@ -11907,10 +12043,10 @@ ficaram em TEMP.
 UI, publicação de site, consumidor onboarding.welcome, cadastro de conta
 protegido, homologação externa e backoffice ainda pendentes. Legado, proxy,
 scheduler e flags reais continuam intactos. Nenhuma dependência/migration,
-commit, push, deploy, cutover ou autorização para excluir app/. ~60% geral é
-estimativa de esforço, sem denominador certificado. Próximo corte independente:
-consumidor durável de boas-vindas e fluxo web guiado sobre esses contratos;
-publicação precisa de comando próprio protegido.
+commit, push, deploy, cutover ou autorização para excluir app/. (caminho antigo)
+~60% geral é estimativa de esforço, sem denominador certificado. Próximo corte
+independente: consumidor durável de boas-vindas e fluxo web guiado sobre esses
+contratos; publicação precisa de comando próprio protegido.
 
 ## Onda 114 — consumidor durável de boas-vindas (2026-10-04, sem commit)
 
@@ -11960,8 +12096,8 @@ ratchet contra 55763c1e passaram; builds API/legado passaram. Higiene conserva
 831 achados aceitos por 242 itens: export de tópico sem consumidor público foi
 retirado, mantendo a constante usada dentro do módulo; nenhuma tolerância ou
 baseline aumentou. Nenhuma migration, dependência, configuração real, commit,
-push, deploy, cutover ou retirada de app/. Proxy, scheduler real e flags
-permanecem como estavam.
+push, deploy, cutover ou retirada de app/. (caminho antigo) Proxy, scheduler
+real e flags permanecem como estavam.
 
 S10 continua parcial: faltam comando de publicação e fluxo guiado S11a. Conta
 protegida, backoffice, decisões comerciais já solicitadas e homologação
@@ -12028,9 +12164,9 @@ dublês. Os processos de validação próprios foram encerrados.
 
 Inventário de fontes atualizado: 163 rotas/207 métodos explícitos em cada host;
 presença de rota não certifica paridade geral. O legado continua ativo, sem
-redirecionamento definitivo, cutover ou retirada de app/. Cadastro público e
-fiscalização off, scheduler real e configurações reais preservados; nenhum
-commit, push, deploy, produção ou parceiro real.
+redirecionamento definitivo, cutover ou retirada de app/. (caminho antigo)
+Cadastro público e fiscalização off, scheduler real e configurações reais
+preservados; nenhum commit, push, deploy, produção ou parceiro real.
 
 B.8/S13 continuam parciais: falta UI guiada, DELETE/despublicação preservando a
 primeira publicação e comportamento público LIVE/PAUSED/OFF. O resolvedor

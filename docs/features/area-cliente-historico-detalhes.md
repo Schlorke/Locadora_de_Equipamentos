@@ -174,8 +174,11 @@ Endereços, Suporte e Sair), contador de notificações não lidas, diálogo de 
 e o atalho do painel para quem é da equipe da locadora (papel do vínculo). A
 composição é o `AccountLayoutShell`
 (`packages/frontend/src/app/providers/AccountLayoutShell.web.tsx`, camada app),
-que monta o mesmo `AreaClienteLayout` do layout da raiz legada
-(`app/area-cliente/layout.tsx`); o layout `(account)` do host web o escolhe.
+que monta o `AreaClienteLayout` preservado da raiz antiga
+(`app/area-cliente/layout.tsx`, retirada em F). O owner atual que escolhe essa
+moldura é `apps/clients/web/src/app/(public)/[locadora]/(account)/layout.tsx`:
+em legacy responde `notFound()`, e no modo de área do cliente habilitada monta
+`AccountLayoutShell`. Isso não transforma o wrapper retirado em fonte atual.
 Antes dela, o host web só aplicava o `noindex` e o portão de modo, e as páginas
 apareciam sem o menu. Sessão e vínculo continuam com o portão da área privada
 (`PrivateAreaGate`). Provas: `AccountLayoutShell.web.test.tsx`,

@@ -1,19 +1,33 @@
 # API compartilhada — aceite operacional e retirada do legado
 
-Estado: ensaio local aprovado em 2026-10-02, sem commit ou publicação. Este
-roteiro não autoriza cutover, remoção de app/ nem alterações em produção.
-Evidências por onda: [API compartilhada](../features/shared-api-host.md).
-Arquitetura: [ADR de extração](../architecture/adr-backend-extraction.md).
+> A raiz legada app/ e lib/, middlewares/require-admin.ts,
+> schemas/settings.schema.ts, types/global.d.ts, types/google-maps-ecl.d.ts,
+> proxy.ts, next.config.mjs, vercel.json, Dockerfile e components.json da raiz
+> foram retirados no Bloco F local. Os auxiliares antigos
+> scripts/patch-prisma.js, scripts/fix-prisma-imports.js e
+> scripts/patch-next-env-for-typecheck.cjs também saíram. O retorno usa um clone
+> completo da tag de pré-exclusão, nunca uma fachada na árvore atual. Os hosts
+> apps/services/api e apps/clients/web, packages, public, Prisma e
+> types/next-auth.d.ts permanecem. Aplicação local e preparação não equivalem a
+> validação P2/F. As evidências datadas abaixo são históricas; cron, domínio,
+> webhook, DB e produção continuam sujeitos ao runbook e à autorização
+> operacional própria.
+
+Registro histórico: ensaio local aprovado em 2026-10-02, então sem commit ou
+publicação. Este roteiro não autoriza cutover, remoção de app/ nem alterações em
+produção. Evidências por onda:
+[API compartilhada](../features/shared-api-host.md). Arquitetura:
+[ADR de extração](../architecture/adr-backend-extraction.md).
 
 ## Responsabilidades atuais
 
-| Superfície            | Responsabilidade                                                            | Destino durante a transição                                              |
-| --------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Web                   | Rotas de UI, bootstrap, arquivos públicos e proxy com borda validada        | WEB_API_ORIGIN configurado; o exemplo da raiz conserva o legado          |
-| Mobile                | Bootstrap, plataforma, identidade e configuração de transporte              | EXPO_PUBLIC_API_URL; arquivos relativos podem usar EXPO_PUBLIC_ASSET_URL |
-| Serviço compartilhado | Host HTTP e composição dos casos de uso                                     | apps/services/api; agenda da Vercel preparada, ativa só no corte         |
-| Backend               | Regras, transações, identidade, RLS, storage, documentos, pagamentos e jobs | packages/backend, consumido pelos dois hosts HTTP                        |
-| Legado                | Compatibilidade HTTP, páginas ainda presentes, callbacks e scheduler atual  | Raiz app/; mantém 149 rotas, 193 métodos e 46 páginas                    |
+| Superfície            | Responsabilidade                                                            | Destino durante a transição                                                                |
+| --------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Web                   | Rotas de UI, bootstrap, arquivos públicos e proxy com borda validada        | WEB_API_ORIGIN configurado para o serviço; retorno pela tag completa                       |
+| Mobile                | Bootstrap, plataforma, identidade e configuração de transporte              | EXPO_PUBLIC_API_URL; arquivos relativos podem usar EXPO_PUBLIC_ASSET_URL                   |
+| Serviço compartilhado | Host HTTP e composição dos casos de uso                                     | apps/services/api; agenda da Vercel preparada, ativa só no corte                           |
+| Backend               | Regras, transações, identidade, RLS, storage, documentos, pagamentos e jobs | packages/backend, consumido pelo host API; contraparte antiga preservada na tag            |
+| Legado                | Compatibilidade HTTP, páginas ainda presentes, callbacks e scheduler atual  | Raiz app/ retirada da árvore corrente; somente clone imutável de pré-exclusão para retorno |
 
 As URLs de assinatura, armazenamento e provedores não devem ser reconstruídas a
 partir da origem da API. WEB_API_ORIGIN é configuração privada do web;

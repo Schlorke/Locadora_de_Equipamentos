@@ -19,10 +19,17 @@
 
 ## 🎯 Otimizações Implementadas
 
-### 1. **Otimização de Package Imports (`next.config.mjs`)**
+### 1. **Package Imports — configuração histórica da raiz**
 
-Adicionados **todos os packages Radix UI e bibliotecas pesadas** ao
-`optimizePackageImports` para tree-shaking agressivo:
+Na etapa de Janeiro 2026 foram adicionados os packages abaixo ao
+optimizePackageImports de next.config.mjs da raiz, aposentada em F. O trecho é
+histórico e não deve ser colado no host novo como se fosse sua configuração.
+
+O owner atual é `apps/clients/web/next.config.mjs` (ESM, createNextConfig), com
+transpilePackages, roots de tracing/Turbopack, CSP e roteamento por host. Ele
+não declara optimizePackageImports, optimizeServerReact, webVitalsAttribution ou
+compiler.removeConsole. Nenhum percentual de ganho da etapa anterior foi medido
+novamente por esta atualização documental.
 
 ```javascript
 experimental: {
@@ -73,10 +80,15 @@ experimental: {
 - ✅ Redução de bundle size em até 30-40%
 - ✅ Imports otimizados automaticamente pelo Next.js
 
-### 2. **Defer de Execução de Código Não-Crítico (`app/ClientLayout.tsx`)**
+### 2. **Defer no ClientLayoutShell web compartilhado**
 
-O `useEffect` que intercepta console.warn/error/log foi otimizado para usar
-`requestIdleCallback`, reduzindo o impacto no TBT:
+O owner atual é `packages/frontend/src/app/providers/ClientLayoutShell.web.tsx`,
+que conserva o efeito de interceptação de console.warn/error/log e seu cleanup,
+com requestIdleCallback ou setTimeout. app/ClientLayout.tsx era o owner
+histórico da raiz aposentada. O trecho abaixo descreve o defer do efeito; não
+inclui a interceptação de console.warn no carregamento do módulo, também
+existente no arquivo. A redução de TBT é hipótese a medir, não prova de que todo
+efeito/log só executa em idle.
 
 ```typescript
 // 🚀 OTIMIZADO: Defer execução para reduzir TBT - executa após idle
@@ -126,7 +138,12 @@ O projeto já tinha várias otimizações implementadas:
 - ✅ `ContactSection` - Lazy loaded
 - ✅ `Analytics` e `SpeedInsights` - Lazy loaded
 
-#### **Compilador Next.js**
+#### **Compilador Next.js — registro histórico**
+
+O trecho abaixo era da configuração da raiz aposentada em F. O host web atual
+não tem compiler.removeConsole; não apresentar ausência de logs como efeito
+comprovado desse build. A decisão de suprimir logs/efeitos exige seu próprio
+escopo e evidência, sem alterar produto por esta documentação.
 
 ```javascript
 compiler: {
@@ -160,7 +177,7 @@ compiler: {
 ### **1. Build de Produção**
 
 ```bash
-pnpm build
+pnpm --filter @gb-locacoes/web build
 ```
 
 Verificar no output do build os tamanhos dos chunks JavaScript.
@@ -180,22 +197,14 @@ Verificar métricas:
 
 ### **3. Bundle Analyzer (Opcional)**
 
-Para análise detalhada do bundle:
-
-```bash
-# Instalar bundle analyzer (se não estiver instalado)
-pnpm add -D @next/bundle-analyzer
-
-# Adicionar ao next.config.mjs (temporariamente)
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-})
-
-module.exports = withBundleAnalyzer(nextConfig)
-
-# Executar análise
-ANALYZE=true pnpm build
-```
+O exemplo anterior de require/module.exports em next.config.mjs da raiz era
+histórico e foi aposentado em F. Se análise for necessária, usar o owner ESM
+`apps/clients/web/next.config.mjs`, preservando createNextConfig, CSP,
+roteamento e roots de workspace. Antes de adicionar uma dependência ou wrapper,
+consultar dependencies.md e os guias da versão Next instalada; não instalar uma
+versão flutuante nem copiar configuração antiga. Comparar chunks do mesmo
+build/alvo e restaurar a configuração temporária ao terminar. Nenhum analyzer
+foi executado nesta revisão.
 
 ## ⚠️ Notas Importantes
 
@@ -203,7 +212,8 @@ ANALYZE=true pnpm build
 
 1. **Framer Motion no Hero**: Mantido como import direto pois é crítico para
    animações do Hero
-   - O `optimizePackageImports` já faz tree-shaking
+   - O uso de optimizePackageImports era da configuração histórica da raiz;
+     conferir o bundle atual antes de afirmar tree-shaking equivalente
    - Lazy load quebraria animações críticas
 
 2. **ScrollRevealInit**: Já está lazy loaded, mas é executado cedo por
@@ -219,7 +229,8 @@ ANALYZE=true pnpm build
 
 ### **Browser Support**
 
-- ✅ `requestIdleCallback`: Suportado em todos os browsers modernos
+- requestIdleCallback: o código faz feature detection; não presumir suporte em
+  todo navegador/dispositivo
 - ✅ Fallback `setTimeout`: Suportado em todos os browsers
 
 ## 📚 Referências

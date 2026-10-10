@@ -49,6 +49,8 @@ export function createZohoMailSender<TRequest extends Request>({
 
     // --- Idempotency ---
     const suppliedKey = request.headers.get('x-idempotency-key')
+    // Compatibilidade do cache: o prefixo app/api/... é namespace textual da antiga app/ retirada em F, não import de arquivo.
+    // Mantê-lo idêntico preserva as chaves existentes quando usesLegacyIdempotency() seleciona esse caminho.
     const idempotencyKey = suppliedKey
       ? `${scope.tenantId}:${userId}:app/api/admin/zoho-mail/messages/send/route.ts:${suppliedKey}`
       : null

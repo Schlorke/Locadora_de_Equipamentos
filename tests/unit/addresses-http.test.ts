@@ -17,10 +17,6 @@ const mocked = vi.hoisted(() => {
   }
   return { tx, transaction: vi.fn(), principal: vi.fn() }
 })
-vi.mock('@/lib/prisma', () => ({
-  prisma: { $transaction: mocked.transaction },
-}))
-vi.mock('@/lib/tenant', () => ({ resolveTenantPrincipal: mocked.principal }))
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
 vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
@@ -30,21 +26,10 @@ vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: mocked.principal,
 }))
-import * as legacyRoute0 from '@/app/api/addresses/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/addresses/route'
-import * as legacyRoute1 from '@/app/api/addresses/[id]/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/addresses/[id]/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      GET: legacyRoute0.GET,
-      POST: legacyRoute0.POST,
-      PATCH: legacyRoute1.PATCH,
-      DELETE: legacyRoute1.DELETE,
-    },
-  ],
   [
     'service',
     {

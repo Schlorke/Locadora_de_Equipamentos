@@ -1,12 +1,18 @@
+import { getDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { NextRequest } from 'next/server'
 const auth = vi.hoisted(() => ({ userId: '' }))
-const fixtureDatabase = vi.hoisted(() => ({ prisma: undefined as unknown }))
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => ({ user: { id: auth.userId } }),
+const fixtureDatabase = vi.hoisted(() => ({
+  prisma: undefined as unknown,
+  pool: undefined as import('pg').Pool | undefined,
 }))
-vi.mock('@/lib/prisma', async () => {
-  if (!process.env.TEST_DATABASE_URL) return { prisma: undefined }
+// O antigo @/lib/prisma foi retirado em F; as fixtures leem o cliente canônico pelo runtime do backend.
+// O dublê abaixo guarda o cliente no momento da criação, sem import cruzado entre dublês.
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()
+  if (!process.env.TEST_DATABASE_URL)
+    return { ...actual, getDatabaseRuntime: () => ({ prisma: undefined }) }
   const { requireTestDatabase } = await import('../helpers/test-database')
   const { Pool } = await import('pg')
   const { PrismaClient } = await import('@prisma/client')
@@ -15,20 +21,13 @@ vi.mock('@/lib/prisma', async () => {
     connectionString: requireTestDatabase(process.env),
     max: 5,
   })
-  return {
-    prisma: (fixtureDatabase.prisma = new PrismaClient({
-      adapter: new PrismaPg(pool),
-    })),
-    testPool: pool,
-  }
+  fixtureDatabase.pool = pool
+  const fixturePrisma = (fixtureDatabase.prisma = new PrismaClient({
+    adapter: new PrismaPg(pool),
+  }))
+  fixtureDatabase.prisma = fixturePrisma
+  return { ...actual, getDatabaseRuntime: () => ({ prisma: fixturePrisma }) }
 })
-// As fixtures (tests/helpers/fixtures.ts) leem o banco pelo runtime do backend (onda 135, E4): o mesmo cliente que a
-// fábrica de `@/lib/prisma` acima cria, guardado no momento da criação (sem import cruzado entre os dois dublês).
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
-}))
-import { prisma } from '@/lib/prisma'
 import {
   cleanupTestData,
   createCategory,
@@ -47,28 +46,13 @@ vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
     getServerSession: async () => ({ user: { id: auth.userId } }),
   }))()),
 }))
-import * as legacyRoute0 from '@/app/api/admin/quotes/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/admin/quotes/route'
-import * as legacyRoute1 from '@/app/api/admin/quotes/[id]/download/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/admin/quotes/[id]/download/route'
-import * as legacyRoute2 from '@/app/api/quotes/[id]/download/route'
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/quotes/[id]/download/route'
-import * as legacyRoute3 from '@/app/api/admin/quotes/[id]/adjustments/download/route'
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/admin/quotes/[id]/adjustments/download/route'
-import * as legacyRoute4 from '@/app/api/admin/quotes/[id]/calculate-late-fee/route'
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/admin/quotes/[id]/calculate-late-fee/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      list: legacyRoute0.GET,
-      document: legacyRoute1.GET,
-      clientDocument: legacyRoute2.GET,
-      adjustments: legacyRoute3.GET,
-      fee: legacyRoute4.POST,
-    },
-  ],
   [
     'service',
     {
@@ -271,10 +255,14 @@ describe.each(HOSTS)(
 // O cliente e o pool do banco descartável são da fábrica deste arquivo: fecham uma vez, depois dos dois hosts.
 afterAll(async () => {
   if (!process.env.TEST_DATABASE_URL) return
-  const database = (await import('@/lib/prisma')) as unknown as {
-    prisma: { $disconnect(): Promise<void> }
-    testPool: { end(): Promise<void> }
-  }
+  const database = { prisma, testPool: requireFixturePool() }
   await database.prisma.$disconnect()
   await database.testPool.end()
 })
+
+const prisma = getDatabaseRuntime().prisma
+function requireFixturePool() {
+  const pool = fixtureDatabase.pool
+  if (!pool) throw new Error('Owned fixture pool was not initialized')
+  return pool
+}

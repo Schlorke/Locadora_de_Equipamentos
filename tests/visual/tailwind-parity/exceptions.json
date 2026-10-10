@@ -1,6 +1,6 @@
 {
   "utilitarios": {
-    "shadow-control": "Próprio do projeto (utilities.web.css): reproduz a sombra da regra global de campos e button[aria-controls] da produção (app/globals.css da main).",
+    "shadow-control": "Próprio do projeto (utilities.web.css): reproduz a sombra da regra global de campos e button[aria-controls] da referência histórica eb4c0098; a antiga app/globals.css da raiz foi retirada em F e seu blob está fixado em production-sources/.",
     "shadow-control-hover": "Próprio do projeto (utilities.web.css): reproduz a sombra de hover da regra global de campos da produção.",
     "shadow-control-focus": "Próprio do projeto (utilities.web.css): reproduz a sombra com halo azul da regra global de campos em foco da produção.",
     "shadow-control-invalid-focus": "Estado de erro dos campos (aria-invalid), exceção aprovada: a produção não tinha estado de erro.",

@@ -3,11 +3,11 @@ import bcrypt from 'bcryptjs'
 
 /**
  * Credencial legada (bcrypt na coluna `users.password`): o ÚNICO caminho que
- * confere e-mail e senha, usado pelo login do NextAuth (`lib/auth.ts`) e pelo
+ * confere e-mail e senha, usado pelo NextAuth composto no host API e pelo
  * login do Better Auth na coexistência (`/api/auth/v2`, `AUTH_MODE=legacy` com
  * `AUTH_V2_ENABLED=true`). Os dois pagam o mesmo endurecimento:
  * - a tentativa é contada ANTES de qualquer busca (mesma resposta para conta
- *   existente ou não) pelo limitador persistente de `lib/rate-limit.ts`;
+ *   existente ou não) pelo limitador persistente de `identity/rate-limit.ts`;
  * - a conta é achada por igualdade exata do e-mail normalizado: `_` e `%`
  *   digitados nunca funcionam como curinga de ILIKE;
  * - conta inexistente, ambígua ou sem senha paga o mesmo bcrypt de uma senha
@@ -95,8 +95,8 @@ export type LegacySignInDecision = {
 }
 
 /**
- * Porta do limitador de login legado. A implementação vive na aplicação
- * (`legacySignInGuard` em `lib/rate-limit.ts`, janelas em
+ * Porta do limitador de login legado. A implementação vive neste módulo
+ * (`legacySignInGuard` em `identity/rate-limit.ts`, janelas em
  * `platform_rate_limits`) e é a mesma para os dois logins.
  */
 export type LegacySignInGuard = {

@@ -10,12 +10,6 @@ const mocks = vi.hoisted(() => ({
 }))
 vi.mock('next-auth', () => ({ getServerSession: mocks.legacy }))
 vi.mock('next/headers', () => ({ headers: mocks.headers }))
-vi.mock('@/lib/auth', () => ({ authOptions: mocks.defaults }))
-vi.mock('@/lib/identity', async () => ({
-  ...(await import('../../packages/backend/src/modules/identity/configuration')),
-  getIdentity: mocks.identity,
-}))
-
 // Contraparte da API compartilhada (onda 135, E27a): a mesma política sobre o leitor composto do serviço
 // (`apps/services/api/src/host/session.ts`). Só a fábrica do motor novo vira dublê; o leitor de corte
 // (`createApplicationSessionReader`) e a projeção da sessão são os reais do host.
@@ -33,7 +27,6 @@ vi.mock('@gb-locacoes/backend/runtime', () => ({
   createResendClient: () => null,
 }))
 
-import { getServerSession as legacyRootSession } from '@/lib/application-session'
 import {
   authOptions as serviceDefaults,
   getServerSession as serviceSession,
@@ -67,10 +60,7 @@ beforeEach(() => {
 })
 afterEach(() => vi.unstubAllEnvs())
 
-describe.each([
-  ['legacy root', legacyRootSession, () => mocks.defaults],
-  ['service', serviceSession, () => serviceDefaults],
-] as const)(
+describe.each([['service', serviceSession, () => serviceDefaults]] as const)(
   '%s application session compatibility',
   (_host, getServerSession, defaults) => {
     it.each(['legacy', 'better-auth'])(

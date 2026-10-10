@@ -44,7 +44,8 @@ apps/web/next.config.mjs
 apps/web/next.config.test.ts
 apps/web/next.config.redirects.test.ts  # órfão
 
-# Rotas e páginas do Next.
+# Rotas e páginas do Next com nomes da antiga raiz app/, retirada em F.
+# São cinco arquivos vazios materializados só em TEMP pelo teste de aninhamento; nomes/oráculos continuam literais.
 app/api/items/route.ts
 app/api/items/route.test.ts
 app/api/items/route.auth.test.ts

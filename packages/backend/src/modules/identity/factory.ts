@@ -132,7 +132,8 @@ const ANONYMOUS_EMAIL_ENDPOINTS = [
  * pedido. O cadastro (`/sign-up/email`) chama `sendVerificationEmail` DENTRO
  * da transação que cria o usuário, e ela segura uma conexão do pool até o fim.
  * O envio consulta os vínculos da conta (`accountLinkOrigin`) pelo cliente
- * global: com o pool de `lib/prisma.ts` (1 conexão; 2 no transaction pooler),
+ * global: no incidente da antiga `lib/prisma.ts`, retirada em F, o pool tinha
+ * 1 conexão (2 no transaction pooler) e
  * a consulta esperava a conexão que a própria transação segurava, a transação
  * expirava, a conta não nascia e o e-mail saía assim mesmo.
  */

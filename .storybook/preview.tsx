@@ -1,8 +1,8 @@
 import type { Preview } from '@storybook/nextjs-vite'
 import { Inter, Jost } from 'next/font/google'
 import React from 'react'
-// CSS global do produto pela entrada pública do frontend (onda 135, A2): o `app/globals.css` da raiz legada só o
-// reimportava e sai com ela.
+// CSS global do produto pela entrada pública do frontend (onda 135, A2): o antigo `app/globals.css` da raiz
+// só o reimportava e foi retirado no clone F; esta entrada pública continua pertencendo ao frontend.
 import '@gb-locacoes/frontend/app/styles.css'
 
 // Configurar fontes do projeto (mesma configuração do layout.tsx)

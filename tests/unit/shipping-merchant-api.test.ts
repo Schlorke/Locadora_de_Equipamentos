@@ -12,13 +12,6 @@ const state = vi.hoisted(() => ({
     equipment: { count: vi.fn() },
   },
 }))
-vi.mock('@/lib/tenant', () => ({
-  resolveTenantPrincipal: state.principal,
-  withTenantTransaction: state.transaction,
-}))
-vi.mock('@/lib/security/tenant-webhook', () => ({
-  resolveIntegrationCredential: state.credential,
-}))
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
 vi.mock(
@@ -56,26 +49,12 @@ vi.mock(
     }))()),
   })
 )
-import * as legacyRoute0 from '@/app/api/integrations/melhor-envio/calculate/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/integrations/melhor-envio/calculate/route'
-import * as legacyRoute1 from '@/app/api/admin/google-merchant/status/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/admin/google-merchant/status/route'
-import * as legacyRoute2 from '@/app/api/admin/google-merchant/sync/route'
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/admin/google-merchant/sync/route'
-import * as legacyRoute3 from '@/app/api/admin/google-merchant/products/[id]/route'
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/admin/google-merchant/products/[id]/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      shipping: legacyRoute0.POST,
-      status: legacyRoute1.GET,
-      sync: legacyRoute2.POST,
-      product: legacyRoute3.POST,
-      remove: legacyRoute3.DELETE,
-    },
-  ],
   [
     'service',
     {

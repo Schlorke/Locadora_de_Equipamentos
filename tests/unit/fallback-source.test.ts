@@ -62,6 +62,7 @@ afterEach(() => {
   for (const root of roots.splice(0)) removeOwnedFixture(root)
 })
 
+// Repositório fixture descartável: reproduz os antigos app/, lib/, proxy.ts e next.config.mjs, retirados em F, para provar snapshot de pré-exclusão, ausência, links e restauração por bytes sem usar a árvore ativa.
 function repository(complete = true) {
   const root = fs.mkdtempSync(
     path.join(fs.realpathSync(os.tmpdir()), 'locadora-fallback-fixture-')

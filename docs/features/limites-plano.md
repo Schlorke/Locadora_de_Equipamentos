@@ -267,11 +267,11 @@ com reconciliação/equipe/site/aceites reais pendentes.
 ## Jobs de tenant: obrigação e divulgação — onda 130 (2026-10-06, sem commit)
 
 O runner único `createTenantCron` (`packages/backend/src/http/tenant-cron.ts`),
-ligado pelas fachadas `lib/security/tenant-cron.ts` e
-`apps/services/api/src/host/tenant-cron.ts`, só executa job declarado no seu
-catálogo `TENANT_CRON_JOBS`. Cada rota de cron dos dois hosts informa
-`job: '<nome da rota>'`. O tipo recusa nome fora do catálogo e chamada sem
-declaração; em tempo de execução, o runner responde 500
+ligado hoje por `apps/services/api/src/host/tenant-cron.ts`, só executa job
+declarado no catálogo `TENANT_CRON_JOBS`. Na onda130 também era ligado pela
+fachada antiga `lib/security/tenant-cron.ts`, retirada em F. Cada rota de cron
+do host API informa `job: '<nome da rota>'`. O tipo recusa nome fora do catálogo
+e chamada sem declaração; em tempo de execução, o runner responde 500
 `Tenant cron job is not declared` depois da autorização e antes de qualquer
 consulta ou job.
 

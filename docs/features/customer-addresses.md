@@ -29,8 +29,10 @@ PostgreSQL impede dois principais.
   modelos Prisma.
 - packages/backend/src/modules/customers/addresses.ts: serviço e transações,
   criado por createAddressService(prisma).
-- lib/customer-addresses.ts: composição de compatibilidade, sem regras próprias.
-- app/api/addresses: adaptação HTTP.
+- apps/services/api/src/host/customers.ts: composição do banco/factory, sem
+  regras próprias. A fachada antiga `lib/customer-addresses.ts` foi retirada em
+  F.
+- apps/services/api/src/app/api/addresses: adaptação HTTP atual.
 - Migration 013: restrição de endereço principal para registros atribuídos.
 
 A interface existente foi preservada. Esta entrega removeu os logs que expunham
@@ -66,8 +68,10 @@ raiz ou do Next. Os handlers e o contrato HTTP permanecem iguais. O piloto
 passou 4 testes PostgreSQL e 13 testes HTTP, incluindo mass assignment,
 propagação de acesso negado, ownership, 404 e erros sanitizados. O plano de
 transferência do runtime está em
-[ADR de extração do backend](../architecture/adr-backend-extraction.md). Nenhuma
-rota foi instalada no host destino neste piloto.
+[ADR de extração do backend](../architecture/adr-backend-extraction.md). Naquele
+piloto nenhuma rota havia sido instalada no host destino; os cortes13/23 abaixo
+registram a instalação posterior. Hoje GET/POST/PATCH/DELETE pertencem à API do
+workspace.
 
 ### Leitura instalada no serviço HTTP (2026-10-01, sem commit)
 
@@ -122,8 +126,9 @@ O cache só existe no diretório temporário da rodada e é apagado no cleanup.
 Somente o role descartável recebe INSERT/UPDATE/DELETE de addresses; privilégios
 e configuração de produção permanecem intactos.
 
-Legado ativo/configurado, clientes sem cutover e validação visual/mobile ainda
-pendente. Estado completo e gates: [registro do corte 23](shared-api-host.md).
+Naquele corte, o legado estava ativo/configurado, os clientes sem cutover e a
+validação visual/mobile ainda pendente; o adapter antigo foi retirado em F.
+Estado histórico completo e gates: [registro do corte 23](shared-api-host.md).
 
 ## Consumidor do orçamento conectado (onda 62)
 

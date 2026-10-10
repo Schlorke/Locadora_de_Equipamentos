@@ -10,7 +10,7 @@ export default defineConfig({
   },
   datasource: {
     url: env('DATABASE_URL'),
-    // directUrl é usado apenas para migrations via variável de ambiente DIRECT_URL
-    // Não precisa estar aqui no Prisma 7.1.0
+    // A CLI lê DATABASE_URL; DIRECT_URL sozinha não muda este datasource.
+    // O executor deve selecionar explicitamente o alvo e o papel apropriado para migrations.
   },
 })

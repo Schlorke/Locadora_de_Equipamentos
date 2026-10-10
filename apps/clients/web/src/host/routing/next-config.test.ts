@@ -1,4 +1,4 @@
-// next.config.mjs do host web: www → apex (T3), noindex e public/ independente da API.
+// apps/clients/web/next.config.mjs: www → apex (T3), noindex e public/ independente da API.
 import {
   getRedirectUrl,
   isRewrite,

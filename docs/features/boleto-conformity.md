@@ -146,7 +146,11 @@ para guia prático de configuração e validação.
 ### 5.1. Pontos Positivos
 
 ✅ **Validação de CPF/CNPJ do Pagador**: O sistema exige e valida o documento do
-cliente antes de gerar o boleto (`lib/quote-boleto.ts`)
+cliente antes de gerar o boleto (owner atual:
+`packages/backend/src/modules/quotations/boleto.ts`, composto por
+`apps/services/api/src/host/payments.ts`). O nome antigo `lib/quote-boleto.ts`
+foi retirado em F; a mudança de owner não altera as regras ou constitui
+homologação bancária nova.
 
 ✅ **Cálculo Correto de Valores**: O sistema calcula o valor total do orçamento,
 incluindo frete, e utiliza na geração do boleto

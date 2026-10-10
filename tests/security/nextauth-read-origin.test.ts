@@ -1,7 +1,17 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return {
+    prisma: { user: { findUnique: mocks.findUnique, findMany: vi.fn() } },
+  }
+}
 /**
  * Achado 149 (onda 133, segunda rodada): os GET do NextAuth (`session`, `csrf`, `providers`, `signin`, `signout`,
- * `verify-request` e qualquer ação nova) recusam `Origin` explícito de outra origem antes do motor e do banco, nas
- * rotas REAIS `[...nextauth]` dos dois hosts (`app/api/auth` da raiz legada e `apps/services/api`), no modo `legacy`
+ * `verify-request` e qualquer ação nova) recusam `Origin` explícito de outra origem antes do motor e do banco,
+ * na rota REAL `apps/services/api/src/app/api/auth/[...nextauth]/route.ts`, no modo `legacy`
  * (o padrão) e no `better-auth-v2`, onde o NextAuth continua em `/api/auth/*`. A regra é a mesma do Better Auth
  * (`engine-read-origin.ts`), aplicada pelo envoltório comum `withSignInAvailability(NextAuth(authOptions))`.
  *
@@ -13,7 +23,7 @@
  * o retorno do Google e do Facebook) e a página `/error` para onde esse retorno manda. Mutações seguem com a defesa
  * própria do motor (token duplo do NextAuth, `OWN_CSRF_DEFENCE`).
  *
- * Sem banco: o Prisma dos dois hosts é um dublê que registra a leitura da credencial da sessão.
+ * Sem banco: o Prisma do runtime do serviço é um dublê que registra a leitura da credencial da sessão.
  */
 import { createHmac } from 'node:crypto'
 import { createRequire } from 'node:module'
@@ -31,7 +41,7 @@ import {
 } from 'vitest'
 
 const mocks = vi.hoisted(() => {
-  // lib/auth, o serviço e o NextAuth leem estes valores quando os módulos são avaliados.
+  // A composição de sessão do serviço e o NextAuth leem estes valores quando os módulos são avaliados.
   process.env.NEXTAUTH_SECRET = 'nextauth-read-origin-secret-0123456789abcdef'
   process.env.NEXTAUTH_URL = 'https://app.platform.test'
   return {
@@ -41,18 +51,27 @@ const mocks = vi.hoisted(() => {
   }
 })
 
-vi.mock('@/lib/prisma', () => ({
-  prisma: { user: { findUnique: mocks.findUnique, findMany: vi.fn() } },
-}))
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({
-    prisma: { user: { findUnique: mocks.findUnique, findMany: vi.fn() } },
-  }),
-  createResendClient: () => null,
-}))
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({
+      prisma: { user: { findUnique: mocks.findUnique, findMany: vi.fn() } },
+    }),
+    createResendClient: () => null,
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 
-import * as legacyRoute from '@/app/api/auth/[...nextauth]/route'
+import * as legacyRoute from '../../apps/services/api/src/app/api/auth/[...nextauth]/route'
 import * as serviceRoute from '../../apps/services/api/src/app/api/auth/[...nextauth]/route'
 
 const NEXTAUTH_SECRET = 'nextauth-read-origin-secret-0123456789abcdef'
@@ -130,10 +149,7 @@ const LOOKALIKES = [
   'session/',
 ]
 
-const HOSTS = [
-  ['legacy root', legacyRoute],
-  ['service', serviceRoute],
-] as const
+const HOSTS = [['service', serviceRoute]] as const
 
 /**
  * A rota do NextAuth no App Router lê cookies e cabeçalhos com `require('next/headers')`, fora do alcance de

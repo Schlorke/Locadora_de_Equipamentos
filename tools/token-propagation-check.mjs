@@ -93,7 +93,7 @@ async function main() {
     native: "packages/ui/src/native/Button.native.test.tsx",
   };
   const sentinel = "#12A457";
-  const DEFINITION = /\borange600:\s*"(#[0-9A-Fa-f]{6})"/g;
+  const DEFINITION = /\borange600:\s*(["'])(#[0-9A-Fa-f]{6})\1/g;
 
   const expectationsPath = path.join(root, EXPECTATIONS_FILE);
   const expectations = fs.existsSync(expectationsPath) ? readExpectations(fs.readFileSync(expectationsPath, "utf8")) : { notProven: {}, problems: [`${EXPECTATIONS_FILE} not found`] };
@@ -103,7 +103,7 @@ async function main() {
   // The hex may live in tokens.ts or in a lower level (primitives.ts); exactly one definition.
   const definitions = filesUnder(tokensDir)
     .filter((f) => /\.tsx?$/.test(f) && !/[\\/]__tests__[\\/]|\.test\.tsx?$/.test(f))
-    .flatMap((f) => [...fs.readFileSync(f, "utf8").matchAll(DEFINITION)].map((m) => ({ file: f, text: m[0], value: m[1] })));
+    .flatMap((f) => [...fs.readFileSync(f, "utf8").matchAll(DEFINITION)].map((m) => ({ file: f, text: m[0], value: m[2] })));
   if (definitions.length !== 1) throw new Error(`expected one hex definition of orange600 in ${toPosix(path.relative(root, tokensDir))}, found ${definitions.length}`);
   const [definition] = definitions;
   const previous = definition.value;

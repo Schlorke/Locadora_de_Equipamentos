@@ -10,45 +10,6 @@ const state = vi.hoisted(() => ({
   updated: [] as unknown[],
   failReminders: false,
 }))
-vi.mock('@/lib/security/tenant-cron', () => ({
-  runTenantCron: (
-    _request: Request,
-    job: (_context: { tenantId: string }) => Promise<Response>
-  ) => job({ tenantId: 'tenant-a' }),
-}))
-vi.mock('@/lib/tenant', () => ({
-  withTenantTransaction: async (
-    context: { tenantId: string },
-    operation: (_tx: unknown) => unknown
-  ) => {
-    state.scopes.push(context.tenantId)
-    return operation({
-      equipment: { findMany: async () => state.equipment },
-      maintenance: {
-        findFirst: async (query: { where: { equipmentId: string } }) =>
-          state.scheduled.has(query.where.equipmentId)
-            ? { id: 'scheduled' }
-            : null,
-        create: async ({ data }: { data: Record<string, unknown> }) => {
-          state.created.push(data)
-          return data
-        },
-        findMany: async () => [{ id: 'maintenance-a' }],
-      },
-      rentals: {
-        findMany: async (query: { where: { enddate: { gte?: Date } } }) => {
-          if (query.where.enddate.gte && state.failReminders)
-            throw new Error('reminder failure')
-          return query.where.enddate.gte ? [{ id: 'due-a' }] : state.rentals
-        },
-        updateMany: async (query: unknown) => {
-          state.updated.push(query)
-          return { count: 1 }
-        },
-      },
-    })
-  },
-}))
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
 vi.mock('../../apps/services/api/src/host/tenant-cron', () => ({
@@ -98,19 +59,10 @@ vi.mock(
     }))()),
   })
 )
-import * as legacyRoute0 from '@/app/api/cron/preventive-maintenance/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/cron/preventive-maintenance/route'
-import * as legacyRoute1 from '@/app/api/cron/send-notifications/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/cron/send-notifications/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      maintenance: legacyRoute0.GET,
-      notifications: legacyRoute1.GET,
-    },
-  ],
   [
     'service',
     {

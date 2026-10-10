@@ -22,10 +22,6 @@ const state = vi.hoisted(() => {
     },
   }
 })
-vi.mock('@/lib/tenant', () => ({ withTenantTransaction: state.transaction }))
-vi.mock('@/lib/tenant-permissions', () => ({
-  requireTenantPermission: state.permission,
-}))
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
 vi.mock('../../apps/services/api/src/host/tenant-transaction', () => ({
@@ -34,25 +30,12 @@ vi.mock('../../apps/services/api/src/host/tenant-transaction', () => ({
 vi.mock('../../apps/services/api/src/host/permissions', () => ({
   requireTenantPermission: state.permission,
 }))
-import * as legacyRoute0 from '@/app/api/admin/dashboard/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/admin/dashboard/route'
-import * as legacyRoute1 from '@/app/api/admin/kpis/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/admin/kpis/route'
-import * as legacyRoute2 from '@/app/api/admin/analytics/route'
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/admin/analytics/route'
-import * as legacyRoute3 from '@/app/api/admin/security/route'
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/admin/security/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      dashboard: legacyRoute0.GET,
-      kpis: legacyRoute1.GET,
-      analytics: legacyRoute2.GET,
-      security: legacyRoute3.GET,
-    },
-  ],
   [
     'service',
     {

@@ -23,8 +23,8 @@ interface SitemapEntry {
 }
 
 /**
- * Frequência e prioridade de cada página, as do `app/sitemap.ts` da raiz legada (onda 135, A7; M3 do plano de
- * aposentadoria da raiz). As páginas fixas e as legais levam a data da geração, como lá.
+ * Frequência e prioridade de cada página preservadas do antigo app/sitemap.ts, retirado com a raiz em F
+ * (onda 135, A7; M3 do plano). As páginas fixas e as legais continuam levando a data da geração.
  */
 const PAGE_RANK: ReadonlyMap<
   string,

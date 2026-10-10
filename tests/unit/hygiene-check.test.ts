@@ -333,6 +333,7 @@ describe('pnpm hygiene de ponta a ponta (knip real)', KNIP_REAL, () => {
 })
 
 describe('regras do gate', () => {
+  // A antiga lib/ foi retirada em F; as strings abaixo são entradas isoladas dos leitores de glob/baseline, sem ler a raiz.
   it('glob de caminho: ** atravessa pastas, * fica no segmento; a parte literal é a pasta antes do curinga', () => {
     expect(
       globToRegExp('lib/validations/schemas/**').test(
@@ -464,6 +465,7 @@ describe('regras do gate', () => {
     expect(stale.map((item) => item.name)).toEqual(['c.ts'])
   })
 
+  // O antigo tsconfig.tsbuildinfo da raiz saiu em F; este sample continua provando a cobertura do ignore por nome.
   it('.gitignore: pasta acima cobre, "!" posterior descobre, regra sem "/" vale em qualquer nível', () => {
     expect(gitignoreCovers('.tmp/\n', '.tmp/visual/current')).toBe(true)
     expect(gitignoreCovers('/coverage\n', 'coverage')).toBe(true)
@@ -665,6 +667,7 @@ describe('regras do gate', () => {
       'packages/p/src/solto.css': '.b {}\n',
       'packages/p/src/extra/uso.css': '.c {}\n',
       'packages/p/src/sozinho/nada.css': '.d {}\n',
+      // A antiga app/ foi retirada em F; esta entrada vive só na fixture temporária de alcance CSS e mantém o oracle.
       'app/page.ts':
         "import '@f/p/tema.css'\nimport '@f/p/extra/uso.css'\nexport const p = 1\n",
       'app/root.css': '.e {}\n',
@@ -703,6 +706,7 @@ describe('regras do gate', () => {
       '../y',
       '/abs',
       '#interno',
+      // A antiga lib/ foi retirada em F; o literal caracteriza alias local, sem resolver/importar esse caminho.
       '@/lib/x',
       '~/x',
       'node:fs',

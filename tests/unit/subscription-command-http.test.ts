@@ -5,40 +5,14 @@ import { RentalMutationError } from '@gb-locacoes/backend/rentals'
 import { VehicleError } from '@gb-locacoes/backend/operations'
 
 const state = vi.hoisted(() => ({ access: vi.fn(), write: vi.fn() }))
-vi.mock('@/lib/tenant', () => ({ resolveTenantPrincipal: state.access }))
-vi.mock('@/lib/tenant-permissions', () => ({
-  requireTenantPermission: state.access,
-}))
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: state.access,
 }))
 vi.mock('../../apps/services/api/src/host/permissions', () => ({
   requireTenantPermission: state.access,
 }))
-vi.mock('@/lib/payment-request', () => ({ requestPayment: state.write }))
 vi.mock('../../apps/services/api/src/host/payments', () => ({
   requestPayment: state.write,
-}))
-vi.mock('@/lib/payment-obligation', async () => {
-  const { PaymentRequestError } = await import('@gb-locacoes/backend/billing')
-  return { PaymentRequestError }
-})
-vi.mock('@/lib/rental-transaction', async () => {
-  const { RentalMutationError } = await import('@gb-locacoes/backend/rentals')
-  return { RentalMutationError }
-})
-vi.mock('@/lib/drivers', () => ({
-  createDriver: state.write,
-  listDrivers: vi.fn(),
-}))
-vi.mock('@/lib/vehicles', async () => {
-  const { VehicleError } = await import('@gb-locacoes/backend/operations')
-  return { VehicleError, createVehicle: state.write, listVehicles: vi.fn() }
-})
-vi.mock('@/lib/logistics', () => ({ updateDelivery: state.write }))
-vi.mock('@/lib/maintenance-http', () => ({
-  createMaintenance: state.write,
-  listMaintenances: vi.fn(),
 }))
 vi.mock('../../apps/services/api/src/host/operations', () => ({
   createDriver: state.write,
@@ -51,17 +25,11 @@ vi.mock('../../apps/services/api/src/host/maintenance', () => ({
   createMaintenance: state.write,
   listMaintenances: vi.fn(),
 }))
-import { POST as legacyPix } from '../../app/api/payments/pix/route'
 import { POST as apiPix } from '../../apps/services/api/src/app/api/payments/pix/route'
-import { POST as legacyBoleto } from '../../app/api/payments/boleto/generate/route'
 import { POST as apiBoleto } from '../../apps/services/api/src/app/api/payments/boleto/generate/route'
-import { POST as legacyDriver } from '../../app/api/admin/drivers/route'
 import { POST as apiDriver } from '../../apps/services/api/src/app/api/admin/drivers/route'
-import { POST as legacyVehicle } from '../../app/api/admin/vehicles/route'
 import { POST as apiVehicle } from '../../apps/services/api/src/app/api/admin/vehicles/route'
-import { PATCH as legacyDelivery } from '../../app/api/admin/logistics/[id]/route'
 import { PATCH as apiDelivery } from '../../apps/services/api/src/app/api/admin/logistics/[id]/route'
-import { POST as legacyMaintenance } from '../../app/api/admin/maintenance/route'
 import { POST as apiMaintenance } from '../../apps/services/api/src/app/api/admin/maintenance/route'
 
 const principal = {
@@ -72,23 +40,9 @@ const principal = {
 }
 const cases = [
   [
-    'legacy PIX',
-    legacyPix,
-    '/api/payments/pix',
-    { rentalId: 'rental', amount: 10, dueDate: '2026-10-10' },
-    true,
-  ],
-  [
     'API PIX',
     apiPix,
     '/api/payments/pix',
-    { rentalId: 'rental', amount: 10, dueDate: '2026-10-10' },
-    true,
-  ],
-  [
-    'legacy boleto',
-    legacyBoleto,
-    '/api/payments/boleto/generate',
     { rentalId: 'rental', amount: 10, dueDate: '2026-10-10' },
     true,
   ],
@@ -100,24 +54,10 @@ const cases = [
     true,
   ],
   [
-    'legacy driver',
-    legacyDriver,
-    '/api/admin/drivers',
-    { name: 'Fixture', phone: '00000000000' },
-    false,
-  ],
-  [
     'API driver',
     apiDriver,
     '/api/admin/drivers',
     { name: 'Fixture', phone: '00000000000' },
-    false,
-  ],
-  [
-    'legacy vehicle',
-    legacyVehicle,
-    '/api/admin/vehicles',
-    { plate: 'FIXTURE' },
     false,
   ],
   [
@@ -128,24 +68,10 @@ const cases = [
     false,
   ],
   [
-    'legacy delivery',
-    legacyDelivery,
-    '/api/admin/logistics/one',
-    { status: 'COMPLETED' },
-    false,
-  ],
-  [
     'API delivery',
     apiDelivery,
     '/api/admin/logistics/one',
     { status: 'COMPLETED' },
-    false,
-  ],
-  [
-    'legacy maintenance',
-    legacyMaintenance,
-    '/api/admin/maintenance',
-    { equipmentId: 'one', type: 'INSPECTION', scheduledAt: '2026-10-10' },
     false,
   ],
   [

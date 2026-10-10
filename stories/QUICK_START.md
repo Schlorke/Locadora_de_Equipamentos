@@ -1,170 +1,94 @@
-# 🚀 Quick Start - Storybook GB Locações
+# Quick Start — Storybook GB Locações
 
-Guia rápido para começar a usar o Storybook do GB Locações em menos de 5
-minutos.
+Este guia usa a configuração atual de `.storybook/main.ts` e
+`.storybook/preview.tsx`. A implementação compartilhada continua em
+`packages/ui` e `packages/frontend`; stories não são uma segunda cópia do
+produto. Consulte [AI_CONTEXT.md](AI_CONTEXT.md) e o
+[guia operacional](../docs/guides/storybook.md).
 
----
+## Iniciar
 
-## 1️⃣ Iniciar o Storybook
+Na raiz do workspace, com as dependências do lockfile instaladas, confirme que a
+porta 6006 está livre e execute:
 
-```bash
+```powershell
 pnpm storybook
 ```
 
-**URL**: `http://localhost:6006`
+Acesse `http://localhost:6006` enquanto o processo estiver ativo. Ao terminar,
+encerre somente o servidor que você iniciou. Este documento não atesta que há um
+servidor rodando.
 
----
+## Navegar e consumir componentes
 
-## 2️⃣ Navegar pela Documentação
+Comece por `Introduction/Welcome`, `Design Tokens` e `Public/Atoms`. O menu
+organiza também `Public`, `Admin` e `Shared`; veja as stories realmente
+coletadas, sem usar contagens históricas como inventário atual.
 
-### Começar por aqui:
-
-1. **Introduction → Welcome** - Visão geral do Design System
-2. **Design Tokens** - Cores, tipografia, espaçamento, sombras, breakpoints
-3. **Public → Atoms** - Componentes básicos (Button, Input, Badge, etc.)
-
-### Estrutura do Menu
-
-```
-📖 Introduction
-   └── Welcome
-
-🎨 Design Tokens
-   ├── Colors
-   ├── Typography
-   ├── Spacing
-   ├── Shadows
-   └── Breakpoints
-
-🧩 Public
-   ├── Atoms (Button, Input, Badge, Label, Checkbox, Switch)
-   ├── Molecules (Card, Alert)
-   └── Organisms (Dialog, Form)
-```
-
----
-
-## 3️⃣ Usar um Componente
-
-### Passo a passo:
-
-1. **Encontre o componente** no menu lateral
-2. **Veja as variantes** nas stories visuais
-3. **Teste no Playground** com os controles
-4. **Copie o código** da documentação MDX
-5. **Cole no seu projeto** e ajuste conforme necessário
-
-### Exemplo - Button:
-
-1. Navegue para: **Public → Atoms → Button**
-2. Veja as 8 variantes disponíveis
-3. Clique em **Playground** e teste props
-4. Vá para a aba **Docs**
-5. Role até "Exemplos de Código"
-6. Copie e use:
+Em `Public/Atoms/Button`, examine as variantes e o Playground, depois confira o
+contrato em `packages/ui/src/contract/button.ts`. Os controles dessa story
+mostram um recorte das variantes do contrato; não autorizam estilos novos.
 
 ```tsx
 import { Button } from "@gb-locacoes/ui"
-;<Button variant="default">Meu Botão</Button>
+
+export function Example() {
+  return <Button variant="default">Salvar</Button>
+}
 ```
 
----
+Use a entrada pública do pacote. As regras de importação FSD continuam valendo
+para componentes do produto em `packages/frontend`; o alias `@/` da configuração
+do Storybook aponta para a raiz do workspace e não é uma API pública de
+componentes.
 
-## 4️⃣ Validar Acessibilidade
+## Verificar a story
 
-1. **Abra qualquer story**
-2. **Clique na aba "Accessibility"** (addon A11y)
-3. **Verifique violações** (deve estar zerado ✅)
-4. **Corrija** se houver problemas
+Teste os estados expostos pelos controles, o foco e a navegação por teclado. O
+addon `@storybook/addon-a11y` auxilia a inspeção; ausência de avisos não
+comprova conformidade completa. Confira também a composição em diferentes
+tamanhos de viewport e as fontes efetivamente carregadas.
 
----
+Os tokens do runtime pertencem a `packages/design-tokens/src`. A referência
+`design-tokens/base.json` usada pelas stories não substitui os contratos do
+design system. O preview importa `@gb-locacoes/frontend/app/styles.css`;
+preserve cores, medidas, camadas e variantes documentadas em
+[design-system.md](../docs/features/design-system.md).
 
-## 5️⃣ Testar Responsividade
+## Construir sem deixar artefatos no repo
 
-1. **Abra uma story**
-2. **Clique no ícone de dispositivo** na toolbar
-3. **Selecione diferentes tamanhos**:
-   - Mobile (375px)
-   - Tablet (768px)
-   - Desktop (1024px)
-4. **Verifique** se comportamento está correto
+Informe uma pasta própria absoluta fora do checkout:
 
----
-
-## 🎨 Design Tokens - Cola Rápida
-
-### Cores (sempre use Tailwind)
-
-```tsx
-bg - orange - 600 // Primary (#ea580c)
-bg - slate - 700 // Secondary (#334155)
-bg - emerald - 500 // Success
-bg - amber - 500 // Warning
-bg - red - 500 // Error
-bg - blue - 500 // Info
+```powershell
+pnpm build-storybook --output-dir <pasta-temporaria-absoluta>
 ```
 
-### Espaçamento Responsivo
+Logs, capturas e o build estático devem ficar fora do repositório. O preview usa
+Inter/Jost por `next/font/google`; configuração não prova que a fonte ou o build
+carregou. Storybook não substitui testes dos hosts, HTTP, sessões, isolamento de
+tenant ou validação visual do produto.
 
-```tsx
-px-4 sm:px-6 lg:px-8           // Containers
-py-12 md:py-16 lg:py-20        // Seções
-gap-6 md:gap-8 lg:gap-12       // Grids
-```
+## Se houver erro
 
-### Tipografia
+Leia a primeira mensagem do processo e registre o diagnóstico fora do repo. Não
+apague `node_modules` ou árvores de cache como receita automática: podem conter
+links e recursos compartilhados. Para conferir a instalação existente, use o
+lockfile atual e `pnpm install --frozen-lockfile` somente na etapa autorizada de
+instalação; incompatibilidade do lockfile deve ser investigada, sem regenerá-lo
+por tentativa.
 
-```tsx
-text - h1 // Títulos principais (40-56px)
-text - h2 // Subtítulos (32-48px)
-text - h3 // Títulos de seção (24-36px)
-text - base // Corpo de texto (16-18px)
-text - small // Texto pequeno (14-16px)
-```
+Uma story precisa corresponder aos globs atuais: `stories/**/*.mdx` ou
+`stories/**/*.stories.@(js|jsx|mjs|ts|tsx)`. Confira o título exportado e a
+entrada pública do componente. Não use instruções de configuração que recriem
+fachadas aposentadas do produto.
 
----
+`pnpm test-storybook` não é um script do `package.json` atual. Os comandos de
+configuração/diagnóstico existentes são `storybook:doctor`, `storybook:check` e
+`storybook:info`; não equivalem a uma execução visual. Veja a cadência e as
+provas necessárias em [testing.md](../docs/guides/testing.md).
 
-## 🆘 Troubleshooting
-
-### Storybook não inicia
-
-```bash
-# Limpar cache e reinstalar
-rm -rf node_modules .next
-pnpm install
-pnpm storybook
-```
-
-### Stories não aparecem
-
-- ✅ Verifique se arquivo termina com `.stories.tsx`
-- ✅ Verifique se está dentro de `stories/`
-- ✅ Recarregue o Storybook (Ctrl+R)
-
-### Erros de import
-
-- ✅ Use alias `@/` para imports
-- ✅ Verifique se componente existe em `packages/ui/src/web/` (exportado por
-  `@gb-locacoes/ui`)
-- ✅ Importe corretamente de lucide-react
-
----
-
-## 📖 Recursos
-
-- **AI Context**: `stories/AI_CONTEXT.md`
-- **Regras Cursor**: `.cursor/rules/storybook-rules.mdc`
-
----
-
-## 🎯 Próximos Passos
-
-1. **Explorar os 10 componentes** implementados
-2. **Usar no projeto** copiando código das docs
-3. **Expandir documentação** para componentes restantes
-4. **Deploy** do Storybook (Chromatic ou Vercel)
-
----
-
-**URL Local**: `http://localhost:6006` **Comando**: `pnpm storybook` **Versão**:
-1.0.0
+A versão anterior, incluindo contagens, exemplos e a receita de remoção de
+pastas, está preservada com os bytes originais em
+[arquivo histórico](../docs/archive/wave135-pre-f/stories/QUICK_START.md.source).
+O README desse diretório registra a proveniência; essa receita histórica não é
+uma instrução operacional atual.

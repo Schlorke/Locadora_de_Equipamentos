@@ -1,6 +1,7 @@
 node_modules
 build
 dist
+# A .next antiga da raiz saiu em F; o basename continua excluindo as saídas geradas pelos hosts Next.
 .next
 coverage
 *.lock

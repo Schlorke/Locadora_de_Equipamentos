@@ -33,11 +33,11 @@ trabalharem no projeto GB-Locações de forma eficiente e consistente.
 ### 📋 Pré-requisitos
 
 ```bash
-# Node.js 20+
-node --version  # v20.0.0 ou superior
+# Node.js conforme .node-version e engines
+node --version  # 24.21.0; >=24.21.0 <25
 
-# PNPM 10+
-pnpm --version  # v10.0.0 ou superior
+# PNPM conforme packageManager
+pnpm --version  # 10.27.0
 
 # Git
 git --version   # v2.0.0 ou superior
@@ -46,25 +46,29 @@ git --version   # v2.0.0 ou superior
 ### ⚡ Instalação Rápida
 
 ```bash
-# 1. Clone o repositório
-git clone https://github.com/GBLocacoes/GB-Locacoes.git
-cd GB-Locacoes
-
-# 2. Instale as dependências
-pnpm install
-
-# 3. Configure as variáveis de ambiente
-cp .env.example .env.local
-# Edite .env.local com suas configurações
-
-# 4. Configure o banco de dados (migrations com RLS; nunca db push)
+git clone https://github.com/Schlorke/Locadora_de_Equipamentos.git
+cd Locadora_de_Equipamentos
+pnpm install --frozen-lockfile
 pnpm db:generate
+# Somente depois de apontar Prisma para um PostgreSQL próprio local:
 pnpm exec prisma migrate deploy
-pnpm db:seed
-
-# 5. Inicie o servidor de desenvolvimento
 pnpm dev
 ```
+
+Use os templates de cada host: `apps/services/api/.env.example`,
+`apps/clients/web/.env.example` e `apps/clients/mobile/.env.example`. Os
+arquivos privados não são versionados. Configure apenas o ambiente local deste
+produto e um PostgreSQL próprio; nunca reutilize conexões, indicadores de deploy
+ou credenciais da GB. Banco hospedado e provedores serão escolhidos em uma etapa
+posterior. Mantenha as integrações desligadas conforme os templates; não execute
+seed ou scripts operacionais como parte do setup.
+
+A API usa `http://127.0.0.1:3002`; o web de desenvolvimento usa a porta 3001 e
+encaminha `/api/*` para `WEB_API_ORIGIN`. A configuração do domínio local
+precisa obedecer à [ADR de hosts](../architecture/adr-tenant-hosts.md). O
+cliente móvel inicia separadamente com
+`pnpm --filter @gb-locacoes/mobile start`; configure sua origem de API pelo
+template do host, não por um fallback para produção.
 
 ### 🔧 Configuração do IDE
 
@@ -96,30 +100,36 @@ completo.
 
 ### 🗂️ Visão Geral
 
-```
-GB-Locacoes/
-├── 📁 apps/clients/web/       # Host Next.js fino: rotas, bootstrap e proxy
-├── 📁 apps/clients/mobile/    # Host Expo fino
-├── 📁 packages/frontend/      # Frontend do produto em FSD (app, pages, widgets,
-│                              #   features, entities, shared)
-├── 📁 packages/ui/            # Design system (.web/.native sobre um contrato)
-├── 📁 packages/design-tokens/ # Tokens e temas canônicos
-├── 📁 packages/backend/       # Módulos de servidor (identidade, cobrança...)
-├── 📁 packages/domain/        # Regras de negócio puras (dinheiro em Decimal.js)
-├── 📁 packages/contracts/     # Contratos compartilhados (zod)
-├── 📁 app/                    # Raiz legada: rotas /api (o backend do host web)
-├── 📁 lib/                    # Servidor e utilitários da raiz legada
-├── 📁 middlewares/, schemas/, types/  # Auxiliares da raiz legada
-├── 📁 prisma/                 # Schema e migrations (RLS por locadora)
-├── 📁 tools/                  # Gates: arch, tokens, ratchet-guard, hygiene
-├── 📁 tests/                  # Suítes (unit, security, identity, contract...)
-└── 📁 stories/                # Storybook stories
+```text
+Locadora_de_Equipamentos/
+├── apps/clients/web/        # Next: rotas, bootstrap, proxy e integração de plataforma
+├── apps/clients/mobile/     # Expo: bootstrap e integração nativa
+├── apps/services/api/       # Next: src/app/api e composição em src/host
+├── packages/frontend/src/  # FSD: app → pages → widgets → features → entities → shared
+├── packages/ui/            # Contratos e implementações web/native do design system
+├── packages/design-tokens/ # Tokens e temas canônicos
+├── packages/backend/src/   # modules/, http/ e runtime/; somente servidor
+├── packages/domain/        # Regras puras, sem dependências dos hosts
+├── packages/contracts/     # Schemas e contratos compartilhados
+├── types/                  # Inclui next-auth.d.ts; não é apagada com a raiz antiga
+├── public/                 # Assets compartilhados e OpenAPI
+├── prisma/                 # Schema e migrations com RLS
+├── tools/                  # Gates e geração do Prisma
+├── scripts/                # Ferramentas conservadas; operações exigem runbook
+├── tests/                  # Suítes e ferramentas de prova
+├── stories/                # Storybook
+└── docs/                   # Guias, decisões e runbooks
 ```
 
-As pastas `components/`, `hooks/` e `stores/` da raiz não existem mais: os
-componentes estão em `packages/ui` e nas fatias de `packages/frontend`, e o
-estado (Zustand) no `model` da fatia dona. A regra de camadas é o contrato do
-`AGENTS.md` (seção "Context Window") e o `pnpm arch` a confere.
+As pastas `app/`, `lib/`, `middlewares/` e `schemas/` da raiz foram aposentadas.
+Não restaure uma fachada para resolver imports: componha o serviço em
+`apps/services/api/src/host` ou consuma o contrato público do package dono.
+`types/next-auth.d.ts`, `public/` e `prisma/` permanecem.
+
+Componentes, hooks e stores do produto ficam no design system ou na fatia FSD
+dona. Uma fatia importa somente camadas abaixo dela por APIs públicas; as
+exceções de cross-import de entities são explícitas em `@x`. O contrato de
+`AGENTS.md` e `pnpm arch` governam essas fronteiras.
 
 ### 📝 Convenções de Nomenclatura
 
@@ -134,7 +144,7 @@ packages/frontend/src/widgets/cabecalho-admin/ui/Cabecalho.web.tsx
 packages/frontend/src/entities/configuracao/api/use-public-settings.ts
 
 # Utilitários - kebab-case
-lib/api-response.ts
+packages/backend/src/http/success-response.ts
 packages/frontend/src/shared/lib/formatting.ts
 
 # Tipos - declarações globais em types/, tipos de domínio no model da fatia
@@ -142,8 +152,8 @@ types/next-auth.d.ts
 packages/frontend/src/entities/equipamento/model/preco.ts
 
 # Páginas - kebab-case (Next.js convention)
-app/admin/equipamentos/page.tsx
-app/orcamento/page.tsx
+apps/clients/web/src/app/(admin)/admin/equipamentos/page.tsx
+apps/clients/web/src/app/(public)/[locadora]/(vitrine)/orcamento/page.tsx
 ```
 
 #### **Variáveis e Funções**
@@ -179,7 +189,8 @@ export default function AdminDashboard() {}
 ```typescript
 'use client' // Se necessário
 
-import { cn } from '@/lib/utils'
+// Exemplo interno a packages/ui/src/web: cn não é exportado pela raiz do package.
+import { cn } from './cn'
 import { cva, type VariantProps } from 'class-variance-authority'
 import * as React from 'react'
 
@@ -235,139 +246,64 @@ export { Component, componentVariants }
 
 #### **Custom Hooks**
 
-```typescript
-// exemplo: packages/frontend/src/entities/<fatia>/api/use-equipment-data.ts
-import { useState, useEffect } from "react"
-import type { Equipment } from "@/types"
+Coloque o hook na fatia dona e use os contratos compartilhados.
+`packages/frontend/src/entities/configuracao/api/use-public-settings.ts` é um
+exemplo real: usa `useApiClient` de `shared/api` e recebe a locadora pela API
+`@x` de organização. Não use tipos da raiz aposentada nem uma requisição global
+que omita o contexto da locadora.
 
-interface UseEquipmentDataReturn {
-  equipment: Equipment[]
-  isLoading: boolean
-  error: string | null
-  refetch: () => void
-}
-
-export function useEquipmentData(): UseEquipmentDataReturn {
-  const [equipment, setEquipment] = useState<Equipment[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const fetchEquipment = async () => {
-    try {
-      setIsLoading(true)
-      const response = await fetch("/api/equipments")
-      if (!response.ok) throw new Error("Failed to fetch")
-      const data = await response.json()
-      setEquipment(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error")
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchEquipment()
-  }, [])
-
-  return {
-    equipment,
-    isLoading,
-    error,
-    refetch: fetchEquipment
-  }
-}
-```
+A infraestrutura HTTP está em `packages/frontend/src/shared/api/http-client.ts`
+e `ApiClientProvider.tsx`. Os hosts configuram transporte e origem; a fatia não
+importa bootstrap do host web nem implementações do backend.
 
 ### 🗃️ API Routes
 
-#### **Estrutura Padrão com Imports Dinâmicos**
+#### **Composição do host da API**
 
 ```typescript
-// app/api/equipments/route.ts
-import { NextResponse, type NextRequest } from "next/server"
+// apps/services/api/src/app/api/equipments/route.ts (composição existente)
+import { publicEquipments } from "../../../host/runtime"
 
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
 export const revalidate = 0
-
-export async function GET(request: NextRequest) {
-  try {
-    // ✅ Import dinâmico do Prisma (OBRIGATÓRIO)
-    const { prisma } = await import("@/lib/prisma")
-    await prisma.$connect()
-
-    // Sua lógica aqui
-    const equipments = await prisma.equipment.findMany()
-
-    return NextResponse.json(equipments)
-  } catch (error) {
-    console.error("API Error:", error)
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
-  }
-}
+export const GET = publicEquipments
 ```
 
-#### **Validação com Zod**
+O runtime compõe as factories de `packages/backend`; não existe mais
+`@/lib/prisma` na raiz. O catálogo público exige `tenantSlug` e não escolhe uma
+locadora por padrão. Em rotas privadas, a identidade, o vínculo e a permissão
+granular são resolvidos antes da operação; o módulo executa com
+`withTenantTransaction`. Não substitua esse fluxo por `findMany()` global.
 
-```typescript
-import { z } from "zod"
+#### **Validação com contratos compartilhados**
 
-const createEquipmentSchema = z.object({
-  name: z.string().min(1, "Nome é obrigatório"),
-  description: z.string().optional(),
-  pricePerDay: z.number().positive("Preço deve ser positivo"),
-  categoryId: z.string().uuid("ID da categoria inválido")
-})
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json()
-    const validatedData = createEquipmentSchema.parse(body)
-
-    // Continua com validatedData...
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: "Dados inválidos", details: error.errors },
-        { status: 400 }
-      )
-    }
-    // Outros erros...
-  }
-}
-```
+`apps/services/api/src/app/api/admin/settings/route.ts` usa `SettingsSchema` de
+`@gb-locacoes/contracts/settings`, `requireTenantPermission` e verificação de
+origem na escrita. Schemas compartilhados pertencem a `packages/contracts`; as
+regras puras pertencem a `packages/domain`. Use o contrato real da rota, não um
+schema demonstrativo copiado deste guia.
 
 ### 🎨 Styling com Tailwind
 
 #### **Classes Recomendadas**
 
-```typescript
-// ✅ Use classes utilitárias
-const Button = () => (
-  <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
-    Clique aqui
-  </button>
-)
+Reutilize os componentes de `@gb-locacoes/ui`. O contrato de Button em
+`packages/ui/src/contract/button.ts` mantém `default` com Slate e `outline` para
+cancelar; o token laranja de marca não autoriza trocar a cor de uma ação.
+Consulte [design-system.md](../features/design-system.md).
 
-// ✅ Use cn() para combinações condicionais
-const Alert = ({ variant }: { variant: 'success' | 'error' }) => (
-  <div className={cn(
-    'p-4 rounded-md',
-    variant === 'success' && 'bg-green-100 text-green-800',
-    variant === 'error' && 'bg-red-100 text-red-800'
-  )}>
-    Mensagem
-  </div>
-)
+```tsx
+import { Button } from '@gb-locacoes/ui'
 
-// ✅ Componentes com variant/size + className: variant primeiro, className por último.
-// O cn() usa tailwind-merge; o último argumento prevalece em conflitos.
-// Ordem correta: base, sizeClasses[size], variantClasses[variant], className
+<Button variant="default">Salvar</Button>
+<Button variant="outline">Cancelar</Button>
 ```
+
+Use `cn()` do dono da implementação para combinar classes: base, tamanho,
+variante e `className` por último. Classe nova precisa conservar a semântica da
+produção; `!important`, valores próprios de z-index e sobrescritas globais sem
+dono são proibidos.
 
 #### **Responsividade**
 
@@ -397,7 +333,7 @@ const ResponsiveGrid = () => (
 ```typescript
 // Testes unitários - colocados junto do arquivo: packages/ui/src/web/Button.web.test.tsx
 import { render, screen } from '@testing-library/react'
-import { Button } from './Button'
+import { Button } from './Button.web'
 
 describe('Button', () => {
   test('renders with text', () => {
@@ -418,20 +354,22 @@ describe('Button', () => {
 ### 📊 Comandos de Teste
 
 ```bash
-# Testes unitários
-pnpm test                 # Executar todos os testes
-pnpm test:watch           # Modo watch
-pnpm test:coverage        # Relatório de cobertura
-pnpm test:ui              # Interface visual
-
-# Testes E2E
-pnpm playwright test      # Executar Playwright
-pnpm playwright test --ui # Interface Playwright
-
-# Storybook
-pnpm storybook           # Desenvolvimento
-pnpm build-storybook    # Build do Storybook
+pnpm test:unit
+pnpm test:web
+pnpm test:mobile
+pnpm test:all        # Suítes consolidadas definidas no package.json
+pnpm test:watch      # Config padrão; não representa todas as suítes
+pnpm test:coverage   # Cobertura da config padrão
+pnpm test:ui
+pnpm storybook
+pnpm build-storybook
 ```
+
+`pnpm test` usa somente a configuração padrão do Vitest; não significa “todos os
+testes”. HTTP API, jornadas Playwright e captura/comparação visual têm
+configurações e pré-condições próprias: banco descartável, ambiente
+neutralizado, builds coerentes com o motor e artefatos externos. Siga
+[testing.md](../guides/testing.md) e `tests/visual/README.md`.
 
 ---
 
@@ -455,7 +393,7 @@ pnpm build-storybook    # Build do Storybook
       "name": "Next.js: debug client-side",
       "type": "chrome",
       "request": "launch",
-      "url": "http://localhost:3000"
+      "url": "http://localhost:3001"
     }
   ]
 }
@@ -463,45 +401,23 @@ pnpm build-storybook    # Build do Storybook
 
 ### 📊 Logging
 
-```typescript
-// Estruturado com Pino
-import { logger } from "@/lib/logger"
-
-// Em desenvolvimento
-logger.info("Equipment created", {
-  equipmentId: equipment.id,
-  userId: user.id
-})
-
-// Em produção
-logger.error("Database connection failed", {
-  error: error.message,
-  stack: error.stack
-})
-```
-
-### 🔍 Debugging de API
+O logger de aplicação é criado no servidor por `createApplicationLogger` de
+`@gb-locacoes/backend/runtime` (`packages/backend/src/runtime/logger.ts`). A
+composição em `apps/services/api/src/host/communications.ts` usa essa factory
+com o ambiente do processo; não importa `@/lib/logger` da raiz aposentada.
 
 ```typescript
-// Middleware para debug
-export async function GET(request: NextRequest) {
-  const startTime = Date.now()
+import { createApplicationLogger } from "@gb-locacoes/backend/runtime"
 
-  try {
-    // Sua lógica aqui
-    const result = await fetchData()
-
-    console.log(`[API] ${request.url} - Success in ${Date.now() - startTime}ms`)
-    return NextResponse.json(result)
-  } catch (error) {
-    console.error(
-      `[API] ${request.url} - Error in ${Date.now() - startTime}ms:`,
-      error
-    )
-    throw error
-  }
-}
+const logger = createApplicationLogger(process.env)
+logger.info({ event: "equipment.created", equipmentId }, "Equipment created")
 ```
+
+Não registre URL com parâmetros, corpo de autenticação, cookies, tokens,
+connection strings ou mensagens brutas de provedor. A política de redação não
+substitui a escolha explícita de campos seguros. Para diagnosticar uma rota,
+registre status, duração e identificadores não secretos; preserve o erro para o
+handler sem despejar o request inteiro.
 
 ---
 
@@ -559,4 +475,5 @@ Para problemas comuns, consulte:
 
 ---
 
-_Última atualização: dezembro 2024_
+_Guia portado para a estrutura após a retirada local da raiz; a validação do
+clone e o corte de produção têm registros próprios._

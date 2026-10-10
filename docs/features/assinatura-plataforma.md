@@ -227,13 +227,14 @@ Provas, limites e próxima etapa: onda 92 de
 
 ## Leituras do dono (2026-10-04, onda 104, sem commit)
 
-GET /api/admin/subscription e /invoices estão instalados nos hosts legado e
-compartilhado. A consulta exige dono atual e vínculo ADMIN ativo, verificados
-sob RLS na mesma transação RepeatableRead/READ ONLY da leitura. Direitos
-reaproveitam a regra de exceções; uso conta modelos e equipe ativa não CLIENT.
-Acesso persistido deve corresponder ao estado; dado inválido não é corrigido por
-GET. Legado sem assinatura recebe 404, sem plano fictício; histórico de faturas
-vazio continua válido.
+Na onda104, GET /api/admin/subscription e /invoices coexistiam nos adapters
+antigo e compartilhado. Após F, as rotas pertencem à API do workspace; o adapter
+antigo foi retirado. A consulta exige dono atual e vínculo ADMIN ativo,
+verificados sob RLS na mesma transação RepeatableRead/READ ONLY da leitura.
+Direitos reaproveitam a regra de exceções; uso conta modelos e equipe ativa não
+CLIENT. Acesso persistido deve corresponder ao estado; dado inválido não é
+corrigido por GET. Legado sem assinatura recebe 404, sem plano fictício;
+histórico de faturas vazio continua válido.
 
 A exceção de S8 é só para as leituras exatas do dono: SETUP, FULL, RESTRICTED e
 ARCHIVED; não permite escritas nem subrotas. O resumo usa a assinatura viva, ou
@@ -243,13 +244,14 @@ atual. Valores/datas/links são validados pelos schemas já existentes. Todas as
 respostas destas leituras são private, no-store e variam por Cookie/Host.
 
 Backend: modules/subscriptions/owner-read.ts e http/owner-subscription.ts.
-Composição: lib/subscription-read.ts e
-apps/services/api/src/host/subscription-read.ts. 185 unitários, 126 banco/RLS e
-78 estruturais passaram; 24 cenários HTTP em cada modo NextAuth/Better Auth,
-tipos/gates e os dois builds também. Somente dois tipos com consumo real saíram
-da baseline de higiene; não houve tolerância nova. Emissão, ações, telas,
-onboarding/backoffice e aceites externos continuam pendentes. Fiscalização off e
-legado/scheduler preservados.
+Composição atual: apps/services/api/src/host/subscription-read.ts, por
+createOwnerSubscriptionReadHandlers. A fachada antiga lib/subscription-read.ts
+foi retirada em F. Na onda104, 185 unitários, 126 banco/RLS e 78 estruturais
+passaram; 24 cenários HTTP em cada modo NextAuth/Better Auth, tipos/gates e os
+dois builds também. Somente dois tipos com consumo real saíram da baseline de
+higiene; não houve tolerância nova. Emissão, ações, telas, onboarding/backoffice
+e aceites externos continuam pendentes. Fiscalização off e legado/scheduler
+preservados.
 [Provas e fronteiras](shared-api-host.md#onda-104--assinatura-e-faturas-do-dono-2026-10-04-sem-commit).
 
 ## Catálogo público — onda 103 (2026-10-04, sem commit)

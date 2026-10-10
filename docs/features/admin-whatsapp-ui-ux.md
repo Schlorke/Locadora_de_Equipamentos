@@ -49,7 +49,9 @@ selecionada e preview com ações Responder e Expandir.
 
 ## 3. Entry Points
 
-- **Route**: `app/admin/whatsapp/page.tsx`
+- **Route**: `apps/clients/web/src/app/(admin)/admin/whatsapp/page.tsx`, host
+  fino que consome `AdminWhatsAppPage` da entrada pública
+  `@gb-locacoes/frontend/pages/whatsapp-admin`.
 - **Componentes**:
   - `packages/frontend/src/pages/whatsapp-admin/ui/Layout.web.tsx` – Container
     principal com ResizablePanelGroup (mensagens | preview)
@@ -105,19 +107,23 @@ selecionada e preview com ações Responder e Expandir.
 
 ### Extração incremental das leituras (2026-10-02)
 
-Os três GETs administrativos abaixo estão compostos no legado e em
-`apps/services/api`. Consultas, DTOs, contagem e ordenação pertencem a
+No corte de 2026-10-02, os três GETs abaixo eram compostos no adapter antigo e
+na API compartilhada. Após F, o dono HTTP é `apps/services/api`, com leitura em
+`apps/services/api/src/host/whatsapp-read.ts`. Consultas, DTOs, contagem e
+ordenação pertencem a
 `packages/backend/src/modules/communications/whatsapp-read.ts`; query,
 parâmetros e respostas são adaptados por `backend/http/whatsapp-read.ts`. Ambos
 usam o vínculo ativo ADMIN/OPERATOR e transações por locadora sob FORCE RLS.
 Listagem usa limite/offset e busca insensível a caixa; thread conserva cursor
 timestamp estrito e devolve cada página em ordem cronológica.
 
-Envio POST e webhooks também estão compostos nos dois hosts desde a onda 50. Não
-houve troca de origem do frontend ou mudança da fase de texto. Resultados,
-limites e estado do serviço parcial na [API compartilhada](shared-api-host.md).
+Na onda50, envio POST e webhooks passaram a coexistir nos dois adapters, sem
+troca de origem naquele corte ou mudança da fase de texto. Hoje a composição é
+`apps/services/api/src/host/whatsapp-write.ts` e `payment-webhooks.ts`; o host
+web encaminha para a API configurada. Resultados, limites e estado do serviço
+parcial na [API compartilhada](shared-api-host.md).
 
-- **Webhook**: GET/POST `/api/webhooks/whatsapp/[integrationId]` nos dois hosts,
+- **Webhook**: GET/POST `/api/webhooks/whatsapp/[integrationId]` no host API,
   autenticados pela integração ativa. A URL sem integração permanece 410.
 - **Admin**:
   - GET `/api/admin/whatsapp/conversations` – listar conversas (limit, offset,
@@ -132,9 +138,11 @@ limites e estado do serviço parcial na [API compartilhada](shared-api-host.md).
 - **Backend compartilhado**: communications/whatsapp-client.ts contém envio e
   parsers; whatsapp-webhook.ts contém a persistência do evento. O adapter
   http/whatsapp-send.ts preserva as validações e os envelopes existentes. As
-  fachadas lib/meta-whatsapp.ts e lib/security/webhook-consumers/whatsapp.ts
-  continuam montadas no legado. Integração exige ADMIN; envio pela conversa
-  permite ADMIN/OPERATOR, sempre pelo vínculo ativo da locadora.
+  fachadas antigas `lib/meta-whatsapp.ts` e
+  `lib/security/webhook-consumers/whatsapp.ts` foram retiradas em F; envio e
+  consumo do webhook são compostos por `whatsapp-write.ts` do host API.
+  Integração exige ADMIN; envio pela conversa permite ADMIN/OPERATOR, sempre
+  pelo vínculo ativo da locadora.
 - Envio persiste OUTBOUND/processing antes da chamada Graph v21.0. Confirmação
   com id do provedor muda para sent; falha ou resposta sem id conserva unknown,
   sem fingir entrega ou repetir automaticamente. Inbox/outbox deduplicam eventos

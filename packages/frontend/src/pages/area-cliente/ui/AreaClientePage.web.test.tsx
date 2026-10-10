@@ -44,10 +44,7 @@ describe('Dashboard da área do cliente', () => {
     expect(source).toContain('Bem-vindo de volta,')
     expect(source).toContain('id="dashboard-banner"')
     expect(source).toContain('#f9fafb')
-    const route = read('../../../../../../app/area-cliente/page.tsx')
-    expect(route).toContain("from '@gb-locacoes/frontend/pages/area-cliente'")
-    expect(route).toContain('return <AreaClientePage />')
-    // Onda 135 (A8): a mesma página no host web (área do cliente no host da locadora); a asserção da raiz sai no F.
+    // A rota do host web mantém a composição compartilhada.
     const webRoute = read(
       '../../../../../../apps/clients/web/src/app/(public)/[locadora]/(account)/area-cliente/page.tsx'
     )

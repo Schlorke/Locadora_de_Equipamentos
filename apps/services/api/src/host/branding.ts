@@ -11,7 +11,7 @@ const settings = createAdminSettings({
   revalidatePath,
 })
 export const { getSettings, updateSettings } = settings
-/** Textos legais da vitrine no painel (onda 134): a mesma composição da raiz legada (`app/api/admin/settings/actions.ts`). */
+/** Textos legais da vitrine no painel (onda 134): mantém a composição compartilhada após retirar a antiga app/api/admin/settings/actions.ts no clone F. */
 export const adminStorefrontLegal = createAdminStorefrontLegalHandlers({
   getDocument: settings.getLegalDocument,
   saveDocument: settings.saveLegalDocument,

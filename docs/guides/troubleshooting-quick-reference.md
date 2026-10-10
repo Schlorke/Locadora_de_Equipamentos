@@ -10,30 +10,37 @@
 
 ### "Invalid url postgresql://...": Currently, only Data Proxy supported (P6001)
 
-**Causa**: Variável `PRISMA_GENERATE_DATAPROXY="false"` presente no ambiente
-força `engine=none`. Em JavaScript, `Boolean("false") === true`, então mesmo
-`="false"` ativa Data Proxy mode.
+**Registro histórico (Prisma 6.15)**: a variável
+`PRISMA_GENERATE_DATAPROXY="false"` ativava o modo Data Proxy naquele gerador,
+pois a string não vazia era tratada como verdadeira. A análise está em
+`docs/internal/prisma-6-15-engine-none-analysis.md`.
 
-**Solução**: **REMOVER COMPLETAMENTE** a variável do `.env` - não apenas
-defini-la como "false".
-
-**Verificação**: `npx prisma generate` deve mostrar `engine=binary`, não
-`engine=none`.
-
-**Detalhes**: Consulte `docs/internal/prisma-6-15-engine-none-analysis.md`.
+**Diagnóstico atual**: o workspace usa Prisma 7.10.0 com `@prisma/adapter-pg`.
+`pnpm db:generate` chama `tools/generate-prisma-client.mjs` com
+`--generator client`; o runtime está em
+`packages/backend/src/runtime/database.ts`. Não use a antiga expectativa
+`engine=binary` como critério do runtime atual nem migre para Data Proxy por
+esta mensagem histórica. Confira as versões instaladas e
+[dependências](../references/dependencies.md) antes de alterar a configuração.
 
 ---
 
 ### "Module not found: Can't resolve '@/lib/validations'"
 
-**Causa (histórica)**: o `generator zod` do `schema.prisma` regravava
-`lib/validations/` e apagava o `index.ts` escrito à mão.
+**Causa histórica**: o `generator zod` regravava `lib/validations/` e apagava o
+`index.ts` escrito à mão. O gerador saiu na onda 9; a saída gerada foi retirada
+em 2026-09-30 (entrada 227).
 
-**Situação atual**: o gerador saiu na onda 9 (achado 131) e o `prisma generate`
-só gera o Prisma Client; `lib/validations/index.ts` e `contact-types.ts` são
-escritos à mão e versionados. Se o erro aparecer, restaure o arquivo pelo git
-(ele não é gerado) e confira que ninguém reintroduziu um gerador no schema
-(`tests/unit/prisma-schema-generators.test.ts`).
+**Após o Bloco F**: `lib/validations/` foi aposentado com a raiz; não restaure
+essa pasta no checkout atual. `ContactSchema` e `QuoteRequestSchema` pertencem
+ao export `@gb-locacoes/contracts/quotations`; os schemas públicos de
+documentação estão em `@gb-locacoes/contracts/openapi`. Confira o import do
+consumidor e o `exports` de `packages/contracts/package.json`. Não crie outra
+cópia do contrato para eliminar o erro. `pnpm db:generate` gera somente Prisma
+Client, sem regravar esses contratos;
+`tests/unit/prisma-schema-generators.test.ts` guarda essa separação. A raiz
+antiga só pode ser consultada no artefato fixado da tag de pré-exclusão ou no
+arquivo local preservado.
 
 ---
 
@@ -50,30 +57,40 @@ escritos à mão e versionados. Se o erro aparecer, restaure o arquivo pelo git
 
 ### "ESLint overwhelming errors (31k+ problemas)"
 
-**Causa**: Arquivos auto-gerados do Prisma incluídos no linting.
+**Registro histórico**: o lint incluía a antiga saída gerada de
+`lib/validations/schemas/**`, aposentada com seu gerador; a entrada 227 registra
+a retirada de suas exclusões de ESLint e TypeScript.
 
-**Solução**: Adicionar patterns em `eslint.config.js` ignores.
-
-**Status**: Já resolvido. A saída do gerador (`lib/validations/schemas/**`) não
-existe mais: o gerador saiu na onda 9 e a pasta, com as exclusões do
-`eslint.config.js` e do `tsconfig.json`, em 2026-09-30 (entrada 227 de
-`docs/issues/known-issues.md`).
+**Recuperação atual**: verifique o arquivo denunciado e as regras existentes de
+`eslint.config.js`. Não acrescente um ignore amplo ou recrie o gerador para
+esconder a falha; Prisma Client é gerado separadamente por `pnpm db:generate`.
 
 ---
 
 ### "Build failing com 'Did not initialize yet'"
 
-**Causa**: PNPM + Next.js 16 + Prisma incompatibilidade.
+**Registro histórico**: incompatibilidades de Prisma/Next motivaram tentativas
+com outro gerenciador. Isso não é a receita atual de instalação.
 
-**Solução**: Use NPM para melhor compatibilidade.
+**Recuperação atual**: use Node `>=24.21.0 <25`, pnpm `10.27.0` e o
+`pnpm-lock.yaml` versionado. Confira
+[dependências](../references/dependencies.md) e a seção "Limpeza segura" de
+[troubleshooting](../getting-started/troubleshooting.md). Não substitua pnpm por
+npm nem apague recursivamente `node_modules`, que pode conter links.
 
 ---
 
 ### "Swagger UI React errors com React 19"
 
-**Causa**: swagger-ui-react não compatível com React 19.
+**Registro histórico**: o guia antigo usava `swagger-ui-react` e
+`app/api-docs/page.tsx`, entrada da raiz agora aposentada.
 
-**Solução**: Implementação custom em `app/api-docs/page.tsx`.
+**Owner atual**: a rota fina
+`apps/clients/web/src/app/(platform)/plataforma/api-docs/page.tsx` renderiza
+`@gb-locacoes/frontend/pages/api-docs`. A tela customizada está em
+`packages/frontend/src/pages/api-docs/ui/ApiDocsPage.web.tsx`, e
+`use-api-docs.ts` lê `/openapi.json` pelo cliente HTTP compartilhado. Não
+reinstale o componente antigo nem recrie a rota da raiz.
 
 ---
 
@@ -129,12 +146,21 @@ Motion com scroll-reveal-init.
 
 ## Compatibilidades Críticas
 
-| Dependência  | Versão Estável | Notas                                                         |
-| :----------- | :------------- | :------------------------------------------------------------ |
-| Prisma       | 7.1.0          | Usar com adapter-pg                                           |
-| Tailwind CSS | 3.4.17         | NÃO atualizar para 4.x (incompatível com Next 16 + Turbopack) |
-| Next.js      | 16.0.3         | App Router                                                    |
-| React        | 19.1.1         | Verificar compatibilidade de libs                             |
+Versões conferidas nos manifests do workspace em 2026-10-09; mudanças exigem
+consulta a [dependências](../references/dependencies.md).
+
+| Dependência  | Versão atual  | Contrato                                        |
+| ------------ | ------------- | ----------------------------------------------- |
+| Node         | >=24.21.0 <25 | Engines dos hosts                               |
+| pnpm         | 10.27.0       | Lockfile único do workspace                     |
+| Prisma       | 7.10.0        | Driver adapter pg no servidor                   |
+| Tailwind CSS | 4.3.3         | Paleta e escalas da produção 3.4.17 preservadas |
+| Next.js      | 16.3.6        | Hosts web e API separados                       |
+| React        | 19.3.0        | Versões dos hosts Next                          |
+
+O alerta antigo para não adotar Tailwind 4 referia-se ao stack anterior,
+aposentado. A paridade de classes continua documentada em
+`tests/visual/README.md`; um build verde não autoriza mudar cores ou escalas.
 
 ---
 
@@ -148,7 +174,7 @@ git log --pretty=format:"%h %ad %s" --date=short -10
 pnpm db:generate
 
 # Verificar tipos
-pnpm type-check
+pnpm typecheck
 
 # Lint com auto-fix
 pnpm lint:fix

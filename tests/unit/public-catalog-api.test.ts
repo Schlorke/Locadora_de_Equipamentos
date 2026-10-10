@@ -9,13 +9,6 @@ const db = vi.hoisted(() => ({
   setting: vi.fn(),
   tenantSetting: vi.fn(),
 }))
-vi.mock('@/lib/prisma', () => ({
-  prisma: {
-    organization: { findUnique: db.organization },
-    $transaction: db.transaction,
-  },
-}))
-vi.mock('@/lib/application-session', () => ({ getServerSession: vi.fn() }))
 vi.mock('@gb-locacoes/backend/runtime', () => ({
   getDatabaseRuntime: () => ({
     prisma: {
@@ -25,9 +18,6 @@ vi.mock('@gb-locacoes/backend/runtime', () => ({
   }),
 }))
 
-import { GET as legacyEquipments } from '@/app/api/equipments/route'
-import { GET as legacySearch } from '@/app/api/equipamentos/search/route'
-import { GET as legacySettings } from '@/app/api/settings/public/route'
 import { GET as serviceEquipments } from '../../apps/services/api/src/app/api/equipments/route'
 import { GET as serviceSearch } from '../../apps/services/api/src/app/api/equipamentos/search/route'
 import { GET as serviceSettings } from '../../apps/services/api/src/app/api/settings/public/route'
@@ -54,7 +44,6 @@ describe.each([
   [
     'equipamentos',
     '/api/equipments',
-    legacyEquipments,
     serviceEquipments,
     db.equipment,
     'Erro ao buscar equipamentos',
@@ -62,7 +51,6 @@ describe.each([
   [
     'busca',
     '/api/equipamentos/search',
-    legacySearch,
     serviceSearch,
     db.equipment,
     'Erro interno do servidor',
@@ -70,14 +58,13 @@ describe.each([
   [
     'configurações',
     '/api/settings/public',
-    legacySettings,
     serviceSettings,
     db.setting,
     'Não foi possível carregar as configurações públicas',
   ],
 ] as const)(
   '%s — erros dos adapters reais',
-  (_route, path, legacy, service, read, message) => {
+  (_route, path, service, read, message) => {
     it.each(['resolução de locadora', 'leitura'] as const)(
       'falha na %s preserva o 500 e não expõe o erro interno',
       async (stage) => {
@@ -87,7 +74,7 @@ describe.each([
         else read.mockRejectedValue(failure)
 
         const responses = []
-        for (const handler of [legacy, service]) {
+        for (const handler of [service]) {
           const response = await handler(
             new NextRequest(
               `http://api.test${path}?tenantSlug=alfa&q=Betoneira`
@@ -99,7 +86,9 @@ describe.each([
             headers: Object.fromEntries(response.headers),
           })
         }
-        expect(responses[1]).toEqual(responses[0])
+        expect(responses[0]!.headers).toEqual({
+          'content-type': 'application/json',
+        })
         expect(responses[0]!.status).toBe(500)
         expect(JSON.parse(responses[0]!.body)).toEqual({ error: message })
         expect(responses[0]!.body).not.toContain('fixture-private')
@@ -109,7 +98,7 @@ describe.each([
     )
 
     it('seleção inválida não consulta o catálogo e mantém resposta neutra', async () => {
-      for (const handler of [legacy, service]) {
+      for (const handler of [service]) {
         const response = await handler(
           new NextRequest(
             `http://api.test${path}?tenantSlug=Bad_Slug&q=Betoneira`

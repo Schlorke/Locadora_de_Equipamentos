@@ -21,16 +21,7 @@ describe('Perfil do cliente', () => {
     expect(source).toContain('#f9fafb')
     expect(source).toContain('#1A2E4C')
     expect(source).toContain('#1a2e4c')
-    const route = readFileSync(
-      new URL(
-        '../../../../../../app/area-cliente/perfil/page.tsx',
-        import.meta.url
-      ),
-      'utf8'
-    )
-    expect(route).toContain("from '@gb-locacoes/frontend/pages/perfil'")
-    expect(route).toContain('return <PerfilPage />')
-    // Onda 135 (A8): a mesma página no host web; a asserção sobre a raiz sai no bloco F.
+    // A rota do host web mantém a composição compartilhada.
     const webRoute = readFileSync(
       new URL(
         '../../../../../../apps/clients/web/src/app/(public)/[locadora]/(account)/area-cliente/perfil/page.tsx',

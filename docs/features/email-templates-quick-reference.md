@@ -1,35 +1,50 @@
 # 📧 Templates de Email - Referência Rápida
 
-> **Versão**: 2.0.0 | **Status**: ✅ Produção | **Compatibilidade**: 100%
+> **Referência**: renderizadores internos ao backend. A versão 2.0.0 e a
+> compatibilidade declarada pertencem ao registro de Dezembro 2024; não são
+> validação atual de entrega ou clientes de email.
 
 ---
 
 ## ⚡ Uso Rápido
 
+Exemplos dentro de `packages/backend/src/modules/communications`, com
+`loadTenantBranding` e `context` injetados. A marca é da Organization ativa;
+imports relativos abaixo são internos, não entradas públicas dos hosts/clientes.
+Para entrega, a API compõe `createQuoteCreatedEffects` pela entrada
+`@gb-locacoes/backend/communications` e o worker processa o pedido persistido.
+
 ### **Formulário de Contato Simples**
 
 ```typescript
-import { generateContactEmailHTML } from "@/lib/email-templates"
+import { generateContactEmailHTML } from "./email-templates"
 
-const html = generateContactEmailHTML({
-  name: "Nome do Cliente",
-  email: "cliente@email.com",
-  phone: "51999887766",
-  message: "Mensagem aqui",
-  // Opcionais:
-  company: "Nome da Empresa",
-  equipment: "Equipamento de Interesse",
-  cpf: "123.456.789-00",
-  cnpj: "12.345.678/0001-90"
-})
+const branding = await loadTenantBranding(context)
+const html = generateContactEmailHTML(
+  branding,
+  {
+    name: "Nome do Cliente",
+    email: "cliente@email.com",
+    phone: "51999887766",
+    message: "Mensagem aqui",
+    // Opcionais:
+    company: "Nome da Empresa",
+    equipment: "Equipamento de Interesse",
+    cpf: "123.456.789-00",
+    cnpj: "12.345.678/0001-90"
+  },
+  "contact-id-exemplo"
+)
 ```
 
 ### **Orçamento Completo**
 
 ```typescript
-import { generateQuoteEmailHTML } from "@/lib/email-templates"
+import { generateQuoteEmailHTML } from "./email-templates"
 
+const branding = await loadTenantBranding(context)
 const html = generateQuoteEmailHTML(
+  branding,
   {
     customerName: "Nome do Cliente",
     customerEmail: "cliente@email.com",
@@ -120,12 +135,15 @@ Shadow: 0 4px 12px rgba(0,0,0,0.05)
 ## 📁 Arquivos Principais
 
 ```
-lib/email-templates.ts          # Geradores de HTML ⭐
-app/api/contact/route.ts        # API contato
-app/api/orcamentos/route.ts     # API orçamentos homepage
-app/api/quotes/route.ts         # API orçamentos /orcamento
-public/email-templates/         # Template base para edição visual
-docs/features/email-templates.md # Documentação completa
+packages/backend/src/modules/communications/email-templates.ts  # HTML interno
+packages/backend/src/modules/communications/tenant-branding.ts  # marca por locadora
+packages/backend/src/modules/communications/quote-created-effects.ts # efeito de outbox
+apps/services/api/src/host/notification-effects.ts              # composição dos efeitos
+apps/services/api/src/app/api/contact/route.ts                  # 202, contato persistido/fila
+apps/services/api/src/app/api/orcamentos/route.ts               # 201, orçamento/fila
+apps/services/api/src/app/api/quotes/route.ts                    # 201, orçamento/fila
+public/email-templates/quote-template.html                      # referência visual histórica
+docs/features/email-templates.md                               # documentação completa
 ```
 
 ---

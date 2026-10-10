@@ -193,8 +193,8 @@ describe('ContatoPage', () => {
       'Qualidade Garantida',
       'Equipamentos revisados e com certificação de segurança',
     ])
-    // Mapa com o local da própria locadora e a moldura do cartão, a classe da produção (eb4c0098:app/contato/page.tsx:297),
-    // que mora no mapa (Mapa.web.test.tsx confere a classe da moldura).
+    // Mapa com o local da própria locadora e a moldura do cartão, caracterizados no antigo app/contato/page.tsx:297
+    // (eb4c0098), retirado em F. A moldura mora no mapa (Mapa.web.test.tsx confere a classe).
     expect(html).toContain(
       '<div data-mapa="Locadora Alfa" data-moldura="cartao">Rua Nova, 1</div>'
     )

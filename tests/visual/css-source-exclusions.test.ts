@@ -67,6 +67,8 @@ function files(dir: string): string[] {
 
 const SERVER_ONLY = (file: string) => {
   const rel = path.relative(webSrc, file).split(path.sep).join('/')
+  // proxy.ts aqui é relativo a apps/clients/web/src; o antigo proxy.ts da raiz foi retirado em F.
+  // Não substituir esse basename: o proxy vivo do host continua sendo código só de servidor.
   return (
     rel === 'proxy.ts' ||
     rel.startsWith('host/routing/') ||

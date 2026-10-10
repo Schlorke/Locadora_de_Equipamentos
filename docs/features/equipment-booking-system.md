@@ -1,11 +1,12 @@
 # 📅 Sistema de Agendamento de Equipamentos - Plano de Implementação
 
-> **Caminhos atuais (conferidos em 2026-09-30)**: este é um plano. Os arquivos
-> citados (`components/equipment-date-range-picker.tsx`,
-> `components/availability-calendar.tsx` e as rotas
-> `app/api/equipamentos/[id]/availability*`) não existem; a disponibilidade
-> atual está em `packages/backend/src/modules/rentals/availability.ts` (ver
-> `docs/features/quote-stock-blocking.md`).
+> **Plano antigo de Janeiro2025**: `components/equipment-date-range-picker.tsx`,
+> `components/availability-calendar.tsx` e
+> `app/api/equipamentos/[id]/availability*` são nomes propostos nunca
+> instalados, não caminhos atuais. A raiz antiga foi retirada em F. A
+> disponibilidade implementada tem dono em
+> `packages/backend/src/modules/rentals/availability.ts`; não expõe os dois
+> endpoints propostos abaixo (ver `docs/features/quote-stock-blocking.md`).
 
 > **Status**: 📋 Planejamento | **Prioridade**: 🔴 Alta | **Data**: Janeiro 2025
 
@@ -44,7 +45,8 @@ administrador.
 
 #### 1.1. `EquipmentDateRangePicker` (Novo Componente)
 
-**Localização**: `components/equipment-date-range-picker.tsx`
+**Localização proposta pelo plano antigo (não instalada)**:
+`components/equipment-date-range-picker.tsx`
 
 **Funcionalidades**:
 
@@ -71,7 +73,8 @@ interface EquipmentDateRangePickerProps {
 
 #### 1.2. `AvailabilityCalendar` (Novo Componente)
 
-**Localização**: `components/availability-calendar.tsx`
+**Localização proposta pelo plano antigo (não instalada)**:
+`components/availability-calendar.tsx`
 
 **Funcionalidades**:
 
@@ -99,9 +102,10 @@ interface EquipmentDateRangePickerProps {
 
 ### 2. **Backend/API**
 
-#### 2.1. Nova API: `/api/equipamentos/[id]/availability`
+#### 2.1. API proposta, não instalada: `/api/equipamentos/[id]/availability`
 
-**Localização**: `app/api/equipamentos/[id]/availability/route.ts`
+**Localização proposta pelo plano antigo (não instalada)**:
+`app/api/equipamentos/[id]/availability/route.ts`
 
 **Endpoint**:
 `GET /api/equipamentos/[id]/availability?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD`
@@ -130,9 +134,10 @@ interface EquipmentDateRangePickerProps {
 }
 ```
 
-#### 2.2. Nova API: `/api/equipamentos/[id]/availability-calendar`
+#### 2.2. API proposta, não instalada: `/api/equipamentos/[id]/availability-calendar`
 
-**Localização**: `app/api/equipamentos/[id]/availability-calendar/route.ts`
+**Localização proposta pelo plano antigo (não instalada)**:
+`app/api/equipamentos/[id]/availability-calendar/route.ts`
 
 **Endpoint**: `GET /api/equipamentos/[id]/availability-calendar?month=YYYY-MM`
 
@@ -276,19 +281,25 @@ básico.
 
 ---
 
-## 🔧 Implementação Técnica
+## 🔧 Etapas técnicas propostas em Janeiro2025 (não checklist de código instalado)
 
 ### Fase 1: Fundação (Semana 1)
 
 #### 1.1. Criar API de Disponibilidade
 
-- [ ] Criar `app/api/equipamentos/[id]/availability/route.ts`
+- [ ] Reavaliar o endpoint de disponibilidade do plano antigo, então chamado
+      `app/api/equipamentos/[id]/availability/route.ts` (nunca instalado). Uma
+      eventual API exige adapter no host API atual, reutilizando o serviço
+      tenant; não criar esse caminho na raiz retirada.
 - [ ] Implementar lógica de verificação de conflitos
 - [ ] Testar com diferentes cenários
 
 #### 1.2. Criar API de Calendário
 
-- [ ] Criar `app/api/equipamentos/[id]/availability-calendar/route.ts`
+- [ ] Reavaliar o calendário do plano antigo, então chamado
+      `app/api/equipamentos/[id]/availability-calendar/route.ts` (nunca
+      instalado). DTO, cache e guard desse novo endpoint ainda exigem
+      decisão/validação própria.
 - [ ] Implementar cache (5 minutos)
 - [ ] Otimizar queries para performance
 
@@ -448,10 +459,14 @@ const calculatePriceFromDates = (start: Date, end: Date) => {
 />
 ```
 
-### Backend
+### Backend — exemplo do plano antigo, não código instalado
+
+Este exemplo de Janeiro2025 não resolve TenantContext/RLS nem representa a
+implementação canônica; não deve ser copiado para o host API. Preserva-se como
+registro da proposta, não como receita operacional após F.
 
 ```typescript
-// app/api/equipamentos/[id]/availability/route.ts
+// Caminho do plano antigo (nunca instalado): app/api/equipamentos/[id]/availability/route.ts
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -483,7 +498,26 @@ export async function GET(
 
 ---
 
-## 🔒 Segurança e Validação
+## Disponibilidade já implementada no backend
+
+`createRentalAvailability` em
+`packages/backend/src/modules/rentals/availability.ts` recebe
+`withTenantTransaction`. Todas as consultas restringem equipamento, itens e
+locações ao tenant; contexto ausente não escolhe uma locadora padrão.
+`calculateEquipmentAvailability`/`assertRentalItemsAvailability` usam o pico de
+quantidade reservada em intervalos (`peakReservedQuantity` do domínio), não uma
+soma indiscriminada de todas as reservas. Consideram os estados de locação
+bloqueantes, manutenção e a exclusão explícita da própria locação quando
+cabível.
+
+`calculateEquipmentCalendarAvailability` já calcula o mapa diário interno e
+estoque; sua existência não instala o endpoint público ou o DTO `conflicts`/
+`blockedReason` proposto acima. Uma nova exposição deve reusar essa regra, com
+principal/tenant confiáveis, sem criar uma query paralela ou enfraquecer os
+oráculos atuais de estoque/preço. Nenhuma nova UI, rota ou cache foi validado
+por esta revisão documental.
+
+## 🔒 Segurança e Validação pretendidas pelo plano antigo
 
 ### Validações Frontend
 

@@ -8,6 +8,94 @@ adere ao [Versionamento Semântico](HTTPS://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
+### Fechamento de código no clone — 2026-10-10
+
+Nova unit 4.104/4.104 em 179 arquivos, sem skips, exit 0, em 406,99 s.
+Fechamento 1003: três passos exit 0, 12 gates, 324 regressões em 14 arquivos e
+13 casos OpenAPI. Os checkpoints RED/pending abaixo ficam históricos; recibos e
+hashes atuais estão no guia F e ledger.
+
+Aplicação, formatação e gates afetados deste complemento ainda terão recibo
+próprio. Validação no diretório original, publicação F e CI F são posteriores,
+em recibos externos; nenhum SHA F é antecipado.
+
+### Checkpoint pós-aplicação da base após F — 2026-10-10 (fechamento em curso)
+
+- Coorte documental V7 aplicada e formatada. A rodada posterior dos gates
+  terminou RED: `check:tokens` não reconheceu o literal com aspas simples,
+  embora a cor canônica continuasse `#ea580c`.
+- Correção mínima aplicada ao leitor para aceitar aspas simples ou duplas com
+  fechamento correspondente e extrair o hex pelo grupo 2. Definição única,
+  sentinela temporária, integridade e expectativas permanecem estritas; estilos,
+  oracle e baselines conservam seus valores.
+- Gate real posterior passou exit 0 em 5,20 s observados pelo executor:
+  arquivo/árvore canônicos intactos, alias aplicado e propagação nativa
+  conferidos. A assertion web esperada e os três NOT_PROVEN permanecem.
+  Regressões existentes e fechamento global posterior ainda pendentes.
+- Full unit posterior terminou RED: 4.103 passes/uma falha em 179 arquivos,
+  391,15 s e exit 1. Quatro referências históricas foram interpretadas como
+  estrutura vigente. Legendas factuais de aposentadoria preparadas no handoff,
+  guia e ledger, mantendo trechos históricos e detector intactos. Nova full unit
+  e fechamento global ainda pendentes.
+
+- Este checkpoint conserva o bloco de 2026-10-09 e o RED anterior. Não antecipa
+  commit/push F ou CI final.
+
+### Checkpoint pré-publicação da base preparada após F — 2026-10-09
+
+- Unit final integral 4.104/4.104 em 179 arquivos, sem skips; P2 v6 e B11 v3
+  scoped e visual F 80/536/31.065 fechados. Rodadas RED e raw verdicts
+  permanecem históricos, separados dos eventos posteriores.
+- B11 comparou 2.400 casos legacy e 2.398 Better Auth, sem violações abertas ou
+  novas justificativas; exceções de cobertura existentes continuam declaradas.
+  Gates documentais após aplicar a coorte. Commit/push,
+  transferência/revalidação e CI final F terão recibos posteriores; nenhum SHA
+  próprio ou publicação é antecipado neste checkpoint.
+- Receitas/ponteiros usam os owners atuais. testing.md recebe LF por CRLF→LF
+  explícito, preservando o conteúdo histórico; C e 25 .source selados mantêm
+  seus registros/bytes. Hygiene 173 continua dívida declarada.
+- Dispositivos, Slow 3G completo e foundations NOT_PROVEN não são promovidos por
+  esses resultados. Infraestrutura hospedada, DB produção e provedores serão
+  escolhidos depois conforme o usuário; migrations locais não homologam conta ou
+  banco de produção.
+
+### Preparação pós-F — 2026-10-09 (validação em curso)
+
+- Corrigidos consumidores de teste da composição canônica, preservando
+  cancelamento M31, portas reais de Zoho, wrapper NextAuth e controles de
+  segurança. Quatro comparações redundantes com a raiz retirada foram encerradas
+  com a evidência anterior; nenhum serviço foi comparado consigo mesmo.
+- Inventário da arquitetura exige ausência das sete raízes retiradas e preserva
+  assets/tokens/shim. O leitor de referências distingue ponto final de extensão
+  `.map`; comentários e documentação identificam cada histórico ou fixture, sem
+  novos ignores.
+- Gerador manual Tailwind usa quatro blobs canônicos verificados, independentes
+  do histórico privado, e saída externa para revisão. A referência visual e o
+  algoritmo de comparação permanecem os mesmos.
+- CI usa mirrors públicos das mesmas imagens oficiais com digest fixo. O
+  candidato pré-F passou no Linux com saúde HTTP 200 e uid 1000; a publicação
+  final precisa de prova própria.
+- Seis dependências sem consumidor saíram do importer da raiz. O lockfile
+  conserva todo o grafo restante; a tentativa de resolução que alterava peers
+  foi rejeitada e a instalação offline travada passou.
+
+### Casa preparada: retirada dos atalhos antigos de banco
+
+- Retirada no Bloco F da família avulsa de RLS/Supabase e do atalho db:push:26
+  arquivos e18 comandos, conforme inventário revisado. Policies/schema continuam
+  em migrations; geração do cliente e operações atuais com runbook são
+  preservadas.
+- Retiradas somente12 allowances dos arquivos excluídos e a exceção
+  safe-postinstall, mantendo todas as asserções do detector. Cinco guias
+  conservam os procedimentos antigos como históricos e apontam comandos atuais.
+- Nenhum banco, volume, integração, template, credencial ou ambiente de produção
+  foi alterado por esta retirada. Validação do clone e do corte registrada
+  separadamente.
+- Retirada física local protegida por guards de caminhos exatos, hashes, backup
+  e preservação dos hosts/Prisma/types; teste de artefatos aposentados mantém31
+  expectativas anteriores e distingue roots antigos de src/app. Aplicação não
+  declara P2/F verde.
+
 ### Revisão e fechamento da base — 2026-10-09
 
 - Aceite humano da interface registrado; referência visual existente ancorada

@@ -13,7 +13,6 @@ export {
 } from './tenant-branding'
 export type { EmailBranding } from './tenant-branding'
 
-export { createAdminNotificationService } from './admin-notifications'
 export { createAdminAlertSync } from './admin-alerts'
 export { createAdminBadges } from './admin-badges'
 export { createZohoMailClient } from './zoho-client'
@@ -24,14 +23,6 @@ export { createWhatsAppClient } from './whatsapp-client'
 export { createWhatsAppWebhookConsumer } from './whatsapp-webhook'
 
 export { createNotificationJob } from './send-notifications'
-
-export {
-  generateContactEmailHTML,
-  generateQuoteEmailHTML,
-  generateBoletoEmailHTML,
-  generateQuoteStatusChangeEmailHTML,
-  generateCustomerQuoteConfirmationEmailHTML,
-} from './email-templates'
 
 export { createQuoteStatusEffects } from './quote-status-effects'
 

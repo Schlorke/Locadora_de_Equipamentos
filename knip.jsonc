@@ -43,7 +43,6 @@
       // Assets servidos como arquivo.
       "ignore": ["public/**"],
       "ignoreDependencies": [
-        // Nomeado em transpilePackages e turbopack.resolveAlias do next.config.mjs da raiz, não por import.
         // require opcional dentro de try/catch em tools/token-check.mjs (fallback da API clássica do TypeScript).
         "@typescript/typescript6",
       ],
@@ -51,7 +50,7 @@
     "apps/clients/web": {
       "entry": [
         "src/**/*.test.{ts,tsx}",
-        // Declarações de next.config.mjs que o TypeScript lê ao lado do .mjs importado pelo teste do host.
+        // Declarações de apps/clients/web/next.config.mjs que o TypeScript lê ao lado do .mjs importado pelo teste do host.
         "next.config.d.mts",
       ],
       "project": ["**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,css}"],

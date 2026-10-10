@@ -1,6 +1,6 @@
 # Gates com catraca (arquitetura, tokens e higiene)
 
-> **Status**: Critical **Last updated**: 2026-09-30
+> **Status**: Critical **Last updated**: 2026-10-09
 
 ---
 
@@ -49,8 +49,13 @@ arquivo novo com violação ou burla do registro reprova o gate.
 
 - `tools/arch-check.mjs`, `tools/arch-runtime.mjs`, `arch.config.json`
   (`universalSourceRoots`, `ratchetBaseline`, `legacyRoots`).
-- `tools/token-check.mjs` (`legacyScope`: `app`, `lib`, `middlewares`,
-  `schemas`, `stores`, `types`, `proxy.ts`, `instrumentation.ts`).
+- `tools/token-check.mjs`: `DEFAULT_TOKEN_CONFIG.legacyScope` é `[]` na
+  configuração pós-F. O escopo de produto continua nos dois clientes e em
+  `packages/ui/src`/`packages/frontend/src`; tokens canônicos permanecem em
+  `packages/design-tokens/src`. O antigo escopo de código da raiz foi retirado
+  com seus arquivos, não substituído por uma tolerância para arquivos novos. Em
+  `arch.config.json`, os `legacyRoots` remanescentes são os assets de `public` e
+  a compatibilidade gerada `design-tokens`, sem código do host antigo.
 - `tools/ratchet-guard.mjs`, `tools/ratchet-transfers.json`: renomeações
   (`--rename`), transferências de configuração e aprovações
   `{ approve, entry, reason }` de estreitamento decidido pelo produto (por
@@ -111,8 +116,9 @@ arquivo novo com violação ou burla do registro reprova o gate.
      (dica `project-extension-unregistered`); tag JSDoc que o knip sempre
      esconde (`export-tag`: public, beta, alias).
    - Saídas de ferramenta (`TOOL_OUTPUTS`): relatórios do Playwright, cobertura,
-     capturas visuais, builds e caches (`.next`, `.expo`, `dist-export`,
-     `.turbo`, `*.tsbuildinfo`...) e logs (`*.log`, `eslint-output.txt`,
+     capturas visuais, builds e caches (por exemplo `apps/clients/web/.next`,
+     `apps/clients/mobile/.expo`, `dist-export`, `.turbo` e arquivos de build
+     incremental dos workspaces) e logs (`*.log`, `eslint-output.txt`,
      `build-output.txt`, `test-output.txt`), cada uma com os caminhos que o
      `.gitignore` precisa ignorar e a regra que acha o arquivo versionado em
      qualquer nível.
@@ -202,7 +208,9 @@ Contagens (baseline no commit `0cff7b65` → onda 2 → onda 3 → árvore da on
   nenhuma regressão foi absorvida. O `UNIVERSAL-WEB-LIB` +1 da onda 2 era
   `shared/lib/sanitize.ts` (isomorphic-dompurify); saiu na onda 3 com as
   variantes `.web`/`.native` (entrada 184). `WORKSPACE-ESCAPE` caiu para 0
-  quando as páginas do host web deixaram de importar `lib/prisma`.
+  quando as páginas do host web deixaram de importar o antigo `lib/prisma`,
+  fachada da raiz posteriormente removida em F. Esse dado é da onda 3, não a
+  medição da árvore pós-F.
 - `css-important` entrou com `--adopt-coverage` (415 medidas no código da base)
   e foi travada em 22 depois do lote "CSS limpo"; na onda 4 chegou a 0 e virou
   regra de tolerância zero.
@@ -220,9 +228,14 @@ Contagens (baseline no commit `0cff7b65` → onda 2 → onda 3 → árvore da on
   contagens de paleta, dimensão arbitrária e `z-index`, e o lote não rodou o
   `node tools/token-check.mjs --update-baseline`; conferir na rodada completa
   antes do commit.
-- Cores literais de e-mail e PDF na raiz legada (`lib/email-templates.ts`,
-  `lib/pdf/*`) ficam congeladas pela catraca (decisão pendente: aceitar ou
-  registrar `token-check-allow:` com motivo).
+- Na fotografia de 2026-09-26, cores de e-mail e PDF dos antigos
+  `lib/email-templates.ts` e `lib/pdf/*` estavam congeladas pela catraca; esses
+  arquivos da raiz saíram em F. Os owners atuais são
+  `packages/backend/src/modules/communications/email-templates.ts` e
+  `packages/backend/src/modules/documents`. Eles são código de servidor, fora do
+  escopo de UI declarado por `DEFAULT_TOKEN_CONFIG.scope`. Essa fronteira não
+  autoriza criar comentário `token-check-allow`, ampliar baseline ou mover
+  código frontend para esconder dívida.
 
 ## 7. Constraints and Edge Cases
 
@@ -263,18 +276,32 @@ Contagens (baseline no commit `0cff7b65` → onda 2 → onda 3 → árvore da on
 
 ## 10. Tests and Validation
 
-Na revisão de 2026-10-09, a classificação dos componentes web foi corrigida com
-variantes `.web` e contratos puros separados, preservando a interface.
-`pnpm arch` mediu zero `UNIVERSAL-DOM-JSX`, `UNIVERSAL-WEB-LIB` e
-`WORKSPACE-ESCAPE` no frontend. A catraca foi reduzida para 43 ocorrências em 16
-arquivos, todas na raiz legada: seis `LEGACY-DEEP-IMPORT`, 31 `LEGACY-DOM-JSX` e
-seis `LEGACY-WEB-LIB`. Sua retirada continua na etapa F. As 53 transferências de
-baseline de tokens apenas mudam o caminho do arquivo para a variante web
-correspondente; não aumentam a tolerância. Os três níveis de propagação ainda
-listados como não provados por `check:tokens` continuam limites explícitos, não
-evidência de execução web ou mobile.
+Na revisão **da primeira etapa com raiz** de 2026-10-09, a classificação dos
+componentes web foi corrigida com variantes `.web` e contratos puros separados,
+preservando a interface. `pnpm arch` mediu zero `UNIVERSAL-DOM-JSX`,
+`UNIVERSAL-WEB-LIB` e `WORKSPACE-ESCAPE` no frontend. A catraca foi reduzida
+para 43 ocorrências em 16 arquivos, todas na raiz legada: seis
+`LEGACY-DEEP-IMPORT`, 31 `LEGACY-DOM-JSX` e seis `LEGACY-WEB-LIB`. A primeira
+etapa foi publicada em `978ceb`; depois, F retirou esses arquivos somente no
+clone independente. A configuração atual não conta mais código legado da raiz,
+mas isso é inspeção de fonte, não uma nova execução verde de `arch`, higiene ou
+`ratchet:guard`. As 53 transferências de baseline de tokens apenas mudam o
+caminho do arquivo para a variante web correspondente; não aumentam a
+tolerância. Os três níveis de propagação ainda listados como não provados por
+`check:tokens` continuam limites explícitos, não evidência de execução web ou
+mobile.
 
 ### Execução local completa
+
+Separe a rotina focada durante edição da validação consolidada da fonte final
+(`docs/guides/testing.md`). A primeira etapa publicada está registrada em
+`docs/guides/wave135-base-validation.md`; a medição pós-F não deve herdar seu
+resultado. O log existente `FINISH/p2-validation/test-unit.log` registrou 245
+casos aprovados e dois reprovados em 247, exit 1, na leitura de artefatos
+aposentados e seu controle negativo. As referências antigas devem ser corrigidas
+em suas unidades históricas ou portadas ao owner real; não adicionar
+ignore/ALLOWED, relaxar o controle ou tratar preparação de docs como teste
+verde.
 
 Confira o exit de cada etapa e faça o comando externo falhar quando alguma etapa
 falhar. Um `echo DONE` ou uma leitura de log no final não pode substituir o

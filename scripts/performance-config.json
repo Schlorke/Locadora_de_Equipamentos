@@ -109,31 +109,31 @@
     },
     "heavyComponents": [
       {
-        "file": "components/hero.tsx",
+        "file": "packages/frontend/src/widgets/hero/ui/Hero.web.tsx",
         "size": "22KB",
         "concern": "Animações CSS/JS pesadas",
         "checkFor": ["requestAnimationFrame", "CSS animations", "large images"]
       },
       {
-        "file": "app/scroll-reveal-init.tsx",
+        "file": "packages/frontend/src/app/providers/ScrollRevealInit.web.tsx",
         "size": "32KB",
         "concern": "Scroll listeners e IntersectionObserver",
         "checkFor": ["scroll events", "reflows", "layout thrashing"]
       },
       {
-        "file": "components/equipment-3d-carousel.tsx",
+        "file": "packages/frontend/src/widgets/hero/ui/Equipment3DCarousel.web.tsx",
         "size": "11KB",
         "concern": "Renderização 3D/WebGL",
         "checkFor": ["canvas", "WebGL", "transform3d"]
       },
       {
-        "file": "components/smart-equipment-pricing.tsx",
+        "file": "packages/frontend/src/pages/equipamento-detalhe/ui/EquipamentoPreco.web.tsx",
         "size": "27KB",
         "concern": "Cálculos em tempo real",
         "checkFor": ["useEffect chains", "heavy computations", "re-renders"]
       },
       {
-        "file": "components/equipment-infinite-scroll.tsx",
+        "file": "packages/frontend/src/widgets/home-cliente/ui/ScrollInfinito.web.tsx",
         "size": "12KB",
         "concern": "Virtualização e lazy loading",
         "checkFor": ["DOM nodes count", "memory leaks", "scroll performance"]

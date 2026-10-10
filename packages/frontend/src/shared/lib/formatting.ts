@@ -1,6 +1,6 @@
 /**
  * Shared formatting utilities used across admin pages.
- * Copiado de lib/utils/formatting.ts — getInitials distinto de cópias locais
+ * Copiado da antiga lib/utils/formatting.ts, retirada em F — getInitials distinto de cópias locais
  * em pages (não unificar se divergirem).
  */
 

@@ -13,10 +13,6 @@ import {
 
 const sessionState = vi.hoisted(() => ({ userId: 'test-admin' }))
 
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => ({ user: { id: sessionState.userId } }),
-}))
-
 // Contraparte da API compartilhada (onda 135, E5): a mesma sessão no leitor do serviço (`host/session`), a mesma
 // rota montada pelo serviço e o mesmo banco descartável (`getDatabaseRuntime`). A metade da raiz legada sai no F.
 vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
@@ -28,10 +24,6 @@ vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
 
 const { prisma } = getDatabaseRuntime()
 const HOSTS = [
-  {
-    name: 'legacy root',
-    route: () => import('@/app/api/admin/quotes/[id]/route'),
-  },
   {
     name: 'service',
     route: () =>

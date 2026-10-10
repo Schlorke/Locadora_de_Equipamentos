@@ -226,5 +226,3 @@ export function ScrollStackBenefitCard({
     </div>
   )
 }
-
-export default ScrollStackBenefitCard

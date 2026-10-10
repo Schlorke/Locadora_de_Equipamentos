@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { getDatabaseRuntime } from '@gb-locacoes/backend/runtime'
-import { calculateAndApplyLateFees as legacyLateFees } from '@/lib/late-fee-calculator'
+
 import { calculateAndApplyLateFees as serviceLateFees } from '../../apps/services/api/src/host/quotations'
 import {
   cleanupTestData,
@@ -16,7 +16,6 @@ import {
 // sai no bloco F; a do serviço fica.
 const { prisma } = getDatabaseRuntime()
 const HOSTS = [
-  { name: 'legacy root', calculateAndApplyLateFees: legacyLateFees },
   { name: 'service', calculateAndApplyLateFees: serviceLateFees },
 ] as const
 

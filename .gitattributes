@@ -1,0 +1,2 @@
+# Preserve the generator's exact LF output for this inventory on every checkout.
+apps/clients/web/src/host/routing/public-entries.generated.ts text eol=lf

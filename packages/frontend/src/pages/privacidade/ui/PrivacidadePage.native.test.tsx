@@ -79,13 +79,16 @@ it('com o documento da GB, a mesma árvore de antes da troca (caracterização d
       }}
     />
   )
+  // Só normaliza CRLF do checkout; a árvore completa e a grafia de classe já aprovada continuam comparadas.
   expect(container.innerHTML + '\n').toBe(
     readFileSync(
       path.resolve(
         'tests/unit/__fixtures__/paginas-legais/privacidade.native.html'
       ),
       'utf8'
-    ).replaceAll('flex-shrink-0', 'shrink-0')
+    )
+      .replace(/\r\n/g, '\n')
+      .replaceAll('flex-shrink-0', 'shrink-0')
   )
 })
 

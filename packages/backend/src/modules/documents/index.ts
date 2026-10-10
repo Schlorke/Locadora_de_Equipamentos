@@ -19,7 +19,6 @@ export {
   PRIVATE_DOCUMENT_URL_TTL,
   InvalidDocumentError,
   isOwnedDocumentPath,
-  createPrivateDocumentStorage,
 } from './private-documents'
 
 export { createContractSignatureEffects } from './contract-signature-effects'

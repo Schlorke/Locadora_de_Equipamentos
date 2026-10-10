@@ -233,18 +233,7 @@ describe('Novo equipamento admin', () => {
 
   it('rota admin de novo é shell', () => {
     // No ambiente jsdom o Vite reescreve new URL(..., import.meta.url) como asset http; use o diretório real.
-    const route = readFileSync(
-      resolve(
-        import.meta.dirname,
-        '../../../../../../app/admin/equipamentos/novo/page.tsx'
-      ),
-      'utf8'
-    )
-    expect(route).toContain(
-      "from '@gb-locacoes/frontend/pages/equipamentos-admin'"
-    )
-    expect(route).toContain('<NovoEquipamentoPage />')
-    // Onda 135 (A8): a mesma página no host web; a asserção sobre a raiz sai no bloco F.
+    // A rota do host web mantém a composição compartilhada.
     const webRoute = readFileSync(
       resolve(
         import.meta.dirname,

@@ -1,27 +1,29 @@
 # Resolução de locadora por requisição (backend)
 
-> **Status**: Critical **Last updated**: 2026-09-26
+> **Status**: Critical **Last updated**: 2026-10-09 (ponteiros pós-F; histórico
+> preservado)
 
 ---
 
 ## 1. Purpose
 
-Garantir que toda API pública e privada do backend legado descubra a locadora de
-uma forma só, sem aceitar escolha contraditória: pelo host (borda validada do
-proxy do host web) ou, fora de host de locadora, pelo `tenantSlug` explícito do
-contrato atual (mobile e hosts antigos). Complementa
-`docs/features/tenant-hosts-web.md` (o lado do proxy).
+Garantir que as APIs de `apps/services/api`, sobre a política compartilhada de
+`packages/backend`, descubram a locadora de uma forma só, sem aceitar escolha
+contraditória: pelo host (borda validada do proxy do host web) ou, fora de host
+de locadora, pelo `tenantSlug` explícito do contrato atual (mobile e hosts
+antigos). Complementa `docs/features/tenant-hosts-web.md` (o lado do proxy).
 
 ## 2. Scope
 
 **In scope**
 
 - Contexto de borda (`readPlatformEdgeContext`) e sua validação.
-- `resolvePublicRequestTenant` e `publicTenantNotFound` em `lib/tenant.ts`.
+- `createPublicTenantResolver` e `publicTenantNotFound` em backend/identity, com
+  `resolvePublicRequestTenant` composto no host API.
 - Candidatas de locadora no principal privado (`resolvePrincipal`) e composição
   compartilhada de requisição (`createTenantPrincipalResolver`).
-- Origem esperada nas mutações (`lib/security/mutation-origin.ts`) e o guard de
-  mesma origem das mutações com cookie (`same-origin-mutation.ts`, onda 4).
+- Origem esperada nas mutações (`apps/services/api/src/host/mutation-origin.ts`)
+  e o guard de mesma origem das mutações com cookie (`same-origin-mutation.ts`).
 - Rotas públicas novas: detalhe de equipamento, cartão público da locadora e
   vínculo com a locadora do host.
 - Política de cache no host de locadora.
@@ -41,17 +43,25 @@ contrato atual (mobile e hosts antigos). Complementa
 - `packages/backend/src/modules/identity/same-origin-mutation.ts`
   (`isSameOriginMutation` e `rejectCrossOriginMutation`, exportados por
   `@gb-locacoes/backend/identity`).
-- `lib/tenant.ts`: `resolvePublicTenant`, `resolvePublicRequestTenant`,
-  `publicTenantNotFound`, `publicCacheHeaders` e `resolveTenantPrincipal`.
-- Desde 2026-09-30, a regra pública fica em
-  `packages/backend/src/modules/identity/public-tenant.ts`; `lib/tenant.ts`
-  preserva sua composição legada. O serviço `apps/services/api` injeta o mesmo
-  lookup e usa a mesma transação do catálogo, sem importar `lib/`.
-- A política de sessão fica em `identity/application-session.ts`, com leitores
-  injetados pela fachada `lib/application-session.ts`; lifecycle Better Auth e
-  opções/callbacks NextAuth ficam em `identity/runtime.ts` e `legacy-auth.ts`. O
-  guard privado continua em `lib/tenant.ts`, com CSRF como primeira instrução.
-  Nenhuma rota privada foi instalada no serviço neste corte preparatório.
+- `packages/backend/src/modules/identity/public-tenant.ts`:
+  `createPublicTenantResolver`, `publicTenantNotFound` e `publicCacheHeaders`.
+  `apps/services/api/src/host/runtime.ts` injeta o lookup de Organization e
+  compõe `resolvePublicTenant`, `resolvePublicRequestTenant` e
+  `resolveCurrentOrganizationTenant`; catálogo usa transação tenant.
+- `packages/backend/src/modules/identity/tenant-request-principal.ts` compõe
+  CSRF, sessão, candidatas, membership, origem explícita e admissão da
+  assinatura. `apps/services/api/src/host/private-identity.ts` injeta o leitor
+  de sessão, Prisma e resolução pública; `host/permissions.ts` compõe a
+  permissão específica da rota.
+- A política de sessão está em `identity/application-session.ts`; os leitores
+  NextAuth/Better Auth são injetados por
+  `apps/services/api/src/host/session.ts`. Lifecycle e callbacks permanecem em
+  `identity/runtime.ts` e `legacy-auth.ts`. Em modo `better-auth`, ausência ou
+  erro de sessão não reativa JWT legacy.
+- Histórico do corte preparatório de 2026-09-30: `lib/tenant.ts` e
+  `lib/application-session.ts` eram fachadas da raiz e ainda não havia rotas
+  privadas no serviço. Essas fachadas foram aposentadas no checkout pós-F;
+  aquele limite não descreve a API atual.
 - `packages/backend/src/modules/directory/{index,card}.ts`
   (`readPublicTenantCard`).
 - Rotas que usam o resolvedor no início do handler: `categories`, `equipments`,
@@ -73,7 +83,7 @@ contrato atual (mobile e hosts antigos). Complementa
    - em `app`/`apex`, qualquer `tenant-slug` invalida a borda; `client-ip` é
      validado;
    - ambiente inválido devolve `null` e registra um único log, sem segredo.
-2. `resolvePublicRequestTenant(request, { bodySlug, pathSlug, trim, requiredCode })`
+2. `resolvePublicRequestTenant(request, { bodySlug, pathSlug, trim, requiredCode, surface })`
    junta os valores de `tenantSlug` da query (`getAll`), do corpo, do caminho e
    da borda de locadora:
    - valores distintos → 400
@@ -88,11 +98,12 @@ contrato atual (mobile e hosts antigos). Complementa
    `tenant`) como candidata junto de `x-tenant-id` e do cookie de seleção. Mais
    de um id distinto → 400 `Conflicting tenant selection` antes de buscar
    membership. Locadora do host inexistente ou suspensa → o mesmo 404 neutro.
-4. Mutações: `isTrustedMutationOrigin` (`lib/security/mutation-origin.ts`)
-   delega, desde a onda 5, ao guard de `same-origin-mutation.ts`: a origem
-   esperada é a da borda validada; sem borda, `WEB_PUBLIC_ORIGIN`; sem ela, a da
-   própria requisição (`WEB_PUBLIC_ORIGIN` inválida recusa navegador). `contact`
-   e `POST /api/quotes` continuam recusando com 403 um `Origin` diferente da
+4. Mutações: `isTrustedMutationOrigin`
+   (`apps/services/api/src/host/mutation-origin.ts`) delega, desde a onda 5, ao
+   guard de `same-origin-mutation.ts`: a origem esperada é a da borda validada;
+   sem borda, `WEB_PUBLIC_ORIGIN`; sem ela, a da própria requisição
+   (`WEB_PUBLIC_ORIGIN` inválida recusa navegador). `contact` e
+   `POST /api/quotes` continuam recusando com 403 um `Origin` diferente da
    borda, e `POST /api/quotes` e o alias `POST /api/orcamentos` chamam
    `rejectCrossOriginMutation` como primeira instrução (onda 5).
 5. Mutações com cookie da área do cliente (onda 4, entrada 190 de
@@ -100,19 +111,22 @@ contrato atual (mobile e hosts antigos). Complementa
    `rejectCrossOriginMutation(request)` responde 403
    `{ error: 'Origem não permitida' }` com `no-store` quando, com borda
    validada, o `Origin` difere da origem da borda (inclusive `null`) ou o
-   `Sec-Fetch-Site` não é `same-origin` nem `none`. GET, HEAD e OPTIONS passam.
-   Todo `{slug}.<raiz>` é o mesmo site, então o `SameSite` do cookie não impede
-   um script de `bravo` de mandar o cookie de `alfa`. Rotas: POST de
-   `cart/sync`, `cart/merge` e `addresses`; PATCH e DELETE de `addresses/[id]` e
-   `client/notifications/[id]`; POST de `client/notifications/mark-all-read`,
-   `client/rentals/[id]/extend`, `request-extension` e `request-pickup`; DELETE
-   de `client/rentals/[id]` e `quotes/[id]`; PUT de `user/profile`; POST de
-   `contracts/sign` e `integrations/melhor-envio/calculate`.
+   `Sec-Fetch-Site` não é `same-origin` nem `none`. GET, HEAD e OPTIONS passam
+   por esse guard de mutação; leituras privadas com Origin explícito seguem
+   também o guard complementar do item 7. Todo `{slug}.<raiz>` é o mesmo site,
+   então o `SameSite` do cookie não impede um script de `bravo` de mandar o
+   cookie de `alfa`. Rotas: POST de `cart/sync`, `cart/merge` e `addresses`;
+   PATCH e DELETE de `addresses/[id]` e `client/notifications/[id]`; POST de
+   `client/notifications/mark-all-read`, `client/rentals/[id]/extend`,
+   `request-extension` e `request-pickup`; DELETE de `client/rentals/[id]` e
+   `quotes/[id]`; PUT de `user/profile`; POST de `contracts/sign` e
+   `integrations/melhor-envio/calculate`.
 6. Guard central (onda 5, entrada 196 de `docs/issues/known-issues.md`): o guard
    é a primeira instrução de `resolveTenantPrincipal`, antes da sessão, o que
-   cobre `requireTenantPermission` e os middlewares de `requireAdmin` (as
-   mutações de `/api/admin/**` no host `app`). Sem borda validada, uma mutação
-   de navegador precisa vir de `WEB_PUBLIC_ORIGIN` ou da própria origem; sem
+   cobre `requireTenantPermission` e as checagens de papel dos handlers de
+   `apps/services/api/src/app/api/admin`. `requireAdmin` era o middleware
+   histórico, aposentado no checkout pós-F. Sem borda validada, uma mutação de
+   navegador precisa vir de `WEB_PUBLIC_ORIGIN` ou da própria origem; sem
    `Origin` e sem `Sec-Fetch-Site` (app nativo, servidor-servidor) segue como
    antes. Quem só enxerga cabeçalhos (`next/headers`) passa `method: null` e
    `url: null`: sem `Origin` a requisição é leitura (especificação Fetch), com
@@ -120,14 +134,22 @@ contrato atual (mobile e hosts antigos). Complementa
    `Host`. `register`, `forgot-password` e `reset-password` também chamam o
    guard como primeira instrução.
 
+7. Leituras privadas: o mesmo principal chama `rejectExplicitCrossOrigin` após
+   validar membership e antes da admissão da assinatura/dados. `Origin` de outra
+   origem ou o valor literal `null` mantém o 403 no-store central; sem Origin
+   segue. Em `/api/auth/organizations/current`, a rota aplica esse guard após
+   host e sessão, antes do vínculo; as recusas 409/404 de host e 401 mantêm
+   precedência.
+
 ## 5. Components and Files
 
 - `packages/backend/src/modules/identity/{platform-edge,tenant-principal,index}.ts`
 - `packages/backend/src/modules/directory/{index,card}.ts`
-- `lib/tenant.ts`, `lib/security/mutation-origin.ts`,
-  `packages/backend/src/modules/identity/same-origin-mutation.ts`
-- `app/api/equipments/[id]/route.ts`, `app/api/public/tenants/[slug]/route.ts`,
-  `app/api/auth/organizations/current/route.ts`
+- `packages/backend/src/modules/identity/{public-tenant,tenant-request-principal,application-session,same-origin-mutation,client-ip}.ts`
+- `apps/services/api/src/host/{runtime,private-identity,permissions,session,mutation-origin,rate-limit}.ts`
+- `apps/services/api/src/app/api/equipments/[id]/route.ts`,
+  `apps/services/api/src/app/api/public/tenants/[slug]/route.ts`,
+  `apps/services/api/src/app/api/auth/organizations/current/route.ts`
 - Testes:
   `tests/security/{platform-edge,tenant-request,tenant-not-found,tenant-principal}.test.ts`
 
@@ -155,13 +177,13 @@ contrato atual (mobile e hosts antigos). Complementa
     neutro. Esses dois mantêm os cabeçalhos canônicos (`no-store`), iguais aos
     das outras rotas; o 404 é conferido byte a byte em
     `tenant-not-found.test.ts`.
-  - Extração incremental em 2026-10-01: os adapters legado e serviço delegam a
-    preparação do host a `createPublicTenantResolver` e a consulta do vínculo a
-    `readCurrentOrganizationMembership`, ambos em backend/identity. Preparar o
-    host não autoriza a consulta: a sessão é obrigatória depois das recusas de
-    host/query. A consulta composta mantém `tenantId_userId` e a transação com
-    `app.tenant_id`. A preferência e o papel global não participam. Provas no
-    corte 11 de [API compartilhada](shared-api-host.md).
+  - Registro da extração incremental em 2026-10-01: os adapters legado e serviço
+    delegavam a preparação do host a `createPublicTenantResolver` e a consulta
+    do vínculo a `readCurrentOrganizationMembership`, ambos em backend/identity.
+    Preparar o host não autoriza a consulta: a sessão é obrigatória depois das
+    recusas de host/query. A consulta composta mantém `tenantId_userId` e a
+    transação com `app.tenant_id`. A preferência e o papel global não
+    participam. Provas no corte 11 de [API compartilhada](shared-api-host.md).
 - **Cache**: no host de locadora, `public, max-age=60` com `Vary: Host`, sem
   `s-maxage` (`publicCacheHeaders`); fora dele, a política atual da rota.
   `GET /api/quotes` (privada) responde `private, no-store` com
@@ -176,19 +198,31 @@ contrato atual (mobile e hosts antigos). Complementa
   - em `availability`, slug só de espaços: 409 (antes 404);
   - slugs reservados ou fora da política D15 (1 caractere, `--`, 64
     caracteres): 404.
-- `resolvePublicTenant` devolve `{ tenantId, slug }` sem `name`; o cartão lê o
-  nome por conta própria.
+- `resolvePublicTenant` devolve `{ tenantId, slug, site }` sem `name`; o cartão
+  lê o nome por conta própria. `site` traz modo/indexação, não identidade
+  privada.
+- O resolvedor atual também respeita a superfície pública S13: `storefront`
+  (padrão), `identity` e `client-area`; `card` escolhe identidade ou
+  `?scope=client-area`. Vitrine PAUSED responde 503 `SITE_PAUSED`, e OFF
+  conserva o 404 neutro; identidade/área do cliente seguem suas regras próprias
+  de disponibilidade. Ver `docs/features/site-por-estado.md`. O lookup composto
+  lê status, access, sitePublishedAt e siteIndexable; retirar esses fatos
+  alteraria o contrato, não apenas o endereço do helper.
 - O 404 neutro não tem `code` no corpo; `TENANT_NOT_FOUND` existe só como
   `PublicRequestTenant.code`. Pôr `code` nos 404/409 exige mudar
   `tests/unit/catalog-http.test.ts` e o contrato legado (decisão pendente).
-- A checagem de `Origin` em `POST /api/quotes` e `/api/contact` só vale com
-  borda (decisão pendente sobre estendê-la).
-- `clientIpFromHeaders` (`lib/rate-limit.ts`) usa o `edge.clientIp` da borda
-  validada por `readPlatformEdgeContext`; com borda validada sem IP, devolve
-  `null` e nunca lê `x-real-ip` nem `X-Forwarded-For` (onda 4). Sem borda, cai
-  em `TRUSTED_PROXY_HOPS` ou `VERCEL=1` (onda 3, Lote 7a). A regra vale para
-  todos os limitadores e, desde a onda 3, também para o IP da auditoria
-  (`lib/audit-logger.ts`).
+- `POST /api/quotes` e seu alias `/api/orcamentos` aplicam o guard central antes
+  de rate limit, corpo e sessão, inclusive sem borda validada. O contato
+  conserva a diferença existente: chama `isTrustedMutationOrigin` somente quando
+  `tenant.edge` está presente, depois da resolução pública. Estender essa
+  checagem a contact sem borda exigiria mudança funcional própria.
+- `clientIpFromHeaders` (`packages/backend/src/modules/identity/client-ip.ts`)
+  usa o `edge.clientIp` da borda validada por `readPlatformEdgeContext`; com
+  borda validada sem IP, devolve `null` e nunca lê `x-real-ip` nem
+  `X-Forwarded-For` (onda 4). Sem borda, cai em `TRUSTED_PROXY_HOPS` ou
+  `VERCEL=1` (onda 3, Lote 7a). A regra vale para todos os limitadores e, desde
+  a onda 3, também para o IP da auditoria (a fachada `lib/audit-logger.ts` era o
+  consumidor histórico, aposentado no checkout pós-F).
 - Rotas novas da onda 3 que seguem esta resolução: `GET /api/public/tenants`
   (diretório, ver `docs/features/tenant-directory-search.md`) e
   `POST /api/client/enroll` (vínculo; exige borda `tenant`, ver
@@ -203,7 +237,7 @@ contrato atual (mobile e hosts antigos). Complementa
 | Slug inválido, reservado, inexistente ou suspenso | 404 neutro `{ error: 'Locadora não encontrada' }`   |
 | Candidatas distintas no principal privado         | 400 `Conflicting tenant selection`                  |
 | `Origin` diferente da borda em mutação            | 403                                                 |
-| Mutação com cookie vinda de outra origem (borda)  | 403 `{ error: 'Origem não permitida' }`, `no-store` |
+| Mutação com cookie vinda de outra origem          | 403 `{ error: 'Origem não permitida' }`, `no-store` |
 | `/current` fora de host de locadora               | 409 `TENANT_REQUIRED` com `code`, `private`, `Vary` |
 | Falha do banco                                    | envelope 500 do handler                             |
 
@@ -215,7 +249,11 @@ contrato atual (mobile e hosts antigos). Complementa
 
 ## 10. Tests and Validation
 
-- `tests/security/platform-edge.test.ts` (31 casos).
+Os números e referências aos dois hosts abaixo registram as ondas indicadas,
+antes de F; não são uma execução nova no checkout sem raiz. A matriz da onda 135
+e seus limites ficam em `docs/guides/wave135-base-validation.md`.
+
+- `tests/security/platform-edge.test.ts` (31 casos no checkpoint original).
 - `tests/security/tenant-request.test.ts` (T7): versão sem banco com dublê que
   falha em qualquer transação e versão com banco que conta `quotes` e
   `outbox_events` das duas locadoras antes e depois; borda forjada,

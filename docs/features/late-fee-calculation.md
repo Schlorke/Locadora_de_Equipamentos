@@ -26,7 +26,7 @@ ser aplicada ao orçamento.
 5. **Admin aprova ou rejeita**:
    - Se aprovar: Multa é adicionada ao valor final
    - Se rejeitar: Multa não é aplicada
-6. **Sistema salva**:
+6. **Após a aprovação, o caso de atualização salva** (a simulação não grava):
    - `lateFee`: Valor da multa calculada
    - `lateFeeApproved`: Boolean (se foi aprovada)
    - `lateFeeApprovedAt`: Data de aprovação
@@ -38,7 +38,9 @@ ser aplicada ao orçamento.
 
 ### 2.2. Configuração de Cálculo
 
-O sistema usa configuração padrão (pode ser customizada):
+A simulação administrativa usa `DEFAULT_LATE_FEE_CONFIG` quando o corpo não traz
+`config`; o job de cálculo em lote usa o mesmo padrão. O utilitário puro aceita
+outra configuração fornecida pelo chamador:
 
 ```typescript
 {
@@ -54,6 +56,13 @@ O sistema usa configuração padrão (pode ser customizada):
 - **Taxa Diária**: `valorOriginal × taxaDiária × diasAtraso`
 - **Valor Fixo**: Valor fixo configurado
 
+`daysLate` usa o teto da diferença em dias de 24 horas e nunca fica negativo.
+Sem atraso retorna zero antes de aplicar mínimo/máximo. `maxDays` limita os dias
+usados no valor, não altera o número de dias informado. O valor é Decimal,
+arredondado em centavos por ROUND_HALF_UP. Configuração customizada não herda
+silenciosamente todo o padrão: os defaults do utilitário incluem taxa 2% e
+mínimo zero, enquanto o objeto padrão acima fixa min50/max5000/maxDays30.
+
 ### 2.3. Regras de Negócio
 
 - **Cálculo automático**: Sistema calcula quando solicitado
@@ -68,7 +77,7 @@ O sistema usa configuração padrão (pode ser customizada):
 ```prisma
 model Quote {
   lateFee             Decimal?          // Valor da multa calculada
-  lateFeeApproved     Boolean?          // Se admin aprovou
+  lateFeeApproved     Boolean?          @default(false) // Se admin aprovou
   lateFeeApprovedAt   DateTime?         // Data de aprovação
   lateFeeApprovedBy   String?           // ID do admin que aprovou
 }
@@ -76,13 +85,35 @@ model Quote {
 
 ### 3.2. API Endpoints
 
-- **POST `/api/admin/quotes/[id]/calculate-late-fee`**: Calcula multa por atraso
-- **PATCH `/api/admin/quotes/[id]`**: Aprova/rejeita multa
-  - Body: `{ lateFee: number, lateFeeApproved: boolean }`
+- **POST `/api/admin/quotes/[id]/calculate-late-fee`**: simula sem persistir;
+  exige principal da locadora e QUOTES/READ. Schema em
+  `packages/contracts/src/quotations.ts` aceita `currentDate` ISO opcional e
+  `config` finita/não negativa, com minAmount ≤ maxAmount quando ambos são
+  informados. Sem orçamento ou sem data final, recusa antes de calcular.
+- **PATCH `/api/admin/quotes/[id]`**: aprova/revoga com
+  `{ lateFee: number, lateFeeApproved: boolean }`; o adapter preserva seu guarda
+  ADMIN/OPERATOR do vínculo e a atualização no backend mantém tenant, histórico,
+  trava e obrigação única. Reaprovar não duplica a multa; trocar substitui e
+  revogar retira o acréscimo.
+- **GET `/api/cron/late-fees`**: composição de job; considera APPROVED ou
+  COMPLETED vencidos e não sobrescreve multas aprovadas. Só atualiza lateFee; a
+  aprovação continua manual. A existência da rota não habilita scheduler.
 
 ### 3.3. Utilitários
 
-- **`lib/late-fee-calculator.ts`**: Função `calculateLateFee()` para cálculo
+- `packages/domain/src/orcamento/multa.ts`: `calculateLateFee`, tipos e padrão,
+  pelo contrato `@gb-locacoes/domain/orcamento`.
+- `packages/backend/src/modules/quotations/administration.ts`: consulta por
+  locadora e simulação `calculateQuoteLateFee`.
+- `packages/backend/src/modules/quotations/late-fees.ts`: cálculo em lote dentro
+  de `withTenantTransaction`.
+- `packages/backend/src/modules/quotations/update.ts`: aprovação/revogação e
+  recomposição de obrigação em centavos.
+- `apps/services/api/src/host/quotations.ts` e os adapters
+  `apps/services/api/src/app/api/admin/quotes/[id]/calculate-late-fee/route.ts`,
+  `[id]/route.ts` e `api/cron/late-fees/route.ts`: composição HTTP.
+- `packages/frontend/src/pages/orcamentos-admin/ui/Multa.web.tsx` e modelos do
+  detalhe: apresentação e transporte; o cliente não persiste por Prisma.
 
 ## 4. Como Usar
 
@@ -96,7 +127,7 @@ model Quote {
 
 ### 4.2. Cliente - Visualizar Multa
 
-1. Acesse área do cliente (quando implementada)
+1. Acesse `/area-cliente/historico` na locadora e abra o orçamento próprio
 2. Visualize orçamento
 3. Veja:
    - Multa calculada (se houver)
@@ -118,6 +149,6 @@ model Quote {
 
 ## 7. Histórico de Alterações
 
-| Data       | Descrição             | Autor   |
-| ---------- | --------------------- | ------- |
-| 2025-01-XX | Implementação inicial | Sistema |
+| Data       | Descrição                                                                                           | Autor   |
+| ---------- | --------------------------------------------------------------------------------------------------- | ------- |
+| 2025-01-XX | Implementação inicial; marcador de data preservado como registro histórico, sem inventar dia/commit | Sistema |

@@ -1,7 +1,9 @@
-# Contexto do Dockerfile (imagem do host web da raiz). Fica fora tudo que o build reconstrói, tudo que é local
+# O antigo Dockerfile da raiz foi retirado em F; a imagem atual usa apps/services/api/Dockerfile e o contexto do workspace.
+# Fica fora tudo que o build reconstrói, tudo que é local
 # da máquina e todo arquivo de ambiente: nenhum segredo entra na imagem.
 
 # Dependências e saídas de build (reinstaladas e reconstruídas dentro da imagem)
+# A .next antiga da raiz saiu em F; o padrão **/.next continua excluindo as saídas geradas dos hosts.
 **/node_modules
 .pnpm-store
 **/.next

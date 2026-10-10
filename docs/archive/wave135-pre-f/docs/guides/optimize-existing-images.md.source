@@ -1,0 +1,120 @@
+# Registro histórico anterior à retirada da raiz
+
+> Original: `docs/guides/optimize-existing-images.md`.
+> Fonte: primeira etapa publicada, commit `978ceb9244c81c7cb2888b798fad8ce90edad25e`.
+> Este registro conserva o contexto, as receitas e as afirmações da época;
+> seus caminhos aposentados e operações externas não são instruções atuais.
+> Guia atual: [abrir](../../../../guides/optimize-existing-images.md).
+
+O conteúdo original começa depois do marcador abaixo. Seus bytes foram
+preservados integralmente; esta caption não revalida provedores, dispositivos
+ou operações externas descritos no registro.
+
+<!-- BEGIN ORIGINAL: SHA-256 b32a07c6bf5d3bbf8b42e407e4d197787dba1470127e352e181e0fdbb7081720 -->
+
+# 🖼️ Guia: Otimizar Imagens Existentes
+
+## 📋 Visão Geral
+
+Script para otimizar imagens JPEG/PNG já existentes no Supabase Storage,
+convertendo-as para WebP e atualizando automaticamente as URLs no banco de
+dados.
+
+## 🚀 Uso
+
+### Modo Dry-Run (Teste)
+
+```bash
+pnpm tsx scripts/optimize-existing-images.ts --dry-run
+```
+
+Testa o processo sem fazer alterações reais. Mostra estatísticas de redução de
+tamanho.
+
+### Execução Real
+
+```bash
+# Otimizar todas as imagens
+pnpm tsx scripts/optimize-existing-images.ts
+
+# Otimizar apenas pasta específica
+pnpm tsx scripts/optimize-existing-images.ts --folder=equipments
+```
+
+## ⚙️ O que o Script Faz
+
+1. **Lista imagens**: Encontra todas as imagens JPEG/PNG no bucket
+2. **Baixa**: Baixa cada imagem do Supabase Storage
+3. **Otimiza**:
+   - Converte para WebP (qualidade 85%)
+   - Redimensiona se maior que 1920px de largura
+   - Comprime para reduzir tamanho em ~50-70%
+
+**Nota de Performance**: Para melhor performance (reduzir tamanho adicional),
+você pode modificar o script para usar:
+
+- Qualidade: 80% (ao invés de 85%)
+- MaxWidth: 1200px (ao invés de 1920px)
+
+4. **Upload**: Faz upload da versão otimizada
+5. **Atualiza banco**: Atualiza URLs no banco de dados automaticamente
+6. **Remove original**: Remove o arquivo original após sucesso
+
+## 📊 Exemplo de Saída
+
+```
+🖼️  Otimizador de Imagens Existentes
+=====================================
+
+📋 Listando imagens...
+✅ Encontradas 15 imagens para otimizar
+
+⚙️  Processando imagens...
+
+[1/15] Processando equipment-abc123.jpg... ✅ 65.3% menor (148.9 KiB → 51.7 KiB, economia: 97.2 KiB) [DB atualizado]
+[2/15] Processando equipment-def456.jpg... ✅ 58.7% menor (49.3 KiB → 20.3 KiB, economia: 29.0 KiB) [DB atualizado]
+...
+
+📊 Estatísticas Finais
+======================
+✅ Sucesso: 15/15
+📊 URLs atualizadas no banco: 15
+❌ Falhas: 0
+
+💾 Tamanhos:
+   Original: 1.2 MiB
+   Otimizado: 425.5 KiB
+   Economia: 798.5 KiB
+   Redução média: 62.1%
+
+✅ Otimização concluída!
+```
+
+## ⚠️ Observações Importantes
+
+1. **Backup**: Recomenda-se fazer backup do Storage antes de executar
+2. **Tempo**: O processo pode levar vários minutos dependendo da quantidade de
+   imagens
+3. **Banco de dados**: As URLs são atualizadas automaticamente no banco
+4. **Formatos preservados**: SVG, GIF e WebP não são processados (mantêm formato
+   original)
+
+## 🔧 Parâmetros
+
+- `--dry-run`: Modo teste (não faz alterações)
+- `--folder=<nome>`: Processa apenas uma pasta específica (ex: `equipments`,
+  `logos`)
+
+## 📝 Notas Técnicas
+
+- Usa Sharp para otimização de imagens
+- Qualidade WebP: 85% (equilíbrio entre tamanho e qualidade)
+- Largura máxima: 1920px (redimensiona automaticamente)
+- Delay entre processamentos: 100ms (para não sobrecarregar API)
+
+## 🔗 Arquivos Relacionados
+
+- **Script**: `scripts/optimize-existing-images.ts`
+- **Otimização no Upload**: `app/api/upload/route.ts`
+- **Documentação de Performance**:
+  `docs/issues/image-optimization-performance.md`

@@ -1,8 +1,25 @@
+import { requireTenantPermission } from '../../apps/services/api/src/host/permissions'
+import { getDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 import { randomUUID } from 'node:crypto'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-const fixtureDatabase = vi.hoisted(() => ({ prisma: undefined as unknown }))
-vi.mock('@/lib/prisma', async () => {
-  if (!process.env.TEST_DATABASE_URL) return { prisma: undefined }
+const fixtureDatabase = vi.hoisted(() => ({
+  prisma: undefined as unknown,
+  pool: undefined as import('pg').Pool | undefined,
+}))
+vi.mock('next/headers', () => ({
+  headers: async () => new Headers({ 'x-tenant-id': currentTenantId }),
+}))
+import { NextRequest } from 'next/server'
+import { publishTestOrganizations } from '../helpers/public-site'
+let currentUserId: string
+let currentTenantId: string
+// Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
+// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()
+  if (!process.env.TEST_DATABASE_URL)
+    return { ...actual, getDatabaseRuntime: () => ({ prisma: undefined }) }
   const { requireTestDatabase } = await import('../helpers/test-database')
   const connectionString = requireTestDatabase(process.env)
   if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
@@ -11,36 +28,13 @@ vi.mock('@/lib/prisma', async () => {
   const { PrismaPg } = await import('@prisma/adapter-pg')
   const { PrismaClient } = await import('@prisma/client')
   const pool = new Pool({ connectionString, max: 8 })
-  return {
-    prisma: (fixtureDatabase.prisma = new PrismaClient({
-      adapter: new PrismaPg(pool),
-    })),
-    testPool: pool,
-  }
+  fixtureDatabase.pool = pool
+  const fixturePrisma = (fixtureDatabase.prisma = new PrismaClient({
+    adapter: new PrismaPg(pool),
+  }))
+  fixtureDatabase.prisma = fixturePrisma
+  return { ...actual, getDatabaseRuntime: () => ({ prisma: fixturePrisma }) }
 })
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => ({ user: { id: currentUserId } }),
-}))
-vi.mock('next/headers', () => ({
-  headers: async () => new Headers({ 'x-tenant-id': currentTenantId }),
-}))
-vi.mock('@/lib/rate-limit', () => ({
-  checkRateLimit: () => ({ allowed: true }),
-  adminApiRateLimit: {},
-}))
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { publishTestOrganizations } from '../helpers/public-site'
-import { requireTenantPermission } from '@/lib/tenant-permissions'
-import { requireAdmin } from '@/middlewares/require-admin'
-let currentUserId: string
-let currentTenantId: string
-// Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
-// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
-}))
 vi.mock('../../apps/services/api/src/host/rate-limit', () => ({
   checkRateLimit: () => ({ allowed: true }),
   adminApiRateLimit: {},
@@ -53,63 +47,21 @@ vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
     getServerSession: async () => ({ user: { id: currentUserId } }),
   }))()),
 }))
-import * as legacyRoute0 from '@/app/api/categories/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/categories/route'
-import * as legacyRoute1 from '@/app/api/equipments/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/equipments/route'
-import * as legacyRoute2 from '@/app/api/equipamentos/search/route'
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/equipamentos/search/route'
-import * as legacyRoute3 from '@/app/api/admin/categories/route'
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/admin/categories/route'
-import * as legacyRoute4 from '@/app/api/admin/categories/[id]/route'
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/admin/categories/[id]/route'
-import * as legacyRoute5 from '@/app/api/admin/equipments/route'
 import * as serviceRoute5 from '../../apps/services/api/src/app/api/admin/equipments/route'
-import * as legacyRoute6 from '@/app/api/admin/equipments/[id]/route'
 import * as serviceRoute6 from '../../apps/services/api/src/app/api/admin/equipments/[id]/route'
-import * as legacyRoute7 from '@/app/api/admin/equipment-units/route'
 import * as serviceRoute7 from '../../apps/services/api/src/app/api/admin/equipment-units/route'
-import * as legacyRoute8 from '@/app/api/admin/equipment-units/[id]/route'
 import * as serviceRoute8 from '../../apps/services/api/src/app/api/admin/equipment-units/[id]/route'
-import * as legacyRoute9 from '@/app/api/admin/vehicles/route'
 import * as serviceRoute9 from '../../apps/services/api/src/app/api/admin/vehicles/route'
-import * as legacyRoute10 from '@/app/api/cart/sync/route'
 import * as serviceRoute10 from '../../apps/services/api/src/app/api/cart/sync/route'
-import * as legacyRoute11 from '@/app/api/cart/merge/route'
 import * as serviceRoute11 from '../../apps/services/api/src/app/api/cart/merge/route'
-import * as legacyRoute12 from '@/app/api/admin/permissions/route'
 import * as serviceRoute12 from '../../apps/services/api/src/app/api/admin/permissions/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      categories: legacyRoute0.GET,
-      equipment: legacyRoute1.GET,
-      searchEquipment: legacyRoute2.GET,
-      listCategories: legacyRoute3.GET,
-      createCategory: legacyRoute3.POST,
-      updateCategory: legacyRoute4.PUT,
-      deleteCategory: legacyRoute4.DELETE,
-      listEquipments: legacyRoute5.GET,
-      createEquipment: legacyRoute5.POST,
-      getEquipment: legacyRoute6.GET,
-      updateEquipment: legacyRoute6.PUT,
-      deleteEquipment: legacyRoute6.DELETE,
-      listUnits: legacyRoute7.GET,
-      createUnit: legacyRoute7.POST,
-      readUnit: legacyRoute8.GET,
-      updateUnit: legacyRoute8.PATCH,
-      deleteUnit: legacyRoute8.DELETE,
-      createVehicle: legacyRoute9.POST,
-      vehicles: legacyRoute9.GET,
-      syncCart: legacyRoute10.POST,
-      readCart: legacyRoute10.GET,
-      mergeCart: legacyRoute11.POST,
-      updatePermissions: legacyRoute12.PUT,
-      readPermissions: legacyRoute12.GET,
-    },
-  ],
   [
     'service',
     {
@@ -736,10 +688,7 @@ describe.each(HOSTS)(
           ).toBe(false)
           currentUserId = clientId
           currentTenantId = tenantA
-          expect(await requireAdmin()).toMatchObject({
-            success: false,
-            status: 403,
-          })
+          // F: the retired root-only requireAdmin facade assertion is superseded by the real createUnit CLIENT=403 assertion immediately below.
           expect(
             (
               await createUnit(
@@ -759,10 +708,14 @@ describe.each(HOSTS)(
 // O cliente e o pool do banco descartável são da fábrica deste arquivo: fecham uma vez, depois dos dois hosts.
 afterAll(async () => {
   if (!process.env.TEST_DATABASE_URL) return
-  const database = (await import('@/lib/prisma')) as unknown as {
-    prisma: { $disconnect(): Promise<void> }
-    testPool: { end(): Promise<void> }
-  }
+  const database = { prisma, testPool: requireFixturePool() }
   await database.prisma.$disconnect()
   await database.testPool.end()
 })
+
+const prisma = getDatabaseRuntime().prisma
+function requireFixturePool() {
+  const pool = fixtureDatabase.pool
+  if (!pool) throw new Error('Owned fixture pool was not initialized')
+  return pool
+}

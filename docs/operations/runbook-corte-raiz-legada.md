@@ -1,10 +1,14 @@
 # Runbook do corte de produção da raiz legada
 
-Estado em 2026-10-08, onda 135, Lote C (C7). Procedimento de referência para o
-dono, não uma autorização: nenhum agente publica, faz push, migra o banco de
-produção, troca DNS, mexe em provedor ou liga agenda real. Os passos das seções
-7.1, 7.2 e do retorno são ações do dono, no painel ou na máquina dele. Fonte:
-seção 7 do plano da onda 135 e as respostas do dono de 2026-10-08.
+Referência do corte de produção, onda 135, Lote C (C7), construída com as
+decisões de 2026-10-08. Decisão humana de 2026-10-09: interface aceita e
+commit/push da primeira etapa autorizados para o novo origin público
+Schlorke/Locadora_de_Equipamentos, com história inicial limpa e preservação
+local dos pais antigos. Isso não autoriza corte da GB, migração de produção,
+DNS, provedores, alteração/revogação de credenciais ou agenda real. A primeira
+etapa usa PostgreSQL local descartável; infraestrutura e serviços são
+posteriores. Os passos 7.1/7.2/retorno continuam procedimentos do dono para essa
+fase futura.
 
 `<raiz>` é o domínio da plataforma (D1), `<origem-api>` é a origem pública da
 API (D5) e `gb` é o slug da GB. As variáveis de cada projeto, com o valor de
@@ -23,7 +27,7 @@ cada uma no corte, estão no [manifesto de variáveis](manifesto-variaveis.md).
 | D5  | Origem pública da API                           | **No dia do corte.** Opções: `api.<raiz>` (subdomínio já reservado; exige emendar a alternativa rejeitada "hosts `api.` próprios" da ADR de hosts) ou o domínio do projeto na Vercel. Fixa para sempre o `PLATFORM_WEBHOOK_ORIGIN`.                              |
 | D6  | Hospedagem e plano                              | **No dia do corte.** Opções: três projetos Vercel (API, web e fallback-raiz) num plano que aceite cron por minuto (o Hobby só aceita cron diário e recusa o deploy com expressão mais frequente) e `maxDuration` 300; ou a imagem da API em Docker próprio (C3). |
 | D7  | Janela de estabilidade                          | **No dia do corte.** Duração da janela, retenção do `fallback-raiz` e do projeto do `main`, e os gatilhos de retorno (seção "Retorno").                                                                                                                          |
-| D10 | Repositório que mantém o `cron-dispatch` GitHub | **No dia do corte.** Opções: `origin` (`Schlorke/Locadora_de_Equipamentos`, o destino autorizado) ou passar os 5 jobs do GitHub para crons da Vercel no projeto da API. O workflow do GB-Locacoes é desativado no passo 2 e não volta.                           |
+| D10 | Repositório que mantém o `cron-dispatch` GitHub | **No dia do corte.** Opções: `origin` (`Schlorke/Locadora_de_Equipamentos`, o destino autorizado) ou passar os 5 endpoints despachados pelo GitHub para crons da Vercel no projeto da API. O workflow do GB-Locacoes é desativado no passo 2 e não volta.        |
 
 ## Dois repositórios, dois papéis
 
@@ -32,18 +36,31 @@ cada uma no corte, estão no [manifesto de variáveis](manifesto-variaveis.md).
   [deploy](../getting-started/deployment.md) proíbe publicar nele.
 - **Destino:** `Schlorke/Locadora_de_Equipamentos` (`origin`). Os projetos novos
   (API, web e `fallback-raiz`) se ligam a ele, ou recebem deploy por CLI a
-  partir de um clone limpo. Qualquer push para `origin` é ação do dono.
+  partir de um clone limpo. O push da primeira etapa ao origin foi autorizado em
+  2026-10-09; a publicação não aciona deploy/corte de produção por si só.
 - **Consequência:** apagar a raiz neste repositório (D0) não muda a produção, e
   o projeto do `main` nunca vai recompilar uma raiz apagada.
 
 ## Agendas
 
-| Agenda                                   | Onde                                                                     | Jobs                                                                                                                     |
-| ---------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| Vercel, projeto do `main` (produção)     | `vercel.json` do `main`                                                  | `late-fees`, `expire-quotes`, `sync-google-merchant`                                                                     |
-| GitHub, "External Cron Dispatch"         | `.github/workflows/cron-dispatch.yml`, **em cada repositório** onde roda | `auto-convert-quotes`, `send-notifications`, `verify-boleto-payments`, `boleto-overdue-alerts`, `preventive-maintenance` |
-| Vercel, projeto da API (depois do corte) | `apps/services/api/vercel.json`                                          | `late-fees` e `expire-quotes` às 00:00 UTC, `outbox` a cada minuto                                                       |
-| Vercel, `fallback-raiz`                  | `vercel.json` da raiz da tag (4 crons, inclusive `outbox` por minuto)    | **Sempre desligados** nas configurações do projeto; só ligam no retorno                                                  |
+As referências vercel.json do antigo main GB e o antigo vercel.json da raiz da
+tag são artefatos históricos preservados fora da árvore F. O vercel.json da raiz
+atual foi retirado; a agenda atual pertence a apps/services/api/vercel.json e ao
+workflow explicitamente opt-in. Nenhuma agenda real foi alterada nesta
+preparação.
+
+| Agenda                                   | Onde                                                                        | Jobs                                                                                                                     |
+| ---------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Vercel, projeto do `main` (produção)     | `vercel.json` do `main`                                                     | `late-fees`, `expire-quotes`, `sync-google-merchant`                                                                     |
+| GitHub, "External Cron Dispatch"         | Workflow atual em `origin`: 4 jobs/5 endpoints; repo exato + opt-in literal | `auto-convert-quotes`, `send-notifications`, `verify-boleto-payments`, `boleto-overdue-alerts`, `preventive-maintenance` |
+| Vercel, projeto da API (depois do corte) | `apps/services/api/vercel.json`                                             | `late-fees` e `expire-quotes` às 00:00 UTC, `outbox` a cada minuto                                                       |
+| Vercel, `fallback-raiz`                  | `vercel.json` da raiz da tag (4 crons, inclusive `outbox` por minuto)       | **Sempre desligados** nas configurações do projeto; só ligam no retorno                                                  |
+
+O workflow atual exige github.repository == Schlorke/Locadora_de_Equipamentos e
+vars.CRON_DISPATCH_ENABLED == true como string literal, além de dispatch manual
+ou schedule exato de cada job. Sem flag, string false ou repositório GB, nenhum
+job chama curl. O estado/configuração do workflow legado no outro repositório só
+pode ser conferido/alterado pelo dono na fase do corte.
 
 Regras: uma autoridade por job (o teste `tests/unit/host-deploy-config.test.ts`
 reprova job nas duas agendas da Vercel e do GitHub); o web nunca agenda nem
@@ -137,10 +154,10 @@ Root Directory prevalece sobre a versão do painel
    já foram provados no staging com o mesmo artefato. Na produção não se grava
    dado de teste.
 6. Projeto **API**: Cron Jobs **desligados** nas configurações antes do primeiro
-   deploy de produção (o `vercel.json` já traz a agenda; mesmo caminho do
-   `fallback-raiz` no 7.1-4); domínio da origem pública (D5); variáveis da
-   tabela API do manifesto. `PLATFORM_WEBHOOK_ORIGIN` = `<origem-api>`, e
-   **nunca muda depois**.
+   deploy de produção (o `apps/services/api/vercel.json` já traz a agenda; mesmo
+   caminho do `fallback-raiz` no 7.1-4); domínio da origem pública (D5);
+   variáveis da tabela API do manifesto. `PLATFORM_WEBHOOK_ORIGIN` =
+   `<origem-api>`, e **nunca muda depois**.
 7. Projeto **web**: domínios `<raiz>`, `www.<raiz>`, `app.<raiz>` e `*.<raiz>`;
    `WEB_API_ORIGIN` = `<origem-api>`; `NEXT_PUBLIC_AUTH_MODE` = `better-auth`
    (D3), com rebuild.
@@ -149,9 +166,12 @@ Root Directory prevalece sobre a versão do painel
 9. **Agenda numa autoridade só:**
    - ligar os Cron Jobs do projeto da API (`late-fees` e `expire-quotes` às
      00:00 UTC, `outbox` a cada minuto; `sync-google-merchant` fica fora);
-   - o `cron-dispatch` roda só no repositório da D10 (padrão: `origin`), com o
-     segredo `CRON_BASE_URL` = `<origem-api>` e o mesmo `CRON_SECRET` da API;
-     ou, na outra opção da D10, os 5 jobs passam para o `vercel.json` da API;
+   - se a D10 escolher GitHub, o workflow atual só roda no origin exato, depois
+     de configurar CRON_BASE_URL/CRON_SECRET próprios e ligar
+     CRON_DISPATCH_ENABLED com valor literal true no momento autorizado; os 4
+     jobs despacham 5 endpoints. Na outra opção da D10, esses 5 endpoints ganham
+     agenda somente em apps/services/api/vercel.json; não deixar GitHub e Vercel
+     ligados para o mesmo job;
    - o workflow do GB-Locacoes segue desativado (passo 2);
    - o `fallback-raiz` segue com os crons desligados.
 10. Webhooks re-registrados por integração em
@@ -169,10 +189,11 @@ Root Directory prevalece sobre a versão do painel
       query, conferido por `curl` (inclusive `/reset-password`, `/sitemap.xml` e
       `/admin`; o host da locadora já manda `/admin/**` para o `app.`). O
       redirecionamento de domínio do painel exige os dois domínios no mesmo
-      projeto; se o curinga não servir de destino, usar um `redirects` do
-      `vercel.json` do web com `has` de host. Registrar a emenda da ADR de hosts
-      (Lote 12 antes do Lote 11). Cron e webhook não seguem redirecionamento:
-      por isso eles já apontam para `<origem-api>` (passos 9 e 10);
+      projeto; se o curinga não servir de destino, usar um redirects em
+      apps/clients/web/vercel.json com has de host. Registrar a emenda da ADR de
+      hosts (Lote 12 antes do Lote 11). Cron e webhook não seguem
+      redirecionamento: por isso eles já apontam para `<origem-api>` (passos 9 e
+      10);
     - opção (b): domínio próprio da GB (Lote 11) antes do corte.
     - Depois: `publicBaseUrl` da GB, mudança de endereço no Search Console
       (verificação por DNS) e links de Business/Ads.
@@ -184,8 +205,10 @@ Root Directory prevalece sobre a versão do painel
 ## Retorno (7.3)
 
 - **Alvo único: o projeto `fallback-raiz`** (raiz da tag de pré-exclusão). Ele é
-  compatível com o banco migrado, porque o P0 rodou essa raiz sobre as 34
-  migrations, e foi ensaiado no staging. Vale antes e depois da exclusão da raiz
+  só pode ser usado após conferir a prova P0 desse artefato fixado contra o
+  banco migrado e seu ensaio no staging. As 34 migrations eram a referência do
+  plano de 2026-10-08; conferir o conjunto efetivo do checkpoint, sem presumir
+  compatibilidade por existir uma tag. Vale antes e depois da exclusão da raiz
   no repositório, porque essa exclusão não altera o deploy.
 - **Mecanismo:**
   1. reatribuir o domínio da origem pública da API ao `fallback-raiz`. Webhooks,

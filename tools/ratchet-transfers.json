@@ -95,12 +95,12 @@
     {
       "approve": "package.exports",
       "entry": "@gb-locacoes/design-tokens#./palette.css",
-      "reason": "Paleta da produção (Tailwind 3.4.17) em hex no @theme (onda 8, lote fech-css, entrada 219 de docs/issues/known-issues.md): só custom properties de token, sem código; o único consumidor é packages/frontend/src/app/styles/globals.web.css, pelo ponto de entrada do pacote, como theme.css e tokens.css."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: Paleta da produção (Tailwind 3.4.17) em hex no @theme (onda 8, lote fech-css, entrada 219 de docs/issues/known-issues.md): só custom properties de token, sem código; o único consumidor é packages/frontend/src/app/styles/globals.web.css, pelo ponto de entrada do pacote, como theme.css e tokens.css."
     },
     {
       "approve": "package.exports",
       "entry": "@gb-locacoes/design-tokens#./scales.css",
-      "reason": "Escalas da produção (sombras, raios, blur, altura de linha, contorno, ring e breakpoints) em @theme inline (onda 9, lote css-paridade, entrada 223 de docs/issues/known-issues.md): só custom properties de token, sem código; o único consumidor é packages/frontend/src/app/styles/globals.web.css, pelo ponto de entrada do pacote."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: Escalas da produção (sombras, raios, blur, altura de linha, contorno, ring e breakpoints) em @theme inline (onda 9, lote css-paridade, entrada 223 de docs/issues/known-issues.md): só custom properties de token, sem código; o único consumidor é packages/frontend/src/app/styles/globals.web.css, pelo ponto de entrada do pacote."
     },
     {
       "approve": "package.exports",
@@ -110,7 +110,7 @@
     {
       "approve": "package.exports",
       "entry": "@gb-locacoes/backend#./runtime",
-      "reason": "Extração incremental autorizada pelo usuário em 2026-09-30: ponto de composição de Prisma/pg compartilhado entre lib/prisma.ts e apps/services/api, preservando os slots, configurações e um pool por processo. Novo entrypoint server-only necessário para evitar import de lib/ pelo serviço; baselines e limites de teste intactos."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: Extração incremental autorizada pelo usuário em 2026-09-30: ponto de composição de Prisma/pg compartilhado entre lib/prisma.ts e apps/services/api, preservando os slots, configurações e um pool por processo. Novo entrypoint server-only necessário para evitar import de lib/ pelo serviço; baselines e limites de teste intactos."
     },
     {
       "approve": "package.exports",
@@ -281,7 +281,7 @@
         "type": "files",
         "path": "lib/quote-code.ts"
       },
-      "reason": "Onda 135, C6 (E16; plano da aposentadoria da raiz, 4.1 e 6.2): o script com entrada db:backfill:quote-codes deixou de importar lib/quote-code.ts (agora @gb-locacoes/backend/quotations, a mesma assignQuoteCode). A fachada legada fica sem consumidor, mas a raiz não é apagada antes da prova sem ela; o item troca o de exports do mesmo arquivo, que ficou velho, e sai com lib/ no bloco F."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: Onda 135, C6 (E16; plano da aposentadoria da raiz, 4.1 e 6.2): o script com entrada db:backfill:quote-codes deixou de importar lib/quote-code.ts (agora @gb-locacoes/backend/quotations, a mesma assignQuoteCode). A fachada legada fica sem consumidor, mas a raiz não é apagada antes da prova sem ela; o item troca o de exports do mesmo arquivo, que ficou velho, e sai com lib/ no bloco F."
     },
     {
       "approve": "hygiene.baseline",
@@ -289,7 +289,7 @@
         "type": "test-only-file",
         "path": "scripts/ops/google-merchant/client.ts"
       },
-      "reason": "Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
     },
     {
       "approve": "hygiene.baseline",
@@ -297,7 +297,7 @@
         "type": "test-only-file",
         "path": "scripts/ops/google-merchant/index.ts"
       },
-      "reason": "Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
     },
     {
       "approve": "hygiene.baseline",
@@ -305,7 +305,7 @@
         "type": "test-only-file",
         "path": "scripts/ops/google-merchant/mapper.ts"
       },
-      "reason": "Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
     },
     {
       "approve": "hygiene.baseline",
@@ -313,7 +313,7 @@
         "type": "test-only-file",
         "path": "scripts/ops/google-merchant/sync-service.ts"
       },
-      "reason": "Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
     },
     {
       "approve": "hygiene.baseline",
@@ -321,7 +321,7 @@
         "type": "test-only-file",
         "path": "scripts/ops/google-merchant/types.ts"
       },
-      "reason": "Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
     },
     {
       "approve": "hygiene.baseline",
@@ -330,7 +330,7 @@
         "path": "scripts/ops/google-merchant/mapper.ts",
         "name": "equipmentsToGoogleProducts"
       },
-      "reason": "Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-04 de lib/google-merchant/* (files e test-only-file na base) para o porte em scripts/ops/google-merchant/*. O código continua desligado (GOOGLE_MERCHANT_LEGACY_DISABLED antes de qualquer autenticação ou consulta, provado no teste); os itens da origem saem com lib/ no bloco F. Sem ampliar outra regra."
     },
     {
       "approve": "hygiene.baseline",
@@ -338,12 +338,12 @@
         "type": "test-only-file",
         "path": "scripts/ops/storage-utils.ts"
       },
-      "reason": "Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-03 de lib/storage-utils.ts (files na base) para o porte em scripts/ops/storage-utils.ts, com o cliente administrativo do backend criado no primeiro uso (tests/unit/storage-utils-ops.test.ts). O item da origem sai com lib/ no bloco F. Sem ampliar outra regra."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: Onda 135, C6 (E31; decisão D9 do dono de 2026-10-08: portar as quarentenas COD-03/04/25, nunca apagar): transferência da quarentena COD-03 de lib/storage-utils.ts (files na base) para o porte em scripts/ops/storage-utils.ts, com o cliente administrativo do backend criado no primeiro uso (tests/unit/storage-utils-ops.test.ts). O item da origem sai com lib/ no bloco F. Sem ampliar outra regra."
     },
     {
       "approve": "package.exports",
       "entry": "@gb-locacoes/contracts#./openapi",
-      "reason": "Onda 135, C5 (E15; aprovação prevista no plano de aposentadoria da raiz): os esquemas públicos da especificação OpenAPI saem de lib/openapi/schemas.ts da raiz legada para o contrato universal, por entrada exata, sem curinga. Só zod (os mesmos oito esquemas, com o JSON Schema gerado byte a byte igual); consumidos por scripts/generate-openapi-zod.ts (gerador lendo apps/services/api) e por tests/api/contract.test.ts. Nenhuma regra de negócio, servidor ou segredo; nenhuma baseline, tolerância ou exclusão de teste ampliada."
+      "reason": "Motivo histórico anterior à retirada das antigas app/ e lib/ no Bloco F; o registro conserva sua identidade e exige resolver o achado no owner atual: Onda 135, C5 (E15; aprovação prevista no plano de aposentadoria da raiz): os esquemas públicos da especificação OpenAPI saem de lib/openapi/schemas.ts da raiz legada para o contrato universal, por entrada exata, sem curinga. Só zod (os mesmos oito esquemas, com o JSON Schema gerado byte a byte igual); consumidos por scripts/generate-openapi-zod.ts (gerador lendo apps/services/api) e por tests/api/contract.test.ts. Nenhuma regra de negócio, servidor ou segredo; nenhuma baseline, tolerância ou exclusão de teste ampliada."
     },
     {
       "baseline": "tokens",
@@ -877,6 +877,97 @@
       "approve": "package.exports",
       "entry": "@gb-locacoes/frontend#./pages/equipamento-detalhe",
       "reason": "A separação de plataforma autorizada declara a condição react-native da entrada já coberta pelo wildcard pages, como as demais telas. Web e native continuam na mesma slice e nos mesmos contratos; não exclui fonte ou testes, não permite biblioteca web em código universal e não cria outra tela."
+    },
+    {
+      "approve": "arch.legacyRoots",
+      "entry": {
+        "path": "app",
+        "runtime": "web-host"
+      },
+      "reason": "Onda 135, Bloco F: retirada local autorizada da raiz app após tag completa de pré-exclusão e provas P2. Esta aprovação só será registrada quando os arquivos desse caminho estiverem comprovadamente ausentes no clone e as baselines tiverem sido medidas antes da redução de escopo. Não transfere dívida, não cria fachada ou ignore, não altera regras nem tolerância zero; recriação continua bloqueada por arquitetura/retired-artifacts."
+    },
+    {
+      "approve": "arch.legacyRoots",
+      "entry": {
+        "path": "lib",
+        "runtime": "server-and-shared"
+      },
+      "reason": "Onda 135, Bloco F: retirada local autorizada da raiz lib após tag completa de pré-exclusão e provas P2. Esta aprovação só será registrada quando os arquivos desse caminho estiverem comprovadamente ausentes no clone e as baselines tiverem sido medidas antes da redução de escopo. Não transfere dívida, não cria fachada ou ignore, não altera regras nem tolerância zero; recriação continua bloqueada por arquitetura/retired-artifacts."
+    },
+    {
+      "approve": "arch.legacyRoots",
+      "entry": {
+        "path": "middlewares",
+        "runtime": "server"
+      },
+      "reason": "Onda 135, Bloco F: retirada local autorizada da raiz middlewares após tag completa de pré-exclusão e provas P2. Esta aprovação só será registrada quando os arquivos desse caminho estiverem comprovadamente ausentes no clone e as baselines tiverem sido medidas antes da redução de escopo. Não transfere dívida, não cria fachada ou ignore, não altera regras nem tolerância zero; recriação continua bloqueada por arquitetura/retired-artifacts."
+    },
+    {
+      "approve": "arch.legacyRoots",
+      "entry": {
+        "path": "schemas",
+        "runtime": "shared"
+      },
+      "reason": "Onda 135, Bloco F: retirada local autorizada da raiz schemas após tag completa de pré-exclusão e provas P2. Esta aprovação só será registrada quando os arquivos desse caminho estiverem comprovadamente ausentes no clone e as baselines tiverem sido medidas antes da redução de escopo. Não transfere dívida, não cria fachada ou ignore, não altera regras nem tolerância zero; recriação continua bloqueada por arquitetura/retired-artifacts."
+    },
+    {
+      "approve": "arch.legacyRoots",
+      "entry": {
+        "path": "types/global.d.ts",
+        "runtime": "types"
+      },
+      "reason": "Onda 135, Bloco F: retirada local autorizada da raiz types/global.d.ts após tag completa de pré-exclusão e provas P2. Esta aprovação só será registrada quando os arquivos desse caminho estiverem comprovadamente ausentes no clone e as baselines tiverem sido medidas antes da redução de escopo. Não transfere dívida, não cria fachada ou ignore, não altera regras nem tolerância zero; recriação continua bloqueada por arquitetura/retired-artifacts."
+    },
+    {
+      "approve": "arch.legacyRoots",
+      "entry": {
+        "path": "types/google-maps-ecl.d.ts",
+        "runtime": "types"
+      },
+      "reason": "Onda 135, Bloco F: retirada local autorizada da raiz types/google-maps-ecl.d.ts após tag completa de pré-exclusão e provas P2. Esta aprovação só será registrada quando os arquivos desse caminho estiverem comprovadamente ausentes no clone e as baselines tiverem sido medidas antes da redução de escopo. Não transfere dívida, não cria fachada ou ignore, não altera regras nem tolerância zero; recriação continua bloqueada por arquitetura/retired-artifacts."
+    },
+    {
+      "approve": "arch.legacyRoots",
+      "entry": {
+        "path": "proxy.ts",
+        "runtime": "server"
+      },
+      "reason": "Onda 135, Bloco F: retirada local autorizada da raiz proxy.ts após tag completa de pré-exclusão e provas P2. Esta aprovação só será registrada quando os arquivos desse caminho estiverem comprovadamente ausentes no clone e as baselines tiverem sido medidas antes da redução de escopo. Não transfere dívida, não cria fachada ou ignore, não altera regras nem tolerância zero; recriação continua bloqueada por arquitetura/retired-artifacts."
+    },
+    {
+      "approve": "tokens.legacyScope",
+      "entry": "app",
+      "reason": "Onda 135, Bloco F: retirada local autorizada da raiz app após tag completa de pré-exclusão e provas P2. Esta aprovação só será registrada quando os arquivos desse caminho estiverem comprovadamente ausentes no clone e as baselines tiverem sido medidas antes da redução de escopo. Não transfere dívida, não cria fachada ou ignore, não altera regras nem tolerância zero; recriação continua bloqueada por arquitetura/retired-artifacts."
+    },
+    {
+      "approve": "tokens.legacyScope",
+      "entry": "lib",
+      "reason": "Onda 135, Bloco F: retirada local autorizada da raiz lib após tag completa de pré-exclusão e provas P2. Esta aprovação só será registrada quando os arquivos desse caminho estiverem comprovadamente ausentes no clone e as baselines tiverem sido medidas antes da redução de escopo. Não transfere dívida, não cria fachada ou ignore, não altera regras nem tolerância zero; recriação continua bloqueada por arquitetura/retired-artifacts."
+    },
+    {
+      "approve": "tokens.legacyScope",
+      "entry": "middlewares",
+      "reason": "Onda 135, Bloco F: retirada local autorizada da raiz middlewares após tag completa de pré-exclusão e provas P2. Esta aprovação só será registrada quando os arquivos desse caminho estiverem comprovadamente ausentes no clone e as baselines tiverem sido medidas antes da redução de escopo. Não transfere dívida, não cria fachada ou ignore, não altera regras nem tolerância zero; recriação continua bloqueada por arquitetura/retired-artifacts."
+    },
+    {
+      "approve": "tokens.legacyScope",
+      "entry": "schemas",
+      "reason": "Onda 135, Bloco F: retirada local autorizada da raiz schemas após tag completa de pré-exclusão e provas P2. Esta aprovação só será registrada quando os arquivos desse caminho estiverem comprovadamente ausentes no clone e as baselines tiverem sido medidas antes da redução de escopo. Não transfere dívida, não cria fachada ou ignore, não altera regras nem tolerância zero; recriação continua bloqueada por arquitetura/retired-artifacts."
+    },
+    {
+      "approve": "tokens.legacyScope",
+      "entry": "types/global.d.ts",
+      "reason": "Onda 135, Bloco F: retirada local autorizada da raiz types/global.d.ts após tag completa de pré-exclusão e provas P2. Esta aprovação só será registrada quando os arquivos desse caminho estiverem comprovadamente ausentes no clone e as baselines tiverem sido medidas antes da redução de escopo. Não transfere dívida, não cria fachada ou ignore, não altera regras nem tolerância zero; recriação continua bloqueada por arquitetura/retired-artifacts."
+    },
+    {
+      "approve": "tokens.legacyScope",
+      "entry": "types/google-maps-ecl.d.ts",
+      "reason": "Onda 135, Bloco F: retirada local autorizada da raiz types/google-maps-ecl.d.ts após tag completa de pré-exclusão e provas P2. Esta aprovação só será registrada quando os arquivos desse caminho estiverem comprovadamente ausentes no clone e as baselines tiverem sido medidas antes da redução de escopo. Não transfere dívida, não cria fachada ou ignore, não altera regras nem tolerância zero; recriação continua bloqueada por arquitetura/retired-artifacts."
+    },
+    {
+      "approve": "tokens.legacyScope",
+      "entry": "proxy.ts",
+      "reason": "Onda 135, Bloco F: retirada local autorizada da raiz proxy.ts após tag completa de pré-exclusão e provas P2. Esta aprovação só será registrada quando os arquivos desse caminho estiverem comprovadamente ausentes no clone e as baselines tiverem sido medidas antes da redução de escopo. Não transfere dívida, não cria fachada ou ignore, não altera regras nem tolerância zero; recriação continua bloqueada por arquitetura/retired-artifacts."
     }
   ]
 }

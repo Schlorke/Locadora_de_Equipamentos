@@ -4,10 +4,6 @@ const mocks = vi.hoisted(() => ({
   command: vi.fn(),
   session: vi.fn(),
 }))
-vi.mock('@/lib/tenant', () => ({ resolveTenantPrincipal: mocks.access }))
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: mocks.session,
-}))
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: mocks.access,
 }))
@@ -19,22 +15,14 @@ vi.mock('@gb-locacoes/backend/runtime', () => ({
   handleConfiguredOwnerActivation: mocks.command,
   handleConfiguredOwnerReactivation: mocks.command,
 }))
-import * as legacyCancel from '@/app/api/admin/subscription/cancel/route'
-import * as legacyUndo from '@/app/api/admin/subscription/undo-cancel/route'
 import * as apiCancel from '../../apps/services/api/src/app/api/admin/subscription/cancel/route'
 import * as apiUndo from '../../apps/services/api/src/app/api/admin/subscription/undo-cancel/route'
-import * as legacyActivate from '@/app/api/admin/subscription/activate/route'
 import * as apiActivate from '../../apps/services/api/src/app/api/admin/subscription/activate/route'
-import * as legacyReactivate from '@/app/api/admin/subscription/reactivate/route'
 import * as apiReactivate from '../../apps/services/api/src/app/api/admin/subscription/reactivate/route'
 const adapters = [
-  ['legacy cancel', legacyCancel, 'cancel'],
-  ['legacy undo', legacyUndo, 'undo-cancel'],
   ['API cancel', apiCancel, 'cancel'],
   ['API undo', apiUndo, 'undo-cancel'],
-  ['legacy activate', legacyActivate, 'activate'],
   ['API activate', apiActivate, 'activate'],
-  ['legacy reactivate', legacyReactivate, 'reactivate'],
   ['API reactivate', apiReactivate, 'reactivate'],
 ] as const
 const principal = {

@@ -1,3 +1,11 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return { prisma: {} }
+}
 /**
  * Achado 2 da revisão (CSRF entre locadoras irmãs): todos os subdomínios da
  * raiz são o mesmo site, então o cookie de sessão de `alfa.<raiz>` acompanha
@@ -19,65 +27,29 @@ const effect = (name: string) => () => {
   return Response.json({ ok: true })
 }
 
-vi.mock('@/lib/prisma', () => ({ prisma: {} }))
-vi.mock('@/lib/tenant', () => ({
-  resolveTenantPrincipal: async () => ({
-    ok: true,
-    principal: {
-      userId: 'client-alfa',
-      tenantId: 'tenant-alfa',
-      membershipId: 'member-alfa',
-      role: 'CLIENT',
-    },
-  }),
-  withTenantTransaction: async () => effect('tenant transaction')(),
-}))
-vi.mock('@/lib/cart-service', () => ({
-  CustomerError: class CustomerError extends Error {},
-  readCustomerCart: async () => null,
-  writeCustomerCart: async () => effect('cart write')(),
-}))
-vi.mock('@/lib/customer-addresses', () => ({
-  AddressNotFound: class AddressNotFound extends Error {},
-  listAddresses: async () => [],
-  createAddress: async () => effect('address create')(),
-  updateAddress: async () => effect('address update')(),
-  deleteAddress: async () => effect('address delete')(),
-}))
-vi.mock('@/lib/rental-transaction', () => ({
-  RentalMutationError: class RentalMutationError extends Error {},
-}))
-vi.mock('@/lib/rental-lifecycle', () => ({
-  extendRental: async () => effect('rental extend')(),
-}))
-vi.mock('@/lib/client-rental-requests', () => ({
-  readClientRental: async () => null,
-  hideClientRental: async () => Boolean(effect('rental hide')()),
-  requestClientRentalAction: async () => effect('rental request')(),
-}))
-vi.mock('@/lib/quote-request', () => ({
-  readClientQuote: async () => null,
-  hideClientQuote: async () => Boolean(effect('quote hide')()),
-}))
-vi.mock('@/lib/contracts/service', () => ({
-  ContractAccessError: class ContractAccessError extends Error {},
-  requestContractSignature: async () => effect('contract signature')(),
-}))
-vi.mock('@/lib/security/tenant-webhook', () => ({
-  resolveIntegrationCredential: async () => effect('integration credential')(),
-}))
-
 import {
   isSameOriginMutation,
   rejectCrossOriginMutation,
 } from '@gb-locacoes/backend/identity'
-import { isTrustedMutationOrigin } from '@/lib/security/mutation-origin'
+import { isTrustedMutationOrigin } from '../../apps/services/api/src/host/mutation-origin'
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: {} }),
-}))
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({ prisma: {} }),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 vi.mock(
   '../../apps/services/api/src/host/private-identity',
   async (importOriginal) => ({
@@ -182,57 +154,36 @@ vi.mock(
       effect('integration credential')(),
   })
 )
-import * as legacyRoute0 from '@/app/api/cart/sync/route'
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/cart/sync/route'
-import * as legacyRoute1 from '@/app/api/cart/merge/route'
+
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/cart/merge/route'
-import * as legacyRoute2 from '@/app/api/addresses/route'
+
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/addresses/route'
-import * as legacyRoute3 from '@/app/api/addresses/[id]/route'
+
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/addresses/[id]/route'
-import * as legacyRoute4 from '@/app/api/client/notifications/[id]/route'
+
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/client/notifications/[id]/route'
-import * as legacyRoute5 from '@/app/api/client/notifications/mark-all-read/route'
+
 import * as serviceRoute5 from '../../apps/services/api/src/app/api/client/notifications/mark-all-read/route'
-import * as legacyRoute6 from '@/app/api/client/rentals/[id]/extend/route'
+
 import * as serviceRoute6 from '../../apps/services/api/src/app/api/client/rentals/[id]/extend/route'
-import * as legacyRoute7 from '@/app/api/client/rentals/[id]/request-extension/route'
+
 import * as serviceRoute7 from '../../apps/services/api/src/app/api/client/rentals/[id]/request-extension/route'
-import * as legacyRoute8 from '@/app/api/client/rentals/[id]/request-pickup/route'
+
 import * as serviceRoute8 from '../../apps/services/api/src/app/api/client/rentals/[id]/request-pickup/route'
-import * as legacyRoute9 from '@/app/api/client/rentals/[id]/route'
+
 import * as serviceRoute9 from '../../apps/services/api/src/app/api/client/rentals/[id]/route'
-import * as legacyRoute10 from '@/app/api/user/profile/route'
+
 import * as serviceRoute10 from '../../apps/services/api/src/app/api/user/profile/route'
-import * as legacyRoute11 from '@/app/api/contracts/sign/route'
+
 import * as serviceRoute11 from '../../apps/services/api/src/app/api/contracts/sign/route'
-import * as legacyRoute12 from '@/app/api/quotes/[id]/route'
+
 import * as serviceRoute12 from '../../apps/services/api/src/app/api/quotes/[id]/route'
-import * as legacyRoute13 from '@/app/api/integrations/melhor-envio/calculate/route'
+
 import * as serviceRoute13 from '../../apps/services/api/src/app/api/integrations/melhor-envio/calculate/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      cartSync: legacyRoute0.POST,
-      cartMerge: legacyRoute1.POST,
-      createAddress: legacyRoute2.POST,
-      updateAddress: legacyRoute3.PATCH,
-      deleteAddress: legacyRoute3.DELETE,
-      readNotification: legacyRoute4.PATCH,
-      deleteNotification: legacyRoute4.DELETE,
-      markAllRead: legacyRoute5.POST,
-      extendRental: legacyRoute6.POST,
-      requestExtension: legacyRoute7.POST,
-      requestPickup: legacyRoute8.POST,
-      hideRental: legacyRoute9.DELETE,
-      updateProfile: legacyRoute10.PUT,
-      signContract: legacyRoute11.POST,
-      hideQuote: legacyRoute12.DELETE,
-      freight: legacyRoute13.POST,
-    },
-  ],
   [
     'service',
     {

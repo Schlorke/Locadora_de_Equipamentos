@@ -9,57 +9,18 @@
     "css-important"
   ],
   "totals": {
-    "tailwind-palette-class": 5793,
-    "arbitrary-color": 20,
-    "arbitrary-dimension": 539,
+    "tailwind-palette-class": 5762,
+    "arbitrary-color": 18,
+    "arbitrary-dimension": 538,
     "hsl-triple": 0,
-    "z-index-literal": 328,
-    "color-literal": 26,
-    "number-literal": 2
+    "z-index-literal": 328
   },
   "files": {
-    "app/admin/admin-layout-client.tsx": {
-      "tailwind-palette-class": 4
-    },
-    "app/admin/categorias/loading.tsx": {
-      "tailwind-palette-class": 2
-    },
-    "app/admin/email/loading.tsx": {
-      "tailwind-palette-class": 3
-    },
-    "app/admin/layout.tsx": {
-      "color-literal": 1
-    },
-    "app/cadastro/page.tsx": {
-      "tailwind-palette-class": 5
-    },
-    "app/entrar/page.tsx": {
-      "tailwind-palette-class": 5
-    },
-    "app/layout.tsx": {
-      "color-literal": 1
-    },
-    "app/login/page.tsx": {
-      "tailwind-palette-class": 5
-    },
-    "app/reset-password/page.tsx": {
-      "tailwind-palette-class": 5
-    },
     "apps/clients/web/src/app/(public)/[locadora]/(auth)/cadastro/page.tsx": {
       "tailwind-palette-class": 5
     },
     "apps/clients/web/src/app/(public)/[locadora]/(auth)/entrar/page.tsx": {
       "tailwind-palette-class": 5
-    },
-    "lib/category-design.tsx": {
-      "color-literal": 3,
-      "number-literal": 2
-    },
-    "lib/utils/category-helpers.tsx": {
-      "tailwind-palette-class": 2,
-      "arbitrary-color": 2,
-      "arbitrary-dimension": 1,
-      "color-literal": 21
     },
     "packages/frontend/src/entities/orcamento/model/registro-utils.ts": {
       "tailwind-palette-class": 30

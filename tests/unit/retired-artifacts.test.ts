@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -141,7 +142,103 @@ type Retired = {
   remains: () => string[]
 }
 
+/** The root app/lib and these exact artifacts were retired in F; host src/app and package sources remain. */
+const RETIRED_ROOT_PATHS: ReadonlyArray<{
+  id: string
+  files: string[]
+  patterns?: ReadonlyArray<RegExp>
+}> = [
+  {
+    id: 'raiz legada app/',
+    files: ['app'],
+    patterns: [/(?<![\w./\\-])app\//, /@\/app(?:\/|(?=['"\s]))/],
+  },
+  {
+    id: 'fachadas legadas lib/',
+    files: ['lib'],
+    patterns: [/(?<![\w./\\-])lib\//, /@\/lib(?:\/|(?=['"\s]))/],
+  },
+  {
+    id: 'middleware legado middlewares/require-admin.ts',
+    files: ['middlewares/require-admin.ts'],
+  },
+  {
+    id: 'schema legado schemas/settings.schema.ts',
+    files: ['schemas/settings.schema.ts'],
+  },
+  {
+    id: 'tipos legados types/global.d.ts e types/google-maps-ecl.d.ts',
+    files: ['types/global.d.ts', 'types/google-maps-ecl.d.ts'],
+  },
+  { id: 'proxy.ts da raiz', files: ['proxy.ts'] },
+  { id: 'next.config.mjs da raiz', files: ['next.config.mjs'] },
+  { id: 'vercel.json da raiz', files: ['vercel.json'] },
+  { id: 'Dockerfile da raiz', files: ['Dockerfile'] },
+  { id: 'components.json da raiz', files: ['components.json'] },
+  {
+    id: 'gerados next-env.d.ts e tsconfig.tsbuildinfo da raiz',
+    files: ['next-env.d.ts', 'tsconfig.tsbuildinfo', '.next'],
+  },
+  {
+    id: 'auxiliares antigos de build da raiz',
+    files: [
+      'scripts/patch-prisma.js',
+      'scripts/fix-prisma-imports.js',
+      'scripts/patch-next-env-for-typecheck.cjs',
+    ],
+  },
+  {
+    id: 'scripts avulsos antigos de DB/RLS/Supabase',
+    files: [
+      'scripts/check-supabase-performance.js',
+      'scripts/supabase-diagnostics.js',
+      'scripts/fix-rls-policies.js',
+      'scripts/force-fix-rls.js',
+      'scripts/final-rls-fix.js',
+      'scripts/debug-policies.js',
+      'scripts/alter-policies.js',
+      'scripts/resolve-all-warnings.js',
+      'scripts/monitor-index-usage.js',
+      'scripts/diagnose-database.js',
+      'scripts/diagnose-connection.js',
+      'scripts/check-policies.js',
+      'scripts/fix-persistent-policies.js',
+      'scripts/fix-new-policies.js',
+      'scripts/fix-insert-policies.js',
+      'scripts/debug-persistent-warnings.js',
+      'scripts/create-missing-index.js',
+      'scripts/check-prisma.js',
+      'scripts/prisma-client.js',
+      'scripts/prisma-client.cjs',
+      'scripts/safe-postinstall.js',
+      'scripts/test-commit.js',
+      'scripts/create-missing-categories.mjs',
+      'scripts/check-equipments.mjs',
+      'scripts/check-andaime-pricing.cjs',
+      'scripts/check-duplicate-categories.cjs',
+    ],
+  },
+]
+
+/** Only a repository-root spelling; qualified hosts/packages and src/app must not match. */
+function retiredRootMention(file: string): RegExp {
+  const special = new Set([
+    36, 40, 41, 42, 43, 46, 63, 91, 92, 93, 94, 123, 124, 125,
+  ])
+  const escaped = Array.from(file, (character) =>
+    special.has(character.charCodeAt(0))
+      ? String.fromCharCode(92) + character
+      : character
+  ).join('')
+  return new RegExp('(?<![\\w./\\\\-])' + escaped + '(?![\\w/\\\\-]|\\.[\\w])')
+}
+
 const RETIRED: ReadonlyArray<Retired> = [
+  ...RETIRED_ROOT_PATHS.map(({ id, files, patterns }): Retired => ({
+    id,
+    patterns: patterns ?? files.map(retiredRootMention),
+    remains: () => still.files(...files),
+  })),
   {
     id: 'junção de apps/clients/web/public (tools/link-web-public.mjs, pnpm link:web-public)',
     patterns: [/(?<![\w-])(?:tools\/)?link[-:]web-public(?:\.mjs)?(?![\w-])/],
@@ -217,6 +314,62 @@ const RETIRED: ReadonlyArray<Retired> = [
   },
 ]
 
+/**
+ * Frozen production data has a hash-verified historical caption, rather than edited source bytes.
+ * This does not exclude a file or suppress its contents: every original sentence is still scanned.
+ * The exact reference and four original Git blobs were independently preserved before F; any
+ * changed byte, origin, path or new file has no historical caption and must fail validation.
+ */
+const FROZEN_PRODUCTION_DATA: ReadonlyArray<{
+  file: string
+  sha256: string
+  normalizeCheckoutEol: boolean
+}> = [
+  {
+    file: 'tests/visual/tailwind-parity/production-sources/app/globals.css.source',
+    sha256: 'b0439afe3fbe76d7bbad974f25475b00aa461c61e72fd6fade62f47e3ec4af9b',
+    normalizeCheckoutEol: false,
+  },
+  {
+    file: 'tests/visual/tailwind-parity/production-sources/design-tokens/output/tokens-tailwind.json.source',
+    sha256: 'bca88fd4fdd717c498ad6cf8f68768766cb8f89cb6305b9bc3af3804d8a14b5f',
+    normalizeCheckoutEol: false,
+  },
+  {
+    file: 'tests/visual/tailwind-parity/production-sources/postcss.config.cjs.source',
+    sha256: '6f3215601b7292a13a7d9a35ef270dfaaaafedd85ea70222192e7368ac491c5d',
+    normalizeCheckoutEol: false,
+  },
+  {
+    file: 'tests/visual/tailwind-parity/production-sources/tailwind.config.cjs.source',
+    sha256: 'de39c4557ab5cc3b9a119db16c47f640f9c00bf82a42384dd7249cdc8c54ac36',
+    normalizeCheckoutEol: false,
+  },
+  {
+    file: 'tests/visual/tailwind-parity/production-sources/manifest.json',
+    sha256: '952888d44ea4326b5b40b95f65fd3d782ed44be128e2717de80b6bbcd86827a2',
+    normalizeCheckoutEol: true,
+  },
+  {
+    file: 'tests/visual/tailwind-parity/production.json',
+    sha256: 'e99c1fb70945ba917d9a7721b4a6ac2ccae3f8d6579788aa5306f545654c5297',
+    normalizeCheckoutEol: true,
+  },
+]
+const FROZEN_DATA_CAPTION =
+  'A antiga app/globals.css e a antiga pipeline do Style Dictionary (design-tokens/output/tokens-tailwind.json e design-system:build-tokens) foram retiradas. Estes bytes são dados históricos fixados da produção eb4c0098, não instruções atuais.'
+
+function historicalDataText(file: string, bytes: Buffer): string {
+  const recorded = FROZEN_PRODUCTION_DATA.find((record) => record.file === file)
+  if (!recorded) return bytes.toString('utf8')
+  const reference = recorded.normalizeCheckoutEol
+    ? Buffer.from(bytes.toString('utf8').replace(/\r\n/g, '\n'))
+    : bytes
+  if (createHash('sha256').update(reference).digest('hex') !== recorded.sha256)
+    throw new Error(`Historical production data diverged: ${file}`)
+  return `// ${FROZEN_DATA_CAPTION}\n${bytes.toString('utf8')}`
+}
+
 /** Citações que ficam de propósito: arquivo, artefato (início do id) e motivo. */
 const ALLOWED: ReadonlyArray<{
   file: string
@@ -227,7 +380,7 @@ const ALLOWED: ReadonlyArray<{
     file: 'tests/visual/support/tailwind-parity-fixture.mjs',
     artifact: 'pipeline do Style Dictionary',
     reason:
-      'Lê design-tokens/output/tokens-tailwind.json da main com git show: é a fonte da produção, não um arquivo desta árvore (entrada 227).',
+      'Lê o blob histórico fixado de design-tokens/output/tokens-tailwind.json pelo manifesto de origem/SHA/Git: é a fonte da produção, não uma pipeline ativa desta árvore (entradas 227 e 339).',
   },
   {
     file: 'tests/visual/README.md',
@@ -246,12 +399,6 @@ const ALLOWED: ReadonlyArray<{
     artifact: 'pipeline do Style Dictionary',
     reason:
       'Comentário que explica por que os tokens do Style Dictionary não entravam como cor; a entrada 227 o deixou para o dono do arquivo, fora do lote fechamento-final.',
-  },
-  {
-    file: 'scripts/safe-postinstall.js',
-    artifact: 'gerador zod',
-    reason:
-      'Script morto (linha de base do pnpm hygiene) que ainda procura o post-prisma-generate.js com existsSync; a entrada 227 o deixou para o dono, fora do lote fechamento-final.',
   },
   {
     file: 'packages/design-tokens/src/primitives.ts',
@@ -450,7 +597,7 @@ describe('artefatos aposentados não aparecem como vivos (achado 135)', () => {
         if (buffer.includes(0)) return []
         return staleMentions(
           file,
-          buffer.toString('utf8'),
+          historicalDataText(file, buffer),
           file === KNOWN_ISSUES ? live : undefined
         ).map((problem) => ({ file, problem }))
       })
@@ -495,6 +642,12 @@ describe('artefatos aposentados não aparecem como vivos (achado 135)', () => {
       'O `foo.js` saiu. Rode `pnpm link:web-public` para criar a pasta.',
       '# Título\n\n## A\n\nO `style-dictionary` saiu.\n\n## B\n\nUse o `style-dictionary`.',
       'Rode `scripts/clean-install-windows.ps1`.',
+      'Use app/api/cart/sync/route.ts.',
+      'A app/admin/layout.tsx não foi removida.',
+      'Importe @/lib/auth para autorizar.',
+      'Execute scripts/fix-rls-policies.js.',
+      'Edite o next.config.mjs da raiz.',
+      'Use types/global.d.ts.',
     ])
       expect.soft(md(text), text).not.toEqual([])
     for (const text of [
@@ -513,6 +666,15 @@ describe('artefatos aposentados não aparecem como vivos (achado 135)', () => {
       'O antigo `scripts/clean-install-windows.ps1` rodava `taskkill`.',
       'Até `351-link-web-public` no registro de migração.',
       'O `generator zod` não existe mais no schema.',
+      'A raiz app/ e as fachadas lib/ saíram no Bloco F.',
+      'O antigo scripts/fix-rls-policies.js foi retirado.',
+      'apps/services/api/src/app/api/cart/sync/route.ts continua no serviço.',
+      'packages/frontend/src/app/styles/globals.web.css mantém o CSS.',
+      'apps/clients/web/next.config.mjs e apps/services/api/next.config.mjs ficam.',
+      'apps/services/api/vercel.json e apps/services/api/Dockerfile ficam.',
+      'types/next-auth.d.ts continua como augmentation.',
+      'Use types/global.d.ts.map.',
+      'Use scripts/fix-rls-policies.js.map.',
     ])
       expect.soft(md(text), text).toEqual([])
     for (const text of [
@@ -521,6 +683,48 @@ describe('artefatos aposentados não aparecem como vivos (achado 135)', () => {
       'throw new Error(`${dest} é um link, resto do antigo tools/link-web-public.mjs.`)',
     ])
       expect.soft(code(text), text).toEqual([])
+  })
+
+  it('dados históricos fixados conservam todos os bytes e reprovam adulteração ou origem diferente', () => {
+    for (const record of FROZEN_PRODUCTION_DATA) {
+      const bytes = fs.readFileSync(path.join(ROOT, record.file))
+      const contextual = historicalDataText(record.file, bytes)
+      expect(contextual.endsWith(bytes.toString('utf8')), record.file).toBe(
+        true
+      )
+      expect(staleMentions(record.file, contextual), record.file).toEqual([])
+      expect(() =>
+        historicalDataText(
+          record.file,
+          Buffer.concat([bytes, Buffer.from('changed')])
+        )
+      ).toThrow('Historical production data diverged')
+    }
+    const unregistered =
+      'tests/visual/tailwind-parity/production-sources/new-fixture.source'
+    const live = Buffer.from('Use app/api/cart/sync/route.ts.')
+    expect(historicalDataText(unregistered, live)).toBe(live.toString())
+    expect(
+      staleMentions(unregistered, historicalDataText(unregistered, live))
+    ).not.toEqual([])
+    const manifestRecord = FROZEN_PRODUCTION_DATA.find((record) =>
+      record.file.endsWith('/manifest.json')
+    )!
+    const forgedOrigin = fs
+      .readFileSync(path.join(ROOT, manifestRecord.file), 'utf8')
+      .replace(
+        'eb4c0098d5d8686b8d72e9aaf560968bb65274e4',
+        '1111111111111111111111111111111111111111'
+      )
+    expect(() =>
+      historicalDataText(manifestRecord.file, Buffer.from(forgedOrigin))
+    ).toThrow('Historical production data diverged')
+    expect(() =>
+      historicalDataText(
+        manifestRecord.file,
+        fs.readFileSync(path.join(ROOT, FROZEN_PRODUCTION_DATA[0]!.file))
+      )
+    ).toThrow('Historical production data diverged')
   })
 
   it('no known-issues, lê só as entradas citadas como regra, e a introdução não as cobre', () => {

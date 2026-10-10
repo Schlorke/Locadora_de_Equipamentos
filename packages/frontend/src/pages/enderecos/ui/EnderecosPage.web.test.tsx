@@ -17,16 +17,7 @@ describe('Endereços do cliente', () => {
     expect(model).toContain('Endereço adicionado com sucesso!')
     expect(model).toContain('Endereço removido com sucesso!')
     expect(source).toContain('#f9fafb')
-    const route = readFileSync(
-      new URL(
-        '../../../../../../app/area-cliente/enderecos/page.tsx',
-        import.meta.url
-      ),
-      'utf8'
-    )
-    expect(route).toContain("from '@gb-locacoes/frontend/pages/enderecos'")
-    expect(route).toContain('return <EnderecosPage />')
-    // Onda 135 (A8): a mesma página no host web; a asserção sobre a raiz sai no bloco F.
+    // A rota do host web mantém a composição compartilhada.
     const webRoute = readFileSync(
       new URL(
         '../../../../../../apps/clients/web/src/app/(public)/[locadora]/(account)/area-cliente/enderecos/page.tsx',

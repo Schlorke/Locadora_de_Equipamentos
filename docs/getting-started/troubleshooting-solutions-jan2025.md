@@ -1,10 +1,11 @@
 # 🔧 Soluções de Problemas - Janeiro 2025
 
-> **Caminhos atuais (conferidos em 2026-09-30)**: registro histórico de janeiro
-> de 2025. `lib/telemetry.ts`, `lib/metrics.ts` e a página `/admin/analytics`
-> não existem mais (ver `docs/features/analytics-dashboard.md`), e os schemas
-> gerados em `lib/validations/schemas` saíram em 2026-09-30 com o gerador
-> (entrada 227 de `docs/issues/known-issues.md`). Para problemas atuais, use
+> **Registro histórico de janeiro de 2025**, com causas e exemplos da raiz
+> posteriormente aposentada. `lib/telemetry.ts`, `lib/metrics.ts` e a página
+> `/admin/analytics` não existem mais (ver
+> `docs/features/analytics-dashboard.md`), e os schemas gerados em
+> `lib/validations/schemas` saíram em 2026-09-30 com o gerador (entrada 227 de
+> `docs/issues/known-issues.md`). Para problemas atuais, use
 > `troubleshooting.md`.
 
 > **Última Atualização**: 15 de Janeiro de 2025  
@@ -23,6 +24,10 @@ soluções já testadas.
 ## 🚨 **PROBLEMAS CRÍTICOS DE BUILD**
 
 ### **❌ Problema: "Module not found: Can't resolve '@/lib/validations'"**
+
+**Unidade histórica: gerador e fachadas da raiz aposentada.** O log e a solução
+manual abaixo explicam o incidente anterior à retirada do gerador; não são
+instruções para restaurar a árvore antiga após o Bloco F.
 
 #### **🔍 Sintomas**
 
@@ -47,14 +52,15 @@ Module not found: Can't resolve '@/lib/validations'
 
 #### **✅ Solução Implementada**
 
-1. **Criação manual do arquivo** após cada `prisma generate`:
+1. **Procedimento manual usado à época (aposentado)**, após cada
+   `prisma generate`:
 
 ```bash
 # PowerShell
 New-Item -Path lib\validations\index.ts -ItemType File -Force
 ```
 
-2. **Conteúdo mínimo necessário**:
+2. **Conteúdo histórico do arquivo recriado**, não modelo para novos contratos:
 
 ```typescript
 // lib/validations/index.ts
@@ -90,7 +96,7 @@ export const QuoteRequestSchema = z.object({
 })
 ```
 
-3. **Procedimento de emergência**:
+3. **Procedimento de emergência histórico (aposentado)**:
 
 ```bash
 # Se o build falhar, execute:
@@ -100,15 +106,24 @@ pnpm db:generate
 pnpm build
 ```
 
-#### **🛡️ Prevenção**
+#### **🛡️ Recuperação atual**
 
-- **NUNCA delete** o arquivo `lib/validations/index.ts`
-- **SEMPRE recrie** após executar `prisma generate`
-- **Considere proteção** do arquivo via git ou scripts automáticos
+Não restaure `lib/validations/index.ts` nem seus schemas gerados na raiz
+aposentada. Confira os imports do consumidor e os exports reais de
+`packages/contracts/package.json`: `ContactSchema` e `QuoteRequestSchema` vêm de
+`@gb-locacoes/contracts/quotations`, e a superfície OpenAPI vem de
+`@gb-locacoes/contracts/openapi`. `pnpm db:generate` chama
+`tools/generate-prisma-client.mjs` somente com o client Prisma. O guard
+`tests/unit/prisma-schema-generators.test.ts` não permite trazer o gerador zod
+de volta.
 
 ---
 
 ### **❌ Problema: "ssr: false is not allowed with next/dynamic in Server Components"**
+
+**Unidade histórica: Swagger e `app/api-docs/page.tsx` da raiz aposentada.** O
+exemplo de `dynamic` abaixo é o contorno usado à época; a tela atual não usa
+`swagger-ui-react`.
 
 #### **🔍 Sintomas**
 
@@ -148,15 +163,27 @@ export default function ApiDocsPage() { // ← REMOVER 'async'
 
 #### **🛡️ Prevenção**
 
-- **SEMPRE use** `'use client'` para componentes com `dynamic` imports
-- **REMOVA `async`** de componentes Client-side
-- **TESTE o build** após modificações em componentes dinâmicos
+- Declare `'use client'` na fronteira interativa que exige APIs do navegador,
+  conforme
+  `node_modules/next/dist/docs/01-app/03-api-reference/01-directives/use-client.md`;
+  a diretiva não é exigida em todo arquivo que importa `dynamic`.
+- A rota fina atual é
+  `apps/clients/web/src/app/(platform)/plataforma/api-docs/page.tsx`, que
+  renderiza `@gb-locacoes/frontend/pages/api-docs`. Sua implementação
+  `ApiDocsPage.web.tsx` já declara a fronteira cliente e usa `use-api-docs.ts`,
+  sem reinstalar Swagger ou recriar a rota aposentada.
+- Valide o host afetado pelo script do workspace; não use o exemplo antigo como
+  alteração automática do bootstrap.
 
 ---
 
 ## 💻 **PROBLEMAS DE CODE QUALITY**
 
 ### **❌ Problema: ESLint "Unexpected any" Warnings (70+ warnings)**
+
+**Unidade histórica da raiz aposentada**: `lib/telemetry.ts`, `lib/metrics.ts` e
+`/admin/analytics` abaixo não são owners atuais. As contagens descrevem a rodada
+de janeiro de 2025, não o lint do workspace.
 
 #### **🔍 Sintomas**
 
@@ -244,6 +271,10 @@ export function withTracing<T extends unknown[], R>(
 ---
 
 ### **❌ Problema: "Variable is assigned but never used" Warnings**
+
+**Registro histórico da raiz aposentada**: o log de `app/api/contact/route.ts` e
+os exemplos seguintes explicam o warning observado. Não recrie a rota antiga nem
+renomeie variáveis só para ocultar uma falha atual de higiene.
 
 #### **🔍 Sintomas**
 
@@ -405,9 +436,20 @@ The term '&&' is not recognized as the name of a cmdlet, function, script file
 - Comandos concatenados não funcionam nativamente
 - Scripts de package.json podem falhar no Windows
 
-#### **✅ Soluções Implementadas**
+#### **✅ Soluções Implementadas (registro do Windows PowerShell usado à época)**
 
-**1. Comandos individuais:**
+Os scripts de build Next da raiz apresentados abaixo foram aposentados. Hoje use
+os scripts dos hosts, sem substituir o lockfile ou recorrer a `npx next` como
+contorno. Em PowerShell, comandos separados continuam evitando depender da
+versão do shell:
+
+```powershell
+pnpm db:generate
+pnpm --filter @gb-locacoes/web build
+pnpm --filter @gb-locacoes/api build
+```
+
+**1. Comandos individuais usados em janeiro de 2025:**
 
 ```bash
 # ❌ Não funciona no PowerShell
@@ -497,6 +539,14 @@ const [error, setError] = useState<string | null>(null)
 ## 🔒 **PROBLEMAS DE SEGURANÇA E ACESSO**
 
 ### **❌ Problema: Middleware de Autenticação Inconsistente**
+
+**Unidade histórica da raiz aposentada**: `middlewares/require-admin.ts`,
+`app/api/admin/analytics/route.ts` e o papel global de usuário dos exemplos
+abaixo não definem a autorização atual. A API compõe a identidade em
+`apps/services/api/src/host/private-identity.ts`; o principal e o papel são
+resolvidos no contexto do vínculo com a locadora. Confira o handler atual e
+[permissões e papéis](../features/admin-permissions-and-roles.md), em vez de
+restaurar o wrapper antigo.
 
 #### **🔍 Sintomas**
 
@@ -616,7 +666,8 @@ export const GET = withAdminAuth(async (request: NextRequest) => {
 
 1. **Consulte esta documentação** para problemas conhecidos
 2. **Verifique logs** do browser e servidor
-3. **Teste em ambiente limpo** (npm clean, rebuild)
+3. **Teste em ambiente local próprio**, seguindo pnpm e a seção "Limpeza segura"
+   de `troubleshooting.md`; não apague pastas que possam conter links
 4. **Documente novos problemas** para futuras referências
 
 ---

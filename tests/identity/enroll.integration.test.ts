@@ -1,3 +1,28 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  const { requireTestDatabase } = await import('../helpers/test-database')
+  if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
+    throw new Error('Disposable database opt-in required')
+  const { Pool } = await import('pg')
+  const { PrismaPg } = await import('@prisma/adapter-pg')
+  const { PrismaClient } = await import('@prisma/client')
+  const pool = new Pool({
+    connectionString: requireTestDatabase(process.env),
+    max: 4,
+  })
+  fPreparedDatabase.pool = pool
+  return {
+    prisma: (fixtureDatabase.prisma = new PrismaClient({
+      adapter: new PrismaPg(pool),
+    })),
+    testPool: pool,
+  }
+}
+import { getDatabaseRuntime as getFPreparedDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 // POST /api/client/enroll (ADR adr-tenant-hosts, D9 e Lote 6): vínculo explícito como CLIENTE da locadora da
 // BORDA, no PostgreSQL descartável. Nunca papel de equipe; vínculo revogado ou suspenso não é reativado; nada do
 // cliente (corpo, x-tenant-id, Origin de outra locadora) escolhe a locadora.
@@ -15,36 +40,26 @@ import { PLATFORM_EDGE_HEADER } from '@gb-locacoes/contracts/platform'
 
 const session = vi.hoisted(() => ({ userId: '' as string | null }))
 const fixtureDatabase = vi.hoisted(() => ({ prisma: undefined as unknown }))
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () =>
-    session.userId ? { user: { id: session.userId, role: 'CLIENT' } } : null,
-}))
-vi.mock('@/lib/prisma', async () => {
-  const { requireTestDatabase } = await import('../helpers/test-database')
-  if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
-    throw new Error('Disposable database opt-in required')
-  const { Pool } = await import('pg')
-  const { PrismaPg } = await import('@prisma/adapter-pg')
-  const { PrismaClient } = await import('@prisma/client')
-  const pool = new Pool({
-    connectionString: requireTestDatabase(process.env),
-    max: 4,
-  })
-  return {
-    prisma: (fixtureDatabase.prisma = new PrismaClient({
-      adapter: new PrismaPg(pool),
-    })),
-    testPool: pool,
-  }
-})
 
-import { prisma } from '@/lib/prisma'
+const { prisma } = getFPreparedDatabaseRuntime()
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
-}))
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
   ...(await importOriginal<
     typeof import('../../apps/services/api/src/host/session')
@@ -54,16 +69,10 @@ vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
       session.userId ? { user: { id: session.userId, role: 'CLIENT' } } : null,
   }))()),
 }))
-import * as legacyRoute0 from '@/app/api/client/enroll/route'
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/client/enroll/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      enroll: legacyRoute0.POST,
-    },
-  ],
   [
     'service',
     {
@@ -473,7 +482,9 @@ describe.each(HOSTS)('%s', (_host, { enroll }) => {
 // O cliente e o pool do banco descartável são da fábrica deste arquivo: fecham uma vez, depois dos dois hosts.
 afterAll(async () => {
   if (!process.env.TEST_DATABASE_URL) return
-  const database = (await import('@/lib/prisma')) as unknown as {
+  const database = (await Promise.resolve(
+    fPreparedDatabase.value!
+  )) as unknown as {
     prisma: { $disconnect(): Promise<void> }
     testPool: { end(): Promise<void> }
   }

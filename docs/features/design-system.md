@@ -54,8 +54,8 @@ responsabilidade, cabeçalho de 1 a 3 linhas e no máximo 300 linhas):
 
 - `globals.web.css`: só a entrada (ordem das camadas, imports dos tokens, da
   paleta, das escalas e dos arquivos, `@config`, ponte `@theme inline` das cores
-  dos controles e `@source`). É o `@gb-locacoes/frontend/app/styles.css`;
-  `app/globals.css` da raiz legada só o importa. O Storybook
+  dos controles e `@source`). É o `@gb-locacoes/frontend/app/styles.css`; A
+  antiga `app/globals.css` da raiz, retirada em F, só o importava. O Storybook
   (`.storybook/preview.tsx`) importa a entrada do frontend desde a onda 135.
 - `utilities.web.css`, `outline.web.css` (contorno com a semântica do Tailwind
   3, onda 9), `base.web.css` (documento, `html`/`body`, rolagem suave, cor de
@@ -67,11 +67,13 @@ responsabilidade, cabeçalho de 1 a 3 linhas e no máximo 300 linhas):
   `day-picker-states`, `recharts`, `base-ui`).
 - O Tailwind não lê testes nem fixtures: `@source not` para `*.test.*`,
   `*.spec.*` e `__fixtures__` na entrada e negação no `content` do
-  `tailwind.config.cjs`, que só cobre a raiz legada (entrada 202).
+  `tailwind.config.cjs`, cujo content foi esvaziado com a retirada da raiz no
+  clone F. As fontes atuais são os @source compartilhados abaixo.
 - Fontes declaradas: `@import 'tailwindcss' source(none)` com `@source` para
   `packages/ui/src`, `packages/frontend/src` e `apps/clients/web/src`; sem a
-  detecção automática, o build da raiz não lê mais `docs/` e `tools/` e gera o
-  mesmo CSS do `build:web` (entrada 222, `index.styles-build.test.ts`).
+  detecção automática, o CSS atual não lê `docs/` e `tools/`. A comparação
+  histórica com o build da antiga raiz foi encerrada na retirada F; o teste
+  `index.styles-build.test.ts` continua caracterizando a entrada do host web.
 
 ### Ordem das camadas
 

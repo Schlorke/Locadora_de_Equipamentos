@@ -1,3 +1,16 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return {
+    get prisma() {
+      if (state.failure) throw state.failure
+      return {}
+    },
+  }
+}
 /**
  * `handleIdentityRequest` (lib/identity.ts) respondia 503 e engolia a causa:
  * sem log, uma configuração quebrada ou o banco fora do ar eram invisíveis.
@@ -9,26 +22,29 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const state = vi.hoisted(() => ({ failure: null as Error | null }))
 
-vi.mock('@/lib/prisma', () => ({
-  get prisma() {
-    if (state.failure) throw state.failure
-    return {}
-  },
-}))
-vi.mock('@/lib/resend', () => ({ default: () => null }))
-
 // Contraparte da API compartilhada (onda 135, B5): o mesmo tratamento pelo leitor do serviço
 // (`apps/services/api/src/host/session.ts`), com o banco do runtime do backend falhando do mesmo jeito.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => {
-    if (state.failure) throw state.failure
-    return { prisma: {} }
-  },
-  createResendClient: () => null,
-}))
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => {
+      if (state.failure) throw state.failure
+      return { prisma: {} }
+    },
+    createResendClient: () => null,
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 
-import { handleIdentityRequest as legacyHandleIdentityRequest } from '@/lib/identity'
 import { handleIdentityRequest as serviceHandleIdentityRequest } from '../../apps/services/api/src/host/session'
 
 const BODY_SECRET = 'senha-do-corpo-nao-pode-vazar'
@@ -70,10 +86,7 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
-describe.each([
-  ['legacy root', legacyHandleIdentityRequest],
-  ['service', serviceHandleIdentityRequest],
-] as const)(
+describe.each([['service', serviceHandleIdentityRequest]] as const)(
   '%s handleIdentityRequest failure log',
   (_host, handleIdentityRequest) => {
     it('an unreachable database: 503 neutral, cause logged by name and code only', async () => {

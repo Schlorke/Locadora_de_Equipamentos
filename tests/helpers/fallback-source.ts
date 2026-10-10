@@ -29,6 +29,7 @@ const SOURCE_PREFIXES = new Set([
   'stores',
   'scripts',
 ])
+// A .next antiga da raiz foi retirada em F; snapshots de retorno extraem somente fontes, omitindo também os gerados dos hosts.
 const OMITTED_SEGMENTS = new Set([
   'node_modules',
   'public',
@@ -91,6 +92,7 @@ function containsSource(directory: string): boolean {
   return false
 }
 
+// O retorno exige uma fotografia completa dos antigos app/, lib/, proxy.ts e next.config.mjs, retirados em F; assertComplete verifica essa fonte externa de pré-exclusão, nunca recria fachadas na árvore ativa.
 function assertComplete(root: string) {
   if (
     !realDirectory(root) ||

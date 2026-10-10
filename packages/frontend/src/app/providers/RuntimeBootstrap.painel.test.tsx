@@ -6,7 +6,7 @@ import {
   PrivateAreaGate,
   type HttpClient,
   type TenantContext,
-} from '../index'
+} from '../index.web'
 import type { MembershipRole } from '../../entities/organizacao'
 import type { SessionAdapter, SessionSnapshot } from '../../entities/sessao'
 

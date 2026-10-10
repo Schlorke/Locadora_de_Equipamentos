@@ -1,5 +1,232 @@
 # 🐛 Problemas Conhecidos e Soluções - GB Locações
 
+## 340. Fechamento pós-F precisa de provas da fonte e do motor realmente executados
+
+### Fechamento atual do clone — 2026-10-10
+
+A nova unit passou 4.104/4.104 em 179 arquivos, sem skips, exit 0, em 406,99 s.
+O fechamento 1003 encerrou seus três passos exit 0: 12 gates, 324 regressões em
+14 arquivos e 13 casos OpenAPI. Recibos e hashes estão no guia F e ledger; os
+checkpoints RED/pending preservados abaixo são históricos.
+
+O código do clone fechou no escopo declarado. Aplicação, formatação e gates
+afetados deste complemento ainda terão recibo próprio. Validação no diretório
+original, publicação F e CI F são posteriores, em recibos externos.
+
+### Checkpoint pós-aplicação — 2026-10-10
+
+**Status atual:** coorte V7 aplicada e formatada; falha de leitura do token
+corrigida e `check:tokens` passou. Fechamento global posterior ainda pendente.
+
+A rodada `final-documentary-closure-20261010T0216` encerrou `final-gates` com
+exit 1. `check:tokens` registrou zero definições hex de orange600: o leitor
+reconhecia somente aspas duplas, mas a formatação havia deixado
+`orange600: '#ea580c'` em `primitives.ts`. O valor da cor permaneceu `#ea580c`.
+
+O executor aplicou a correção mínima em `tools/token-propagation-check.mjs`:
+aspas simples ou duplas com fechamento correspondente e hex no grupo 2. O gate
+real posterior passou exit 0, em 5,20 s observados pelo executor. O log confirma
+definição encontrada, arquivo e árvore canônicos intactos, alias temporário
+aplicado, propagação nativa e nenhuma outra assertion falha. A assertion
+vermelha de propagação web continua esperada; os três níveis NOT_PROVEN
+permanecem. Isso não certifica a propagação web ou o export mobile.
+
+A definição única, a sentinela temporária, a integridade e as expectativas
+continuam estritas. Estilos, oracle e baselines não foram alterados por essa
+correção. Nova rodada global de gates e regressões existentes permanece
+pendente. Recibos e hashes dos eventos RED e verde constam no ledger, sem
+antecipar fechamento global, SHA de F, publicação ou CI final.
+
+A full unit seguinte, `final-unit-after-token-quote-20261010T0945`, terminou
+RED: 4.103 passes e uma falha, 178 arquivos aprovados e um falho, em 391,15 s,
+exit 1. `retired-artifacts` encontrou quatro menções históricas sem legenda
+eficaz para o arquivo inteiro: duas no handoff e uma no guia e no ledger. O gate
+de tokens verde permanece um evento distinto. Este candidato prepara legendas
+factuais na introdução do handoff e do guia e um campo do ledger, preservando as
+referências antigas. Detector, oracle, raw blocks e expectativas não mudam. Nova
+full unit e fechamento global ainda exigem recibos reais.
+
+### Histórico preservado — 2026-10-09
+
+**Data:** 2026-10-09, checkpoint local. **Status:** base preparada no clone; P2
+v6, unit 4.104/4.104 sem skips e visual F fecharam no escopo declarado. B11 v3
+também fechou no escopo declarado. Gates documentais após aplicação;
+transferência/revalidação, publicação e CI final F são ações posteriores.
+
+Depois da retirada física, receitas de teste ainda citavam a compilação e o
+adapter antigos, e tentativas de execução não tinham todas a mesma fonte/build.
+Uma rodada declarada legacy sobre web compilado Better Auth é histórica
+INVALID_BUILD_PROFILE, não prova legacy nem defeito de produto. Os headers
+vigentes agora apontam ao [guia F](../guides/wave135-retirement-validation.md) e
+seu ledger; C continua separado no commit
+978ceb9244c81c7cb2888b798fad8ce90edad25e e na tag
+checkpoint/onda-135-pre-exclusao.
+
+A integração canônica preserva uma instância dos 23 casos antes duplicados e os
+mesmos 19 restantes: C 65 execuções passa a F 42, sem reduzir assertions,
+fixtures ou o motor legacy do serviço. A API ausente/produção passou 2400 casos
+e um skip em legacy e 2398 em Better Auth; jornadas finais recompilaram web por
+motor e passaram 7+2 skips e 8+1 skip. Contagens sobrepostas não são somadas.
+
+O visual F passou 80 arquivos/536 estados/31.065 elementos na comparação fresh,
+com listas pending/approved/unused/problems vazias e referência humana intocada.
+O summary bruto da captura ainda registra comparação pendente; seu resultado
+posterior tem recibo próprio. São diferenças de propriedades/estrutura, não
+pixels, e não se promove Dialog/open 390 a prova universal de usabilidade. E22
+tem duas folhas/276.029 bytes sem diferenças raw/AST/ordem/utilitários.
+Packaging HBC/Storybook e A10 normal em GPU hardware têm provas próprias;
+dispositivo e Slow 3G completo continuam fora do atestado.
+
+P2 v6 recebeu parecer PASS_WITH_STATED_SCOPE, SHA-256
+037fb60c97fd5bd26c18a38fa05020f0f0ed3d486a2934045a31e2e0401e9f9f: cinco
+negativos 1/1/5/1/1 por asserções reais e positivos restaurados nas mesmas
+contagens, 49 fontes restauradas exatamente, quatro builds API reais e cleanup
+observado. O raw mantém operatorReviewed:false e mutantKilled:null; o parecer
+separado não altera esses campos. Tentativas v3/v4/v5 continuam históricas. Os
+focos não substituem whole-suite B3/B11.
+
+A rodada full unit 4103/1 continua histórica RED. O único erro restante era
+OpenAPI gerado: 637 folhas por IDs opacos TypeScript, sem diferenças semânticas
+fora dos contadores e com schemas públicos inalterados. Somente o dado gerado
+foi atualizado sob preimage; gerador/check/testes permaneceram estritos. O foco
+posterior 13/13 passou. A full unit seguinte fechou 4.104/4.104 sem skips, 179
+arquivos e exit 0; é evento separado das rodadas RED. B11 v3 encerrou os 21
+passos exit 0: legacy compara 2.400 casos contra 3.018 presentes e 618 somente
+com raiz; Better Auth compara 2.398 contra 3.014 e 616 somente com raiz. Ambos
+têm zero casos somente sem raiz, violações abertas ou justificativas da
+comparação. Cobertura de sucesso é 158/173 rotas e 201/221 métodos com 20
+exceções existentes em legacy; 164/173 e 207/221 com 14 em Better Auth. As
+exceções de cobertura não são dispensas da comparação. O parecer independente
+75fe3eda1e33a15afcb6473c4e62d7c7c85ef435c4e7cadd53b1f7432a50b82c vincula
+execução/logs, cleanup próprio, sentinel e papéis/inventário preservados. O raw
+conserva operatorReviewedResult:false; o parecer posterior é separado. Falhas de
+setup anteriores e guards/inputs/oracle ficam preservados.
+
+Arquivos documentais: docs/guides/wave135-retirement-validation.md e ledger,
+docs/ai/boot.md, docs/ai/context-map.md, CLAUDE_TO_CODEX_HANDOFF.md e
+docs/guides/testing.md. A receita atual exige API_LEGACY_MODE=absent explícito,
+API_HOST_MODE=production, build API e TEST_DATABASE_DISPOSABLE=true. O default
+dev histórico do harness não foi alterado. Esta coorte documental não muda
+guardas tenant/RLS/auth/dinheiro/outbox/ACL nem expectativas dos testes.
+
+Aplicar a coorte e executar gates documentais/arquitetura afetados. A unit final
+e B11 já têm recibos próprios; gates do texto ausente não bloqueiam
+circularmente sua aplicação. Este é checkpoint pré-publicação, sem inventar
+commit/push/CI final F. As 173 entradas aceitas de hygiene são dívida declarada.
+Infraestrutura hospedada, banco de produção e provedores serão escolhidos depois
+conforme o usuário; migrations locais não criam ou homologam conta/banco
+produção.
+
+## 339. Reprodução Tailwind dependia de um commit privado e o CI bloqueava no registry
+
+**Data:** 2026-10-09. **Status:** correções aplicadas no clone; provas finais
+pós-F ainda em execução.
+
+O histórico público começa em `978ceb9244c81c7cb2888b798fad8ce90edad25e` para
+não publicar os pais com credenciais antigas. O gerador manual de paridade
+Tailwind usava `git show eb4c0098:<arquivo>`; esse objeto não existe na história
+limpa. Os quatro blobs canônicos foram preservados byte a byte como dados
+`.source`, com manifesto de origem, tamanho, SHA-256 e objeto Git. O helper
+verifica tudo antes da materialização temporária, fixa as versões antigas e
+permite `--out` externo. Compilação/comparação e `production.json` foram
+preservados. Atributos locais `*.source -text` evitam transformação de bytes;
+não mudam regras do produto.
+
+Arquivos: `tests/visual/support/tailwind-parity-fixture.mjs`,
+`tests/visual/tailwind-parity/production-sources/` e `tests/visual/README.md`.
+Validar geração real na história limpa, comparação com a referência inalterada e
+recusa de byte, arquivo e origem adulterados antes de escrever saídas. Esse
+procedimento não aprova diferenças de visual.
+
+Os primeiros jobs públicos não chegaram à construção da imagem devido a
+timeout/limite de acesso ao Docker Hub. A recuperação usa as mesmas Docker
+Official Images pelo mirror público ECR, fixando os manifests idênticos de
+PostgreSQL 18 e Node 24.21.0 Alpine. Retirar a diretiva opcional de frontend
+Dockerfile evita uma terceira consulta ao Docker Hub. Não houve escolha de
+infraestrutura, conta AWS, credencial ou alteração de conteúdo das imagens.
+Arquivos: `.github/workflows/ci.yml`, `.github/workflows/api-container.yml` e
+`apps/services/api/Dockerfile`.
+
+O candidato CI `f4dd62a538befdf00d15dde99090fa29a19f9f44` passou no Linux no run
+`37995355803`, com `/api/health` 200 e uid 1000. Esse resultado pertence ao
+candidato pré-F; a fonte final pós-F exige nova execução. Falhas anteriores
+foram preservadas. Provedores, serviços hospedados e produção seguem
+posteriores.
+
+## 338. Testes mantinham adapters e pares aposentados após o bloco F
+
+**Data:** 2026-10-09. **Status:** corrigindo os consumidores de teste no clone
+independente; não declarar a bateria final verde antes da execução.
+
+A retirada dos adapters antigos mudou a composição e os imports, sem mudar
+regras comerciais. O primeiro ensaio pós-F encontrou uma variável `crons` já
+retirada no caso M31, um wrapper NextAuth importado do host errado, mocks do
+callback Zoho no contrato antigo e quatro comparações redundantes entre a raiz
+aposentada e o serviço. O caso M31 agora chama o cron canônico uma vez e
+conserva seus gabaritos de cancelamento/purga/ausência de saída. NextAuth
+importa seu wrapper de `@gb-locacoes/backend/http`. Zoho injeta o principal no
+formato real e verifica as portas reais de banco/provedor; conserva também a
+recusa sem mensagem da função compartilhada, distinta do fallback explícito do
+adapter.
+
+As quatro comparações entre hosts foram encerradas com sua prova pré-exclusão;
+não foram substituídas por comparações do serviço consigo mesmo. Permanecem
+todas as mutações ativas e controles de CSRF, a matriz LIVE/PAUSED/OFF com
+ausência de efeitos e as 111 rotas/144 chamadas que exigem a requisição
+original. O inventário estrutural de autorização continua exigindo suas provas
+negativas, sem nova allowlist ou redução de guardas.
+
+O leitor de artefatos aposentados também confundia ponto final com extensão de
+arquivo. A fronteira reconhece a pontuação e continua recusando nomes `.map`; os
+controles explícitos não usam texto de aposentadoria que poderia ocultar falso
+positivo. O teste da configuração real exige ausência nominal das sete raízes de
+código retiradas, classificações exatas de `public` e `design-tokens` e o shim
+de tipos remanescente; fixtures adversariais continuam exercitando a
+compatibilidade.
+
+Arquivos: `tests/identity/subaccount-provisioning-database.test.ts`,
+`tests/security/{admin-same-origin,auth-unavailable,public-site-state,route-auth-normalization,subscription-route-context,route-auth-inventory}.test.ts`,
+`tests/unit/{retired-artifacts,architecture-runtime}.test.ts` e comentários
+específicos das ferramentas/fixtures. Validar casos corrigidos, inventário de
+referências, suítes completas apropriadas, gates e builds. Tipagem dos quatorze
+projetos passou no clone; isso não substitui os demais resultados.
+
+## 337. Atalhos antigos de RLS/Supabase sobreviveriam à aposentadoria da raiz
+
+**Status:** retirada local do Bloco F; validação do clone exige registro
+próprio. Aplicar esta entrada somente após a exclusão real dos arquivos e
+comandos abaixo, sem declarar P2/F verde antes da execução final.
+
+A família avulsa de Supabase Auth usava auth.uid/authenticated e alterava
+políticas/índices fora das migrations; até scripts de debug executavam DDL no
+DATABASE_URL configurado, sem seleção explícita de alvo ou dry-run. db:push era
+um atalho de alteração do schema incompatível com as migrations tenant.
+check-prisma criava temporário na raiz e safe-postinstall convertia falha de
+geração em exit0. Nenhum desses arquivos tinha consumidor produtivo nos
+hosts/backend; os consumidores entre scripts pertenciam à mesma família.
+
+No Bloco F saem26 arquivos e18 comandos exatos inventariados. Os12 allowances de
+arquivos saem somente após a exclusão real, e sai o objeto ALLOWED de
+safe-postinstall no teste retired-artifacts. As31 chamadas/textos de expectativa
+existentes ficam iguais; acrescentam-se13 grupos de ausência/reaparecimento das
+raízes/arquivos exatos e controles que distinguem app/ de apps/src/app, sem nova
+exceção. O gerador tools/generate-prisma-client.mjs, tenant:check, migrations,
+scripts/security, ops com runbook, backfill/dedupe, templates, exemplos de env e
+storage/SDK Supabase são preservados. Nenhuma política de tenant ou
+implementação comercial é substituída.
+
+Os dois literais de diagnose-database:175,178 foram classificados como exemplos
+genéricos de configuração, sem DSN real completo; a retirada não é atribuída a
+vazamento confirmado. A revisão não prova segurança universal de
+história/env/snapshot.
+
+Validação requerida: higiene e ratchet sem nova isenção, controle de exceção sem
+uso, scripts-root-independence com PENDING={}, tipos/suítes/builds apropriados
+no clone e diffs revisados. A retirada não certifica produção, provedores ou
+banco hospedado. Referências: docs/architecture/modernization.md (scripts
+avulsos), docs/operations/runbook-corte-raiz-legada.md (migrations/ops) e
+inventário externo de retirada.
+
 ## 336. Revisão de testes: duplicação, multa sem gabarito e captura visual vazia
 
 **Data:** 2026-10-09. **Status:** correções aplicadas; fechamento integral da
@@ -1213,8 +1440,10 @@ seis previews web, defaults e HTML das três mensagens iguais.
 
 Não cria regras de autorização no cliente, redes sociais adicionais ou execução
 de código customizado no preview. Desenho/SVG/gestos/teclado/upload reais exigem
-aceite em aparelho. API/RLS/scheduler/legado ficam ativos; não autoriza retirar
-app/.
+aceite em aparelho. Na implementação de 2026-10-03, API/RLS/scheduler e a antiga
+raiz app/ permaneciam ativos; esse bloco não autorizava sua retirada, realizada
+depois somente no clone F. O registro não certifica aparelho nem operação
+externa.
 
 ## 265. Operações Expo ausentes e contratos misturavam DTOs com ícones web
 
@@ -1241,8 +1470,9 @@ web e corpos de calendário iguais. Nove badges computados/pixels iguais com
 paleta canônica; 27 ocorrências eliminadas sem ampliar baseline.
 
 Nova Entrega e Agendar Manutenção continuam pendentes como no web. A grade
-native não certifica Gantt/sobreposição/gestos/visual em aparelho. API/RLS/
-scheduler e implantação não mudaram; não autoriza remover app/.
+native não certifica Gantt/sobreposição/gestos/visual em aparelho. No checkpoint
+de 2026-10-03, API/RLS/scheduler e implantação não mudaram; essa prova não
+autorizava remover a antiga raiz app/, retirada depois apenas no clone F.
 
 ## 264. Financeiro administrativo sem consumidor Expo e dependência indireta DOM
 
@@ -2321,10 +2551,14 @@ achado 132) **Ambiente**: `tools/ratchet-transfers.json`, `package.json`,
 - Gerador zod: saíram o bloco `generator zod`, o `prisma-zod-generator` e o
   override `prisma-zod-generator>ajv` (lockfile só com remoções, conferido com
   `pnpm install --frozen-lockfile`);
-  `tests/unit/prisma-schema-generators.test.ts` reprova gerador de volta.
-  `lib/validations/index.ts` e `contact-types.ts` ficam onde estão (escritos à
-  mão, importados por `app/api/contact`, `app/api/quotes`,
-  `lib/email-templates.ts` e `lib/openapi/schemas.ts`).
+  `tests/unit/prisma-schema-generators.test.ts` reprova gerador de volta. Na
+  onda 9 de 2026-09-30, as antigas fachadas `lib/validations/index.ts` e
+  `contact-types.ts` ficaram onde estavam (escritas à mão, usadas pelas antigas
+  rotas `app/api/contact` e `app/api/quotes`, por `lib/email-templates.ts` e
+  `lib/openapi/schemas.ts`); essas rotas e fachadas foram retiradas no clone F.
+  Hoje `QuoteRequestSchema`, `ContactSchema` e `ValidatedContactData` pertencem
+  a `packages/contracts/src/quotations.ts`; os efeitos de contato e os templates
+  pertencem a backend/quotations e backend/communications.
 - Regra de manutenção desligada registrada (entrada 228).
 
 #### Remoção dos arquivos e ajustes (RESOLVIDO em 2026-09-30, achado 132)
@@ -2374,18 +2608,32 @@ achado 132) **Ambiente**: `tools/ratchet-transfers.json`, `package.json`,
     `docs/guides/troubleshooting-quick-reference.md`) e notas datadas nos
     registros de `docs/internal/` que mandavam não apagar o
     `post-prisma-generate.js` (entrada 229).
-- Referências que ficam de propósito:
-  `tests/visual/support/tailwind-parity-fixture.mjs` lê
-  `design-tokens/output/tokens-tailwind.json` da `main` com `git show` (é a
-  fonte da produção); `tests/unit/hygiene-check.test.ts` usa
-  `lib/validations/schemas/**` só como texto de glob; os registros históricos de
-  `docs/` (ver `docs/README.md`) descrevem o código da época. Fora do escopo do
-  lote, para o dono de cada arquivo: o comentário do `tailwind.config.cjs` que
-  explica por que `design-tokens/output/tokens-tailwind.json` não entrava como
-  cor, e o `scripts/safe-postinstall.js` (morto, na linha de base do hygiene),
-  que ainda procura o `post-prisma-generate.js` com `existsSync`.
+- Referências registradas no fechamento de 2026-09-30: naquela versão,
+  `tests/visual/support/tailwind-parity-fixture.mjs` lia a antiga saída
+  `design-tokens/output/tokens-tailwind.json` da `main` com `git show`, como
+  fonte da produção; `tests/unit/hygiene-check.test.ts` usava
+  `lib/validations/schemas/**` só como texto de glob, e os registros históricos
+  de `docs/` descreviam o código da época. Fora do escopo daquele lote ficavam o
+  comentário do `tailwind.config.cjs` sobre a saída antiga e o antigo
+  `scripts/safe-postinstall.js`, depois retirado, que procurava
+  `post-prisma-generate.js` com `existsSync`; não era uma instrução para
+  restaurá-lo.
+- Situação pós-F dessa prova visual: o helper lê quatro fontes canônicas
+  arquivadas em `tests/visual/tailwind-parity/production-sources/`, verifica
+  origem, tamanho, SHA-256 e identidade de blob conforme o manifesto e não
+  depende dos parents antigos no Git. A saída `production.json` continua
+  referência de valores; a retirada não autoriza recalibrar esses valores.
 
-#### Como validar
+#### Validação registrada no lote de 2026-09-30
+
+O roteiro abaixo descreve os comandos executados naquela árvore, com suas
+antigas fachadas `lib/validations` e seus parents Git, retirados da árvore pós-F
+e da história inicial limpa. Não reutilizar `4b02f52f` como base operacional no
+clone limpo nem restaurar os arquivos para repetir a sonda. Hoje
+`pnpm test:gates` inclui `tests/unit/retired-artifacts.test.ts`; `pnpm hygiene`
+usa os módulos atuais, e `pnpm build` compila os hosts web e API. Esses comandos
+atuais precisam de resultados próprios; os resultados abaixo pertencem ao lote
+antigo.
 
 - `RATCHET_BASE_REF=4b02f52f pnpm ratchet:guard`, `pnpm hygiene`,
   `pnpm test:gates`, `pnpm install --frozen-lockfile`,
@@ -3990,10 +4238,11 @@ página travada com o `Drawer`) **Status**: RESOLVIDO (onda 5, sem commit)
 
 **Data da Ocorrência**: 2026-09-29 **Severidade**: Média (achado 8 da revisão da
 onda 3 e pendência da onda 4) **Status**: RESOLVIDO (onda 5, sem commit)
-**Ambiente**: `packages/backend/src/modules/billing/cancelled-charges.ts`,
-`packages/backend/src/modules/quotations/boleto.ts`,
-`lib/payment-obligation.ts`, `lib/quote-boleto.ts`, `lib/payment-request.ts`,
-`scripts/ops/legacy-cents-report.ts`
+**Ambiente na correção de 2026-09-29**:
+`packages/backend/src/modules/billing/cancelled-charges.ts`,
+`packages/backend/src/modules/quotations/boleto.ts`, as antigas fachadas
+`lib/payment-obligation.ts`, `lib/quote-boleto.ts` e `lib/payment-request.ts`,
+retiradas depois no clone F, e `scripts/ops/legacy-cents-report.ts`.
 
 #### Descrição
 
@@ -4027,11 +4276,16 @@ onda 3 e pendência da onda 4) **Status**: RESOLVIDO (onda 5, sem commit)
   - removida: a prova é gravada e sai uma única cobrança nova;
   - `REFUNDED`, outro valor ou meio, 404, mais de uma aberta ou outra cobrança
     vigente (de qualquer meio, inclusive `PAID` parcial): 409, nada muda.
-- Composição: `readTenantProviderCharge` (`lib/payment-obligation.ts`) lê pela
-  única integração `ASAAS` `ACTIVE` da locadora, com a credencial dela;
-  integração ausente, ambígua ou sem chave é indisponibilidade, nunca prova de
-  cancelamento. `lib/quote-boleto.ts` e `lib/payment-request.ts` usam o mesmo
-  ciclo, e `cancelledChargeError` traduz a falha.
+- Na solução de 2026-09-29, `readTenantProviderCharge` era composto pela antiga
+  `lib/payment-obligation.ts`, e `lib/quote-boleto.ts` e
+  `lib/payment-request.ts` usavam o mesmo ciclo; essas fachadas foram retiradas
+  no clone F. A composição atual é `apps/services/api/src/host/payments.ts`:
+  cria o leitor de `packages/backend/src/modules/billing/payment-obligation.ts`
+  e o injeta em payment-request e quotations/boleto. O leitor usa a única
+  integração `ASAAS` `ACTIVE` da locadora, com a credencial dela; integração
+  ausente, ambígua ou sem chave é indisponibilidade, nunca prova de
+  cancelamento. `withCancelledChargeProof` continua comum aos dois fluxos, e
+  `cancelledChargeError` traduz a falha.
 - Respostas, nenhuma com segunda cobrança: 409 para divergência; 503 para
   provedor indisponível ou integração não configurada; 502 para chave da
   locadora recusada (401/403) ou resposta fora do contrato (antes, 409). As
@@ -4041,7 +4295,12 @@ onda 3 e pendência da onda 4) **Status**: RESOLVIDO (onda 5, sem commit)
   `DATABASE_URL` explícita, sem modo `--apply`) e runbook
   `docs/guides/legacy-cents-reconciliation.md`.
 
-#### Como validar
+#### Validação e pendência registradas na onda 5 (2026-09-29)
+
+As contagens e a pendência abaixo pertencem àquela rodada. No clone pós-F, o
+teste de prova de cancelamento importa a composição atual de
+`apps/services/api/src/host/payments.ts`; o roteiro antigo com `next dev` não é
+o resultado consolidado dos hosts compilados atuais.
 
 - `tests/unit/cancelled-charge-proof-database.test.ts` (17 testes em banco real,
   com a composição real contra o dublê `tests/helpers/fake-asaas` e o lock da
@@ -4762,9 +5021,10 @@ revisão da onda 3) **Status**: RESOLVIDO (onda 4, commit `4b02f52f`)
 
 - `resolvePlatformEnv` (comum ao web e ao backend) não exige nem recusa
   `WEB_API_ORIGIN`: devolve `apiOrigin` `null` quando ela falta ou é inválida.
-- `resolveWebPlatformEnv`, só no web (`proxy.ts` e `public-api.ts`), exige a
-  variável em produção, aceita só a origem e exige https fora de development. O
-  web continua falhando fechado: 503 em páginas e APIs.
+- `resolveWebPlatformEnv`, só no host web (`apps/clients/web/src/proxy.ts` e
+  `apps/clients/web/src/host/server/public-api.ts`), exige a variável em
+  produção, aceita só a origem e exige https fora de development. O web continua
+  falhando fechado: 503 em páginas e APIs.
 - Na mesma área:
   - achado 3: o teste de borda forjada usava `beta`, subdomínio reservado, e
     passava mesmo com o segredo ignorado; agora usa `bravo`, com controles
@@ -4841,10 +5101,13 @@ ligado na composição na onda 5, entrada 199) **Ambiente**:
 ### Problema RESOLVIDO
 
 **Data da Ocorrência**: 2026-09-26 **Severidade**: Alta (achados 7 e 9 da
-revisão da onda 3) **Status**: RESOLVIDO (onda 4, commit `4b02f52f`)
-**Ambiente**: `packages/domain/src/locacao/saldo.ts`,
+revisão da onda 3) **Status**: RESOLVIDO (onda 4, commit `4b02f52f`) **Ambiente
+na correção de 2026-09-26**: `packages/domain/src/locacao/saldo.ts`,
 `packages/domain/src/orcamento`,
-`packages/backend/src/modules/{quotations,rentals}`, `lib/payment-obligation.ts`
+`packages/backend/src/modules/{quotations,rentals}` e a antiga fachada
+`lib/payment-obligation.ts`, retirada depois no clone F. A regra atual permanece
+em `packages/backend/src/modules/billing/payment-obligation.ts`, composta pelo
+host API em `apps/services/api/src/host/payments.ts`.
 
 #### Descrição
 
@@ -5402,16 +5665,23 @@ respostas de erro) **Status**: RESOLVIDO (onda 3, commit `be859915`)
 - `asaas-amount.ts`: `toMoney`, `toAsaasAmount` (recusa mais de 2 casas, valor
   negativo e perda de precisão), `fromAsaasAmount` e `sameAmount`, em
   `Prisma.Decimal`.
-- `issue-payment` e `cancel-attempt` usam `sameAmount`; `number` continua aceito
-  na entrada só por compatibilidade com `lib/`.
+- `issue-payment` e `cancel-attempt` usam `sameAmount`; na correção de
+  2026-09-26, `number` continuou aceito por compatibilidade com as antigas
+  fachadas `lib/`, depois retiradas em F. O contrato atual `MoneyInput` em
+  `packages/backend/src/modules/billing/asaas-amount.ts` ainda aceita `number`
+  por compatibilidade; a comparação continua Decimal por `sameAmount`, sem mudar
+  a política de dinheiro.
 - `issuePayment` valida valor, vencimento e CPF/CNPJ antes da reserva: pedido
   inválido fica `QUEUED` em vez de virar `UNKNOWN`.
 
 #### Como validar
 
 - `tests/contract/asaas-fake.test.ts` e as suítes de billing de
-  `pnpm test:unit`. A suíte de contrato ainda não está em nenhuma config do
-  vitest (ver `docs/features/modernization-billing.md`).
+  `pnpm test:unit`. No checkpoint de 2026-09-26, a suíte de contrato ainda não
+  estava em uma config do Vitest. Hoje `pnpm test:contract` usa
+  `vitest.contract.config.ts`, com `tests/contract/**/*.test.ts` e a guarda
+  `tests/helpers/no-network.ts`; ver também
+  `docs/features/modernization-billing.md`.
 
 ---
 
@@ -16469,18 +16739,23 @@ para aceitar fixtures inválidas.
 ## 295. Moldura administrativa ausente no host web e seletor encoberto
 
 **Data:** 2026-10-04, onda 120, sem commit. A prova compilada de recebimentos
-mostrava a consulta mas nenhum menu: a composição ainda existia apenas em
-app/admin/admin-layout-client.tsx. Reutilizar os cabeçalhos fixos também expôs o
-seletor do gate fora da área útil, encoberto no desktop e no viewport estreito.
-Testes isolados de página/menu não detectavam essa integração.
+mostrava a consulta mas nenhum menu: a composição ainda existia apenas na antiga
+app/admin/admin-layout-client.tsx, retirada depois no clone F. Reutilizar os
+cabeçalhos fixos também expôs o seletor do gate fora da área útil, encoberto no
+desktop e no viewport estreito. Testes isolados de página/menu não detectavam
+essa integração.
 
 **Solução:** AdminLayoutShell em frontend/app compõe os widgets originais,
-colapso desktop, menu mobile, rolagem do main e classe do body. Layouts legado e
-web delegam sua apresentação; a autorização legada foi preservada. O gate
-entrega o seletor existente à moldura só quando o conteúdo está aberto. Sem
-seleção ele continua disponível fora da moldura e o conteúdo privado continua
-fechado. Clientes mobile e demais gates preservam o posicionamento anterior. Não
-há nova seleção, regra comercial ou leitura de identidade no layout.
+colapso desktop, menu mobile, rolagem do main e classe do body. Na onda 120, os
+layouts legado e web passaram a delegar a apresentação, preservando a
+autorização então existente. Após F, a composição visual canônica é
+`packages/frontend/src/app/providers/AdminLayoutShell.web.tsx`, consumida por
+`apps/clients/web/src/app/(admin)/layout.tsx`; autenticação e seleção continuam
+nos gates do host, não na moldura visual. O gate entrega o seletor existente à
+moldura só quando o conteúdo está aberto. Sem seleção ele continua disponível
+fora da moldura e o conteúdo privado continua fechado. Clientes mobile e demais
+gates preservam o posicionamento anterior. Não há nova seleção, regra comercial
+ou leitura de identidade no layout.
 
 **Validação:** seis provas da moldura com widgets reais, incluindo integração
 com RuntimeBootstrap, ausência de seleção, colapso, Escape e rolagem. Provas

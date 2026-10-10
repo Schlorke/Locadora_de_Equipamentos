@@ -93,8 +93,14 @@ describe('token-check rules (fixtures)', () => {
       ].sort()
     )
     // `!text-white` and `stroke-cyan-700!` also carry the important modifier (css-important).
-    expect(found('palette.tsx', 'css-important')).toEqual(['!text-white', 'stroke-cyan-700!'])
-    expect(rulesIn('palette.tsx')).toEqual(['css-important', 'tailwind-palette-class'])
+    expect(found('palette.tsx', 'css-important')).toEqual([
+      '!text-white',
+      'stroke-cyan-700!',
+    ])
+    expect(rulesIn('palette.tsx')).toEqual([
+      'css-important',
+      'tailwind-palette-class',
+    ])
     expect(
       rules.allowed.filter(
         (a: Finding) => a.file === 'packages/ui/src/palette.tsx'
@@ -149,11 +155,7 @@ describe('token-check rules (fixtures)', () => {
 
   it('CSS: HSL triples in custom properties, z-index literals and @apply classes', () => {
     expect(found('theme.css', 'hsl-triple')).toEqual(
-      [
-        '12 76% 61%',
-        '210deg 40% 98% / 50%',
-        '24.6 95% 53.1%',
-      ].sort()
+      ['12 76% 61%', '210deg 40% 98% / 50%', '24.6 95% 53.1%'].sort()
     )
     expect(found('theme.css', 'z-index-literal')).toEqual(
       ['9999 !important', 'z-10'].sort()
@@ -161,7 +163,9 @@ describe('token-check rules (fixtures)', () => {
     expect(found('theme.css', 'tailwind-palette-class')).toEqual([
       'border-gray-200',
     ])
-    expect(found('theme.css', 'css-important')).toEqual(['z-index: 9999 !important'])
+    expect(found('theme.css', 'css-important')).toEqual([
+      'z-index: 9999 !important',
+    ])
     expect(rulesIn('theme.css')).toEqual([
       'css-important',
       'hsl-triple',
@@ -216,13 +220,22 @@ describe('tailwind-palette-class through the palette variable', () => {
     '[--accent:var(--color-sky-300)]',
     'bg-[var(--color-orange-600,var(--fallback))]',
   ])('counts %s', (token) => {
-    expect(classFindings(token)).toEqual([{ rule: 'tailwind-palette-class', value: token }])
+    expect(classFindings(token)).toEqual([
+      { rule: 'tailwind-palette-class', value: token },
+    ])
   })
 
   it('keeps a literal fallback visible to the absolute color-literal rule', () => {
     expect(classFindings('bg-[var(--color-orange-600,#fff)]')).toEqual([
-      { rule: 'tailwind-palette-class', value: 'bg-[var(--color-orange-600,#fff)]' },
-      { rule: 'color-literal', value: '#fff', token: 'bg-[var(--color-orange-600,#fff)]' },
+      {
+        rule: 'tailwind-palette-class',
+        value: 'bg-[var(--color-orange-600,#fff)]',
+      },
+      {
+        rule: 'color-literal',
+        value: '#fff',
+        token: 'bg-[var(--color-orange-600,#fff)]',
+      },
     ])
   })
 
@@ -235,7 +248,11 @@ describe('tailwind-palette-class through the palette variable', () => {
     'bg-[--color-orange-600]',
     '[color:var(--brand)]',
   ])('does not count %s', (token) => {
-    expect(classFindings(token).filter((f: { rule: string }) => f.rule === 'tailwind-palette-class')).toEqual([])
+    expect(
+      classFindings(token).filter(
+        (f: { rule: string }) => f.rule === 'tailwind-palette-class'
+      )
+    ).toEqual([])
   })
 })
 
@@ -247,7 +264,9 @@ describe('tailwind-palette-class through the palette variable', () => {
  */
 describe('tailwind-palette-class wherever an arbitrary value reads the palette', () => {
   const palette = (token: string) =>
-    classFindings(token).filter((f: { rule: string }) => f.rule === 'tailwind-palette-class')
+    classFindings(token).filter(
+      (f: { rule: string }) => f.rule === 'tailwind-palette-class'
+    )
 
   it.each([
     'bg-[--theme(--color-orange-600)]',
@@ -272,14 +291,24 @@ describe('tailwind-palette-class wherever an arbitrary value reads the palette',
     '[--accent:theme(colors.sky.300)]',
     'hover:bg-[var(--brand,var(--color-black))]',
   ])('counts %s', (token) => {
-    expect(palette(token)).toEqual([{ rule: 'tailwind-palette-class', value: token }])
+    expect(palette(token)).toEqual([
+      { rule: 'tailwind-palette-class', value: token },
+    ])
   })
 
   it('keeps the dimension of a shadow that reads the palette in its own ratchet', () => {
-    expect(classFindings('shadow-[0_0_0_1px_var(--color-orange-600)]')).toEqual([
-      { rule: 'tailwind-palette-class', value: 'shadow-[0_0_0_1px_var(--color-orange-600)]' },
-      { rule: 'arbitrary-dimension', value: 'shadow-[0_0_0_1px_var(--color-orange-600)]' },
-    ])
+    expect(classFindings('shadow-[0_0_0_1px_var(--color-orange-600)]')).toEqual(
+      [
+        {
+          rule: 'tailwind-palette-class',
+          value: 'shadow-[0_0_0_1px_var(--color-orange-600)]',
+        },
+        {
+          rule: 'arbitrary-dimension',
+          value: 'shadow-[0_0_0_1px_var(--color-orange-600)]',
+        },
+      ]
+    )
   })
 
   it.each([
@@ -354,7 +383,11 @@ describe('token-check ratchet (tools/token-baseline.json)', () => {
   it('fails when a file goes above its count and names the file, rule and counts', () => {
     const root = ratchetRoot()
     expect(cli(root, '--init-baseline').status).toBe(0)
-    edit(card(root), 'className="text-slate-700"', 'className="text-slate-700 bg-orange-600"')
+    edit(
+      card(root),
+      'className="text-slate-700"',
+      'className="text-slate-700 bg-orange-600"'
+    )
     const result = cli(root)
     expect(result.status).toBe(1)
     expect(result.out).toContain(
@@ -367,7 +400,11 @@ describe('token-check ratchet (tools/token-baseline.json)', () => {
     const root = ratchetRoot()
     expect(cli(root, '--init-baseline').status).toBe(0)
     // Both spellings render `color: var(--color-slate-700)`; the variable one used to drop out of the count.
-    edit(card(root), 'className="text-slate-700"', 'className="text-[var(--color-slate-700)]"')
+    edit(
+      card(root),
+      'className="text-slate-700"',
+      'className="text-[var(--color-slate-700)]"'
+    )
     edit(card(root), ' bg-white', ' bg-(--color-white)')
     const respelled = cli(root)
     expect(respelled.status).toBe(0)
@@ -383,13 +420,19 @@ describe('token-check ratchet (tools/token-baseline.json)', () => {
     expect(grown.out).toContain(
       'RATCHET increase packages/ui/src/Card.tsx tailwind-palette-class: baseline 2, now 3'
     )
-    expect(grown.out).toContain('border-[var(--color-gray-200)] (catraca: 3 > baseline 2)')
+    expect(grown.out).toContain(
+      'border-[var(--color-gray-200)] (catraca: 3 > baseline 2)'
+    )
   })
 
   it('counts theme(), --theme() and a palette fallback like the palette class: no respelling lowers the count', () => {
     const root = ratchetRoot()
     expect(cli(root, '--init-baseline').status).toBe(0)
-    edit(card(root), 'className="text-slate-700"', 'className="text-[theme(colors.slate.700)]"')
+    edit(
+      card(root),
+      'className="text-slate-700"',
+      'className="text-[theme(colors.slate.700)]"'
+    )
     edit(card(root), ' bg-white', ' bg-[--theme(--color-white)]')
     const respelled = cli(root)
     expect(respelled.status).toBe(0)
@@ -458,16 +501,20 @@ describe('token-check ratchet (tools/token-baseline.json)', () => {
       'increase packages/ui/src/theme.css hsl-triple: 1 -> 2'
     )
     expect(fs.readFileSync(baselineFile(root), 'utf8')).toBe(before)
-    expect(
-      updateBaseline(root, undefined, { init: true })
-    ).toMatchObject({ written: false })
+    expect(updateBaseline(root, undefined, { init: true })).toMatchObject({
+      written: false,
+    })
     expect(fs.readFileSync(baselineFile(root), 'utf8')).toBe(before)
   })
 
   it('absolute rules are never absorbed by the baseline', () => {
     const root = ratchetRoot()
     expect(cli(root, '--init-baseline').status).toBe(0)
-    edit(card(root), 'className="text-slate-700"', 'className="text-slate-700" style={{ color: "#ea580c" }}')
+    edit(
+      card(root),
+      'className="text-slate-700"',
+      'className="text-slate-700" style={{ color: "#ea580c" }}'
+    )
     const result = cli(root)
     expect(result.status).toBe(1)
     expect(result.out).toContain('TOKEN color-literal packages/ui/src/Card.tsx')
@@ -480,7 +527,9 @@ describe('token-check ratchet (tools/token-baseline.json)', () => {
     const forged = baselineFile(root)
     fs.writeFileSync(
       forged,
-      JSON.stringify({ files: { 'packages/ui/src/Card.tsx': { 'color-literal': 1 } } })
+      JSON.stringify({
+        files: { 'packages/ui/src/Card.tsx': { 'color-literal': 1 } },
+      })
     )
     expect(() => readBaseline(forged)).toThrow(/not a ratchet rule/)
     expect(RATCHET_RULES).not.toContain('color-literal')
@@ -497,19 +546,35 @@ describe('tailwind-palette-class against the Tailwind 4.3.3 design system', () =
   const loadTailwind = async () => {
     const require = createRequire(import.meta.url)
     const dir = path.dirname(require.resolve('tailwindcss/package.json'))
-    const version = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8')).version
-    const tw = await import(pathToFileURL(path.join(dir, 'dist', 'lib.mjs')).href)
-    const ds: DesignSystem = await tw.__unstable__loadDesignSystem('@import "tailwindcss";', {
-      base: dir,
-      loadStylesheet: async (id: string, base: string) => {
-        const file = id === 'tailwindcss' ? path.join(dir, 'index.css') : path.resolve(base, id)
-        return { path: file, base: path.dirname(file), content: fs.readFileSync(file, 'utf8') }
-      },
-    })
+    const version = JSON.parse(
+      fs.readFileSync(path.join(dir, 'package.json'), 'utf8')
+    ).version
+    const tw = await import(
+      pathToFileURL(path.join(dir, 'dist', 'lib.mjs')).href
+    )
+    const ds: DesignSystem = await tw.__unstable__loadDesignSystem(
+      '@import "tailwindcss";',
+      {
+        base: dir,
+        loadStylesheet: async (id: string, base: string) => {
+          const file =
+            id === 'tailwindcss'
+              ? path.join(dir, 'index.css')
+              : path.resolve(base, id)
+          return {
+            path: file,
+            base: path.dirname(file),
+            content: fs.readFileSync(file, 'utf8'),
+          }
+        },
+      }
+    )
     return { version, ds }
   }
   const flagged = (token: string) =>
-    classFindings(token).some((f: Finding) => f.rule === 'tailwind-palette-class')
+    classFindings(token).some(
+      (f: Finding) => f.rule === 'tailwind-palette-class'
+    )
 
   it('flags exactly the classes whose CSS reads a default palette color', async () => {
     const { version, ds } = await loadTailwind()
@@ -522,7 +587,9 @@ describe('tailwind-palette-class against the Tailwind 4.3.3 design system', () =
     const palette = classes.filter((_, i) => readsPalette.test(css[i] ?? ''))
     expect(palette.length).toBeGreaterThan(14000)
     expect(palette.filter((c) => !flagged(c))).toEqual([])
-    expect(classes.filter((c, i) => !readsPalette.test(css[i] ?? '') && flagged(c))).toEqual([])
+    expect(
+      classes.filter((c, i) => !readsPalette.test(css[i] ?? '') && flagged(c))
+    ).toEqual([])
   })
 
   it('flags opacity modifiers, variants and ! that Tailwind 4.3.3 renders for every color utility', async () => {
@@ -536,7 +603,17 @@ describe('tailwind-palette-class against the Tailwind 4.3.3 design system', () =
           .map((c) => c.slice(0, -'-orange-600'.length))
       ),
     ]
-    expect(utilities).toEqual(expect.arrayContaining(['drop-shadow', 'inset-ring', 'inset-shadow', 'text-shadow', 'mask-t-from', 'scrollbar-thumb', 'border-bs']))
+    expect(utilities).toEqual(
+      expect.arrayContaining([
+        'drop-shadow',
+        'inset-ring',
+        'inset-shadow',
+        'text-shadow',
+        'mask-t-from',
+        'scrollbar-thumb',
+        'border-bs',
+      ])
+    )
     const forms = utilities.flatMap((u) => [
       `${u}-orange-600/7.5`,
       `${u}-orange-600/(--alpha)`,
@@ -585,12 +662,17 @@ describe('tailwind-palette-class against the Tailwind 4.3.3 design system', () =
       '[color:var(--brand)]',
     ]
     const css = ds.candidatesToCss(forms)
-    const readsPalette = /var\(--color-(?:(?:slate|gray|zinc|neutral|stone|mauve|mist|olive|taupe|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|[1-9]00|950)|white|black)[,)]/
+    const readsPalette =
+      /var\(--color-(?:(?:slate|gray|zinc|neutral|stone|mauve|mist|olive|taupe|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|[1-9]00|950)|white|black)[,)]/
     const rendered = forms.filter((_, i) => css[i])
-    const palette = rendered.filter((c) => readsPalette.test(css[forms.indexOf(c)]!))
+    const palette = rendered.filter((c) =>
+      readsPalette.test(css[forms.indexOf(c)]!)
+    )
     expect(palette.length).toBeGreaterThan(5 * utilities.length)
     expect(palette.filter((c) => !flagged(c))).toEqual([])
-    expect(rendered.filter((c) => !palette.includes(c) && flagged(c))).toEqual([])
+    expect(rendered.filter((c) => !palette.includes(c) && flagged(c))).toEqual(
+      []
+    )
   })
 
   it('flags every arbitrary value whose CSS reads a palette color (var, theme, --theme, fallback, mix) and nothing else', async () => {
@@ -642,10 +724,15 @@ describe('tailwind-palette-class against the Tailwind 4.3.3 design system', () =
       "content-['var(--color-orange-600)']",
       '[--color-orange-600:var(--brand)]',
     ]
-    const hues = 'slate|gray|zinc|neutral|stone|mauve|mist|olive|taupe|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose'
-    const paletteKey = new RegExp(`^(?:(?:${hues})-(?:50|[1-9]00|950)|white|black)$`)
+    const hues =
+      'slate|gray|zinc|neutral|stone|mauve|mist|olive|taupe|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose'
+    const paletteKey = new RegExp(
+      `^(?:(?:${hues})-(?:50|[1-9]00|950)|white|black)$`
+    )
     const colors = ds.theme.namespace('--color') as Map<string, string>
-    const paletteValues = [...colors].filter(([key]) => paletteKey.test(key)).map(([, value]) => value)
+    const paletteValues = [...colors]
+      .filter(([key]) => paletteKey.test(key))
+      .map(([, value]) => value)
     expect(paletteValues).toHaveLength(288)
     const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     // The CSS reads the palette through its variable (CSS function names ignore case) or through its resolved value.
@@ -654,14 +741,22 @@ describe('tailwind-palette-class against the Tailwind 4.3.3 design system', () =
     )
     // Declarations only: @property defaults (#fff, 0 0 #0000) and quoted strings are not color reads.
     const declarations = (css: string) =>
-      css.replace(/@property[^{]*\{[^}]*\}/g, '').replace(/'[^']*'|"[^"]*"/g, "''")
+      css
+        .replace(/@property[^{]*\{[^}]*\}/g, '')
+        .replace(/'[^']*'|"[^"]*"/g, "''")
     const css = ds.candidatesToCss(forms)
     const rendered = forms.filter((_, i) => css[i])
-    const palette = rendered.filter((c) => readsPalette.test(declarations(css[forms.indexOf(c)]!)))
+    const palette = rendered.filter((c) =>
+      readsPalette.test(declarations(css[forms.indexOf(c)]!))
+    )
     expect(palette.length).toBeGreaterThan(14 * utilities.length)
-    expect(rendered.length - palette.length).toBeGreaterThan(5 * utilities.length)
+    expect(rendered.length - palette.length).toBeGreaterThan(
+      5 * utilities.length
+    )
     expect(palette.filter((c) => !flagged(c))).toEqual([])
-    expect(rendered.filter((c) => !palette.includes(c) && flagged(c))).toEqual([])
+    expect(rendered.filter((c) => !palette.includes(c) && flagged(c))).toEqual(
+      []
+    )
   })
 
   it('css-important knows every Tailwind 4.3.3 utility and flags each one only with the important modifier', async () => {
@@ -678,19 +773,37 @@ describe('tailwind-palette-class against the Tailwind 4.3.3 design system', () =
     expect([...TAILWIND_ROOTS].sort()).toEqual([...roots].sort())
     expect([...TAILWIND_STATIC].sort()).toEqual([...statics].sort())
     // Every important form Tailwind renders is flagged in a string made only of classes, with no class context.
-    const forms = (name: string) => [`!${name}`, `${name}!`, `hover:!${name}`, `[&_svg]:${name}!`]
+    const forms = (name: string) => [
+      `!${name}`,
+      `${name}!`,
+      `hover:!${name}`,
+      `[&_svg]:${name}!`,
+    ]
     expect(ds.candidatesToCss(forms('bg-orange-600')).every(Boolean)).toBe(true)
     expect(
-      classes.filter((name) => forms(name).some((form) => importantClassFindings(`px-4 ${form}`).length !== 1))
+      classes.filter((name) =>
+        forms(name).some(
+          (form) => importantClassFindings(`px-4 ${form}`).length !== 1
+        )
+      )
     ).toEqual([])
-    expect(classes.filter((name) => importantClassFindings(`px-4 ${name}`).length)).toEqual([])
+    expect(
+      classes.filter((name) => importantClassFindings(`px-4 ${name}`).length)
+    ).toEqual([])
   })
 })
 
 describe('css-important (tools/token-check.mjs)', () => {
   const importantConfig = { ...DEFAULT_TOKEN_CONFIG, scope: ['packages'] }
-  const report = checkTokens(path.join(fixtures, 'important'), importantConfig, null)
-  const importantFindings = [...report.violations.filter((v: Finding) => !v.ratchet), ...report.ratcheted]
+  const report = checkTokens(
+    path.join(fixtures, 'important'),
+    importantConfig,
+    null
+  )
+  const importantFindings = [
+    ...report.violations.filter((v: Finding) => !v.ratchet),
+    ...report.ratcheted,
+  ]
   const valuesIn = (file: string) =>
     importantFindings
       .filter((v: Finding) => v.file === file)
@@ -701,7 +814,10 @@ describe('css-important (tools/token-check.mjs)', () => {
     expect(RATCHET_RULES).not.toContain('css-important')
     expect(BASELINE_RULES).toEqual([...RATCHET_RULES, 'css-important'])
     const baseline = JSON.parse(
-      fs.readFileSync(path.resolve(here, '..', '..', 'tools', 'token-baseline.json'), 'utf8')
+      fs.readFileSync(
+        path.resolve(here, '..', '..', 'tools', 'token-baseline.json'),
+        'utf8'
+      )
     )
     expect(baseline.rules).toContain('css-important')
     expect(baseline.totals['css-important']).toBeUndefined()
@@ -711,9 +827,17 @@ describe('css-important (tools/token-check.mjs)', () => {
         .map(([file]) => file)
     ).toEqual([])
     // Every finding of the fixture is a violation of its own, never a ratchet entry.
-    expect(report.ratcheted.filter((v: Finding) => v.rule === 'css-important')).toEqual([])
-    expect(report.violations.filter((v: Finding) => v.rule === 'css-important' && v.ratchet)).toEqual([])
-    expect(report.zeroTolerance).toEqual({ 'css-important': importantFindings.length })
+    expect(
+      report.ratcheted.filter((v: Finding) => v.rule === 'css-important')
+    ).toEqual([])
+    expect(
+      report.violations.filter(
+        (v: Finding) => v.rule === 'css-important' && v.ratchet
+      )
+    ).toEqual([])
+    expect(report.zeroTolerance).toEqual({
+      'css-important': importantFindings.length,
+    })
   })
 
   it('code: the Tailwind modifier in class contexts, inline style, CSS-in-JS and setProperty', () => {
@@ -739,7 +863,9 @@ describe('css-important (tools/token-check.mjs)', () => {
       // The allow comment on this line does not exempt it.
       '39: gap: 0 !important',
     ])
-    expect(new Set(importantFindings.map((v: Finding) => v.rule))).toEqual(new Set(['css-important']))
+    expect(new Set(importantFindings.map((v: Finding) => v.rule))).toEqual(
+      new Set(['css-important'])
+    )
     expect(report.allowed).toEqual([])
   })
 
@@ -772,15 +898,32 @@ describe('css-important (tools/token-check.mjs)', () => {
     expect(valuesIn('packages/design-tokens/src/theme.css')).toEqual([
       '8: color: hsl(var(--brand)) !important',
     ])
-    expect(valuesIn('packages/design-tokens/src/tokens.ts')).toEqual(['3: var(--brand) !important'])
+    expect(valuesIn('packages/design-tokens/src/tokens.ts')).toEqual([
+      '3: var(--brand) !important',
+    ])
     expect(report.examined).toEqual({ code: 2, css: 3 })
     // As in the real config, the canonical source is outside the scope and is still read for css-important.
-    expect(DEFAULT_TOKEN_CONFIG.scope).not.toContain(DEFAULT_TOKEN_CONFIG.canonical[0])
-    const apart = checkTokens(path.join(fixtures, 'important'), { ...DEFAULT_TOKEN_CONFIG, scope: ['packages/ui/src'] }, null)
+    expect(DEFAULT_TOKEN_CONFIG.scope).not.toContain(
+      DEFAULT_TOKEN_CONFIG.canonical[0]
+    )
+    const apart = checkTokens(
+      path.join(fixtures, 'important'),
+      { ...DEFAULT_TOKEN_CONFIG, scope: ['packages/ui/src'] },
+      null
+    )
     expect(
-      apart.violations.filter((v: Finding) => v.file.startsWith('packages/design-tokens/')).map((v: Finding) => v.value)
-    ).toEqual(['color: hsl(var(--brand)) !important', 'var(--brand) !important'])
-    expect(apart.ratcheted.filter((v: Finding) => v.file.startsWith('packages/design-tokens/'))).toEqual([])
+      apart.violations
+        .filter((v: Finding) => v.file.startsWith('packages/design-tokens/'))
+        .map((v: Finding) => v.value)
+    ).toEqual([
+      'color: hsl(var(--brand)) !important',
+      'var(--brand) !important',
+    ])
+    expect(
+      apart.ratcheted.filter((v: Finding) =>
+        v.file.startsWith('packages/design-tokens/')
+      )
+    ).toEqual([])
   })
 
   it('never flags interface text, comparisons, JS negation or loose words', () => {
@@ -797,11 +940,15 @@ describe('css-important (tools/token-check.mjs)', () => {
       expect(importantClassFindings(text)).toEqual([])
       expect(importantDeclarations(text)).toEqual([])
     }
-    expect(importantDeclarations('.important { content: "importante" } /* sem prioridade */')).toEqual([])
+    expect(
+      importantDeclarations(
+        '.important { content: "importante" } /* sem prioridade */'
+      )
+    ).toEqual([])
     // A class context accepts custom utilities, but still needs a class-shaped token.
-    expect(importantClassFindings('!scrollbar-hide Sucesso!', { classContext: true })).toEqual([
-      { rule: 'css-important', value: '!scrollbar-hide' },
-    ])
+    expect(
+      importantClassFindings('!scrollbar-hide Sucesso!', { classContext: true })
+    ).toEqual([{ rule: 'css-important', value: '!scrollbar-hide' }])
     expect(importantClassFindings('!scrollbar-hide Sucesso!')).toEqual([])
   })
 
@@ -813,7 +960,9 @@ describe('css-important (tools/token-check.mjs)', () => {
       '@media not (prefers-reduced-motion: reduce) { .m { n: o !important } }',
       '@media (prefers-reduced-motion: no-preference) { .p { q: r !important } }',
     ].join('\n')
-    expect(importantDeclarations(css).map((hit: { value: string }) => hit.value)).toEqual([
+    expect(
+      importantDeclarations(css).map((hit: { value: string }) => hit.value)
+    ).toEqual([
       'b: c !important',
       'e: f !important',
       'h: i !important',
@@ -826,13 +975,23 @@ describe('css-important (tools/token-check.mjs)', () => {
   it('a single !important fails the gate on its own, and no baseline update absorbs it', () => {
     const root = ratchetRoot()
     expect(cli(root, '--init-baseline').status).toBe(0)
-    expect(cli(root).out).toContain('zero tolerance (every scope, no baseline): css-important 0')
-    edit(card(root), 'className="text-slate-700"', 'className="text-slate-700 !p-4"')
+    expect(cli(root).out).toContain(
+      'zero tolerance (every scope, no baseline): css-important 0'
+    )
+    edit(
+      card(root),
+      'className="text-slate-700"',
+      'className="text-slate-700 !p-4"'
+    )
     const result = cli(root)
     expect(result.status).toBe(1)
-    expect(result.out).toMatch(/^TOKEN css-important packages\/ui\/src\/Card\.tsx:\d+:\d+ className !p-4$/m)
+    expect(result.out).toMatch(
+      /^TOKEN css-important packages\/ui\/src\/Card\.tsx:\d+:\d+ className !p-4$/m
+    )
     expect(result.out).not.toContain('RATCHET')
-    expect(result.out).toContain('zero tolerance (every scope, no baseline): css-important 1')
+    expect(result.out).toContain(
+      'zero tolerance (every scope, no baseline): css-important 1'
+    )
     const before = fs.readFileSync(baselineFile(root), 'utf8')
     cli(root, '--update-baseline')
     updateBaseline(root, undefined, { init: true })
@@ -840,7 +999,11 @@ describe('css-important (tools/token-check.mjs)', () => {
     expect(cli(root).status).toBe(1)
 
     // A new stylesheet with one declaration fails too (no "new file" allowance).
-    edit(card(root), 'className="text-slate-700 !p-4"', 'className="text-slate-700"')
+    edit(
+      card(root),
+      'className="text-slate-700 !p-4"',
+      'className="text-slate-700"'
+    )
     expect(cli(root).status).toBe(0)
     fs.writeFileSync(
       path.join(root, 'packages', 'ui', 'src', 'overrides.css'),
@@ -867,14 +1030,24 @@ describe('css-important (tools/token-check.mjs)', () => {
     const root = ratchetRoot()
     expect(cli(root, '--init-baseline').status).toBe(0)
     const file = baselineFile(root)
-    const forge = (files: object) => fs.writeFileSync(file, JSON.stringify({ files }))
+    const forge = (files: object) =>
+      fs.writeFileSync(file, JSON.stringify({ files }))
     forge({ 'packages/ui/src/Card.tsx': { 'css-important': 1 } })
-    expect(() => readBaseline(file)).toThrow(/"css-important", a zero-tolerance rule/)
+    expect(() => readBaseline(file)).toThrow(
+      /"css-important", a zero-tolerance rule/
+    )
     expect(cli(root).status).toBe(1)
+    // The former root app/ was retired; this forged baseline tests the explicit compatibility scope, not a real file.
     forge({ 'app/page.tsx': { 'css-important': 1 } })
-    expect(() => readBaseline(file, { legacyScope: ['app'] })).toThrow(/zero-tolerance/)
+    expect(() => readBaseline(file, { legacyScope: ['app'] })).toThrow(
+      /zero-tolerance/
+    )
     // The serialized baseline keeps the rule listed, with no entry and no total.
-    const written = JSON.parse(serializeBaseline({ 'packages/ui/src/Card.tsx': { 'z-index-literal': 1 } }))
+    const written = JSON.parse(
+      serializeBaseline({
+        'packages/ui/src/Card.tsx': { 'z-index-literal': 1 },
+      })
+    )
     expect(written.rules).toEqual(BASELINE_RULES)
     expect(written.totals).not.toHaveProperty('css-important')
   })
@@ -900,14 +1073,18 @@ describe('css-important (tools/token-check.mjs)', () => {
       measureBase: () => ({ tokens: {} }),
     })
     expect(dropped.ok).toBe(false)
-    expect(dropped.results[0]!.problems.join('\n')).toContain('rule css-important is ratcheted at the base but missing')
+    expect(dropped.results[0]!.problems.join('\n')).toContain(
+      'rule css-important is ratcheted at the base but missing'
+    )
   })
 })
 
 describe('css-important in the Tailwind JS config and plugins', () => {
   const tailwindConfig = { ...DEFAULT_TOKEN_CONFIG, scope: ['packages/ui/src'] }
   const tailwindRoot = () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'locadora-token-tailwind-'))
+    const root = fs.mkdtempSync(
+      path.join(os.tmpdir(), 'locadora-token-tailwind-')
+    )
     temporaryRoots.push(root)
     fs.cpSync(path.join(fixtures, 'tailwind-config'), root, { recursive: true })
     return root
@@ -918,9 +1095,15 @@ describe('css-important in the Tailwind JS config and plugins', () => {
       .map((v) => `${v.file}:${v.line} ${v.property} ${v.value}`)
 
   it('reads the config a stylesheet loads (@config), its local plugins (require) and @plugin files, out of scope', () => {
-    const report = checkTokens(path.join(fixtures, 'tailwind-config'), tailwindConfig, null)
+    const report = checkTokens(
+      path.join(fixtures, 'tailwind-config'),
+      tailwindConfig,
+      null
+    )
     expect(
-      [...report.tailwind].sort((a: { file: string }, b: { file: string }) => a.file.localeCompare(b.file))
+      [...report.tailwind].sort((a: { file: string }, b: { file: string }) =>
+        a.file.localeCompare(b.file)
+      )
     ).toEqual([
       { file: 'tailwind.config.cjs', kind: 'config' },
       { file: 'tailwind/base-plugin.cjs', kind: 'plugin' },
@@ -936,12 +1119,17 @@ describe('css-important in the Tailwind JS config and plugins', () => {
 
   it('a selector string is the option too; only the literal false passes; the CLI fails on the config alone', () => {
     const root = tailwindRoot()
-    for (const plugin of ['base-plugin.cjs', 'compat.cjs']) edit(path.join(root, 'tailwind', plugin), ' !important', '')
+    for (const plugin of ['base-plugin.cjs', 'compat.cjs'])
+      edit(path.join(root, 'tailwind', plugin), ' !important', '')
     const config = path.join(root, 'tailwind.config.cjs')
     const result = cli(root)
     expect(result.status).toBe(1)
-    expect(result.out).toContain('TOKEN css-important tailwind.config.cjs:3:3 important important: true')
-    expect(result.out).toContain('tailwind JS read for css-important: tailwind.config.cjs (config)')
+    expect(result.out).toContain(
+      'TOKEN css-important tailwind.config.cjs:3:3 important important: true'
+    )
+    expect(result.out).toContain(
+      'tailwind JS read for css-important: tailwind.config.cjs (config)'
+    )
 
     edit(config, 'important: true', "important: '#app'")
     expect(important(checkTokens(root, tailwindConfig, null))).toEqual([
@@ -956,17 +1144,34 @@ describe('css-important in the Tailwind JS config and plugins', () => {
     const repository = path.resolve(here, '..', '..')
     const report = checkTokens(
       repository,
-      { ...DEFAULT_TOKEN_CONFIG, scope: ['packages/frontend/src/app/styles'], legacyScope: [], canonical: [] },
+      {
+        ...DEFAULT_TOKEN_CONFIG,
+        scope: ['packages/frontend/src/app/styles'],
+        legacyScope: [],
+        canonical: [],
+      },
       null
     )
-    expect(report.tailwind).toContainEqual({ file: 'tailwind.config.cjs', kind: 'config' })
+    expect(report.tailwind).toContainEqual({
+      file: 'tailwind.config.cjs',
+      kind: 'config',
+    })
     expect(important(report)).toEqual([])
   })
 })
 
+// The former root app/ was retired; app/Legado.tsx is a static adversarial fixture read under an explicit scope here.
 describe('jsx-text-escape (JavaScript escapes that JSX shows literally)', () => {
-  const escapesConfig = { ...DEFAULT_TOKEN_CONFIG, scope: ['packages/ui/src'], legacyScope: ['app'] }
-  const report = checkTokens(path.join(fixtures, 'escapes'), escapesConfig, null)
+  const escapesConfig = {
+    ...DEFAULT_TOKEN_CONFIG,
+    scope: ['packages/ui/src'],
+    legacyScope: ['app'],
+  }
+  const report = checkTokens(
+    path.join(fixtures, 'escapes'),
+    escapesConfig,
+    null
+  )
 
   it('is an absolute rule of the product scope', () => {
     expect(RATCHET_RULES).not.toContain('jsx-text-escape')
@@ -985,18 +1190,27 @@ describe('jsx-text-escape (JavaScript escapes that JSX shows literally)', () => 
       'packages/ui/src/Escapes.tsx:8 data-hint \\u{e7}',
       'packages/ui/src/Escapes.tsx:8 JSX text \\xe7',
     ])
-    expect(report.violations.filter((v: Finding) => v.rule !== 'jsx-text-escape')).toEqual([])
+    expect(
+      report.violations.filter((v: Finding) => v.rule !== 'jsx-text-escape')
+    ).toEqual([])
   })
 
   it('does not apply to the legacy root', () => {
-    expect(report.ratcheted.filter((v: Finding) => v.file === 'app/Legado.tsx')).toEqual([])
-    expect(report.violations.filter((v: Finding) => v.file === 'app/Legado.tsx')).toEqual([])
+    expect(
+      report.ratcheted.filter((v: Finding) => v.file === 'app/Legado.tsx')
+    ).toEqual([])
+    expect(
+      report.violations.filter((v: Finding) => v.file === 'app/Legado.tsx')
+    ).toEqual([])
   })
 })
 
+// The former app/, lib/ and proxy.ts were retired in F; this group copies only the controlled tokens/legacy fixture to TEMP.
 describe('token-check legacy scope (app/, lib/, proxy.ts)', () => {
   const legacyFixture = () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'locadora-token-legacy-'))
+    const root = fs.mkdtempSync(
+      path.join(os.tmpdir(), 'locadora-token-legacy-')
+    )
     temporaryRoots.push(root)
     fs.cpSync(path.join(fixtures, 'legacy'), root, { recursive: true })
     return root
@@ -1007,10 +1221,8 @@ describe('token-check legacy scope (app/, lib/, proxy.ts)', () => {
     legacyScope: ['app', 'lib', 'proxy.ts'],
   }
 
-  it('the real config covers the legacy root with code', () => {
-    expect(DEFAULT_TOKEN_CONFIG.legacyScope).toEqual(
-      expect.arrayContaining(['app', 'lib', 'proxy.ts'])
-    )
+  it('the real config has no legacy runtime scope after root retirement', () => {
+    expect(DEFAULT_TOKEN_CONFIG.legacyScope).toEqual([])
   })
 
   it('the legacy scope is the legacy root with code of arch.config.json: a root the architecture gate retires is not legacy here', () => {
@@ -1033,7 +1245,11 @@ describe('token-check legacy scope (app/, lib/, proxy.ts)', () => {
   })
 
   it('ratchets every rule found there, absolute ones included, per file', () => {
-    const report = checkTokens(path.join(fixtures, 'legacy'), legacyConfig, null)
+    const report = checkTokens(
+      path.join(fixtures, 'legacy'),
+      legacyConfig,
+      null
+    )
     expect(report.ratchet.counts).toEqual({
       'app/page.tsx': {
         'tailwind-palette-class': 1,
@@ -1068,8 +1284,14 @@ describe('token-check legacy scope (app/, lib/, proxy.ts)', () => {
 
   it('css-important is a violation in the legacy root too, never a ratchet entry', () => {
     const root = legacyFixture()
-    fs.writeFileSync(path.join(root, 'app', 'estilo.css'), '.faixa {\n  display: none !important;\n}\n')
-    fs.writeFileSync(path.join(root, 'lib', 'estilo.ts'), "export const escondido = 'display: none !important'\n")
+    fs.writeFileSync(
+      path.join(root, 'app', 'estilo.css'),
+      '.faixa {\n  display: none !important;\n}\n'
+    )
+    fs.writeFileSync(
+      path.join(root, 'lib', 'estilo.ts'),
+      "export const escondido = 'display: none !important'\n"
+    )
     const report = checkTokens(root, legacyConfig, null)
     expect(
       report.violations
@@ -1086,18 +1308,30 @@ describe('token-check legacy scope (app/, lib/, proxy.ts)', () => {
   it('a new legacy file with an absolute finding fails; the baseline may hold absolute rules only there', () => {
     const root = legacyFixture()
     expect(cli(root, '--init-baseline').status).toBe(0)
-    fs.writeFileSync(path.join(root, 'lib', 'novo.ts'), 'export const fundo = "#000000";\n')
+    fs.writeFileSync(
+      path.join(root, 'lib', 'novo.ts'),
+      'export const fundo = "#000000";\n'
+    )
     const result = cli(root)
     expect(result.status).toBe(1)
-    expect(result.out).toContain('RATCHET new file lib/novo.ts color-literal: baseline 0, now 1')
+    expect(result.out).toContain(
+      'RATCHET new file lib/novo.ts color-literal: baseline 0, now 1'
+    )
 
     const forged = baselineFile(root)
     fs.writeFileSync(
       forged,
-      JSON.stringify({ files: { 'packages/ui/src/Badge.tsx': { 'color-literal': 1 } } })
+      JSON.stringify({
+        files: { 'packages/ui/src/Badge.tsx': { 'color-literal': 1 } },
+      })
     )
-    expect(() => readBaseline(forged, legacyConfig)).toThrow(/not a ratchet rule/)
-    fs.writeFileSync(forged, JSON.stringify({ files: { 'lib/email.ts': { 'color-literal': 1 } } }))
+    expect(() => readBaseline(forged, legacyConfig)).toThrow(
+      /not a ratchet rule/
+    )
+    fs.writeFileSync(
+      forged,
+      JSON.stringify({ files: { 'lib/email.ts': { 'color-literal': 1 } } })
+    )
     expect(readBaseline(forged, legacyConfig)).toEqual({
       files: { 'lib/email.ts': { 'color-literal': 1 } },
     })
@@ -1113,13 +1347,17 @@ describe('token-check baseline totals', () => {
     expect(data.totals['z-index-literal']).toBe(1)
     data.totals['z-index-literal'] = 5
     fs.writeFileSync(file, JSON.stringify(data))
-    expect(() => readBaseline(file)).toThrow(/declared z-index-literal total 5 differs/)
+    expect(() => readBaseline(file)).toThrow(
+      /declared z-index-literal total 5 differs/
+    )
     expect(cli(root).status).not.toBe(0)
   })
 })
 
 describe('check:tokens verdict (tools/token-propagation-expectations.json)', () => {
-  const measured = (overrides: Record<string, boolean> = {}): [string, boolean][] =>
+  const measured = (
+    overrides: Record<string, boolean> = {}
+  ): [string, boolean][] =>
     Object.entries({
       'tokens.ts unchanged': true,
       'alias to the temporary copy': true,
@@ -1128,24 +1366,47 @@ describe('check:tokens verdict (tools/token-propagation-expectations.json)', () 
       'web render': false,
       ...overrides,
     })
-  const expected = { 'style resolution (web)': 'classes Tailwind literais', 'web render': 'não executado' }
-  const verdictOf = (levels: [string, boolean][], notProven: Record<string, string>) =>
-    judgeLevels(levels, notProven)
+  const expected = {
+    'style resolution (web)': 'classes Tailwind literais',
+    'web render': 'não executado',
+  }
+  const verdictOf = (
+    levels: [string, boolean][],
+    notProven: Record<string, string>
+  ) => judgeLevels(levels, notProven)
 
   it('passes when every not-proven level is listed with a reason and every other level is proven', () => {
     const result = verdictOf(measured(), expected)
     expect(result.ok).toBe(true)
-    expect(result.verdicts.map((v: { verdict: string }) => v.verdict)).toEqual(['ok', 'ok', 'ok', 'expected', 'expected'])
+    expect(result.verdicts.map((v: { verdict: string }) => v.verdict)).toEqual([
+      'ok',
+      'ok',
+      'ok',
+      'expected',
+      'expected',
+    ])
   })
 
   it('fails a proven level that regresses and a listed level that became proven', () => {
-    const regression = verdictOf(measured({ 'style resolution (native)': false }), expected)
+    const regression = verdictOf(
+      measured({ 'style resolution (native)': false }),
+      expected
+    )
     expect(regression.ok).toBe(false)
-    expect(regression.verdicts.find((v: { name: string }) => v.name === 'style resolution (native)')?.verdict).toBe('regression')
+    expect(
+      regression.verdicts.find(
+        (v: { name: string }) => v.name === 'style resolution (native)'
+      )?.verdict
+    ).toBe('regression')
     const nowProven = verdictOf(measured({ 'web render': true }), expected)
     expect(nowProven.ok).toBe(false)
-    expect(nowProven.verdicts.find((v: { name: string }) => v.name === 'web render')?.verdict).toBe('unexpected pass')
-    expect(verdictOf(measured({ 'tokens.ts unchanged': false }), expected).ok).toBe(false)
+    expect(
+      nowProven.verdicts.find((v: { name: string }) => v.name === 'web render')
+        ?.verdict
+    ).toBe('unexpected pass')
+    expect(
+      verdictOf(measured({ 'tokens.ts unchanged': false }), expected).ok
+    ).toBe(false)
   })
 
   it('integrity checks and unknown levels cannot be listed; every entry needs a reason', () => {
@@ -1158,16 +1419,33 @@ describe('check:tokens verdict (tools/token-propagation-expectations.json)', () 
         },
       })
     )
-    expect(notProven).toEqual({ 'mobile export': 'não executado sem alias do Metro' })
+    expect(notProven).toEqual({
+      'mobile export': 'não executado sem alias do Metro',
+    })
     expect(problems).toHaveLength(2)
     expect(PROPAGATION_LEVELS).not.toContain('tokens.ts unchanged')
-    expect(verdictOf(measured(), { ...expected, 'mobile export': 'não medido aqui' }).ok).toBe(false)
+    expect(
+      verdictOf(measured(), { ...expected, 'mobile export': 'não medido aqui' })
+        .ok
+    ).toBe(false)
   })
 
   it('the versioned expectation lists only propagation levels, each with a reason', () => {
-    const file = path.resolve(here, '..', '..', 'tools', 'token-propagation-expectations.json')
-    const { notProven, problems } = readExpectations(fs.readFileSync(file, 'utf8'))
+    const file = path.resolve(
+      here,
+      '..',
+      '..',
+      'tools',
+      'token-propagation-expectations.json'
+    )
+    const { notProven, problems } = readExpectations(
+      fs.readFileSync(file, 'utf8')
+    )
     expect(problems).toEqual([])
-    expect(Object.keys(notProven).sort()).toEqual(['mobile export', 'style resolution (web)', 'web render'])
+    expect(Object.keys(notProven).sort()).toEqual([
+      'mobile export',
+      'style resolution (web)',
+      'web render',
+    ])
   })
 })

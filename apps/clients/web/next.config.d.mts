@@ -1,4 +1,4 @@
-// Tipos de next.config.mjs para os testes do host web (src/host/routing/next-config.test.ts).
+// Tipos de apps/clients/web/next.config.mjs para os testes do próprio host (src/host/routing/next-config.test.ts).
 import type { NextConfig } from 'next'
 
 export interface PlatformBuildEnv {

@@ -25,10 +25,6 @@ const state = vi.hoisted(() => {
     },
   }
 })
-vi.mock('@/lib/tenant', () => ({
-  resolveTenantPrincipal: state.principal,
-  withTenantTransaction: state.transaction,
-}))
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
@@ -37,32 +33,14 @@ vi.mock('../../apps/services/api/src/host/private-identity', () => ({
 vi.mock('../../apps/services/api/src/host/tenant-transaction', () => ({
   withTenantTransaction: state.transaction,
 }))
-import * as legacyRoute0 from '@/app/api/admin/maintenance/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/admin/maintenance/route'
-import * as legacyRoute1 from '@/app/api/admin/maintenance/scheduled/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/admin/maintenance/scheduled/route'
-import * as legacyRoute2 from '@/app/api/admin/maintenance/preventive-schedule/route'
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/admin/maintenance/preventive-schedule/route'
-import * as legacyRoute3 from '@/app/api/admin/maintenance/[id]/route'
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/admin/maintenance/[id]/route'
-import * as legacyRoute4 from '@/app/api/admin/maintenance/[id]/complete/route'
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/admin/maintenance/[id]/complete/route'
-import * as legacyRoute5 from '@/app/api/admin/audit-logs/route'
 import * as serviceRoute5 from '../../apps/services/api/src/app/api/admin/audit-logs/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      list: legacyRoute0.GET,
-      create: legacyRoute0.POST,
-      scheduled: legacyRoute1.GET,
-      preventive: legacyRoute2.POST,
-      update: legacyRoute3.PATCH,
-      complete: legacyRoute4.POST,
-      audit: legacyRoute5.GET,
-    },
-  ],
   [
     'service',
     {

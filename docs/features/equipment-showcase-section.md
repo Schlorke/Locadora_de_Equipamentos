@@ -269,7 +269,12 @@ renderiza no cliente, aguarde carregamento
 ### **Problema: Click não redireciona**
 
 **Causa**: URL params não configurados na página de destino **Solução**:
-Verifique `app/equipamentos/page.tsx` aceita param `categoria`
+Verifique
+`apps/clients/web/src/app/(public)/[locadora]/(vitrine)/equipamentos/CatalogoDaVitrine.tsx`:
+ele lê `searchParams.get("categoria")` e passa a `EquipamentosPage`, com o slug
+do segmento preenchido pelo host. O modelo
+`packages/frontend/src/pages/equipamentos/model/use-equipment-catalog.ts`
+seleciona a categoria por slug. A query de categoria não escolhe a locadora.
 
 ## 📊 Performance
 

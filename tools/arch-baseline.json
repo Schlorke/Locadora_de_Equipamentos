@@ -8,66 +8,14 @@
     "LEGACY-DOM-JSX",
     "LEGACY-WEB-LIB"
   ],
-  "total": 43,
+  "total": 0,
   "totalsByRule": {
     "UNIVERSAL-DOM-JSX": 0,
     "UNIVERSAL-WEB-LIB": 0,
     "WORKSPACE-ESCAPE": 0,
-    "LEGACY-DEEP-IMPORT": 6,
-    "LEGACY-DOM-JSX": 31,
-    "LEGACY-WEB-LIB": 6
+    "LEGACY-DEEP-IMPORT": 0,
+    "LEGACY-DOM-JSX": 0,
+    "LEGACY-WEB-LIB": 0
   },
-  "files": {
-    "app/admin/admin-layout-client.tsx": {
-      "LEGACY-DOM-JSX": 4
-    },
-    "app/admin/categorias/loading.tsx": {
-      "LEGACY-DOM-JSX": 1,
-      "LEGACY-WEB-LIB": 1
-    },
-    "app/admin/email/loading.tsx": {
-      "LEGACY-DOM-JSX": 2
-    },
-    "app/area-cliente/layout.tsx": {
-      "LEGACY-DEEP-IMPORT": 1
-    },
-    "app/cadastro/page.tsx": {
-      "LEGACY-DOM-JSX": 4
-    },
-    "app/entrar/page.tsx": {
-      "LEGACY-DOM-JSX": 4
-    },
-    "app/equipamentos/[id]/page.tsx": {
-      "LEGACY-DEEP-IMPORT": 3
-    },
-    "app/equipamentos/page.tsx": {
-      "LEGACY-DEEP-IMPORT": 1
-    },
-    "app/layout.tsx": {
-      "LEGACY-DOM-JSX": 3
-    },
-    "app/login/page.tsx": {
-      "LEGACY-DOM-JSX": 4
-    },
-    "app/page.tsx": {
-      "LEGACY-DEEP-IMPORT": 1
-    },
-    "app/reset-password/page.tsx": {
-      "LEGACY-DOM-JSX": 4
-    },
-    "lib/category-design.tsx": {
-      "LEGACY-DOM-JSX": 3,
-      "LEGACY-WEB-LIB": 1
-    },
-    "lib/constants/all-icons.tsx": {
-      "LEGACY-WEB-LIB": 1
-    },
-    "lib/utils.ts": {
-      "LEGACY-WEB-LIB": 1
-    },
-    "lib/utils/category-helpers.tsx": {
-      "LEGACY-DOM-JSX": 2,
-      "LEGACY-WEB-LIB": 2
-    }
-  }
+  "files": {}
 }

@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:18
+        image: public.ecr.aws/docker/library/postgres@sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336
         env:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
@@ -117,25 +117,23 @@ jobs:
         run: pnpm test:mobile
       - name: Web host tests (vitest.web.config.ts)
         run: pnpm test:web
-      - name: Build legacy API host for production parity
-        run: pnpm exec next build
       - name: Build shared API host
         run: pnpm build:api
       - name: Build web consumer for real proxy and rollback checks
         run: pnpm build:web
       - name: Check localhost TLS fixture tool
         run: openssl version
-      - name: Legacy/shared API HTTP parity with PostgreSQL RLS
+      - name: Shared API HTTP with PostgreSQL RLS
         run: pnpm test:api
         env:
           API_HOST_MODE: production
-          API_LEGACY_MODE: production
+          API_LEGACY_MODE: absent
           API_AUTH_MODE: legacy
-      - name: Legacy/shared API HTTP parity with Better Auth cookies
+      - name: Shared API HTTP with Better Auth cookies
         run: pnpm test:api
         env:
           API_HOST_MODE: production
-          API_LEGACY_MODE: production
+          API_LEGACY_MODE: absent
           API_AUTH_MODE: better-auth
       - run: pnpm test:integration
       - run: pnpm type-check
@@ -160,58 +158,18 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm exec prisma generate --generator client
-      - name: Build current root host
-        run: pnpm exec next build
+      - name: Build shared API host
+        run: pnpm build:api
       - name: Build destination web host
         run: pnpm build:web
       - name: Bundle both native targets
         run: pnpm bundle:mobile
-  docker:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:18
-        env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: test_db
-        options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build the image (Dockerfile, no secrets in the build)
-        run: docker build --tag gb-locacoes:ci .
-      - name: Container answers 200 on /api/health
-        env:
-          # Credenciais do PostgreSQL descartável do job; o segredo abaixo só existe no CI.
-          DATABASE_URL: postgresql://test:test@127.0.0.1:5432/test_db
-          NEXTAUTH_SECRET: ci-only-not-a-production-secret
-        run: |
-          docker run --detach --name app --network host \
-            --env DATABASE_URL --env NEXTAUTH_SECRET --env NEXTAUTH_URL=http://localhost:3000 \
-            gb-locacoes:ci
-          for attempt in $(seq 1 60); do
-            status=$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:3000/api/health || true)
-            if [ "$status" = "200" ]; then
-              echo "GET /api/health -> 200"
-              test "$(docker exec app id -u)" != "0"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "GET /api/health did not answer 200 (last status: $status)"
-          docker logs app
-          exit 1
-  # Imagem da API compartilhada (apps/services/api/Dockerfile, standalone na porta 3002, USER node). O job
-  # "docker" acima (imagem da raiz legada) segue até a exclusão da raiz (plano da onda 135, Bloco F).
+  # Única imagem de servidor: API standalone na porta 3002, com health 200 e USER node.
   api-docker:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:18
+        image: public.ecr.aws/docker/library/postgres@sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336
         env:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test

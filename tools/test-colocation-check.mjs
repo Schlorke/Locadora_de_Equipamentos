@@ -13,6 +13,7 @@
 // repository, except the root `tests/` folder (suites that are not colocated by design), any
 // `__fixtures__` folder, dot-folders (.git, .next, .tmp, vendored agent skills…), node_modules,
 // build outputs and symbolic links/junctions (never followed).
+// The former root .next was retired in F; the basename above still describes generated host outputs excluded from colocation.
 //
 // Case: names are compared case-sensitively, like VS Code does on case-sensitive file systems
 // (Linux CI, macOS with case-sensitive volumes). On Windows VS Code lowercases both sides, so
@@ -25,61 +26,73 @@
 //
 // Usage: node tools/test-colocation-check.mjs [--root <dir>] [--settings <file>] [--allowlist <file>] [--json]
 // Exit code: 0 when there is no orphan outside the allowlist and the allowlist is valid; 1 otherwise.
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-export const SETTINGS_FILE = ".vscode/settings.json";
-export const ALLOWLIST_FILE = "tools/test-colocation-allowlist.json";
-export const MIN_REASON_LENGTH = 8;
+export const SETTINGS_FILE = '.vscode/settings.json'
+export const ALLOWLIST_FILE = 'tools/test-colocation-allowlist.json'
+export const MIN_REASON_LENGTH = 8
 
-const ZERO_WIDTH_SPACE = new RegExp(String.fromCharCode(0x200b), "g");
-const TEST_FILE = /\.(test|spec)\.[cm]?[jt]sx?$/;
+const ZERO_WIDTH_SPACE = new RegExp(String.fromCharCode(0x200b), 'g')
+const TEST_FILE = /\.(test|spec)\.[cm]?[jt]sx?$/
 /** Folder names never walked, wherever they are. Dot-folders are skipped separately. */
-const SKIPPED_FOLDERS = new Set(["node_modules", "__fixtures__", "dist", "dist-export", "build", "out", "coverage", "storybook-static"]);
+const SKIPPED_FOLDERS = new Set([
+  'node_modules',
+  '__fixtures__',
+  'dist',
+  'dist-export',
+  'build',
+  'out',
+  'coverage',
+  'storybook-static',
+])
 /** Top-level folders that hold suites which are not colocated by design. */
-const SKIPPED_ROOT_FOLDERS = new Set(["tests"]);
+const SKIPPED_ROOT_FOLDERS = new Set(['tests'])
 
 export function isTestFile(name) {
-  return TEST_FILE.test(name);
+  return TEST_FILE.test(name)
 }
 
 /** Index of the next character that is not whitespace or inside a comment, from `i` on. */
 function nextSignificant(text, i) {
   while (i < text.length) {
-    if (/\s/.test(text[i])) i++;
-    else if (text.startsWith("//", i)) {
-      const end = text.indexOf("\n", i);
-      i = end === -1 ? text.length : end;
-    } else if (text.startsWith("/*", i)) {
-      const end = text.indexOf("*/", i + 2);
-      i = end === -1 ? text.length : end + 2;
-    } else return i;
+    if (/\s/.test(text[i])) i++
+    else if (text.startsWith('//', i)) {
+      const end = text.indexOf('\n', i)
+      i = end === -1 ? text.length : end
+    } else if (text.startsWith('/*', i)) {
+      const end = text.indexOf('*/', i + 2)
+      i = end === -1 ? text.length : end + 2
+    } else return i
   }
-  return i;
+  return i
 }
 
 /** Parses JSON with comments and trailing commas, as VS Code accepts in settings.json. Strings are kept intact. */
 export function parseJsonc(text) {
-  let out = "";
-  let inString = false;
+  let out = ''
+  let inString = false
   for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
+    const ch = text[i]
     if (inString) {
-      out += ch;
-      if (ch === "\\") out += text[++i] ?? "";
-      else if (ch === '"') inString = false;
+      out += ch
+      if (ch === '\\') out += text[++i] ?? ''
+      else if (ch === '"') inString = false
     } else if (ch === '"') {
-      inString = true;
-      out += ch;
-    } else if (text.startsWith("//", i) || text.startsWith("/*", i)) {
-      i = nextSignificant(text, i) - 1;
-      out += " ";
-    } else if (ch === "," && "}]".includes(text[nextSignificant(text, i + 1)] ?? "")) {
+      inString = true
+      out += ch
+    } else if (text.startsWith('//', i) || text.startsWith('/*', i)) {
+      i = nextSignificant(text, i) - 1
+      out += ' '
+    } else if (
+      ch === ',' &&
+      '}]'.includes(text[nextSignificant(text, i + 1)] ?? '')
+    ) {
       // trailing comma: dropped
-    } else out += ch;
+    } else out += ch
   }
-  return JSON.parse(out);
+  return JSON.parse(out)
 }
 
 /**
@@ -88,25 +101,37 @@ export function parseJsonc(text) {
  * trimmed, zero-width spaces removed, empty items dropped; non-string entries ignored.
  */
 export function readNestingSettings(settings) {
-  const nested = settings?.explorer?.fileNesting ?? {};
-  const enabled = settings?.["explorer.fileNesting.enabled"] ?? nested.enabled ?? false;
-  const raw = settings?.["explorer.fileNesting.patterns"] ?? nested.patterns;
-  const problems = [];
-  if (enabled !== true) problems.push(`${SETTINGS_FILE}: "explorer.fileNesting.enabled" must be true, otherwise VS Code nests nothing`);
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
-    problems.push(`${SETTINGS_FILE}: "explorer.fileNesting.patterns" must be an object { "<parent>": "<child>, <child>" }`);
-    return { patterns: [], problems };
+  const nested = settings?.explorer?.fileNesting ?? {}
+  const enabled =
+    settings?.['explorer.fileNesting.enabled'] ?? nested.enabled ?? false
+  const raw = settings?.['explorer.fileNesting.patterns'] ?? nested.patterns
+  const problems = []
+  if (enabled !== true)
+    problems.push(
+      `${SETTINGS_FILE}: "explorer.fileNesting.enabled" must be true, otherwise VS Code nests nothing`
+    )
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    problems.push(
+      `${SETTINGS_FILE}: "explorer.fileNesting.patterns" must be an object { "<parent>": "<child>, <child>" }`
+    )
+    return { patterns: [], problems }
   }
   const patterns = Object.entries(raw)
-    .filter(([parent, children]) => typeof parent === "string" && typeof children === "string" && parent && children)
+    .filter(
+      ([parent, children]) =>
+        typeof parent === 'string' &&
+        typeof children === 'string' &&
+        parent &&
+        children
+    )
     .map(([parent, children]) => [
       parent.trim(),
       children
-        .split(",")
-        .map((child) => child.trim().replace(ZERO_WIDTH_SPACE, "").trim())
-        .filter((child) => child !== ""),
-    ]);
-  return { patterns, problems };
+        .split(',')
+        .map((child) => child.trim().replace(ZERO_WIDTH_SPACE, '').trim())
+        .filter((child) => child !== ''),
+    ])
+  return { patterns, problems }
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -115,251 +140,328 @@ export function readNestingSettings(settings) {
 // matching the empty string, several parents, chains resolved to root ancestors, cycles) behave
 // the same as in the editor.
 
-const SUBSTITUTION = /\$[({](capture|basename|dirname|extname)[)}]/g;
+const SUBSTITUTION = /\$[({](capture|basename|dirname|extname)[)}]/g
 
 class SubstitutionString {
   constructor(pattern) {
-    this.tokens = [];
-    SUBSTITUTION.lastIndex = 0;
-    let token;
-    let lastIndex = 0;
+    this.tokens = []
+    SUBSTITUTION.lastIndex = 0
+    let token
+    let lastIndex = 0
     while ((token = SUBSTITUTION.exec(pattern))) {
-      this.tokens.push(pattern.slice(lastIndex, token.index));
-      this.tokens.push({ capture: token[1] });
-      lastIndex = token.index + token[0].length;
+      this.tokens.push(pattern.slice(lastIndex, token.index))
+      this.tokens.push({ capture: token[1] })
+      lastIndex = token.index + token[0].length
     }
-    if (lastIndex !== pattern.length) this.tokens.push(pattern.slice(lastIndex));
+    if (lastIndex !== pattern.length) this.tokens.push(pattern.slice(lastIndex))
   }
 
   substitute(attributes, capture) {
     return this.tokens
       .map((token) => {
-        if (typeof token === "string") return token;
-        if (token.capture === "capture") return capture ?? "";
-        return attributes[token.capture];
+        if (typeof token === 'string') return token
+        if (token.capture === 'capture') return capture ?? ''
+        return attributes[token.capture]
       })
-      .join("");
+      .join('')
   }
 }
 
 class SufTrie {
   constructor() {
-    this.star = [];
-    this.epsilon = [];
-    this.map = new Map();
-    this.hasItems = false;
+    this.star = []
+    this.epsilon = []
+    this.map = new Map()
+    this.hasItems = false
   }
 
   add(key, value) {
-    this.hasItems = true;
-    if (key === "*") this.star.push(new SubstitutionString(value));
-    else if (key === "") this.epsilon.push(new SubstitutionString(value));
+    this.hasItems = true
+    if (key === '*') this.star.push(new SubstitutionString(value))
+    else if (key === '') this.epsilon.push(new SubstitutionString(value))
     else {
-      const tail = key[key.length - 1];
-      const rest = key.slice(0, -1);
-      if (tail === "*") throw new Error(`Unexpected star in SufTrie key: ${key}`);
-      let next = this.map.get(tail);
-      if (!next) this.map.set(tail, (next = new SufTrie()));
-      next.add(rest, value);
+      const tail = key[key.length - 1]
+      const rest = key.slice(0, -1)
+      if (tail === '*')
+        throw new Error(`Unexpected star in SufTrie key: ${key}`)
+      let next = this.map.get(tail)
+      if (!next) this.map.set(tail, (next = new SufTrie()))
+      next.add(rest, value)
     }
   }
 
   get(key, attributes) {
-    const results = [];
-    if (key === "") results.push(...this.epsilon.map((s) => s.substitute(attributes)));
-    if (this.star.length) results.push(...this.star.map((s) => s.substitute(attributes, key)));
-    const next = this.map.get(key[key.length - 1]);
-    if (next) results.push(...next.get(key.slice(0, -1), attributes));
-    return results;
+    const results = []
+    if (key === '')
+      results.push(...this.epsilon.map((s) => s.substitute(attributes)))
+    if (this.star.length)
+      results.push(...this.star.map((s) => s.substitute(attributes, key)))
+    const next = this.map.get(key[key.length - 1])
+    if (next) results.push(...next.get(key.slice(0, -1), attributes))
+    return results
   }
 }
 
 class PreTrie {
   constructor() {
-    this.value = new SufTrie();
-    this.map = new Map();
+    this.value = new SufTrie()
+    this.map = new Map()
   }
 
   add(key, value) {
-    if (key === "" || key[0] === "*") this.value.add(key, value);
+    if (key === '' || key[0] === '*') this.value.add(key, value)
     else {
-      let next = this.map.get(key[0]);
-      if (!next) this.map.set(key[0], (next = new PreTrie()));
-      next.add(key.slice(1), value);
+      let next = this.map.get(key[0])
+      if (!next) this.map.set(key[0], (next = new PreTrie()))
+      next.add(key.slice(1), value)
     }
   }
 
   get(key, attributes) {
-    const results = [...this.value.get(key, attributes)];
-    const next = this.map.get(key[0]);
-    if (next) results.push(...next.get(key.slice(1), attributes));
-    return results;
+    const results = [...this.value.get(key, attributes)]
+    const next = this.map.get(key[0])
+    if (next) results.push(...next.get(key.slice(1), attributes))
+    return results
   }
 }
 
 function filenameAttributes(name, dirname) {
-  const lastDot = name.lastIndexOf(".");
-  return lastDot < 1 ? { dirname, basename: name, extname: "" } : { dirname, basename: name.slice(0, lastDot), extname: name.slice(lastDot + 1) };
+  const lastDot = name.lastIndexOf('.')
+  return lastDot < 1
+    ? { dirname, basename: name, extname: '' }
+    : {
+        dirname,
+        basename: name.slice(0, lastDot),
+        extname: name.slice(lastDot + 1),
+      }
 }
 
 /** Builds the nester for normalized `[parentPattern, childPatterns[]]` pairs. */
 export function createFileNester(patterns) {
-  const root = new PreTrie();
-  for (const [parent, children] of patterns) for (const child of children) root.add(parent, child);
+  const root = new PreTrie()
+  for (const [parent, children] of patterns)
+    for (const child of children) root.add(parent, child)
   return {
     /** Files of one folder → Map(root ancestor → Set(nested files)), as the explorer computes it. */
     nest(files, dirname) {
-      const parentFinder = new PreTrie();
+      const parentFinder = new PreTrie()
       for (const potentialParent of files) {
-        for (const child of root.get(potentialParent, filenameAttributes(potentialParent, dirname))) parentFinder.add(child, potentialParent);
+        for (const child of root.get(
+          potentialParent,
+          filenameAttributes(potentialParent, dirname)
+        ))
+          parentFinder.add(child, potentialParent)
       }
       const rootAncestors = (file, seen = new Set()) => {
-        if (seen.has(file)) return [];
-        seen.add(file);
-        const parents = parentFinder.get(file, filenameAttributes(file, dirname));
-        if (parents.length === 0) return [file];
-        if (parents.length === 1 && parents[0] === file) return [file];
-        return parents.flatMap((parent) => rootAncestors(parent, seen));
-      };
-      const result = new Map();
+        if (seen.has(file)) return []
+        seen.add(file)
+        const parents = parentFinder.get(
+          file,
+          filenameAttributes(file, dirname)
+        )
+        if (parents.length === 0) return [file]
+        if (parents.length === 1 && parents[0] === file) return [file]
+        return parents.flatMap((parent) => rootAncestors(parent, seen))
+      }
+      const result = new Map()
       for (const file of files) {
-        let ancestors = rootAncestors(file);
-        if (ancestors.length === 0) ancestors = [file];
+        let ancestors = rootAncestors(file)
+        if (ancestors.length === 0) ancestors = [file]
         for (const ancestor of ancestors) {
-          let nested = result.get(ancestor);
-          if (!nested) result.set(ancestor, (nested = new Set()));
-          if (file !== ancestor) nested.add(file);
+          let nested = result.get(ancestor)
+          if (!nested) result.set(ancestor, (nested = new Set()))
+          if (file !== ancestor) nested.add(file)
         }
       }
-      return result;
+      return result
     },
-  };
+  }
 }
 
 /** Test files of one folder that no non-test file nests. `files` are the folder's file names. */
 export function orphanTestsIn(nester, files, dirname) {
-  const shownUnderSubject = new Set();
+  const shownUnderSubject = new Set()
   for (const [ancestor, nested] of nester.nest(files, dirname)) {
-    if (isTestFile(ancestor)) continue;
-    for (const file of nested) shownUnderSubject.add(file);
+    if (isTestFile(ancestor)) continue
+    for (const file of nested) shownUnderSubject.add(file)
   }
-  return files.filter((file) => isTestFile(file) && !shownUnderSubject.has(file));
+  return files.filter(
+    (file) => isTestFile(file) && !shownUnderSubject.has(file)
+  )
 }
 
 /** Yields [repo-relative posix folder, file names] for every walked folder that holds a test file. */
 export function* foldersWithTests(root) {
-  const pending = [""];
+  const pending = ['']
   while (pending.length) {
-    const relative = pending.pop();
-    const entries = fs.readdirSync(path.join(root, relative), { withFileTypes: true });
-    const files = [];
+    const relative = pending.pop()
+    const entries = fs.readdirSync(path.join(root, relative), {
+      withFileTypes: true,
+    })
+    const files = []
     for (const entry of entries) {
-      if (entry.isSymbolicLink()) continue;
+      if (entry.isSymbolicLink()) continue
       if (entry.isDirectory()) {
-        const skip = entry.name.startsWith(".") || SKIPPED_FOLDERS.has(entry.name) || (relative === "" && SKIPPED_ROOT_FOLDERS.has(entry.name));
-        if (!skip) pending.push(relative ? `${relative}/${entry.name}` : entry.name);
-      } else if (entry.isFile()) files.push(entry.name);
+        const skip =
+          entry.name.startsWith('.') ||
+          SKIPPED_FOLDERS.has(entry.name) ||
+          (relative === '' && SKIPPED_ROOT_FOLDERS.has(entry.name))
+        if (!skip)
+          pending.push(relative ? `${relative}/${entry.name}` : entry.name)
+      } else if (entry.isFile()) files.push(entry.name)
     }
-    if (files.some(isTestFile)) yield [relative, files.sort()];
+    if (files.some(isTestFile)) yield [relative, files.sort()]
   }
 }
 
 /** Colocated tests under `root`: how many were examined and the orphans, as sorted repo-relative posix paths. */
 export function findOrphanTests(root, patterns) {
-  const nester = createFileNester(patterns);
-  const orphans = [];
-  let examined = 0;
+  const nester = createFileNester(patterns)
+  const orphans = []
+  let examined = 0
   for (const [folder, files] of foldersWithTests(root)) {
-    const dirname = folder ? folder.slice(folder.lastIndexOf("/") + 1) : path.basename(root);
-    examined += files.filter(isTestFile).length;
-    for (const file of orphanTestsIn(nester, files, dirname)) orphans.push(folder ? `${folder}/${file}` : file);
+    const dirname = folder
+      ? folder.slice(folder.lastIndexOf('/') + 1)
+      : path.basename(root)
+    examined += files.filter(isTestFile).length
+    for (const file of orphanTestsIn(nester, files, dirname))
+      orphans.push(folder ? `${folder}/${file}` : file)
   }
-  return { examined, orphans: orphans.sort() };
+  return { examined, orphans: orphans.sort() }
 }
 
 /** Validates the allowlist body: { "orphans": { "<repo-relative test path>": "<reason>" } }. */
 export function readAllowlist(text) {
-  const problems = [];
-  let data;
+  const problems = []
+  let data
   try {
-    data = JSON.parse(text);
+    data = JSON.parse(text)
   } catch (error) {
-    return { allowed: new Map(), problems: [`${ALLOWLIST_FILE} is not valid JSON: ${error.message}`] };
+    return {
+      allowed: new Map(),
+      problems: [`${ALLOWLIST_FILE} is not valid JSON: ${error.message}`],
+    }
   }
-  const listed = data?.orphans;
-  if (!listed || typeof listed !== "object" || Array.isArray(listed)) {
-    return { allowed: new Map(), problems: [`${ALLOWLIST_FILE}: expected an object "orphans": { "<test path>": "<reason>" }`] };
+  const listed = data?.orphans
+  if (!listed || typeof listed !== 'object' || Array.isArray(listed)) {
+    return {
+      allowed: new Map(),
+      problems: [
+        `${ALLOWLIST_FILE}: expected an object "orphans": { "<test path>": "<reason>" }`,
+      ],
+    }
   }
-  const allowed = new Map();
+  const allowed = new Map()
   for (const [file, reason] of Object.entries(listed)) {
-    if (typeof reason !== "string" || reason.trim().length < MIN_REASON_LENGTH) problems.push(`${ALLOWLIST_FILE}: "${file}" needs a reason (${MIN_REASON_LENGTH}+ characters)`);
-    else allowed.set(file, reason.trim());
+    if (typeof reason !== 'string' || reason.trim().length < MIN_REASON_LENGTH)
+      problems.push(
+        `${ALLOWLIST_FILE}: "${file}" needs a reason (${MIN_REASON_LENGTH}+ characters)`
+      )
+    else allowed.set(file, reason.trim())
   }
-  return { allowed, problems };
+  return { allowed, problems }
 }
 
 /**
  * Runs the whole check. Returns the orphans split into allowed and unlisted, the allowlist entries
  * that are stale (file missing, or no longer an orphan) and configuration problems.
  */
-export function checkTestColocation(root, { settingsFile, allowlistFile } = {}) {
-  const settingsPath = path.resolve(root, settingsFile ?? SETTINGS_FILE);
-  const allowlistPath = path.resolve(root, allowlistFile ?? ALLOWLIST_FILE);
-  const problems = [];
-  let patterns = [];
-  if (!fs.existsSync(settingsPath)) problems.push(`${SETTINGS_FILE} not found at ${settingsPath}`);
+export function checkTestColocation(
+  root,
+  { settingsFile, allowlistFile } = {}
+) {
+  const settingsPath = path.resolve(root, settingsFile ?? SETTINGS_FILE)
+  const allowlistPath = path.resolve(root, allowlistFile ?? ALLOWLIST_FILE)
+  const problems = []
+  let patterns = []
+  if (!fs.existsSync(settingsPath))
+    problems.push(`${SETTINGS_FILE} not found at ${settingsPath}`)
   else {
     try {
-      const nesting = readNestingSettings(parseJsonc(fs.readFileSync(settingsPath, "utf8")));
-      patterns = nesting.patterns;
-      problems.push(...nesting.problems);
+      const nesting = readNestingSettings(
+        parseJsonc(fs.readFileSync(settingsPath, 'utf8'))
+      )
+      patterns = nesting.patterns
+      problems.push(...nesting.problems)
     } catch (error) {
-      problems.push(`${SETTINGS_FILE} could not be parsed: ${error.message}`);
+      problems.push(`${SETTINGS_FILE} could not be parsed: ${error.message}`)
     }
   }
-  let allowed = new Map();
+  let allowed = new Map()
   if (fs.existsSync(allowlistPath)) {
-    const list = readAllowlist(fs.readFileSync(allowlistPath, "utf8"));
-    allowed = list.allowed;
-    problems.push(...list.problems);
+    const list = readAllowlist(fs.readFileSync(allowlistPath, 'utf8'))
+    allowed = list.allowed
+    problems.push(...list.problems)
   }
-  const { examined, orphans } = problems.length ? { examined: 0, orphans: [] } : findOrphanTests(root, patterns);
-  const orphanSet = new Set(orphans);
-  const stale = [];
+  const { examined, orphans } = problems.length
+    ? { examined: 0, orphans: [] }
+    : findOrphanTests(root, patterns)
+  const orphanSet = new Set(orphans)
+  const stale = []
   for (const file of allowed.keys()) {
-    if (!fs.existsSync(path.join(root, file))) stale.push({ file, why: "file does not exist" });
-    else if (!orphanSet.has(file)) stale.push({ file, why: "no longer an orphan (it nests under a subject or is out of scope)" });
+    if (!fs.existsSync(path.join(root, file)))
+      stale.push({ file, why: 'file does not exist' })
+    else if (!orphanSet.has(file))
+      stale.push({
+        file,
+        why: 'no longer an orphan (it nests under a subject or is out of scope)',
+      })
   }
   return {
     examined,
     orphans,
-    allowed: orphans.filter((file) => allowed.has(file)).map((file) => ({ file, reason: allowed.get(file) })),
+    allowed: orphans
+      .filter((file) => allowed.has(file))
+      .map((file) => ({ file, reason: allowed.get(file) })),
     unlisted: orphans.filter((file) => !allowed.has(file)),
     stale,
     problems,
-    ok: problems.length === 0 && stale.length === 0 && orphans.every((file) => allowed.has(file)),
-  };
+    ok:
+      problems.length === 0 &&
+      stale.length === 0 &&
+      orphans.every((file) => allowed.has(file)),
+  }
 }
 
 function option(args, name) {
-  const index = args.indexOf(name);
-  return index === -1 ? undefined : args[index + 1];
+  const index = args.indexOf(name)
+  return index === -1 ? undefined : args[index + 1]
 }
 
-const invoked = process.argv[1] ? path.resolve(process.argv[1]) : "";
-const self = fileURLToPath(import.meta.url);
-if (process.platform === "win32" ? invoked.toLowerCase() === self.toLowerCase() : invoked === self) {
-  const args = process.argv.slice(2);
-  const root = path.resolve(option(args, "--root") ?? path.join(path.dirname(self), ".."));
-  const report = checkTestColocation(root, { settingsFile: option(args, "--settings"), allowlistFile: option(args, "--allowlist") });
-  if (args.includes("--json")) process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+const invoked = process.argv[1] ? path.resolve(process.argv[1]) : ''
+const self = fileURLToPath(import.meta.url)
+if (
+  process.platform === 'win32'
+    ? invoked.toLowerCase() === self.toLowerCase()
+    : invoked === self
+) {
+  const args = process.argv.slice(2)
+  const root = path.resolve(
+    option(args, '--root') ?? path.join(path.dirname(self), '..')
+  )
+  const report = checkTestColocation(root, {
+    settingsFile: option(args, '--settings'),
+    allowlistFile: option(args, '--allowlist'),
+  })
+  if (args.includes('--json'))
+    process.stdout.write(`${JSON.stringify(report, null, 2)}\n`)
   else {
-    for (const problem of report.problems) process.stdout.write(`CONFIG ${problem}\n`);
-    for (const file of report.unlisted) process.stdout.write(`ORPHAN ${file} — rename it to <subject>.test.ts(x) or <subject>.<aspect>.test.ts(x) next to the file it tests (${SETTINGS_FILE} explorer.fileNesting.patterns)\n`);
-    for (const { file, why } of report.stale) process.stdout.write(`STALE ${ALLOWLIST_FILE}: ${file} — ${why}; remove the entry\n`);
-    for (const { file, reason } of report.allowed) process.stdout.write(`allowed ${file} (${reason})\n`);
-    const summary = `${report.examined} colocated test file(s), ${report.orphans.length} orphan(s): ${report.allowed.length} allowed, ${report.unlisted.length} unlisted; ${report.stale.length} stale allowlist entr${report.stale.length === 1 ? "y" : "ies"}`;
-    process.stdout.write(`${report.ok ? "test colocation check passed" : "test colocation check FAILED"} — ${summary}\n`);
+    for (const problem of report.problems)
+      process.stdout.write(`CONFIG ${problem}\n`)
+    for (const file of report.unlisted)
+      process.stdout.write(
+        `ORPHAN ${file} — rename it to <subject>.test.ts(x) or <subject>.<aspect>.test.ts(x) next to the file it tests (${SETTINGS_FILE} explorer.fileNesting.patterns)\n`
+      )
+    for (const { file, why } of report.stale)
+      process.stdout.write(
+        `STALE ${ALLOWLIST_FILE}: ${file} — ${why}; remove the entry\n`
+      )
+    for (const { file, reason } of report.allowed)
+      process.stdout.write(`allowed ${file} (${reason})\n`)
+    const summary = `${report.examined} colocated test file(s), ${report.orphans.length} orphan(s): ${report.allowed.length} allowed, ${report.unlisted.length} unlisted; ${report.stale.length} stale allowlist entr${report.stale.length === 1 ? 'y' : 'ies'}`
+    process.stdout.write(
+      `${report.ok ? 'test colocation check passed' : 'test colocation check FAILED'} — ${summary}\n`
+    )
   }
-  process.exitCode = report.ok ? 0 : 1;
+  process.exitCode = report.ok ? 0 : 1
 }

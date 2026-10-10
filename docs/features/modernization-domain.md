@@ -17,10 +17,14 @@ delegam ao pacote, preservando importadores. Cálculo puro não importa Next,
 React, Prisma, Node ou transportes. A função de frete que consulta API continua
 no frontend.
 
-A aplicação transacional permanece em `lib/rental-converter.ts`,
-`lib/rental-lifecycle.ts`, `lib/payment-processor.ts` e
-`lib/equipment-availability.ts`. As rotas conservam as URLs e delegam suas
-mutações a esses serviços.
+A aplicação transacional tem dono em
+`packages/backend/src/modules/rentals/{conversion,lifecycle,availability}.ts` e
+`packages/backend/src/modules/billing/payment-processor.ts`. As rotas da API
+compõem essas factories por `apps/services/api/src/host/rentals.ts`,
+`quotations.ts`, `runtime.ts` e `payment-webhooks.ts`. As fachadas antigas
+`lib/rental-converter.ts`, `lib/rental-lifecycle.ts`, `lib/payment-processor.ts`
+e `lib/equipment-availability.ts` foram retiradas em F. URLs, contexto/lock/RLS
+e regras de domínio continuam os mesmos; os hosts não duplicam cálculo.
 
 ## 3. Entry Points
 

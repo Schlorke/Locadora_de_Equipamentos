@@ -25,8 +25,10 @@ público" e "Área do cliente final"; B.10, linha "Público"; D1; D23; lote S13)
 - Regra única do modo do site em `packages/domain/src/assinatura/site.ts`
   (`decidirModoDoSite`) e da área do cliente em
   `packages/domain/src/assinatura/area-do-cliente.ts` (`decidirAreaDoCliente`).
-- Resolvedor público do backend (`createPublicTenantResolver`), usado pelos dois
-  hosts HTTP (`app/api` legado e `apps/services/api`).
+- Resolvedor público do backend (`createPublicTenantResolver`), composto pelo
+  host API atual em `apps/services/api/src/host/runtime.ts`. Na onda 130 também
+  havia o adapter antigo `app/api`, retirado em F. O host web atual continua
+  separado e lê o cartão da API para decidir suas páginas.
 - Código estável `SITE_PAUSED` e cabeçalhos do contrato em
   `packages/contracts/src/subscription.ts`.
 - Host web: página de pausa com 503 real, `noindex`, `robots.txt` e
@@ -59,12 +61,12 @@ público" e "Área do cliente final"; B.10, linha "Público"; D1; D23; lote S13)
 
 - Domínio: `packages/domain/src/assinatura/site.ts` e `area-do-cliente.ts`.
 - Backend: `packages/backend/src/modules/identity/public-tenant.ts`, composto em
-  `lib/tenant.ts` e `apps/services/api/src/host/runtime.ts` (mesma consulta,
-  tipada por `PublicOrganization`).
+  `apps/services/api/src/host/runtime.ts` (consulta tipada por
+  `PublicOrganization`). A fachada antiga `lib/tenant.ts` foi retirada em F.
 - Rotas da vitrine (503 em pausa): `/api/categories`, `/api/equipments`,
   `/api/equipments/{id}`, `/api/equipments/{id}/availability`,
   `/api/equipamentos/search`, `POST /api/quotes`, `POST /api/orcamentos`,
-  `POST /api/contact`, nos dois hosts.
+  `POST /api/contact`, no host API atual.
 - Identidade (respondem em pausa): `/api/public/tenants/{slug}` e
   `/api/settings/public`.
 - Cartão no escopo da área do cliente:
@@ -156,8 +158,9 @@ público" e "Área do cliente final"; B.10, linha "Público"; D1; D23; lote S13)
   `createPublicTenantResolver(findOrganization, { enforcement, observe })`,
   `publicSitePaused`, `publicSiteHeaders`.
 - `packages/backend/src/http/{tenant-card,public-settings}.ts` e
-  `app/api/{public/tenants/[slug],settings/public,client/enroll}/route.ts`,
-  `apps/services/api/src/app/api/client/enroll/route.ts`: superfície declarada.
+  `apps/services/api/src/app/api/{public/tenants/[slug],settings/public,client/enroll}/route.ts`:
+  superfície declarada do host API. Os adapters antigos da raiz foram retirados
+  em F; regras e contratos do backend continuam únicos.
 - `packages/frontend/src/widgets/site-pausado` (`AvisoSitePausado`, contato em
   `model/contato.ts`; `MolduraSitePausado`, a moldura neutra) e
   `packages/frontend/src/pages/site-pausado` (`SitePausadoPage`: moldura e
@@ -261,14 +264,14 @@ público" e "Área do cliente final"; B.10, linha "Público"; D1; D23; lote S13)
   pausa implica área do cliente").
 - Contrato: `packages/contracts/src/subscription.test.ts`.
 - Resolvedor: `packages/backend/src/modules/identity/public-tenant.test.ts`.
-- Dois hosts: `tests/security/public-site-state.test.ts` (503, 404 do D10 byte a
-  byte, identidade, área do cliente com o site desligado, as duas resoluções do
-  vínculo com `tenantSlug` no corpo e na query, cartão com escopo, `off`).
+- API canônica: `tests/security/public-site-state.test.ts` (503, 404 do D10 byte
+  a byte, identidade, área do cliente com o site desligado, as duas resoluções
+  do vínculo com `tenantSlug` no corpo e na query, cartão com escopo, `off`).
 - Host web: `host/server/site-state.test.ts`, `host/routing/site-mode.test.ts`,
   `host/routing/platform-proxy.site-mode.test.ts`, `proxy.test.ts`,
   `host/server/public-api.test.ts` e os testes de `layout`, `(vitrine)/layout`,
   `site-pausado`, `robots.txt`, `sitemap.xml` e do detalhe em
-  `app/(public)/[locadora]`.
+  `apps/clients/web/src/app/(public)/[locadora]`.
 - Moldura (achado 142): `MolduraSitePausado.web.test.tsx`,
   `SitePausadoPage.web.test.tsx`, `ClientLayoutShell.casca.web.test.tsx`
   (`chrome="none"`), `host/providers/TenantSiteProviders.test.tsx` (pausa
@@ -279,13 +282,15 @@ público" e "Área do cliente final"; B.10, linha "Público"; D1; D23; lote S13)
   e `quote-api.test.ts`.
 - Fixtures publicam as organizações de teste pelo papel restrito de plataforma
   (`tests/helpers/public-site.ts`), como a migration 0104 fez com as vivas.
-- Prova HTTP: builds de produção dos três hosts com fiscalização `on`
-  (resultados na onda 130 de `shared-api-host.md`); moldura neutra com 503 no
-  build de produção do host web (onda 132); páginas legais em pausa no build de
-  produção do host web sobre os dois backends
-  (`tests/api-host/storefront-legal-paused.http.test.ts`, onda 134: `/termos` e
-  `/cookies` 200 com `noindex` e `no-store` na moldura, documento não publicado
-  404, vitrine 503 com `Retry-After`, locadora desligada igual à desconhecida).
+- Histórico da prova HTTP: na onda 130, builds de produção dos três adapters
+  então existentes com fiscalização `on` (resultados na onda 130 de
+  `shared-api-host.md`); moldura neutra com 503 no build de produção do host web
+  (onda 132); páginas legais em pausa no build de produção do host web sobre os
+  dois backends então existentes
+  (`tests/api-host/storefront-legal-paused.http.test.ts`, onda 134 histórica:
+  `/termos` e `/cookies` 200 com `noindex` e `no-store` na moldura, documento
+  não publicado 404, vitrine 503 com `Retry-After`, locadora desligada igual à
+  desconhecida).
 - Páginas legais em pausa (onda 134): `host/routing/site-mode.test.ts`,
   `platform-proxy.site-mode.test.ts`, `TenantSiteProviders.test.tsx`, os
   `page.test.tsx` de `termos`, `privacidade`, `politica-devolucao`, `cookies` e

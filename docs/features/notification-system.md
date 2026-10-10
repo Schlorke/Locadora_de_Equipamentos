@@ -23,19 +23,21 @@ provas, limites e pendências na onda 95 de
 
 ## Extração da listagem para API compartilhada (corte 20, 2026-10-02, sem commit)
 
-`GET /api/client/notifications` está instalado localmente em
-`apps/services/api`, além do adapter legado ativo. As consultas e a montagem da
-resposta têm uma implementação em
+Na fotografia do corte 20, `GET /api/client/notifications` foi instalado
+localmente em `apps/services/api`, além do adapter legado então ativo. Esse
+adapter antigo saiu em F; a API workspace permanece. As consultas e a montagem
+da resposta têm uma implementação em
 `packages/backend/src/modules/communications/client-notifications.ts`. O módulo
-de comunicações previsto na ADR começa por essa leitura; fan-out, sync e
-mutações ainda têm sua implementação legada. O web/mobile continuam na origem
-configurada, sem cutover.
+de comunicações previsto na ADR começou por essa leitura; fan-out, sync e
+mutações ainda eram legados naquele corte. Naquela prova, web/mobile continuavam
+na origem configurada, sem cutover.
 
 O parser foi movido para `packages/contracts/src/notifications.ts`, sem Prisma
-ou implementação de servidor. Os dois hosts importam os entrypoints públicos
-`backend/communications` e `contracts/notifications`. O serviço compõe o runner
-RLS no seu processo, sem outro pool. O novo consumidor de contracts está
-declarado no package.json do host; não foi instalada dependência externa nova.
+ou implementação de servidor. Os dois adapters de backend da época (raiz legada
+e API workspace) importavam os entrypoints públicos `backend/communications` e
+`contracts/notifications`. O serviço compõe o runner RLS no seu processo, sem
+outro pool. O novo consumidor de contracts está declarado no package.json do
+host; não foi instalada dependência externa nova.
 
 Contrato observado da leitura:
 
@@ -74,11 +76,12 @@ certifica Expo/browser/deploy.
 
 ## Estatísticas compartilhadas (corte 21, 2026-10-02, sem commit)
 
-`GET /api/client/notifications/stats` está montado nos dois hosts. Seus quatro
-SELECTs e a montagem da resposta agora pertencem a
-`backend/communications/client-notification-stats.ts`. O adapter legado continua
-ativo; o serviço reutiliza o principal e o runner RLS do processo. Nenhum
-parser, pacote, dependência ou regra de autorização novo foi introduzido.
+No corte 21, `GET /api/client/notifications/stats` foi montado na raiz legada e
+na API workspace. Seus quatro SELECTs e a montagem da resposta pertencem a
+`packages/backend/src/modules/communications/client-notification-stats.ts`. O
+adapter antigo da raiz, ainda ativo naquela prova, saiu em F; a API workspace
+reutiliza o principal e o runner RLS do processo. Nenhum parser, pacote,
+dependência ou regra de autorização novo foi introduzido.
 
 O DTO é `{ total, unread, byType, byPriority }`: total de toda a caixa e
 agregados das não lidas, sempre por usuário/locadora do principal. Todas as
@@ -99,8 +102,9 @@ houve cutover.
 ## Marcação/exclusão compartilhadas (corte 22, 2026-10-02, sem commit)
 
 PATCH/DELETE de `/api/client/notifications/[id]` e POST de
-`/api/client/notifications/mark-all-read` estão instalados no serviço parcial e
-mantêm seus adapters legados ativos. Consultas e efeitos agora pertencem a
+`/api/client/notifications/mark-all-read` foram instalados no serviço parcial no
+corte 22, conservando então os adapters legados. Esses adapters antigos saíram
+em F; consultas e efeitos pertencem a
 `communications/client-notification-mutations.ts`; os hosts compõem principal,
 guard de origem, transação RLS e transporte. O entrypoint de communications já
 existente expõe funções nomeadas, sem pacote ou dependência nova.
@@ -128,8 +132,9 @@ relógio real e o valor persistido; somente essa diferença esperada de horário
 normalizada para comparar hosts. O runtime descartável recebe SELECT, UPDATE e
 DELETE em notifications, sem INSERT, ownership ou bypass; triggers de falha são
 criadas/removidas apenas no banco de teste. Evidências e limites: corte 22 de
-[API compartilhada](shared-api-host.md). Fan-out, sync, pagamentos, jobs e
-clientes seguem legados. Nenhum cutover ou mudança de produção.
+[API compartilhada](shared-api-host.md). Na conclusão daquele corte, fan-out,
+sync, pagamentos, jobs e clientes ainda eram legados. A onda 45 e os lotes
+posteriores abaixo documentam sua extração; não houve mudança de produção.
 
 ## 📋 Visão Geral
 
@@ -173,6 +178,10 @@ inclui notificações visuais no header, página dedicada na área do cliente e
 
 ```prisma
 model Notification {
+  // Nullable while unassigned legacy records remain quarantined.
+  tenantId String?
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
   id         String               @id @default(cuid())
   userId     String
   type       NotificationType
@@ -186,10 +195,11 @@ model Notification {
   readAt     DateTime?
 
   @@index([userId])
-  @@index([isRead])
   @@index([createdAt])
   @@index([type])
   @@map("notifications")
+  @@index([tenantId])
+  @@unique([id, tenantId])
 }
 
 enum NotificationType {
@@ -264,20 +274,34 @@ const {
 
 ### Localização
 
-- `lib/notification-service.ts`: `createAdminNotifications(context, input)` e
-  `getAdminUserIds(context)`, sempre com o `TenantContext` da locadora.
-- `app/api/admin/notifications/sync/route.ts`: gera os alertas da equipe (seção
-  "Admin - Painel" abaixo) com `createAdminNotifications`.
+- `packages/backend/src/modules/communications/admin-notifications.ts`: factory
+  interna `createAdminNotificationService({ withTenantTransaction })`, que
+  fornece `createAdminNotifications(context, input)` e
+  `getAdminUserIds(context)`, sempre com `TenantContext`. Não é um export
+  público para os hosts; `admin-alerts.ts` a compõe internamente.
+- `apps/services/api/src/app/api/admin/notifications/sync/route.ts`: resolve o
+  principal da locadora, exige seu papel `ADMIN` e chama `syncAdminAlerts` de
+  `apps/services/api/src/host/communications.ts`, composto por
+  `createAdminAlertSync` do entrypoint `@gb-locacoes/backend/communications`.
+- A antiga fachada `lib/notification-service.ts` e o adapter da raiz
+  `app/api/admin/notifications/sync/route.ts` saíram em F.
 - `packages/backend/src/modules/rentals/client-requests.ts`: o pedido de coleta
   ou de prorrogação feito pelo cliente notifica os `ADMIN` da locadora na mesma
   transação.
 
 ### Criando notificações para a equipe da locadora
 
+Exemplo **interno ao módulo communications**, com `withTenantTransaction`
+injetado pelo composition root e `context` obtido do principal autorizado. Um
+host usa a factory pública do caso de uso, não importa este arquivo interno:
+
 ```typescript
 import { NotificationPriority, NotificationType } from "@prisma/client"
-import { createAdminNotifications } from "@/lib/notification-service"
+import { createAdminNotificationService } from "./admin-notifications"
 
+const { createAdminNotifications } = createAdminNotificationService({
+  withTenantTransaction
+})
 await createAdminNotifications(context, {
   type: NotificationType.QUOTE,
   title: "Orçamento pendente sem ação",
@@ -302,8 +326,10 @@ Os helpers por evento (`createNotification`, `createManyNotifications`,
 `notifyQuoteCreated`, `notifyQuoteApproved`, `notifyPaymentReceived`,
 `notifyDeliveryScheduled` e os demais `notify*`) e o `NotificationDropdown` do
 header público não tinham chamador e saíram na faxina da onda 9 (entrada 225 de
-`docs/issues/known-issues.md`). A versão anterior está em
-`git show 4b02f52f:lib/notification-service.ts`. Hoje não existe notificação ao
+`docs/issues/known-issues.md`). A versão anterior era a do commit local
+histórico `4b02f52f`, no antigo `lib/notification-service.ts` (removido em F).
+Ela é proveniência do arquivo preservado localmente, não comando operacional
+para o repositório público de história limpa. Hoje não existe notificação ao
 cliente por evento (orçamento aprovado, pagamento, entrega): quem a criar parte
 de `createAdminNotifications` como modelo (contexto e transação da locadora,
 dedupe) e atualiza esta seção.
@@ -391,7 +417,16 @@ window.addEventListener("notificationUpdate", (e) => {
 
 ### Localização
 
-`/area-cliente/notificacoes`
+`/area-cliente/notificacoes`: conteúdo em
+`packages/frontend/src/pages/notificacoes/ui/NotificacoesPage.{web,native}.tsx`,
+atrás do contrato público `@gb-locacoes/frontend/pages/notificacoes`. A rota web
+vive em
+`apps/clients/web/src/app/(public)/[locadora]/(account)/area-cliente/notificacoes/page.tsx`.
+O modelo é
+`packages/frontend/src/features/notificacoes/model/use-notifications-model.ts`;
+somente `use-notifications.web.ts` lê DOM/localStorage, enquanto a variante
+native usa o transporte configurado pelo host. O proxy web recusa a área de
+conta no modo auth `legacy`; isso não autoriza ignorar falha de carga no modelo.
 
 ### Funcionalidades
 
@@ -459,10 +494,14 @@ transição de 1000ms para efeito gradual.
 Os eventos que notificam hoje são os alertas da equipe gerados por
 `POST /api/admin/notifications/sync` (chamado pelo `useNotifications` quando a
 sessão é de `ADMIN`) e os pedidos de coleta e prorrogação do cliente. Evento
-novo usa `createAdminNotifications` (seção "Serviço de Notificações") dentro da
-rota ou do módulo que já tem o `TenantContext`; o exemplo antigo com
-`notifyQuoteApproved` em `app/api/admin/quotes/[id]/approve/route.ts` descrevia
-uma API e uma rota que não existem mais.
+novo pertence ao módulo do caso de uso, com `TenantContext` e transação já
+autorizados. Dentro de communications, `createAdminNotifications` da factory
+interna é o modelo de fan-out/dedupe; o host consome a API pública do caso de
+uso, sem importar essa factory interna. O exemplo antigo com
+`notifyQuoteApproved` no antigo `app/api/admin/quotes/[id]/approve/route.ts`
+descrevia uma API e uma rota removidas. Efeitos de e-mail são compostos em
+`apps/services/api/src/host/notification-effects.ts`; não confundir essas portas
+de transporte com a caixa `Notification` do usuário.
 
 ## 📊 Métricas e Analytics
 
@@ -538,18 +577,26 @@ console.log(localStorage.getItem("gb-locacoes-unread-count"))
 
 ---
 
-**Última atualização**: 2026-10-02 (listagem, estatísticas e marcação/exclusão
-no host HTTP parcial, sem cutover) **Versão**: 2.4 (Persistência no Banco)
-**Status**: ✅ Implementado e Funcional
+**Registro de 2026-10-02**: versão 2.4 (listagem, estatísticas e
+marcação/exclusão no host HTTP parcial, sem cutover).
+
+**Revisão de referências de 2026-10-09**: factories, transporte e UI canônicos
+no clone pós-F, após a primeira etapa publicada em `978ceb`. O resultado dessa
+primeira etapa está em `docs/guides/wave135-base-validation.md`; a rodada final
+pós-F segue pendente. Persistência local e testes não homologam recebimento em
+aparelho, push ou entrega externa de e-mail.
 
 ## Extração HTTP administrativa — onda 45
 
 Em 2026-10-02, GET /api/admin/badges e POST /api/admin/notifications/sync foram
 compostos em apps/services/api sobre factories únicas em backend/communications.
 Contadores, nove chaves de alerta, cortes de tempo, fanout ADMIN por membership,
-lock SQL e dedupe de seis horas foram preservados. lib/notification-service.ts e
-lib/zoho-mail mantêm fachadas vivas; a API legada e o scheduler continuam. HTTP
-local passa nos dois motores de sessão. Provas, arquivos e limites na onda 45 de
+lock SQL e dedupe de seis horas foram preservados. Naquela onda, as antigas
+fachadas `lib/notification-service.ts` e `lib/zoho-mail` ainda atendiam a raiz;
+essas fachadas saíram em F. A API legada e o scheduler eram os consumidores
+daquela fotografia; hoje a API workspace compõe `communications.ts` e o runner
+único de jobs. A prova HTTP da onda 45 passou localmente nos dois motores.
+Provas, arquivos e limites na onda 45 de
 [API compartilhada](shared-api-host.md).
 
 ## Consumidor web/Expo compartilhado (onda 75, 2026-10-03)

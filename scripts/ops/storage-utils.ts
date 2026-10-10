@@ -1,7 +1,7 @@
 /**
  * Utilitários do bucket de imagens do Supabase para os scripts de manutenção de imagens
- * (scripts/cleanup-orphaned-images.ts; docs/features/storage-image-cleanup.md). Porte de lib/storage-utils.ts
- * (onda 135, Lote C, D9 = portar): quarentena COD-03 transferida, o original sai com a raiz legada.
+ * (scripts/cleanup-orphaned-images.ts; docs/features/storage-image-cleanup.md). O antigo lib/storage-utils.ts
+ * foi retirado em F após o porte (onda 135, Lote C, D9 = portar); a quarentena COD-03 permanece em scripts/ops.
  * O cliente administrativo é o do backend (`createSupabaseAdminClient`), criado no primeiro uso.
  */
 import { createSupabaseAdminClient } from '@gb-locacoes/backend/runtime'

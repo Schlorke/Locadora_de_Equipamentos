@@ -1856,10 +1856,21 @@ globalThis.fetch = function (input, init) {
       await login(financial, host('app'), '/login', users.financial.email)
       await financial.waitForURL(/\/admin/, { timeout: 30_000 })
       await selectTenant(financial)
+      // Selection commits before the role gate replaces the page. Observe that
+      // real navigation before attempting the separate forbidden destination.
+      await financial.waitForURL(
+        (url) =>
+          url.origin === host('app') && url.pathname === '/admin/financeiro',
+        { waitUntil: 'load', timeout: 30_000 }
+      )
       await financial.goto(host('app') + '/admin/dashboard', {
         waitUntil: 'load',
       })
-      await financial.waitForURL(/\/admin\/financeiro$/, { timeout: 30_000 })
+      await financial.waitForURL(
+        (url) =>
+          url.origin === host('app') && url.pathname === '/admin/financeiro',
+        { waitUntil: 'load', timeout: 30_000 }
+      )
       expect(
         await financial.evaluate(
           async () => (await fetch('/api/admin/settings')).status

@@ -1,7 +1,20 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return {
+    get prisma() {
+      state.readDatabase()
+      return {}
+    },
+  }
+}
 /**
  * Achado 149 (onda 133): as leituras GET/HEAD do Better Auth (`get-session`, `list-sessions`, `list-accounts`,
  * `account-info` e qualquer outro GET do motor) recusam `Origin` explícito de outra origem antes do motor e do banco,
- * nas composições REAIS dos dois hosts (`lib/identity` e `apps/services/api/src/host/session`), pelo
+ * na composição REAL do host API (`apps/services/api/src/host/session`), pelo
  * `handleIdentityRequest` comum (`packages/backend/src/modules/identity/runtime.ts`).
  *
  * Consumidores caracterizados: o cliente web de cada host chama o próprio host (mesma origem, GET sem `Origin`); o app
@@ -28,25 +41,27 @@ vi.mock(
     createIdentity: state.create,
   })
 )
-vi.mock('@/lib/prisma', () => ({
-  get prisma() {
-    state.readDatabase()
-    return {}
-  },
-}))
-vi.mock('@/lib/resend', () => ({ default: () => null }))
-vi.mock('@/lib/rate-limit', () => ({
-  consumeVerificationResend: vi.fn(),
-  legacySignInGuard: vi.fn(),
-}))
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => {
-    state.runtimeDatabase()
-    return { prisma: {} }
-  },
-  createResendClient: () => null,
-}))
+
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => {
+      state.runtimeDatabase()
+      return { prisma: {} }
+    },
+    createResendClient: () => null,
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 
 const SECRET = 'identity-read-origin-edge-secret-0123456789'
 const ROOT = 'platform.test'
@@ -128,11 +143,6 @@ const LOOKALIKES = [
 
 type Handle = (request: Request) => Promise<Response>
 const HOSTS = [
-  [
-    'legacy',
-    async (): Promise<Handle> =>
-      (await import('@/lib/identity')).handleIdentityRequest,
-  ],
   [
     'service',
     async (): Promise<Handle> =>

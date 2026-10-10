@@ -122,8 +122,9 @@ fora. Nunca entra dado de outra locadora.
 - Backend: `packages/backend/src/modules/catalog/public.ts`
   (`getPublicSettings`, configurações e organização na mesma transação da
   locadora) e `public-settings.ts` (`publicBusinessHours`,
-  `publicLegalIdentity`), compostos nos dois hosts por `lib/catalog.ts` e
-  `apps/services/api/src/host/runtime.ts`.
+  `publicLegalIdentity`), compostos atualmente por
+  `apps/services/api/src/host/runtime.ts`. A fachada antiga `lib/catalog.ts` foi
+  retirada em F; o host web lê essa API pelo seu adapter servidor.
 - Host web: `apps/clients/web/src/app/(public)/[locadora]/layout.tsx` (cartão do
   escopo da área do cliente) → `host/providers/TenantSiteProviders.tsx` →
   `AppProviders` (`publicTenantIdentity`).
@@ -139,11 +140,13 @@ fora. Nunca entra dado de outra locadora.
 2. Os widgets leem a identidade (`useIdentidadePublica`) e as configurações
    públicas (`usePublicSettings`). Cada bloco aparece só com o dado presente, e
    os textos de região usam a cidade do cartão.
-3. Sem identidade informada (raiz legada `app/`, app móvel, painel), o hook
-   devolve `null` e nada de marca aparece. Ele não consulta a API, porque o
-   proxy do host de locadora nega o cartão ao navegador (allowlist do Lote 4b).
-   Passar a identidade também no app móvel e na raiz legada é pendência
-   registrada.
+3. Sem identidade informada (por exemplo no cliente móvel ou painel), o hook
+   devolve `null` e nada de marca aparece. Na etapa original a raiz antiga
+   `app/` também não fornecia essa identidade; foi retirada em F. Ele não
+   consulta a API, porque o proxy do host de locadora nega o cartão ao navegador
+   (allowlist do Lote 4b). Passar a identidade também no cliente móvel era
+   pendência daquela etapa e continua exigindo seu consumidor real; restaurar a
+   raiz antiga não é tarefa.
 4. JSON-LD e SEO usam o nome, a cidade, a UF e a origem canônica da própria
    locadora. Sem origem (ambiente sem raiz), os caminhos saem relativos.
 
@@ -212,12 +215,13 @@ fora. Nunca entra dado de outra locadora.
   como na produção; sem WhatsApp, o telefone (no hero, o espaço do celular
   recebe o telefone; no cabeçalho, o link do telefone perde o `hidden sm:inline`
   e fica com a classe do link do WhatsApp). Antes, uma locadora só com telefone
-  via no celular só o ícone, sem número. A home da raiz legada (`app/page.tsx`)
-  também passa `companyPhone` e `whatsappNumber`, que já lia do banco, a
-  `buildHeroInitialSettings` (2026-10-08). As prévias do painel
-  (`HeaderFooterPreview` e `HeroCarouselPreview` no web, `SettingsPreviews` no
-  app) e o laboratório `pages/playground` ainda têm o "|" fixo (pendências
-  registradas).
+  via no celular só o ícone, sem número. No registro de2026-10-08, a home antiga
+  (`app/page.tsx`, retirada em F) também passava `companyPhone` e
+  `whatsappNumber`, que lia do banco, a `buildHeroInitialSettings`. A fonte
+  atual da home web é a rota da vitrine qualificada acima, com o mesmo contrato.
+  As prévias do painel (`HeaderFooterPreview` e `HeroCarouselPreview` no web,
+  `SettingsPreviews` no app) e o laboratório `pages/playground` ainda têm o "|"
+  fixo (pendências registradas).
 - Rede social sem URL: o ícone fica sem link, como o LinkedIn já ficava.
 - Página Sobre sem texto "Sobre nós": sem o parágrafo; sem nome, "Sobre nós". A
   seção do selo do Google só aparece com o selo e o nome da própria locadora (o

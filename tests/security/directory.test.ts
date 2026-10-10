@@ -1,3 +1,35 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  if (process.env.TEST_DATABASE_URL) {
+    const { requireTestDatabase } = await import('../helpers/test-database')
+    const { Pool } = await import('pg')
+    const { PrismaClient } = await import('@prisma/client')
+    const { PrismaPg } = await import('@prisma/adapter-pg')
+    const pool = new Pool({
+      connectionString: requireTestDatabase(process.env),
+      max: 4,
+    })
+    fPreparedDatabase.pool = pool
+    return {
+      prisma: new PrismaClient({ adapter: new PrismaPg(pool) }),
+      testPool: pool,
+    }
+  }
+  const unavailable = () => {
+    throw new Error('database access is not expected in this suite')
+  }
+  return {
+    prisma: {
+      organization: { findMany: unavailable },
+      platformRateLimit: { upsert: unavailable, deleteMany: unavailable },
+    },
+  }
+}
+import { getDatabaseRuntime as getFPreparedDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 import {
   platformRateLimitDigest,
   rateLimitKeyPrefix,
@@ -33,29 +65,19 @@ import {
   vi,
 } from 'vitest'
 
-vi.mock('@/lib/prisma', async () => {
-  if (process.env.TEST_DATABASE_URL) {
-    const { requireTestDatabase } = await import('../helpers/test-database')
-    const { Pool } = await import('pg')
-    const { PrismaClient } = await import('@prisma/client')
-    const { PrismaPg } = await import('@prisma/adapter-pg')
-    const pool = new Pool({
-      connectionString: requireTestDatabase(process.env),
-      max: 4,
-    })
-    return {
-      prisma: new PrismaClient({ adapter: new PrismaPg(pool) }),
-      testPool: pool,
-    }
-  }
-  const unavailable = () => {
-    throw new Error('database access is not expected in this suite')
-  }
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+  }))(importOriginal)
   return {
-    prisma: {
-      organization: { findMany: unavailable },
-      platformRateLimit: { upsert: unavailable, deleteMany: unavailable },
-    },
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
   }
 })
 
@@ -75,8 +97,8 @@ import {
 } from '@gb-locacoes/backend/directory'
 import { platformRateLimitSecret } from '../../packages/backend/src/modules/directory/rate-limit'
 import { withTenantTransaction } from '@gb-locacoes/backend/identity'
-import { prisma } from '@/lib/prisma'
-import { GET as search } from '@/app/api/public/tenants/route'
+const { prisma } = getFPreparedDatabaseRuntime()
+import { GET as search } from '../../apps/services/api/src/app/api/public/tenants/route'
 import { requireTestDatabase } from '../helpers/test-database'
 
 const API = 'https://backend.internal'
@@ -433,9 +455,16 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
       const client = new PrismaClient({ adapter: new PrismaPg(pool) })
       instances.push({ client, pool })
       vi.resetModules()
-      vi.doMock('@/lib/prisma', () => ({ prisma: client }))
-      const route = await import('@/app/api/public/tenants/route')
-      const shared = await import('@/lib/prisma')
+      vi.doMock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
+        ...(await importOriginal<
+          typeof import('@gb-locacoes/backend/runtime')
+        >()),
+        getDatabaseRuntime: () => ({ prisma: client, pool }),
+      }))
+      const route =
+        await import('../../apps/services/api/src/app/api/public/tenants/route')
+      const runtime = await import('@gb-locacoes/backend/runtime')
+      const shared = runtime.getDatabaseRuntime()
       expect(shared.prisma).toBe(client)
       expect(shared.prisma).not.toBe(prisma)
       return route.GET
@@ -460,34 +489,37 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
       vi.stubEnv('PLATFORM_RATE_LIMIT_SECRET', secret)
     })
     afterAll(async () => {
-      await withTenantTransaction(db, { tenantId: ids[0]! }, (tx) =>
-        tx.setting.deleteMany({ where: { tenantId: ids[0]! } })
+      await runFPreparedCleanup(
+        async () => {
+          await withTenantTransaction(db, { tenantId: ids[0]! }, (tx) =>
+            tx.setting.deleteMany({ where: { tenantId: ids[0]! } })
+          )
+          await db.organization.deleteMany({ where: { id: { in: ids } } })
+          for (const ip of usedIps)
+            await db.platformRateLimit.deleteMany({
+              where: {
+                key: {
+                  startsWith: rateLimitKeyPrefix([
+                    'directory-search',
+                    'ip',
+                    platformRateLimitDigest(secret, 'ip', ip),
+                  ]),
+                },
+              },
+            })
+          if (windowEnd)
+            await db.platformRateLimit.deleteMany({
+              where: {
+                key: { startsWith: 'directory-search:ip:' },
+                expiresAt: new Date(windowEnd),
+              },
+            })
+        },
+        ...instances.flatMap(({ client, pool }) => [
+          () => client.$disconnect(),
+          () => pool.end(),
+        ])
       )
-      await db.organization.deleteMany({ where: { id: { in: ids } } })
-      for (const ip of usedIps)
-        await db.platformRateLimit.deleteMany({
-          where: {
-            key: {
-              startsWith: rateLimitKeyPrefix([
-                'directory-search',
-                'ip',
-                platformRateLimitDigest(secret, 'ip', ip),
-              ]),
-            },
-          },
-        })
-      // The window of the instance without a configured secret (unknown HMAC key).
-      if (windowEnd)
-        await db.platformRateLimit.deleteMany({
-          where: {
-            key: { startsWith: 'directory-search:ip:' },
-            expiresAt: new Date(windowEnd),
-          },
-        })
-      for (const { client, pool } of instances) {
-        await client.$disconnect()
-        await pool.end()
-      }
     })
 
     it('returns at most 10 opted-in ACTIVE tenants by name, case-insensitively', async () => {
@@ -674,3 +706,29 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
     })
   }
 )
+
+// Close the fixture-created Prisma and Pool after original row cleanup.
+afterAll(async () => {
+  if (!fPreparedDatabase.pool) return
+  try {
+    await getFPreparedDatabaseRuntime().prisma.$disconnect()
+  } finally {
+    await fPreparedDatabase.pool.end()
+  }
+})
+
+// Close all owned siblings and restore process state; cleanup errors stay fatal.
+async function runFPreparedCleanup(
+  ...steps: Array<() => unknown | Promise<unknown>>
+) {
+  const errors: unknown[] = []
+  for (const step of steps) {
+    try {
+      await step()
+    } catch (error) {
+      errors.push(error)
+    }
+  }
+  if (errors.length)
+    throw new AggregateError(errors, 'F fixture cleanup failed')
+}

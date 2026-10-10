@@ -13,8 +13,11 @@ const mocks = vi.hoisted(() => ({
   enqueue: vi.fn(),
   cancelled: vi.fn(),
 }))
-vi.mock('@/lib/tenant', () => ({
+vi.mock('@gb-locacoes/backend/outbox', () => ({ enqueueOutbox: mocks.enqueue }))
+vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: mocks.access,
+}))
+vi.mock('../../apps/services/api/src/host/tenant-transaction', () => ({
   withTenantTransaction: async (
     _context: unknown,
     operation: (tx: unknown) => unknown
@@ -38,22 +41,7 @@ vi.mock('@/lib/tenant', () => ({
       permission: { findFirst: vi.fn() },
     }),
 }))
-vi.mock('@/lib/security/tenant-webhook', () => ({
-  resolveIntegrationCredential: async () => ({
-    apiKey: 'fixture',
-    environment: 'sandbox',
-  }),
-}))
-vi.mock('@gb-locacoes/backend/outbox', () => ({ enqueueOutbox: mocks.enqueue }))
-vi.mock('../../apps/services/api/src/host/private-identity', () => ({
-  resolveTenantPrincipal: mocks.access,
-}))
-vi.mock('../../apps/services/api/src/host/tenant-transaction', async () => ({
-  withTenantTransaction: (await import('@/lib/tenant')).withTenantTransaction,
-}))
 import { isObligationSettled } from '@gb-locacoes/domain/locacao'
-import { POST as boleto } from '../../app/api/payments/boleto/generate/route'
-import { POST as pix } from '../../app/api/payments/pix/route'
 import { POST as serviceBoleto } from '../../apps/services/api/src/app/api/payments/boleto/generate/route'
 import { POST as servicePix } from '../../apps/services/api/src/app/api/payments/pix/route'
 const principal = {
@@ -109,8 +97,6 @@ beforeEach(() => {
   mocks.cancelled.mockResolvedValue([])
 })
 describe.each([
-  ['boleto', boleto],
-  ['pix', pix],
   ['service boleto', serviceBoleto],
   ['service pix', servicePix],
 ] as const)('%s authorization', (_name, handler) => {
@@ -186,7 +172,7 @@ it('queues the canonical balance without issuing a fake payment or using body pa
     principal: { ...principal, userId: 'client-b' },
   })
   mocks.aggregate.mockResolvedValue({ _sum: { amount: 40 } })
-  const response = await boleto(request({ ...payload, amount: 60 }))
+  const response = await serviceBoleto(request({ ...payload, amount: 60 }))
   expect(response.status).toBe(202)
   expect(await response.json()).toMatchObject({
     processing: 'PENDING',
@@ -216,7 +202,7 @@ it('charges the cents balance under the same settlement rule as the quote conver
   })
   mocks.aggregate.mockResolvedValue({ _sum: { amount: '5.004' } })
   // Saldo = 10.01 (total em centavos) − 5.00 (pago em centavos) = 5.01.
-  const response = await pix(request({ ...payload, amount: 5.01 }))
+  const response = await servicePix(request({ ...payload, amount: 5.01 }))
   expect(response.status).toBe(202)
   expect(await response.json()).toMatchObject({ payment: { amount: '5.01' } })
   // Cobrar esse saldo quita a obrigação pela mesma regra que converte o orçamento e libera o estoque.
@@ -233,6 +219,6 @@ it('does not create payment when this tenant has no configured provider', async 
     principal: { ...principal, userId: 'client-b' },
   })
   mocks.integrations.mockResolvedValue([])
-  expect((await pix(request(payload))).status).toBe(503)
+  expect((await servicePix(request(payload))).status).toBe(503)
   expect(mocks.create).not.toHaveBeenCalled()
 })

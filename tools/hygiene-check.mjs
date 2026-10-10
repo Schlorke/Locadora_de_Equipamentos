@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Gate de higiene (pnpm hygiene). Reprova sobra que nenhum outro gate enxerga:
 //   - arquivo, export, tipo, dependência, binário ou import sem dono, pelo knip (knip.jsonc) a partir das entradas
-//     reais: raiz legada (app/, lib/, tools/, tests/, stories/), host web, host mobile e pacotes. Nos pacotes o knip
+//     reais: ferramentas/testes/stories da raiz, hosts web/mobile/API e pacotes. Nos pacotes o knip
 //     também cobra o export sem consumidor do próprio ponto de entrada (includeEntryExports);
 //   - código que só um teste mantém vivo: um segundo passe do knip sem os testes (sem *.test/*.spec e pastas de
 //     teste nas entradas e no project, plugins vitest e playwright desligados) acha o arquivo e o export que só são
@@ -104,16 +104,19 @@ export const TOOL_OUTPUTS = [
   // pnpm visual:capture e build-storybook.
   { rule: '.tmp/visual/current/', samples: ['.tmp/visual/current/'] },
   { rule: 'storybook-static/', samples: ['storybook-static/'] },
+  // A antiga .next da raiz foi retirada em F; o sample relativo continua provando que uma saída indevida ali reprova.
   // Builds e caches do Next, do Expo, do gerador OpenAPI, do Turborepo e do TypeScript incremental.
   { rule: '.next/', samples: ['.next/', 'apps/clients/web/.next/'] },
   { rule: '.expo/', samples: ['apps/clients/mobile/.expo/'] },
   { rule: 'dist-export/', samples: ['apps/clients/mobile/dist-export/'] },
   { rule: '.openapi-gen/', samples: ['.openapi-gen/'] },
   { rule: '.turbo/', samples: ['.turbo/'] },
+  // O antigo tsconfig.tsbuildinfo da raiz saiu em F; estes samples ainda cobram descarte/ignore dos caches em qualquer nível.
   {
     rule: '*.tsbuildinfo',
     samples: ['tsconfig.tsbuildinfo', 'apps/clients/web/tsconfig.tsbuildinfo'],
   },
+  // O antigo next-env.d.ts da raiz saiu em F; o nome da regra continua cobrindo o gerado real do host web.
   { rule: 'next-env.d.ts', samples: ['apps/clients/web/next-env.d.ts'] },
   { rule: '.eslintcache', samples: ['.eslintcache'] },
   { rule: '.stylelintcache', samples: ['.stylelintcache'] },
@@ -153,7 +156,7 @@ const isGlob = (pattern) => /[*?]/.test(pattern)
 const pathMatches = (pattern, file) =>
   isGlob(pattern) ? globToRegExp(pattern).test(file) : pattern === file
 
-/** A parte literal de um glob, até a pasta antes do primeiro curinga: `lib/a/**` -> `lib/a/`. */
+/** A parte literal de um glob, até a pasta antes do primeiro curinga: `src/a/**` -> `src/a/`. */
 export function globBase(pattern) {
   const segments = pattern.split('/')
   const literal = []

@@ -37,7 +37,6 @@ import { createPlatformOutboxRepository } from '../../packages/backend/src/modul
 import { SecretValue } from '../../packages/backend/src/modules/secrets/secret-value'
 import { getPlatformDatabaseRuntime } from '../../packages/backend/src/runtime/platform-database'
 import { runConfiguredPlatformJobs } from '@gb-locacoes/backend/runtime'
-import { GET as legacyCron } from '../../app/api/cron/platform/route'
 import { GET as apiCron } from '../../apps/services/api/src/app/api/cron/platform/route'
 import { alphanumericCnpjFor } from '../helpers/fake-asaas'
 
@@ -1806,7 +1805,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
         data: { status: 'BLOCKED' },
       })
     })
-    it('the same configured runtime and both cron adapters use only the account credential, without root secrets', async () => {
+    it('the configured runtime and successive API cron receipts use only the account credential, without root secrets', async () => {
       // Earlier test retries are completed through the injected reader first.
       const worker = consumer()
       read.mockResolvedValue(approved)
@@ -1860,9 +1859,10 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
       ).toBe('PROCESSED')
       expect(fetch).toHaveBeenCalledTimes(1)
       vi.stubEnv('CRON_SECRET', 'synthetic-health-cron')
-      for (const handler of [legacyCron, apiCron]) {
+      // Each receipt has its own persisted event ID and repeats the account health read.
+      for (let invocation = 0; invocation < 2; invocation++) {
         await receipt()
-        const response = await handler(
+        const response = await apiCron(
           new Request('http://localhost/api/cron/platform', {
             headers: { authorization: 'Bearer synthetic-health-cron' },
           })
@@ -1871,7 +1871,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
       }
       expect(fetch).toHaveBeenCalledTimes(3)
     })
-    it('both cron hosts share the installed uncertain recovery and only root GETs, with no key or account creation', async () => {
+    it('repeated API cron invocations preserve uncertain recovery using only root GETs, with no key or account creation', async () => {
       const found = await uncertainFixture()
       vi.stubEnv('PLATFORM_DATABASE_URL', platformUrl)
       vi.stubEnv('PLATFORM_ASAAS_ENVIRONMENT', 'sandbox')
@@ -1901,8 +1901,9 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
       })
       vi.stubGlobal('fetch', fetch)
       configured = true
-      for (const handle of [legacyCron, apiCron]) {
-        const response = await handle(
+      // Repeating the cron must not repeat provider I/O or create a key/account.
+      for (let invocation = 0; invocation < 2; invocation++) {
+        const response = await apiCron(
           new Request('http://localhost/api/cron/platform', {
             headers: { authorization: 'Bearer synthetic-health-cron' },
           })

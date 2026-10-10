@@ -306,7 +306,7 @@ function routes(table: Record<string, { status: number; body: unknown }>) {
 }
 
 // S13 e onda 135 (A7): o sitemap da locadora lê o catálogo e as categorias públicas; categoria só entra com equipamento
-// disponível, como o app/sitemap.ts da raiz legada.
+// disponível, preservando o comportamento do antigo app/sitemap.ts da raiz, retirado no clone F.
 describe('fetchPublicSitemapCatalog (sitemap, S13 e onda 135)', () => {
   const CATEGORIES = [
     { id: 'cat-1', slug: 'andaimes', updatedAt: '2026-09-01T10:00:00.000Z' },

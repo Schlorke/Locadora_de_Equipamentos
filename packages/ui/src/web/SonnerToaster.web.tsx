@@ -47,7 +47,7 @@ export function Toaster(props: ToasterProps) {
         [data-sonner-toaster] {
           --toaster-top: 120px;
         }
-        /* Admin: usa class adicionada em app/admin/layout.tsx */
+        /* Admin: a classe é montada por AdminLayoutShell.web.tsx do frontend. */
         body.admin-body-layout [data-sonner-toaster] {
           --toaster-top: calc(64px + 16px);
         }
@@ -78,7 +78,9 @@ export function Toaster(props: ToasterProps) {
           info: <InfoIcon className="size-5 text-gray-700" />,
           warning: <TriangleAlertIcon className="size-5 text-orange-700" />,
           error: <OctagonXIcon className="size-5 text-red-700" />,
-          loading: <Loader2Icon className="size-5 animate-spin text-gray-700" />,
+          loading: (
+            <Loader2Icon className="size-5 animate-spin text-gray-700" />
+          ),
         }}
         toastOptions={{
           unstyled: true,
@@ -119,8 +121,7 @@ export function Toaster(props: ToasterProps) {
               'col-start-3 row-start-3 mt-4 inline-flex items-center justify-center gap-2  rounded-md bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-orange-600 shadow-md hover:shadow-sm active:shadow-none active:text-gray-500',
             cancelButton:
               'col-start-2 row-start-3 mt-4 justify-self-end w-auto inline-flex items-center justify-center gap-2 rounded-md bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-orange-600 shadow-md hover:shadow-sm active:shadow-none active:text-gray-500',
-            closeButton:
-              `absolute top-2 right-2 rounded-md p-1 text-gray-500 hover:bg-white/90 ${FOCUS_RING}`,
+            closeButton: `absolute top-2 right-2 rounded-md p-1 text-gray-500 hover:bg-white/90 ${FOCUS_RING}`,
           },
         }}
         style={

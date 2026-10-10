@@ -11,18 +11,18 @@ substituído pelos dados globais de `User`.
 
 ## 2. Scope
 
-- Leitura existente em `GET /api/user/profile`, no legado e no host
-  compartilhado parcial.
-- Atualização em `PUT /api/user/profile`, no legado e no host compartilhado
-  parcial, usando o mesmo serviço de customers.
-- Sem criação implícita, normalização nova, mudança de contrato ou troca da
-  origem usada pelos clientes neste corte.
+- GET/PUT `/api/user/profile` no host API do workspace, usando a implementação
+  única de customers e clientes HTTP escopados web/Expo.
+- O adapter antigo e o serviço parcial coexistiam no corte25; o primeiro foi
+  retirado em F. Essa história não exige a raiz como runtime ou fonte atual.
+- Sem criação implícita, fallback de dados globais ou mudança de contrato.
 
 ## 3. Entry Points
 
 - Tela: `packages/frontend/src/pages/perfil/ui/PerfilPage.web.tsx`.
 - Orçamento: `packages/frontend/src/pages/orcamento/ui/OrcamentoPage.web.tsx`.
-- API legada: `app/api/user/profile/route.ts`.
+- API antiga do corte25: `app/api/user/profile/route.ts`, retirada em F;
+  preservada aqui somente como origem da caracterização.
 - API compartilhada: `apps/services/api/src/app/api/user/profile/route.ts`.
 
 ## 4. Core Flow
@@ -44,7 +44,7 @@ substituído pelos dados globais de `User`.
   leitura, DTO e atualização do perfil.
 - `packages/backend/src/modules/customers/errors.ts`: erros do módulo.
 - `packages/contracts/src/customer-profile.ts`: schema de entrada extraído do
-  adapter legado, sem mudanças de validação; importado pelos dois hosts.
+  adapter antigo, sem mudanças de validação; consumido pelo host API atual.
 - `packages/backend/src/modules/identity/tenant-principal.ts`: contexto RLS.
 - `apps/services/api/src/host/customers.ts`: composição do serviço com o banco
   do processo, sem consulta ou regra de negócio duplicada.
@@ -77,9 +77,9 @@ somente seu próprio perfil na locadora com vínculo ativo.
   para `cpf`, 14 para `cnpj`, demais para nenhum dos dois. Um CPF formatado com
   14 caracteres aparece em `cnpj`; texto alfanumérico com 14 também. Corrigir
   isso exige um corte próprio com compatibilidade e dados caracterizados.
-- PUT em ambos os hosts mantém schema estrito de `phone`, `cpf`, `cnpj`,
-  `company`, validação numérica existente, guard de mesma origem e erro de
-  unicidade. Não aceita mudar nome/email ou identidade por esse contrato.
+- PUT na API mantém schema estrito de `phone`, `cpf`, `cnpj`, `company`,
+  validação numérica existente, guard de mesma origem e erro de unicidade. Não
+  aceita mudar nome/email ou identidade por esse contrato.
 - Os limites do corpo são 30 caracteres para phone, 20 para cpf/cnpj e 200 para
   company, antes da normalização. Chaves extras, nulls e tipos diferentes de
   string são recusados; campos omitidos permanecem intactos.
@@ -116,23 +116,23 @@ modifica a interface ou acessibilidade; dispositivo mobile não foi validado.
 
 ## 10. Tests and Validation
 
-Antes de instalar o adapter, caracterizar o GET legado com
-`tests/unit/customer-profile-read-api.test.ts` e `customers-http.test.ts`.
-Depois, repetir os mesmos casos nos dois adapters e executar `pnpm test:api` com
-`API_HOST_MODE=production`, `API_LEGACY_MODE=production`, primeiro
-`API_AUTH_MODE=legacy`, depois `better-auth`.
+O corte25 caracterizou o GET antigo com
+`tests/unit/customer-profile-read-api.test.ts` e `customers-http.test.ts`, e
+repetiu a matriz nos dois adapters daquela etapa. Essas contagens/história estão
+em [API compartilhada](shared-api-host.md); não são uma nova rodada após F.
 
-Banco somente local descartável, com `TEST_DATABASE_DISPOSABLE=true`. A suite
-usa cookies emitidos pelo login HTTP legado e papel de runtime sem
-bypass/ownership. Verifica DTO, mudanças após login, revogação, falta de perfil,
-falha real de SELECT, isolamento SQL RLS e preservação de PUT no legado. O corte
-25 acrescenta a matriz de PUT nos dois adapters e hosts: quatro papéis de
-vínculo, transportes de seleção, CSRF, schema estrito, limites, normalização,
-falta de perfil, unicidade por locadora, duas identidades, concorrência entre
-hosts, rollback por trigger e falha de permissão SQL. `global-setup.ts` concede
-SELECT/UPDATE de client_profiles somente ao papel descartável da suite, sem
-ownership ou bypass; nenhum grant de produção muda. Resultados do corte:
-[API compartilhada](shared-api-host.md).
+Hoje os unitários leem os adapters da API canônica. Para HTTP real, use
+`pnpm test:api` com `API_HOST_MODE=production`, `API_LEGACY_MODE=absent` e os
+modos `API_AUTH_MODE=legacy`/`better-auth` em rodadas separadas. Banco somente
+descartável (`TEST_DATABASE_DISPOSABLE=true`), com cookies emitidos pelo motor
+real e papel sem ownership/bypass. Não restaure a raiz nem use produção para
+executar a caracterização.
+
+A matriz de GET/PUT preserva DTO, quatro papéis de vínculo, revogação, falta de
+perfil, schema/limites, CSRF, normalização, documentos únicos por tenant,
+concorrência, rollback e falha de permissão SQL. O setup concede SELECT/UPDATE
+somente ao papel descartável; nenhum grant real muda. A dívida de classificação
+do documento por comprimento permanece exatamente como descrita na seção7.
 
 ## 11. Related Docs
 
@@ -151,7 +151,7 @@ ownership ou bypass; nenhum grant de produção muda. Resultados do corte:
 - 2026-10-02: PUT montado no serviço parcial. Schema legado movido para
   contracts e consumido pelos dois adapters; normalização, DTO, transação e
   UPDATE continuam na implementação existente de customers. Clientes e endpoint
-  legado ativos.
+  legado estavam ativos naquele corte, antes da retirada F.
 
 ## Consumidor do orçamento conectado (onda 62)
 

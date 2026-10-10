@@ -1,3 +1,33 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return (legacyPrisma.module = (await (async () => {
+    // Identity windows live in platform_rate_limits: an in-memory stand-in,
+    // kept for the whole file like the tables of a real database.
+    const { createPlatformRateLimitTable } =
+      await import('../helpers/platform-rate-limit-table')
+    return {
+      prisma: {
+        user: {
+          findMany: mocks.userFindMany,
+          findUnique: mocks.userFindUnique,
+          create: mocks.userCreate,
+          update: mocks.userUpdate,
+        },
+        verificationToken: {
+          findUnique: mocks.tokenFind,
+          create: mocks.tokenCreate,
+          deleteMany: mocks.tokenDeleteMany,
+        },
+        platformRateLimit: createPlatformRateLimitTable().platformRateLimit,
+        $transaction: mocks.transaction,
+      },
+    }
+  })()) as { prisma: unknown })
+}
 import { createHash } from 'node:crypto'
 import { Prisma } from '@prisma/client'
 import { NextRequest } from 'next/server'
@@ -13,7 +43,7 @@ import {
 } from 'vitest'
 
 const mocks = vi.hoisted(() => {
-  // lib/auth reads the secret when the module is evaluated.
+  // The API host's session composition reads the secret when the module is evaluated.
   process.env.NEXTAUTH_SECRET = 'fixture-nextauth-secret-for-security-tests'
   return {
     userFindMany: vi.fn(),
@@ -30,7 +60,7 @@ const mocks = vi.hoisted(() => {
     compareRounds: [] as number[],
   }
 })
-// O módulo `@/lib/prisma` que a fábrica abaixo monta: o serviço lê o mesmo cliente (real ou simulado) pelo runtime.
+// A fábrica abaixo monta o cliente (real ou simulado) que o serviço lê pelo runtime do backend.
 const serviceDatabase = vi.hoisted(() => ({
   prisma: undefined as unknown,
   table: (() => {
@@ -40,45 +70,7 @@ const serviceDatabase = vi.hoisted(() => ({
 const legacyPrisma = vi.hoisted(() => ({
   module: undefined as undefined | { prisma: unknown },
 }))
-vi.mock(
-  '@/lib/prisma',
-  async () =>
-    (legacyPrisma.module = (await (async () => {
-      // Identity windows live in platform_rate_limits: an in-memory stand-in,
-      // kept for the whole file like the tables of a real database.
-      const { createPlatformRateLimitTable } =
-        await import('../helpers/platform-rate-limit-table')
-      return {
-        prisma: {
-          user: {
-            findMany: mocks.userFindMany,
-            findUnique: mocks.userFindUnique,
-            create: mocks.userCreate,
-            update: mocks.userUpdate,
-          },
-          verificationToken: {
-            findUnique: mocks.tokenFind,
-            create: mocks.tokenCreate,
-            deleteMany: mocks.tokenDeleteMany,
-          },
-          platformRateLimit: createPlatformRateLimitTable().platformRateLimit,
-          $transaction: mocks.transaction,
-        },
-      }
-    })()) as { prisma: unknown })
-)
-vi.mock('@/lib/resend', () => ({
-  default: () => ({ emails: { send: mocks.send } }),
-}))
-vi.mock('@/lib/identity', async () => {
-  const config =
-    await import('../../packages/backend/src/modules/identity/configuration')
-  return {
-    ...config,
-    getIdentity: vi.fn(),
-    handleIdentityRequest: vi.fn(),
-  }
-})
+
 vi.mock('next/server', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next/server')>()),
   after: mocks.after,
@@ -110,25 +102,37 @@ import bcrypt from 'bcryptjs'
 import { getServerSession, type User } from 'next-auth'
 import { encode, type JWT } from 'next-auth/jwt'
 import type { CredentialsConfig } from 'next-auth/providers/credentials'
-import { authOptions as legacyAuthOptions } from '@/lib/auth'
+
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
-// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  // O serviço tem as próprias janelas de limite (como numa execução à parte) sobre os mesmos dublês de usuário e token.
-  getDatabaseRuntime: () => ({
-    prisma: (serviceDatabase.prisma ??= {
-      ...(legacyPrisma.module?.prisma as object),
-      platformRateLimit: serviceDatabase.table().platformRateLimit,
+// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade da raiz foi retirada no bloco F.
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    // O serviço tem as próprias janelas de limite (como numa execução à parte) sobre os mesmos dublês de usuário e token.
+    getDatabaseRuntime: () => ({
+      prisma: (serviceDatabase.prisma ??= {
+        ...(legacyPrisma.module?.prisma as object),
+        platformRateLimit: serviceDatabase.table().platformRateLimit,
+      }),
     }),
-  }),
-  ...(await (async () => {
-    const F = await (() => ({
-      default: () => ({ emails: { send: mocks.send } }),
-    }))()
-    return { createResendClient: () => F.default() }
-  })()),
-}))
+    ...(await (async () => {
+      const F = await (() => ({
+        default: () => ({ emails: { send: mocks.send } }),
+      }))()
+      return { createResendClient: () => F.default() }
+    })()),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 vi.mock('@gb-locacoes/backend/identity', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@gb-locacoes/backend/identity')>()),
   ...(await (async () => {
@@ -152,23 +156,14 @@ vi.mock('@gb-locacoes/backend/identity', async (importOriginal) => ({
 import * as serviceSession from '../../apps/services/api/src/host/session'
 import { createPlatformRateLimitTable } from '../helpers/platform-rate-limit-table'
 serviceDatabase.table = createPlatformRateLimitTable
-import * as legacyRoute0 from '@/app/api/auth/forgot-password/route'
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/auth/forgot-password/route'
-import * as legacyRoute1 from '@/app/api/auth/reset-password/route'
+
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/auth/reset-password/route'
-import * as legacyRoute2 from '@/app/api/auth/register/route'
+
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/auth/register/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      authOptions: legacyAuthOptions,
-      forgotPassword: legacyRoute0.POST,
-      resetPassword: legacyRoute1.POST,
-      register: legacyRoute2.POST,
-    },
-  ],
   [
     'service',
     {

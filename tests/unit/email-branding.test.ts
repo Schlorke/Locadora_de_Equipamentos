@@ -1,11 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-vi.mock('@/lib/tenant', () => ({ withTenantTransaction: vi.fn() }))
 import {
   normalizeEmailBranding,
   emailAssetUrl,
   type EmailBranding,
 } from '../../packages/backend/src/modules/communications/tenant-branding'
-import * as legacyTemplates from '@/lib/email-templates'
 // Contraparte da API compartilhada (onda 135, B5): o serviço usa os geradores direto do backend.
 import {
   generateBoletoEmailHTML as serviceBoleto,
@@ -13,9 +11,8 @@ import {
   generateQuoteEmailHTML as serviceQuote,
   generateQuoteStatusChangeEmailHTML as serviceQuoteStatus,
   generateCustomerQuoteConfirmationEmailHTML as serviceConfirmation,
-} from '@gb-locacoes/backend/communications'
+} from '../../packages/backend/src/modules/communications/email-templates'
 const TEMPLATE_HOSTS = [
-  ['legacy root', legacyTemplates],
   [
     'service',
     {

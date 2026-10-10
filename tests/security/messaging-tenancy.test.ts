@@ -1,3 +1,11 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return { prisma: {} }
+}
 import { NextRequest } from 'next/server'
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
 const mocks = vi.hoisted(() => {
@@ -28,53 +36,52 @@ const mocks = vi.hoisted(() => {
     tenantId: 'tenant-A',
   }
 })
-vi.mock('@/lib/tenant', () => ({
-  withTenantTransaction: async (
-    context: unknown,
-    fn: (_tx: unknown) => Promise<unknown>
-  ) => {
-    mocks.context(context)
-    return fn(mocks.tx)
-  },
-}))
-vi.mock('@/lib/prisma', () => ({ prisma: {} }))
-vi.mock('@/lib/security/tenant-webhook', () => ({
-  resolveIntegrationCredential: mocks.credential,
-}))
-vi.mock('@/middlewares/require-admin', () => ({
-  requireAdminOrOperator: async () => ({
-    success: true,
-    user: { id: 'user-A' },
-    tenantId: mocks.tenantId,
-    principal: {
-      tenantId: mocks.tenantId,
-      userId: 'user-A',
-      membershipId: 'membership-A',
-      role: 'ADMIN',
-    },
-  }),
-}))
+
 vi.mock('next/headers', () => ({
   cookies: async () => ({
     get: () => ({ value: mocks.cookie }),
     delete: vi.fn(),
   }),
 }))
-vi.mock('@/lib/zoho-mail/client', () => ({
-  refreshAccessToken: mocks.refresh,
-  exchangeCodeForTokens: mocks.exchange,
-  makeZohoMailRequest: mocks.mail,
-  isZohoOAuthConfigured: () => true,
-  getZohoOAuthUrl: () => 'https://accounts.zoho.com/auth',
-}))
-import { getZohoAccessToken } from '@/lib/zoho-mail/get-access-token'
-import { sendTextMessage } from '@/lib/meta-whatsapp'
+
+import {
+  createZohoMailClient,
+  createZohoMailConfiguration,
+  createZohoMailTokenReader,
+} from '@gb-locacoes/backend/communications'
+import { withTenantTransaction as zohoTenantTransaction } from '../../apps/services/api/src/host/tenant-transaction'
+const { refreshAccessToken: zohoRefresh } = createZohoMailClient()
+const { getZohoMailBaseUrl } = createZohoMailConfiguration(process.env)
+const { getZohoAccessToken } = createZohoMailTokenReader({
+  withTenantTransaction: zohoTenantTransaction,
+  refreshAccessToken: zohoRefresh,
+  getZohoMailBaseUrl,
+})
+import { createWhatsAppClient } from '@gb-locacoes/backend/communications'
+import { withTenantTransaction as whatsappTenantTransaction } from '../../apps/services/api/src/host/tenant-transaction'
+import { resolveIntegrationCredential as whatsappCredential } from '../../apps/services/api/src/host/webhook-authentication'
+const { sendTextMessage } = createWhatsAppClient({
+  withTenantTransaction: whatsappTenantTransaction,
+  resolveIntegrationCredential: whatsappCredential,
+})
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: {} }),
-}))
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({ prisma: {} }),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 vi.mock(
   '../../apps/services/api/src/host/private-identity',
   async (importOriginal) => {
@@ -210,19 +217,12 @@ vi.mock(
     }))()),
   })
 )
-import * as legacyRoute0 from '@/app/api/admin/zoho-mail/oauth/callback/route'
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/admin/zoho-mail/oauth/callback/route'
-import * as legacyRoute1 from '@/app/api/admin/zoho-mail/oauth/disconnect/route'
+
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/admin/zoho-mail/oauth/disconnect/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      callback: legacyRoute0.GET,
-      disconnect: legacyRoute1.DELETE,
-    },
-  ],
   [
     'service',
     {

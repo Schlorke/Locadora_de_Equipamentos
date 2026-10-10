@@ -1,3 +1,11 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return { prisma: {} }
+}
 import { NextRequest } from 'next/server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import sharp from 'sharp'
@@ -48,78 +56,79 @@ const mocks = vi.hoisted(() => {
     scope: vi.fn(),
   }
 })
-vi.mock('@/lib/tenant', () => ({
-  resolveTenantPrincipal: async () =>
-    mocks.anonymous
-      ? { ok: false, response: Response.json({}, { status: 401 }) }
-      : { ok: true, principal: mocks.principal },
-  withTenantTransaction: async (
-    context: unknown,
-    operation: (_tx: unknown) => unknown
-  ) => {
-    mocks.scope(context)
-    return operation(mocks.tx)
-  },
-}))
-vi.mock('@/lib/prisma', () => ({ prisma: {} }))
-vi.mock('@/lib/supabase-admin', () => ({
-  supabaseAdmin: {
-    storage: { from: () => mocks.bucket, getBucket: mocks.bucket.getBucket },
-  },
-}))
-vi.mock('@/lib/security/tenant-webhook', () => ({
-  resolveIntegrationCredential: mocks.credential,
-}))
-vi.mock('@/lib/zapsign', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/lib/zapsign')>()),
-  createZapSignDocument: mocks.createProvider,
-  getZapSignDocument: mocks.getProvider,
-}))
 
 import {
-  runContractSignatureEffect,
-  runContractSignedArchiveEffect,
-} from '@/lib/contract-signature-effects'
+  createContractSignatureEffects,
+  createZapSignDocument,
+  getZapSignDocument,
+} from '@gb-locacoes/backend/documents'
+import { createSupabaseDocumentStorage } from '@gb-locacoes/backend/runtime'
+import { withTenantTransaction as signatureTenantTransaction } from '../../apps/services/api/src/host/tenant-transaction'
+import { resolveIntegrationCredential as signatureCredential } from '../../apps/services/api/src/host/webhook-authentication'
+const { getPrivateDocumentStorage: signatureStorage } =
+  createSupabaseDocumentStorage()
+const { runContractSignatureEffect, runContractSignedArchiveEffect } =
+  createContractSignatureEffects({
+    withTenantTransaction: signatureTenantTransaction,
+    resolveIntegrationCredential: signatureCredential,
+    provider: {
+      createDocument: createZapSignDocument,
+      getDocument: getZapSignDocument,
+    },
+    getPrivateDocumentStorage: signatureStorage,
+  })
 import { ZapSignRequestError } from '../../packages/backend/src/modules/documents/zapsign'
 import { generateContractHTML } from '../../packages/backend/src/modules/documents/contract-rendering'
-import { isOwnedDocumentPath } from '@/lib/security/private-documents'
+import { isOwnedDocumentPath } from '@gb-locacoes/backend/documents'
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: {} }),
-  ...(await (async () => {
-    const F = await (() => ({
-      supabaseAdmin: {
-        storage: {
-          from: () => mocks.bucket,
-          getBucket: mocks.bucket.getBucket,
-        },
-      },
-    }))()
-    return {
-      createSupabaseDocumentStorage: () => {
-        let storage:
-          { getPrivateDocumentStorage(): Promise<unknown> } | undefined
-        return {
-          async getPrivateDocumentStorage() {
-            const { createPrivateDocumentStorage } =
-              await import('@gb-locacoes/backend/documents')
-            storage ??= createPrivateDocumentStorage({
-              getClient: async () => F.supabaseAdmin as never,
-            }) as never
-            return storage!.getPrivateDocumentStorage()
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({ prisma: {} }),
+    ...(await (async () => {
+      const F = await (() => ({
+        supabaseAdmin: {
+          storage: {
+            from: () => mocks.bucket,
+            getBucket: mocks.bucket.getBucket,
           },
-        }
-      },
-      createSupabaseImageStorage: () => ({
-        async getImageStorage() {
-          return F.supabaseAdmin.storage.from('gb-locacoes-images')
         },
-      }),
-    }
-  })()),
-}))
+      }))()
+      return {
+        createSupabaseDocumentStorage: () => {
+          let storage:
+            { getPrivateDocumentStorage(): Promise<unknown> } | undefined
+          return {
+            async getPrivateDocumentStorage() {
+              const { createPrivateDocumentStorage } =
+                await import('../../packages/backend/src/modules/documents/private-documents')
+              storage ??= createPrivateDocumentStorage({
+                getClient: async () => F.supabaseAdmin as never,
+              }) as never
+              return storage!.getPrivateDocumentStorage()
+            },
+          }
+        },
+        createSupabaseImageStorage: () => ({
+          async getImageStorage() {
+            return F.supabaseAdmin.storage.from('gb-locacoes-images')
+          },
+        }),
+      }
+    })()),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 vi.mock('@gb-locacoes/backend/documents', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@gb-locacoes/backend/documents')>()),
   ...(await (async () => {
@@ -186,31 +195,20 @@ vi.mock(
     }))()),
   })
 )
-import * as legacyRoute0 from '@/app/api/upload/route'
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/upload/route'
-import * as legacyRoute1 from '@/app/api/admin/clients/[id]/documents/route'
+
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/admin/clients/[id]/documents/route'
-import * as legacyRoute2 from '@/app/api/admin/rentals/[id]/client-documents/route'
+
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/admin/rentals/[id]/client-documents/route'
-import * as legacyRoute3 from '@/app/api/contracts/generate/route'
+
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/contracts/generate/route'
-import * as legacyRoute4 from '@/app/api/contracts/sign/route'
+
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/contracts/sign/route'
-import * as legacyRoute5 from '@/app/api/contracts/[rentalId]/download/route'
+
 import * as serviceRoute5 from '../../apps/services/api/src/app/api/contracts/[rentalId]/download/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      uploadImage: legacyRoute0.POST,
-      listDocuments: legacyRoute1.GET,
-      uploadDocument: legacyRoute2.POST,
-      generate: legacyRoute3.POST,
-      sign: legacyRoute4.POST,
-      download: legacyRoute5.GET,
-    },
-  ],
   [
     'service',
     {

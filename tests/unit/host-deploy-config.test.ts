@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 
 /**
  * Publicação dos hosts novos (onda 135, Lote C: C1 e Bloco K; docs/operations/runbook-corte-raiz-legada.md).
+ * O antigo vercel.json da raiz foi retirado em F; os arquivos exercitados são apps/clients/web/vercel.json e apps/services/api/vercel.json.
  * - Cada host tem o seu `vercel.json` mínimo (Root Directory = pasta do host) e declara o Node do workspace em
  *   `engines`: a Vercel usa o `engines.node` do package.json do Root Directory acima da versão do painel.
  * - A agenda da Vercel fica só no projeto da API (uma autoridade); o web nunca agenda nem recebe cron

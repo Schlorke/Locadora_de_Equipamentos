@@ -8,20 +8,6 @@ const state = vi.hoisted(() => ({
     notification: { count: vi.fn(), groupBy: vi.fn() },
   },
 }))
-vi.mock('@/lib/tenant', async () => {
-  const { withTenantTransaction } =
-    await import('@gb-locacoes/backend/identity')
-  return {
-    resolveTenantPrincipal: state.principal,
-    withTenantTransaction: (context: { tenantId: string }, operation: never) =>
-      withTenantTransaction(
-        { $transaction: state.transaction } as never,
-        context,
-        operation
-      ),
-  }
-})
-import { GET as legacy } from '@/app/api/client/notifications/stats/route'
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: state.principal,
 }))
@@ -64,10 +50,7 @@ beforeEach(() => {
   )
 })
 
-describe.each([
-  ['legacy', legacy],
-  ['service', service],
-] as const)(
+describe.each([['service', service]] as const)(
   '%s client notification stats GET characterization',
   (_host, GET) => {
     const request = (query = '') =>

@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { NextRequest } from 'next/server'
-import * as legacyLimiters from '@/lib/rate-limit'
 // Contraparte da API compartilhada (onda 135, B5): o mesmo par de limitadores na composição do serviço.
 import * as serviceLimiters from '../../apps/services/api/src/host/rate-limit'
 import { createMemoryRateLimiters } from '@gb-locacoes/backend/http'
@@ -157,10 +156,7 @@ describe.each(
 })
 
 // The legacy facade and the service composition retain only names actually used by active routes.
-describe.each([
-  ['legacy root', legacyLimiters],
-  ['service', serviceLimiters],
-] as const)(
+describe.each([['service', serviceLimiters]] as const)(
   '%s memory limiter facade',
   (_host, { adminApiRateLimit, strictRateLimit, checkRateLimit }) => {
     afterEach(() => {

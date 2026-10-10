@@ -373,7 +373,7 @@ describe('.github/workflows/ci.yml', () => {
     // The job body: from its key under `jobs:` to the next job key (two-space indentation).
     const job = /^ {2}api-docker:\n((?:(?: {3,}.*)?\n)+)/m.exec(workflow)?.[1]
     expect(job, 'jobs.api-docker').toBeDefined()
-    // Workspace root as the build context (the Dockerfile copies the whole workspace and builds the API filter).
+    // Workspace root as the build context: apps/services/api/Dockerfile copies the workspace and builds the API filter.
     expect(job).toMatch(
       /docker build --file apps\/services\/api\/Dockerfile --tag gb-locacoes-api:ci \.\n/
     )
@@ -393,8 +393,53 @@ describe('.github/workflows/ci.yml', () => {
     )
     expect(dockerfile).toMatch(/^USER node$/m)
     expect(dockerfile).toMatch(/^EXPOSE 3002$/m)
-    // The root image job stays until the root is retired (plano da onda 135, Bloco F).
-    expect(workflow).toMatch(/^ {2}docker:\n/m)
+    // Bloco F: only the API image remains after the legacy root is retired.
+    expect(workflow).not.toMatch(/^ {2}docker:\n/m)
+  })
+
+  it('keeps production service-only HTTP coverage in both auth engines with the disposable RLS database', () => {
+    const job = /^ {2}tests:\n((?:(?: {3,}.*)?\n)+)/m.exec(workflow)?.[1]
+    expect(job, 'jobs.tests').toBeDefined()
+    const profiles = [
+      ...job!.matchAll(
+        /^ {8}run: pnpm test:api\n {8}env:\n((?: {10}\S.*\n)+)/gm
+      ),
+    ].map((match) => {
+      const environment = Object.fromEntries(
+        [...match[1]!.matchAll(/^ {10}([A-Z_]+): (.+)$/gm)].map((entry) => [
+          entry[1]!,
+          entry[2]!.trim(),
+        ])
+      )
+      return {
+        host: environment.API_HOST_MODE,
+        legacy: environment.API_LEGACY_MODE,
+        auth: environment.API_AUTH_MODE,
+      }
+    })
+    expect(profiles).toEqual([
+      { host: 'production', legacy: 'absent', auth: 'legacy' },
+      { host: 'production', legacy: 'absent', auth: 'better-auth' },
+    ])
+    expect(job).toMatch(/^ {6}TEST_DATABASE_DISPOSABLE: 'true'$/m)
+    expect(job).toMatch(/^ {8}run: pnpm exec prisma migrate deploy$/m)
+    expect(job).not.toMatch(/\bprisma (?:db push|migrate reset)\b/)
+  })
+
+  it('builds the API and destination web hosts and bundles both native targets without a root Next build', () => {
+    const job = /^ {2}builds:\n((?:(?: {3,}.*)?\n)+)/m.exec(workflow)?.[1]
+    expect(job, 'jobs.builds').toBeDefined()
+    const builds = [...job!.matchAll(/^ {8}run: (pnpm [^\n]+)$/gm)].map(
+      (match) => match[1]!
+    )
+    expect(builds).toEqual([
+      'pnpm build:api',
+      'pnpm build:web',
+      'pnpm bundle:mobile',
+    ])
+    expect(workflow).not.toMatch(
+      /^\s+(?:(?:- )?run: )?(?:pnpm (?:build(?::root)?|exec next build)|(?:pnpm )?next build)(?:\s|$)/m
+    )
   })
 
   it('runs every dedicated vitest suite of package.json', () => {

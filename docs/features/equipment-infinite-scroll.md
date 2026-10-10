@@ -282,7 +282,7 @@ equipamentos, otimize imagens com Next/Image
   evitar reflow por frame
 - ✅ **Listas memoizadas**: Duplica arrays e cards com memo para reduzir renders
 
-### **Métricas Esperadas**
+### **Métricas Esperadas (metas, não medições desta revisão)**
 
 - **FPS**: 60fps constante
 - **CPU**: < 5% em desktop moderno
@@ -293,8 +293,16 @@ equipamentos, otimize imagens com Next/Image
 
 - **Componente**:
   `packages/frontend/src/widgets/home-cliente/ui/ScrollInfinito.web.tsx`
-- **Página Demo**: `app/equipamentos-scroll/page.tsx`
-- **API Endpoint**: `app/api/equipments/route.ts`
+- **Página Demo**:
+  `apps/clients/web/src/app/(labs)/equipamentos-scroll/page.tsx`, consumindo
+  `packages/frontend/src/pages/equipamentos-scroll/ui/EquipamentosScrollPage.web.tsx`.
+- **API Endpoint**: `apps/services/api/src/app/api/equipments/route.ts`,
+  composto pelo catálogo público em `host/runtime.ts`.
+- **Limite atual da demo**: `ScrollInfinito.web.tsx` faz
+  `fetch("/api/equipments")` sem enviar `tenantSlug`. A API exige contexto de
+  locadora e responde 409 quando ele está ausente; a existência da rota de
+  laboratório não garante cards carregados. Não inserir locadora padrão nem
+  tomar dados mock como prova desse fluxo.
 - **Types**: Definidos inline no componente
 
 ## 📝 Melhorias Futuras

@@ -1,3 +1,11 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return { prisma: mocks.prisma }
+}
 import { createHmac } from 'node:crypto'
 import { NextRequest } from 'next/server'
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
@@ -39,69 +47,40 @@ const mocks = vi.hoisted(() => {
     send: vi.fn(),
   }
 })
-vi.mock('@/lib/security/webhook-inbox', () => ({
-  runWebhookInboxEffect: vi.fn(),
-  acceptTenantWebhook: (
-    event: unknown,
-    consume: (_event: unknown) => Promise<Response>
-  ) => consume(event),
-}))
-vi.mock('@/lib/prisma', () => ({ prisma: mocks.prisma }))
-vi.mock('@/lib/tenant', () => ({
-  withTenantTransaction: (
-    _context: unknown,
-    operation: (_tx: unknown) => unknown
-  ) => operation(mocks.prisma),
-}))
-vi.mock('@/lib/security/tenant-boleto-verification', () => ({
-  verifyTenantBoleto: mocks.verify,
-}))
-vi.mock('@/lib/payment-processor', () => ({
-  processPayment: mocks.processPayment,
-}))
-vi.mock('@/lib/quote-payment-conversion', () => ({
-  convertPaidQuotePayment: mocks.convert,
-  autoConvertApprovedQuotes: vi.fn(),
-}))
-vi.mock('@/lib/quote-validity', () => ({ checkAndExpireQuotes: mocks.expire }))
-vi.mock('@/lib/late-fee-calculator', () => ({
-  calculateAndApplyLateFees: mocks.lateFees,
-}))
-vi.mock('@/lib/google-merchant', () => ({
-  googleMerchantSync: { syncAllEquipments: mocks.sync },
-}))
-vi.mock('@/lib/resend', () => ({
-  default: () => ({ emails: { send: mocks.send } }),
-}))
-vi.mock('@/lib/email-templates', () => ({
-  generateQuoteStatusChangeEmailHTML: vi.fn(() => ''),
-  generateQuoteEmailHTML: vi.fn(() => ''),
-  generateContactEmailHTML: vi.fn(() => ''),
-  generateCustomerQuoteConfirmationEmailHTML: vi.fn(() => ''),
-  generateBoletoEmailHTML: vi.fn(() => ''),
-}))
 
-import * as seed from '@/app/api/admin/seed-admin/route'
-import * as login from '@/app/api/test-login/route'
-import * as storage from '@/app/api/fix-storage/route'
-import * as setup from '@/app/api/supabase-setup/route'
+import * as seed from '../../apps/services/api/src/app/api/admin/seed-admin/route'
+import * as login from '../../apps/services/api/src/app/api/test-login/route'
+import * as storage from '../../apps/services/api/src/app/api/fix-storage/route'
+import * as setup from '../../apps/services/api/src/app/api/supabase-setup/route'
 import {
   mapAsaasStatus,
   parseAsaasWebhook,
 } from '../../packages/backend/src/modules/billing/asaas-events'
-import { runTenantCron } from '@/lib/security/tenant-cron'
+import { runTenantCron } from '../../apps/services/api/src/host/tenant-cron'
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: mocks.prisma }),
-  ...(await (async () => {
-    const F = await (() => ({
-      default: () => ({ emails: { send: mocks.send } }),
-    }))()
-    return { createResendClient: () => F.default() }
-  })()),
-}))
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({ prisma: mocks.prisma }),
+    ...(await (async () => {
+      const F = await (() => ({
+        default: () => ({ emails: { send: mocks.send } }),
+      }))()
+      return { createResendClient: () => F.default() }
+    })()),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 vi.mock(
   '../../apps/services/api/src/host/payment-webhooks',
   async (importOriginal) => ({
@@ -159,53 +138,34 @@ vi.mock('@gb-locacoes/backend/billing', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@gb-locacoes/backend/billing')>()),
   createPaymentProcessor: () => ({ processPayment: mocks.processPayment }),
 }))
-import * as legacyRoute0 from '@/app/api/payments/pix/webhook/[integrationId]/route'
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/payments/pix/webhook/[integrationId]/route'
-import * as legacyRoute1 from '@/app/api/payments/boleto/webhook/[integrationId]/route'
+
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/payments/boleto/webhook/[integrationId]/route'
-import * as legacyRoute2 from '@/app/api/contracts/zapsign-webhook/[integrationId]/route'
+
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/contracts/zapsign-webhook/[integrationId]/route'
-import * as legacyRoute3 from '@/app/api/webhooks/whatsapp/[integrationId]/route'
+
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/webhooks/whatsapp/[integrationId]/route'
-import * as legacyRoute4 from '@/app/api/cron/auto-convert-quotes/route'
+
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/cron/auto-convert-quotes/route'
-import * as legacyRoute5 from '@/app/api/cron/boleto-overdue-alerts/route'
+
 import * as serviceRoute5 from '../../apps/services/api/src/app/api/cron/boleto-overdue-alerts/route'
-import * as legacyRoute6 from '@/app/api/cron/expire-quotes/route'
+
 import * as serviceRoute6 from '../../apps/services/api/src/app/api/cron/expire-quotes/route'
-import * as legacyRoute7 from '@/app/api/cron/late-fees/route'
+
 import * as serviceRoute7 from '../../apps/services/api/src/app/api/cron/late-fees/route'
-import * as legacyRoute8 from '@/app/api/cron/preventive-maintenance/route'
+
 import * as serviceRoute8 from '../../apps/services/api/src/app/api/cron/preventive-maintenance/route'
-import * as legacyRoute9 from '@/app/api/cron/send-notifications/route'
+
 import * as serviceRoute9 from '../../apps/services/api/src/app/api/cron/send-notifications/route'
-import * as legacyRoute10 from '@/app/api/cron/sync-google-merchant/route'
+
 import * as serviceRoute10 from '../../apps/services/api/src/app/api/cron/sync-google-merchant/route'
-import * as legacyRoute11 from '@/app/api/cron/verify-boleto-payments/route'
+
 import * as serviceRoute11 from '../../apps/services/api/src/app/api/cron/verify-boleto-payments/route'
-import * as legacyRoute12 from '@/app/api/cron/outbox/route'
+
 import * as serviceRoute12 from '../../apps/services/api/src/app/api/cron/outbox/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      pixHandler: legacyRoute0.POST,
-      boletoHandler: legacyRoute1.POST,
-      zapsignHandler: legacyRoute2.POST,
-      whatsappHandler: legacyRoute3.POST,
-      handshakeHandler: legacyRoute3.GET,
-      autoConvert: legacyRoute4.GET,
-      alerts: legacyRoute5.GET,
-      expire: legacyRoute6.GET,
-      lateFees: legacyRoute7.GET,
-      maintenance: legacyRoute8.GET,
-      notifications: legacyRoute9.GET,
-      merchant: legacyRoute10.GET,
-      verifyBoletos: legacyRoute11.GET,
-      outbox: legacyRoute12.GET,
-    },
-  ],
   [
     'service',
     {

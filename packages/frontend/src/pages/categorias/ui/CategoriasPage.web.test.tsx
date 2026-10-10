@@ -36,18 +36,7 @@ describe('Listagem admin de categorias', () => {
     )
     expect(mapa).toContain('export const CATEGORY_PAGE_SIZE = 9')
 
-    const route = readFileSync(
-      new URL(
-        '../../../../../../app/admin/categorias/page.tsx',
-        import.meta.url
-      ),
-      'utf8'
-    )
-    expect(route).toContain("from '@gb-locacoes/frontend/pages/categorias'")
-    expect(route).toContain('return <AdminCategoriesPage />')
-    expect(route).not.toContain('useCategoriesData')
-    expect(route).not.toContain('Gerenciar Categorias')
-    // Onda 135 (A8): a mesma página no host web; a asserção sobre a raiz sai no bloco F.
+    // A rota do host web mantém a composição compartilhada.
     const webRoute = readFileSync(
       new URL(
         '../../../../../../apps/clients/web/src/app/(admin)/admin/categorias/page.tsx',
@@ -59,8 +48,11 @@ describe('Listagem admin de categorias', () => {
       /from\s+["']@gb-locacoes\/frontend\/pages\/categorias["']/
     )
     expect(webRoute).toContain('return <AdminCategoriesPage />')
+    expect(webRoute).not.toContain('useCategoriesData')
+    expect(webRoute).not.toContain('Gerenciar Categorias')
     // Onda 135 (A6): o carregamento da rota no host web. A raiz legada desenhava o mesmo spinner da listagem de
-    // orçamentos (app/admin/categorias/loading.tsx tem a marcação de AdminQuotesLoading; CarregandoLista.rotas.test.tsx).
+    // orçamentos (o antigo app/admin/categorias/loading.tsx, retirado em F, tinha a marcação de AdminQuotesLoading;
+    // CarregandoLista.rotas.test.tsx preserva essa caracterização).
     const webLoading = readFileSync(
       new URL(
         '../../../../../../apps/clients/web/src/app/(admin)/admin/categorias/loading.tsx',

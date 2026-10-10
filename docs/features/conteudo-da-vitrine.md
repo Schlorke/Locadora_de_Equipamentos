@@ -58,8 +58,9 @@ textos e aceite registrado no orçamento (D-F); frete por locadora (P-1).
   links legais publicados) e JSON-LD (FAQ e serviço de andaimes só com a
   certificação declarada).
 - Páginas legais web e app pelo documento da locadora: no host web o documento é
-  lido no servidor (404 sem documento); na raiz legada e no app, pelo hook.
-  Orçamento: aceite dos Termos só com os Termos publicados (D-C, parte 1).
+  lido no servidor (404 sem documento); no Expo, pelo hook. Na onda134 a raiz
+  antiga também usava o hook; esse adapter foi retirado em F. Orçamento: aceite
+  dos Termos só com os Termos publicados (D-C, parte 1).
 - Pausa (S13): `/termos`, `/privacidade`, `/politica-devolucao` e `/cookies`
   continuam no ar (200, `noindex`, `no-store`), na moldura neutra da locadora,
   com os links dos documentos publicados; `sitemap.xml` só com as legais
@@ -77,8 +78,8 @@ textos e aceite registrado no orçamento (D-F); frete por locadora (P-1).
 - Frete por locadora (P-1), versões dos textos e aceite no orçamento (D-F),
   exigir Termos e Privacidade para publicar sites novos (D-C, parte 2): lotes
   próprios.
-- Captura visual da Sobre no harness (limite aceito): o host web importa o
-  `Equipment3DCarousel` direto, sem `next/dynamic`
+- Limitação histórica da captura de Sobre na onda134 (não prova nova após F): o
+  host web importa o `Equipment3DCarousel` direto, sem `next/dynamic`
   (`apps/clients/web/src/app/(public)/[locadora]/(vitrine)/sobre/page.tsx`), e o
   harness nunca responde os chunks de three.js, então o `load` não dispara. O
   carrossel não é alterado (componente crítico, `AGENTS.md` §5.1). A prova da
@@ -86,20 +87,23 @@ textos e aceite registrado no orçamento (D-F); frete por locadora (P-1).
   (`tests/unit/__fixtures__/vitrine-gb/sobre.markup.html`, igual byte a byte em
   `tests/unit/gb-site-content.textos.test.tsx`): textos, elementos e classes,
   sem o estilo computado nem o carrossel (trocado por `null` na prova).
-- Regravar a linha de base de `painel/configuracoes` (limite aceito): ela foi
-  gravada sem a moldura administrativa que o host web passou a montar (entrada
-  295 de `docs/issues/known-issues.md`, outro lote) e já diverge por ela. Os
-  quatro estados novos (`secao-horario`, `secao-conteudo`, `secao-compromissos`
-  e `secao-textos-legais`, a 390 e a 1440) entram em
-  `tests/visual/approved-changes.json`, com o motivo B10, como capturas inteiras
-  aprovadas (`element` e `property` `*`, de "captura ausente" para "captura
-  presente"). Como a linha de base não tem esses estados, o comparador
-  (`tools/visual-baseline/compare.mjs`) registra uma só diferença por estado e
-  não compara nenhum elemento dele: o conteúdo das quatro seções fica sem
-  referência visual, e uma mudança dentro delas passa no gate até o painel ser
-  regravado e essas aprovações saírem. Por elemento entram só as diferenças dos
-  estados que já existiam (`base`, `toast-salvo`, `foco-teclado-telefone` e
-  `secao-redes-sociais`), vindas dos botões novos da barra de seções.
+- Limitação histórica de `painel/configuracoes` na onda134, antes da reancoragem
+  da referência humana da primeira etapa: a linha de base foi gravada sem a
+  moldura administrativa que o host web passou a montar (entrada 295 de
+  `docs/issues/known-issues.md`, outro lote) e já diverge por ela. Os quatro
+  estados novos (`secao-horario`, `secao-conteudo`, `secao-compromissos` e
+  `secao-textos-legais`, a 390 e a 1440) entram em
+  `tests/visual/approved-changes.json` naquela etapa, com o motivo B10, como
+  capturas inteiras aprovadas (`element` e `property` `*`, de "captura ausente"
+  para "captura presente"). Como a linha de base não tem esses estados, o
+  comparador (`tools/visual-baseline/compare.mjs`) registra uma só diferença por
+  estado e não compara nenhum elemento dele: o conteúdo das quatro seções fica
+  sem referência visual, e uma mudança dentro delas passa no gate até o painel
+  ser regravado e essas aprovações saíssem. Esse relato explica o limite daquele
+  corte, não autoriza reaplicar B10 ou aceitar novas diferenças após F. Por
+  elemento entram só as diferenças dos estados que já existiam (`base`,
+  `toast-salvo`, `foco-teclado-telefone` e `secao-redes-sociais`), vindas dos
+  botões novos da barra de seções.
 
 ## 3. Entry Points
 
@@ -115,12 +119,15 @@ textos e aceite registrado no orçamento (D-F); frete por locadora (P-1).
   (`getLegalDocument`, `saveLegalDocument`, `removeLegalDocument`,
   `storefrontLegalDigest`) e `packages/backend/src/http/storefront-legal.ts`
   (`createPublicStorefrontLegalHandler`, `createAdminStorefrontLegalHandlers`).
-- Composição: raiz legada em `lib/catalog.ts` e
-  `app/api/admin/settings/actions.ts`; serviço em
-  `apps/services/api/src/host/runtime.ts` e `host/branding.ts`. Rotas:
-  `app/api/settings/public/legal-documents/[kind]/route.ts`,
-  `app/api/admin/settings/legal-documents/[kind]/route.ts` e as duas iguais em
-  `apps/services/api/src/app/api/`.
+- Composição atual: `apps/services/api/src/host/runtime.ts` (catálogo/legal
+  público) e `apps/services/api/src/host/branding.ts` (configurações/textos
+  legais privados), pelas factories públicas do backend. Rotas:
+  `apps/services/api/src/app/api/settings/public/legal-documents/[kind]/route.ts`
+  e
+  `apps/services/api/src/app/api/admin/settings/legal-documents/[kind]/route.ts`.
+  Os antigos `lib/catalog.ts`/`app/api/admin/settings/actions.ts` e adapters da
+  raiz foram retirados em F; web e API do workspace continuam como hosts
+  distintos.
 - Admissão: `packages/backend/src/modules/entitlements/request-access.ts`.
 - Entidades:
   `packages/frontend/src/entities/configuracao/model/{numeros,compromissos,local-da-loja,local-business}.ts`
@@ -147,7 +154,7 @@ textos e aceite registrado no orçamento (D-F); frete por locadora (P-1).
   (`pausedSiteServes`, `PAUSED_LEGAL_PAGE_HEADERS`),
   `host/providers/TenantSiteProviders.tsx` (sem a moldura da vitrine nas legais
   em pausa) e
-  `app/(public)/[locadora]/(vitrine)/{pausa.ts,termos,privacidade,politica-devolucao,cookies,site-pausado}`.
+  `apps/clients/web/src/app/(public)/[locadora]/(vitrine)/{pausa.ts,termos,privacidade,politica-devolucao,cookies,site-pausado}`.
 - Leitura no servidor do host web:
   `apps/clients/web/src/host/server/public-api.ts` (`getPublicLegalDocument`:
   `null` só no 404, qualquer outra falha lança; `getPublicCategoryNames`) e

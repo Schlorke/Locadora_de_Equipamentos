@@ -1,3 +1,33 @@
+import { withTenantTransaction } from '../../apps/services/api/src/host/tenant-transaction'
+import { createRentalTransaction } from '@gb-locacoes/backend/rentals'
+import { createPaymentProcessor } from '@gb-locacoes/backend/billing'
+import {
+  requestPayment,
+  ensureQuoteBoletoPayment,
+} from '../../apps/services/api/src/host/payments'
+import { getDatabaseRuntime } from '@gb-locacoes/backend/runtime'
+const fixtureDatabase = vi.hoisted(() => ({
+  prisma: undefined as unknown,
+  pool: undefined as import('pg').Pool | undefined,
+}))
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()
+  if (!process.env.TEST_DATABASE_URL)
+    return { ...actual, getDatabaseRuntime: () => ({ prisma: undefined }) }
+  const { requireTestDatabase } = await import('../helpers/test-database')
+  const connectionString = requireTestDatabase(process.env)
+  if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
+    throw new Error('Explicit disposable database opt-in required')
+  const { Pool } = await import('pg')
+  const { PrismaPg } = await import('@prisma/adapter-pg')
+  const { PrismaClient } = await import('@prisma/client')
+  const pool = new Pool({ connectionString, max: 8 })
+  fixtureDatabase.pool = pool
+  const fixturePrisma = new PrismaClient({ adapter: new PrismaPg(pool) })
+  fixtureDatabase.prisma = fixturePrisma
+  return { ...actual, getDatabaseRuntime: () => ({ prisma: fixturePrisma }) }
+})
 import { randomUUID } from 'node:crypto'
 import {
   afterAll,
@@ -10,30 +40,8 @@ import {
   vi,
 } from 'vitest'
 
-vi.mock('@/lib/prisma', async () => {
-  if (!process.env.TEST_DATABASE_URL) return { prisma: undefined }
-  const { requireTestDatabase } = await import('../helpers/test-database')
-  const connectionString = requireTestDatabase(process.env)
-  if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
-    throw new Error('Explicit disposable database opt-in required')
-  const { Pool } = await import('pg')
-  const { PrismaPg } = await import('@prisma/adapter-pg')
-  const { PrismaClient } = await import('@prisma/client')
-  const pool = new Pool({ connectionString, max: 8 })
-  return {
-    prisma: new PrismaClient({ adapter: new PrismaPg(pool) }),
-    testPool: pool,
-  }
-})
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => null,
-}))
-// Sem mock de `@/lib/security/tenant-webhook`: a credencial da integração vem do ambiente, como em produção.
+// Sem mock da resolução da integração no backend: a credencial da integração vem do ambiente, como em produção.
 
-import { prisma } from '@/lib/prisma'
-import { ensureQuoteBoletoPayment } from '@/lib/quote-boleto'
-import { requestPayment } from '@/lib/payment-request'
-import { processPayment } from '@/lib/payment-processor'
 import { CANCELLED_CHARGE_FAILURES } from '@gb-locacoes/backend/billing'
 import { createAsaasGateway } from '../../packages/backend/src/modules/billing/asaas'
 import {
@@ -43,9 +51,10 @@ import {
 } from '../helpers/fake-asaas'
 
 /**
- * Composição real (lib/quote-boleto.ts e lib/payment-request.ts) contra o dublê do Asaas: uma
+ * Composição real do backend contra o dublê do Asaas: uma
  * cobrança PIX/boleto marcada CANCELLED só no sistema, com transactionId e sem tentativa, só deixa
  * sair cobrança nova depois de lida no provedor — fora de SQL, pela integração ACTIVE da locadora.
+ * Os títulos conservam as antigas lib/quote-boleto.ts e lib/payment-request.ts, retiradas em F; as chamadas atuais são as factories do backend, não imports dessas fachadas.
  */
 const CREDENTIAL = 'LOCADORA_INTEGRATION_RECONCILIATION_FIXTURE'
 const tenantId = 'reconcile-' + randomUUID()
@@ -65,14 +74,7 @@ let gateway: ReturnType<typeof createAsaasGateway>
 let lockFreeDuringProviderCalls: boolean[]
 
 async function rentalMutationLockIsFree() {
-  const { testPool } = (await import('@/lib/prisma')) as unknown as {
-    testPool: {
-      query(
-        _sql: string,
-        _args: string[]
-      ): Promise<{ rows: { free: boolean }[] }>
-    }
-  }
+  const { testPool } = { testPool: requireFixturePool() }
   const result = await testPool.query(
     "SELECT pg_try_advisory_xact_lock(hashtext('gb-locacoes:rental-mutations'), hashtext($1)) AS free",
     [tenantId]
@@ -146,26 +148,6 @@ function legacyCancelled(
 }
 
 const providerReads = () => fake.countRequests('GET', /^\/payments\/[^/]+$/)
-const attemptsOf = (paymentId: string) =>
-  prisma.paymentAttempt.findMany({
-    where: { paymentId },
-    select: {
-      externalId: true,
-      integrationId: true,
-      status: true,
-      cancellationStatus: true,
-    },
-  })
-const outboxTopics = async () =>
-  (
-    await prisma.outboxEvent.findMany({
-      where: { tenantId },
-      select: { topic: true },
-    })
-  )
-    .map((row) => row.topic)
-    .sort()
-
 describe.skipIf(!process.env.TEST_DATABASE_URL)(
   'Proof of a cancelled charge at the provider (disposable PostgreSQL + Asaas double)',
   () => {
@@ -222,9 +204,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
       await prisma.tenantIntegration.deleteMany({ where: { tenantId } })
       await prisma.organization.deleteMany({ where: { id: tenantId } })
       await prisma.$disconnect()
-      const { testPool } = (await import('@/lib/prisma')) as unknown as {
-        testPool: { end(): Promise<void> }
-      }
+      const { testPool } = { testPool: requireFixturePool() }
       await testPool.end()
     })
 
@@ -614,3 +594,36 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
     })
   }
 )
+
+const prisma = getDatabaseRuntime().prisma
+function requireFixturePool() {
+  const pool = fixtureDatabase.pool
+  if (!pool) throw new Error('Owned fixture pool was not initialized')
+  return pool
+}
+
+const attemptsOf = (paymentId: string) =>
+  prisma.paymentAttempt.findMany({
+    where: { paymentId },
+    select: {
+      externalId: true,
+      integrationId: true,
+      status: true,
+      cancellationStatus: true,
+    },
+  })
+
+const outboxTopics = async () =>
+  (
+    await prisma.outboxEvent.findMany({
+      where: { tenantId },
+      select: { topic: true },
+    })
+  )
+    .map((row) => row.topic)
+    .sort()
+
+const { withRentalTransaction } = createRentalTransaction({
+  withTenantTransaction,
+})
+const { processPayment } = createPaymentProcessor({ withRentalTransaction })

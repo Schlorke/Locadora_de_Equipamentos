@@ -1,22 +1,31 @@
 # 🧪 Dialog Lab (Base UI)
 
-> **Caminhos atuais (conferidos em 2026-09-30)**: o `Dialog` do design system
-> está em `packages/ui/src/web/Dialog.web.tsx` (`@gb-locacoes/ui`);
-> `components/ui/dialog.tsx` é o caminho antigo.
+> **Caminhos atuais (conferidos no clone pós-F em 2026-10-09)**: o `Dialog` do
+> design system está em `packages/ui/src/web/Dialog.web.tsx`
+> (`@gb-locacoes/ui`); `components/ui/dialog.tsx` é o caminho antigo.
 
 ## 📋 Visão Geral
 
 - Implementamos um laboratório dedicado para o novo componente de dialog baseado
   em [Base UI](https://base-ui.com/react/components/dialog#open-from-a-menu).
-- O playground em `app/playground/page.tsx` concentra todas as experimentações
-  atuais, permitindo validar animações, layout, acessibilidade e interações
-  antes de reintegrar os fluxos administrativos.
+- O antigo laboratório em `app/playground/page.tsx` foi substituído pela rota
+  fina `apps/clients/web/src/app/(labs)/playground/page.tsx`. Ela monta
+  `PlaygroundPage` de `@gb-locacoes/frontend/pages/playground`; na fonte atual,
+  essa página demonstra benefícios e ScrollStack, não os demos de Dialog
+  descritos no registro anterior abaixo.
+- O seletor de ícones independente está em
+  `apps/clients/web/src/app/(labs)/playground/icon-customization/page.tsx`, que
+  monta `IconCustomizationPage` da mesma entrada pública. Os labs dependem de
+  `PLATFORM_LABS_ENABLED=true` e são recusados em produção.
 - Removemos os modais legados do projeto (wrappers Radix customizados, modais de
   categorias e preview de equipamentos) para garantir que a migração aconteça
   sobre uma única base.
-- A página `app/admin/categorias/page.tsx` está temporariamente em modo
-  manutenção e `app/admin/equipamentos/page.tsx` opera com um overlay simples
-  até que o novo dialog seja promovido para produção.
+- A manutenção de `app/admin/categorias/page.tsx` e o overlay temporário de
+  `app/admin/equipamentos/page.tsx` pertenciam ao laboratório antigo; esses
+  wrappers saíram em F. Hoje `CategoriasPage.web.tsx` monta
+  `CategoryDialogModal`/`ViewCategoryDialog`, e `Lista.web.tsx` de
+  `pages/equipamentos-admin` monta `ViewEquipmentDialog` e a confirmação de
+  exclusão, todos com `Dialog` de `@gb-locacoes/ui`.
 
 ## 🎯 Objetivos
 
@@ -33,14 +42,20 @@
 
 ## 🏗️ Arquitetura do Playground
 
+A tabela registra a composição do laboratório anterior à extração FSD.
+`EquipmentDialogDemo`, `ScrollContent` e `NestedDialogDemo` não são exports da
+`PlaygroundPage.web.tsx` atual; não procurá-los no host fino nem recriá-los como
+uma segunda tela. O wrapper web do design system permanece o owner do Dialog
+usado nos fluxos produtivos.
+
 | Seção                                | Descrição                                                                                                                       |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
 | `EquipmentDialogDemo`                | Demonstração principal com conteúdo rico: badges, resumo de locação, formulário rápido e CTA.                                   |
 | `ScrollContent`                      | Conteúdo interno envolto por `ScrollArea`, respeitando `max-h-[60vh]` e mantendo o ritmo vertical padrão (`px-6/py-6 sm:px-8`). |
 | `NestedDialogDemo`                   | Fluxo com dialogs aninhadas demonstrando `data-[nested-dialog-open]` e transições independentes.                                |
-| `packages/ui/src/web/Dialog.web.tsx` | Wrapper universal para o Dialog do Base UI, com backdrop/popup padronizados e subcomponentes de layout.                         |
+| `packages/ui/src/web/Dialog.web.tsx` | Wrapper web para o Dialog do Base UI, com backdrop/popup padronizados e subcomponentes de layout.                               |
 
-## 🧱 Componente Universal `Dialog`
+## 🧱 Componente web `Dialog`
 
 - **Localização:** `packages/ui/src/web/Dialog.web.tsx`
 - **Propósito:** centralizar as classes e animações oficiais, evitando
@@ -60,9 +75,9 @@
 ### Exemplo mínimo
 
 ```tsx
-import { Dialog } from "@/components/ui/dialog"
+import { Dialog } from "@gb-locacoes/ui"
 ;<Dialog.Root open={open} onOpenChange={setOpen}>
-  <Dialog.Trigger asChild>…</Dialog.Trigger>
+  <Dialog.Trigger>Abrir</Dialog.Trigger>
   <Dialog.Portal>
     <Dialog.Backdrop />
     <Dialog.Popup>
@@ -90,7 +105,7 @@ import { Dialog } from "@/components/ui/dialog"
 const [open, setOpen] = useState(false)
 
 <Dialog.Root open={open} onOpenChange={setOpen}>
-  <Dialog.Trigger asChild>…</Dialog.Trigger>
+  <Dialog.Trigger>Abrir</Dialog.Trigger>
   <Dialog.Portal>
     <Dialog.Backdrop />
     <Dialog.Popup>
@@ -102,14 +117,24 @@ const [open, setOpen] = useState(false)
 </Dialog.Root>
 ```
 
-- `dismissible` e `modal` ficam ativos por padrão para preservar foco, scroll
-  lock e click outside controlado.
-- `Dialog.Close` é sempre renderizado como `Button` para manter rastreamento e
-  estados visuais documentados no design system.
+- `Root`, `Trigger` e `Close` delegam ao Base UI; o wrapper não acrescenta uma
+  prop `dismissible`. `modal` tem padrão `true`; `disablePointerDismissal` tem
+  padrão `false`, no contrato instalado do primitive. Preserve foco, scroll lock
+  e fechamento, sem reutilizar props de wrappers Radix antigos.
+- `Dialog.CloseButton` fornece o X do cabeçalho. Para compor um botão de ação
+  com `Dialog.Close`, use a API `render` do Base UI com `Button`; `asChild` não
+  faz parte do wrapper atual.
 - Conteúdos longos utilizam `ScrollArea` com `maxHeight` calculado para
   preservar espaço para header/footer.
 
-## 🎨 Estilos Principais
+## 🎨 Estilos Principais (registro do laboratório)
+
+As classes descritas nesta unidade registram a composição anterior do
+laboratório; não substituem as classes atuais de `Dialog.web.tsx`. O wrapper
+atual conserva `fixed`, tokens `--layer-dialog*`, estados starting/ending e
+nested; seu backdrop base é `bg-black/60` (dark `bg-black/70`) e suas variantes
+são `default`, `compact` e `unstyled`. Ajustes de documentação não autorizam
+alterar CSS, timing, cores ou variantes de UX no produto.
 
 - **Camadas**: `z-[var(--layer-dialog-backdrop)]` para o backdrop e
   `z-[var(--layer-dialog)]` para o popup; não use números mágicos.
@@ -132,13 +157,14 @@ const [open, setOpen] = useState(false)
 
 - Base UI gerencia `aria-hidden`, `aria-modal`, focus trap e stacking context
   automaticamente.
-- Botões fecham dialog via `Dialog.Close asChild`, preservando rótulos
-  (`aria-label`) e mantendo clique keyboard-friendly.
+- Botões fecham via `Dialog.Close` (API `render` do Base UI quando composto com
+  `Button`), preservando rótulos (`aria-label`) e acionamento por teclado.
 - Dialogs aninhadas utilizam `data-[nested-dialog-open]` para informar estados
   ao dialog pai, permitindo estilização condicional no futuro.
-- O overlay manual implementado em `app/admin/equipamentos/page.tsx` permanecerá
-  apenas até a migração para o componente Base UI (garantindo compatibilidade
-  temporária).
+- O overlay manual do antigo `app/admin/equipamentos/page.tsx` era uma
+  compatibilidade temporária. Na fonte atual, o preview pertence a
+  `packages/frontend/src/pages/equipamentos-admin/ui/VerEquipamento.web.tsx` e
+  usa o Dialog do design system; o wrapper legado saiu em F.
 
 ## ?? Responsividade dos fluxos nested
 
@@ -186,15 +212,16 @@ const [open, setOpen] = useState(false)
 - **Dialogs encadeadas (Customize/Edit)**: padrão oficial para abrir uma segunda
   dialog a partir de ações como “Editar”, “Customizar” ou “Configurar”.
 
-## 🧩 Configurador de Categoria (Playground Atualizado)
+## 🧩 Configurador de Categoria (registro do laboratório)
 
 - **Localização principal**:
   `packages/frontend/src/pages/categorias/ui/CategoriaDialog.web.tsx` expõe o
   `CategoryDialogModal`, o `CategoryDialog` de demonstração e os helpers
   utilizados nas dialogs aninhadas.
-- **Consumo no playground**: `app/playground/page.tsx` importa diretamente o
-  `CategoryDialog`, garantindo que o playground e os fluxos produtivos usem o
-  mesmo componente compartilhado (sem wrappers adicionais).
+- **Consumo produtivo atual**: `CategoriasPage.web.tsx` da mesma slice monta
+  `CategoryDialogModal`. O consumo direto por `app/playground/page.tsx` era do
+  playground antigo, removido; o host atual de labs monta `PlaygroundPage` pelo
+  entrypoint do pacote e não importa o interno de categorias.
 - **Nested dialog**: o botão “Editar” dentro do preview da categoria abre uma
   segunda dialog reaproveitando `Dialog.Backdrop` e
   `Dialog.Popup variant="compact"` para manter as animações e escalas oficiais
@@ -262,10 +289,11 @@ const [open, setOpen] = useState(false)
   permitindo evolução isolada e reuse em outros fluxos administrativos. Os
   controles de cor permanecem em seção dedicada logo abaixo do preview para
   reforçar a hierarquia visual antes da seleção de ícones.
-- **Folha de rascunho dedicada**: `app/playground/icon-customization/page.tsx`
-  carrega o componente em modo independente, com estado próprio e preview
-  simplificado para testar rapidamente variantes de ícones/cores sem abrir a
-  dialog principal.
+- **Folha de rascunho dedicada**:
+  `apps/clients/web/src/app/(labs)/playground/icon-customization/page.tsx`
+  delega a `IconCustomizationPage` do pacote frontend. O estado vem de
+  `pages/playground/model/use-icon-customization.ts`, e o render web de
+  `pages/playground/ui/IconCustomizationPage.web.tsx`, sem abrir o dialog pai.
 - **Seletor estilo Notion**: o cabeçalho exibe abas `Ícones`, `Emoji`,
   `Fazer Upload` e a ação `Remover`, reproduzindo a UX das capturas enviadas
   pelo usuário. O estado ativo é persistido ao reabrir a dialog.
@@ -276,7 +304,8 @@ const [open, setOpen] = useState(false)
   primeira seleção.
 - **Fallback de bandeiras**: a classe `.emoji-font` usa a fonte
   `Twemoji Country Flags` (`public/fonts/twemoji-country-flags.woff2`)
-  registrada em `app/globals.css` para garantir que os emojis de países apareçam
+  registrada em `packages/frontend/src/app/styles/base.web.css`, com a utility
+  em `utilities.web.css`, para garantir que os emojis de países apareçam
   corretamente no Windows (onde o sistema converte `🇧🇷` em "BR"). Qualquer
   grid/preview de emojis deve aplicar essa classe para manter consistência com o
   playground.
@@ -294,7 +323,14 @@ const [open, setOpen] = useState(false)
   badge. O fluxo top-down mantém o layout compacto e evita cartões aninhados
   redundantes dentro da dialog.
 
-## 🎨 Estilos Principais
+## 🎨 Estilos Principais (registro do laboratório)
+
+As classes descritas nesta unidade registram a composição anterior do
+laboratório; não substituem as classes atuais de `Dialog.web.tsx`. O wrapper
+atual conserva `fixed`, tokens `--layer-dialog*`, estados starting/ending e
+nested; seu backdrop base é `bg-black/60` (dark `bg-black/70`) e suas variantes
+são `default`, `compact` e `unstyled`. Ajustes de documentação não autorizam
+alterar CSS, timing, cores ou variantes de UX no produto.
 
 - **Camadas**: `z-[var(--layer-dialog-backdrop)]` para o backdrop e
   `z-[var(--layer-dialog)]` para o popup; não use números mágicos.
@@ -315,13 +351,14 @@ const [open, setOpen] = useState(false)
 
 - Base UI gerencia `aria-hidden`, `aria-modal`, focus trap e stacking context
   automaticamente.
-- Botões fecham dialog via `Dialog.Close asChild`, preservando rótulos
-  (`aria-label`) e mantendo clique keyboard-friendly.
+- Botões fecham via `Dialog.Close` (API `render` do Base UI quando composto com
+  `Button`), preservando rótulos (`aria-label`) e acionamento por teclado.
 - Dialogs aninhadas utilizam `data-[nested-dialog-open]` para informar estados
   ao dialog pai, permitindo estilização condicional no futuro.
-- O overlay manual implementado em `app/admin/equipamentos/page.tsx` permanecerá
-  apenas até a migração para o componente Base UI (garantindo compatibilidade
-  temporária).
+- O overlay manual do antigo `app/admin/equipamentos/page.tsx` era uma
+  compatibilidade temporária. Na fonte atual, o preview pertence a
+  `packages/frontend/src/pages/equipamentos-admin/ui/VerEquipamento.web.tsx` e
+  usa o Dialog do design system; o wrapper legado saiu em F.
 
 ## 🔬 Casos Cobertos
 
@@ -334,12 +371,13 @@ const [open, setOpen] = useState(false)
 - **Dialogs encadeadas (Customize/Edit)**: padrão oficial para abrir uma segunda
   dialog a partir de ações como “Editar”, “Customizar” ou “Configurar”.
 
-## 🧩 Configurador de Categoria (Playground Atualizado)
+## 🧩 Configurador de Categoria (registro do laboratório)
 
 - **Localização**:
   `packages/frontend/src/pages/categorias/ui/CategoriaDialog.web.tsx` concentra
-  o `CategoryDialog` e o `DesignDialog`; `app/playground/page.tsx` consome o
-  componente diretamente para demonstrar o fluxo completo.
+  o `CategoryDialogModal` produtivo. O trecho anterior sobre consumo em
+  `app/playground/page.tsx` e um `DesignDialog` separado é histórico: o antigo
+  wrapper saiu, e `CategoriasPage.web.tsx` monta o dialog da mesma slice.
 - **Nested dialog**: o botão “Editar” dentro do preview da categoria abre uma
   segunda dialog reaproveitando `Dialog.Backdrop` e
   `Dialog.Popup variant="compact"` para manter as animações e escalas oficiais
@@ -380,10 +418,11 @@ const [open, setOpen] = useState(false)
   permitindo evolução isolada e reuse em outros fluxos administrativos. Os
   controles de cor permanecem em seção dedicada logo abaixo do preview para
   reforçar a hierarquia visual antes da seleção de ícones.
-- **Folha de rascunho dedicada**: `app/playground/icon-customization/page.tsx`
-  carrega o componente em modo independente, com estado próprio e preview
-  simplificado para testar rapidamente variantes de ícones/cores sem abrir a
-  dialog principal.
+- **Folha de rascunho dedicada**:
+  `apps/clients/web/src/app/(labs)/playground/icon-customization/page.tsx`
+  delega a `IconCustomizationPage` do pacote frontend. O estado vem de
+  `pages/playground/model/use-icon-customization.ts`, e o render web de
+  `pages/playground/ui/IconCustomizationPage.web.tsx`, sem abrir o dialog pai.
 - **Seletor estilo Notion**: o cabeçalho exibe abas `Emoji`, `Ícones`,
   `Personalizado` e a ação `Remover`, reproduzindo a UX das capturas enviadas
   pelo usuário. O estado ativo é persistido ao reabrir a dialog.
@@ -406,9 +445,20 @@ const [open, setOpen] = useState(false)
 
 ## ♻️ Impacto nas Páginas
 
-- `app/admin/categorias/page.tsx` agora exibe mensagem de manutenção até que a
-  nova dialog seja integrada.
-- `app/admin/equipamentos/page.tsx` utiliza overlay custom (sem Base UI) como
-  solução temporária. O próximo passo é substituir este overlay pelo componente
-  `Dialog` do playground.
-- Todos os wrappers anteriores (`components/ui/dialog.tsx`, `
+- O antigo `app/admin/categorias/page.tsx` teve manutenção temporária e saiu em
+  F. A rota atual `apps/clients/web/src/app/(admin)/admin/categorias/page.tsx`
+  monta `CategoriasPage` pelo entrypoint; edição e preview são da slice.
+- O antigo `app/admin/equipamentos/page.tsx` usou overlay provisório e saiu em
+  F. A rota atual `apps/clients/web/src/app/(admin)/admin/equipamentos/page.tsx`
+  monta a lista administrativa do pacote, cujo preview/confirmar já usam Dialog.
+- `components/ui/dialog.tsx` é o wrapper antigo removido. O owner atual é
+  `packages/ui/src/web/Dialog.web.tsx`, sem fachada de produto na raiz.
+
+## Provas e limite da revisão de 2026-10-09
+
+Os testes colocados de `Dialog.web.tsx` e `Dialog.foco.web.test.tsx`, os de
+`CategoriaDialog.web.tsx` e os previews administrativos protegem comportamento e
+composição. A referência visual e o aceite da primeira etapa publicados em
+`978ceb` estão em `docs/guides/wave135-base-validation.md`; esta atualização de
+ponteiros no clone pós-F não é nova captura, aprovação humana ou prova de
+pixels. A validação final de F permanece separada.

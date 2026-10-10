@@ -1,31 +1,48 @@
 # AI Context Map
 
 Continuidade vigente da onda 135 — decisão humana de 2026-10-09: interface
-aceita; após validar a fonte final, commit e push da primeira etapa autorizados
-para o novo repositório público vazio `Schlorke/Locadora_de_Equipamentos`.
-Publicar história inicial limpa, sem os pais antigos; conservar o histórico e as
-referências antigas somente no arquivo local de preservação. Não publicar esse
-histórico com segredos nem alterar/revogar credenciais reais, que podem ser
-compartilhadas com a GB. O PostgreSQL da etapa é local descartável;
-infraestrutura, provedores e corte de produção continuam posteriores.
+aceita. A primeira etapa C foi publicada em `Schlorke/Locadora_de_Equipamentos`
+no commit `978ceb9244c81c7cb2888b798fad8ce90edad25e`, com a tag
+`checkpoint/onda-135-pre-exclusao`. Essa história inicial limpa não inclui os
+pais antigos, preservados somente no arquivo local. Não publicar o histórico com
+segredos nem alterar/revogar credenciais reais, que podem ser compartilhadas com
+a GB. Infraestrutura hospedada, banco de produção e provedores serão escolhidos
+depois conforme a decisão do usuário. Migrations no PostgreSQL local descartável
+não criam nem homologam conta, banco ou provedores de produção.
 
-Para retomar: ler o checkpoint de 2026-10-09 no início de
-`CLAUDE_TO_CODEX_HANDOFF.md`, `docs/architecture/modernization.md`,
-`docs/features/shared-api-host.md` e as provas em
-`%TEMP%/locadora-wave135-finish-20261009` (`FINISH`). `arch.log` registra zero
-DOM/web no código universal do frontend e 43 ocorrências restantes em 16
-arquivos, todas legadas. `visual-human-acceptance.json` registra o aceite;
-`reviews/` reúne a revisão dos testes, o mapa de fronteiras e o plano de
-retirada. As novas suítes são consolidadas em FINISH; a validação ainda está em
-curso, sem certificado geral de fechamento.
+**Checkpoint da base preparada — 2026-10-09, checkpoint pré-publicação:** **base
+preparada no clone; unit, P2, B11 e visual fechados no escopo declarado**. Unit
+4.104/4.104 sem skips, P2 v6 e B11 v3 no escopo declarado e visual F
+80/536/31.065 sem pendências têm recibos próprios. Gates documentais executarão
+após aplicação. Dispositivos, Slow 3G completo e foundations NOT_PROVEN
+continuam separados. Para retomar, ler o
+[guia F](../guides/wave135-retirement-validation.md), seu
+[ledger](../guides/wave135-retirement-validation.ledger.json) e o início de
+`CLAUDE_TO_CODEX_HANDOFF.md`. Contratos e evolução do produto permanecem em
+`docs/architecture/modernization.md` e `docs/features/shared-api-host.md`. As
+provas locais estão em `%TEMP%/locadora-wave135-finish-20261009` (`FINISH`).
 
-P0/P1/P2 e F conservam sua sequência e exigências. A autorização permite
-continuar, mas não equivale à conclusão dessas fases: preservar o estado com
-raiz, fixar a referência de pré-exclusão, aplicar F primeiro em clone
-independente e só depois importar e revalidar. Não apagar a raiz do checkout
-atual antes desse clone. Os registros anteriores abaixo são históricos; suas
-proibições de commit/push e o aceite visual então aberto foram substituídos pela
-decisão acima.
+As primeiras rodadas unit 245 passes/2 falhas, identidade 796/1 e segurança
+921/31 com 18 skips são **históricas**, anteriores às correções e aos recibos
+finais do guia F. O `arch.log` anterior à retirada também é histórico: zero
+DOM/web universal e 43 ocorrências em 16 arquivos legados não representam a
+medição final do clone. `visual-human-acceptance.json` registra o aceite C;
+`reviews/` conserva auditorias, payloads e o plano, sem substituírem execução.
+
+No clone independente `FINISH/p2/aposentar-raiz`, as antigas raízes `app/`,
+`lib/`, `middlewares`, `schemas`, `types/global.d.ts`,
+`types/google-maps-ecl.d.ts` e `proxy.ts` foram retiradas. Os owners atuais são
+os hosts/pacotes, `public` como browser-assets, `design-tokens` como
+compatibilidade gerada e `types/next-auth.d.ts` como shim só de tipos. Estado
+salvo antes da publicação: F está no clone independente;
+transferência/revalidação, commit/push e CI final F são passos posteriores com
+recibos externos. Nenhum SHA futuro é antecipado. As 173 entradas aceitas de
+hygiene são dívida declarada, não prova de zero código morto.
+
+Os marcos por onda abaixo conservam a fotografia de sua execução. Não instruem
+restaurar fachadas antigas ou repetir provas fechadas sem mudança relevante. A
+autorização de publicação e o aceite humano substituíram os bloqueios históricos
+correspondentes; produção e corte continuam separados.
 
 Criação da conta de recebimentos (onda 134, S9): conta-recebimentos.md,
 docs/operations/runbook-asaas-subaccount.md e shared-api-host.md, onda 134.
@@ -241,13 +258,14 @@ Só metadados de chave via secrets. PAYMENT comercial ganhou consumidor na onda
 92; SUBSCRIPTION continua pendente para S6. S9 é parcial e não certifica
 operação real.
 
-Entrada Asaas: onda 90 de shared-api-host.md e entrada 272 de known-issues.
-Endpoints novos /api/webhooks/asaas/platform e /[integrationId] existem nos dois
-hosts; persistência após autenticação, filas por responsabilidade, token estrito
-e alertas de conflito/UNROUTED. Tópico platform.webhook.process permanece
-PENDING para S6; conta/chave usam o consumidor próprio desde a onda 91. URLs
-antigas não foram trocadas; S5 ainda parcial. Não configurar provedores nem
-retirar app/ com este checkpoint.
+Registro histórico da entrada Asaas na onda 90 de shared-api-host.md e entrada
+272 de known-issues, anterior à retirada da antiga `app/` no clone F. Endpoints
+novos /api/webhooks/asaas/platform e /[integrationId] existem nos dois hosts;
+persistência após autenticação, filas por responsabilidade, token estrito e
+alertas de conflito/UNROUTED. Tópico platform.webhook.process permanece PENDING
+para S6; conta/chave usam o consumidor próprio desde a onda 91. URLs antigas não
+foram trocadas; S5 ainda era parcial. Esse checkpoint não autorizava retirar a
+raiz nem configurar provedores.
 
 Cofre e credenciais: ondas 87–89 de `docs/features/shared-api-host.md`,
 B.7.3/S3/S7 de `docs/architecture/adr-saas-subscription.md` e entradas 269–271
@@ -266,8 +284,11 @@ selecionar legacy/Better Auth; SSR e dublês não certificam aparelhos ou
 provedores.
 
 Extração da API compartilhada: `docs/architecture/adr-backend-extraction.md` e
-`docs/features/shared-api-host.md`. `test:api` compara o serviço e o legado com
-PostgreSQL RLS; o checkpoint canônico da transferência continua sendo
+`docs/features/shared-api-host.md`. A comparação histórica de `test:api` entre
+serviço e as antigas fachadas `app/`/`lib/`, retiradas no clone F, usou
+PostgreSQL RLS; a suíte portada exercita o host API/backend sem recriar a raiz.
+O motor de autenticação legacy permanece no serviço ao lado de Better Auth. O
+checkpoint da transferência de 2026-09-30 é histórico:
 `docs/ai/claude-codex-handoff-2026-09-30.md`.
 
 Perfil comercial do cliente: `docs/features/customer-profile.md`. Leitura
@@ -451,7 +472,8 @@ quote-documents.md e client-documents-antifraud.md. Boleto na entidade
 pagamento; adapters exclusivos nos segmentos api das páginas locacoes,
 financeiro e orcamentos-admin. 202/multipart/PDFs preservados, escopo descarta
 efeitos antigos. Outros consumidores administrativos, nativo/SaaS/operação
-pendentes; não retirar app/ por contagem de rotas.
+pendentes naquele incremento; a antiga `app/` só foi retirada depois no clone F,
+com provas próprias, não pela contagem de rotas da onda 66.
 
 Financeiro/orçamentos administrativos: onda 67 de shared-api-host.md,
 admin-financeiro-page.md e admin-orcamentos-page.md. Adapters nas páginas donas
@@ -488,7 +510,8 @@ das slices e modelos/transporte compartilhados; callbacks de saída no host. 58
 casos focados e tipos/gates/builds/source maps aprovados. Destinos mobile
 ausentes e fidelidade em aparelho continuam pendentes; próximo orçamento/
 catálogo e histórico nativos, depois SaaS/operação. Legado e agenda ativos; ~60%
-geral é estimativa de esforço, sem autorização para retirar app/.
+geral era estimativa de esforço; a onda 71 não autorizava retirar a antiga
+`app/`, posteriormente retirada no clone F.
 
 Histórico/detalhes Expo: onda 72 de shared-api-host.md e
 area-cliente-historico-detalhes.md. Modelos/preços/timeline compartilhados;
@@ -500,7 +523,8 @@ ativos; geral ~60% estimativa de esforço.
 Detalhe público web/Expo: docs/features/equipment-detail.md e onda 73 de
 shared-api-host.md. Modelos de preços/datas/confirmação comuns, parser único e
 rota nativa fina. Orçamento Expo continua pendente; não declarar fluxo de
-solicitação completo nem retirar app/ por esse incremento.
+solicitação completo naquela onda nem retirar a antiga `app/` por esse
+incremento; a retirada posterior no clone F tem validação independente.
 
 Orçamento Expo: onda 74 de shared-api-host.md e quote-system.md. Página e
 formulário compartilham modelos/transportes com o web; preferências assíncronas
@@ -661,16 +685,17 @@ S10 do ADR. Legado/enforcement off e critério comercial pendente preservados.
 
 ## Onda 113 — adaptadores e checklist de onboarding
 
-Três rotas paralelas em app/api/onboarding e
-apps/services/api/src/app/api/onboarding consomem http/onboarding,
-http/onboarding-status e modules/onboarding/status. runtime/platform-jobs compõe
-criação, sem segunda conexão de plataforma. Sessão de conta protege
-criação/disponibilidade; status revalida dono na transação restrita da locadora.
-runtime/onboarding-captcha confere ação/host no Siteverify somente em pedidos
-novos; recibo confirmado continua replayable. Cadastro público off, leitura
-assistida disponível. 234 provas locais; UI/publicação/welcome, AWS/Cloudflare
-reais e operação pendentes. Ver onboarding-locadora.md e onda 113 de
-shared-api-host.md. Legado/enforcement e decisão comercial preservados.
+Na onda 113 havia três rotas paralelas na antiga `app/api/onboarding`, retirada
+no clone F, e em `apps/services/api/src/app/api/onboarding`; consumiam
+http/onboarding, http/onboarding-status e modules/onboarding/status.
+runtime/platform-jobs compõe criação, sem segunda conexão de plataforma. Sessão
+de conta protege criação/disponibilidade; status revalida dono na transação
+restrita da locadora. runtime/onboarding-captcha confere ação/host no Siteverify
+somente em pedidos novos; recibo confirmado continua replayable. Cadastro
+público off, leitura assistida disponível. 234 provas locais;
+UI/publicação/welcome, AWS/Cloudflare reais e operação pendentes. Ver
+onboarding-locadora.md e onda 113 de shared-api-host.md. Legado/enforcement e
+decisão comercial preservados.
 
 ## Onda 116 — dashboard e checklist do dono
 

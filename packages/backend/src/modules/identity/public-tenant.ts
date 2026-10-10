@@ -304,7 +304,7 @@ export function createPublicTenantResolver(
         }
       ),
     })
-    // Query cannot turn app/apex or an untrusted edge into a tenant host.
+    // Query cannot turn the app host, apex host, or an untrusted edge into a tenant host.
     const url = new URL(request.url)
     const hostOnly = new Request(url.origin + url.pathname, {
       headers: request.headers,

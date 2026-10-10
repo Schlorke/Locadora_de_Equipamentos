@@ -1,0 +1,2469 @@
+/* stylelint-disable */
+/* eslint-disable */
+/* @microsoft-edge-tools-disable */
+
+/* ============================================================ */
+/* GLOBALS.CSS INDEX
+ * 01. Tailwind directives
+ * 01.1 Fontes customizadas (emoji)
+ * 02. Variáveis CSS (design tokens)
+ * 03. Reset global
+ * 04. Tipografia
+ * 05. Layout estrutural
+ * 06. Componentes Radix UI
+ * 07. Formulários e inputs
+ * 08. Botões e interações
+ * 09. Filtros e elementos admin
+ * 10. Sidebar admin
+ * 11. Scrollbar customizado
+ * 12. WhatsApp FAB
+ * 13. Badges e status
+ * 14. Selection e utility
+ * 15. Keyframes (animações)
+ * 16. Animações de iluminação
+ * 17. Classes de animação
+ * 18. Página Sobre (específica)
+ * 19. Área do cliente
+ * 20. Animações - card hovers
+ * 21. Accessibility (A11y)
+ * 22. Utilities e overrides
+ * 23. Scrollbar hide (tabs mobile)
+ * 24. React-day-picker v9 styles
+ */
+/* ============================================================ */
+
+/* ================================ */
+/* 1. TAILWIND DIRECTIVES           */
+/* ================================ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ================================ */
+/* 1.1 FONTES CUSTOMIZADAS (EMOJI)  */
+/* ================================ */
+@font-face {
+  font-family: 'Twemoji Country Flags';
+  src: url('/fonts/twemoji-country-flags.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.emoji-font {
+  font-family:
+    'Twemoji Country Flags', 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Noto Color Emoji', 'EmojiOne Color', sans-serif;
+}
+
+/* ================================ */
+/* 2. VARIÁVEIS CSS (DESIGN TOKENS) */
+/* ================================ */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --radius: 0.5rem;
+  --chart-1: 12 76% 61%;
+  --chart-2: 173 58% 39%;
+  --chart-3: 197 37% 24%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
+  --header-height: 5rem;
+  --ring: 0 0% 3.9%;
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  /* Camadas globais para sincronizar z-index em todos os overlays */
+  --layer-base: 0;
+  --layer-floating: 20;
+  --layer-sticky: 30;
+  --layer-fab: 40;
+  --layer-dropdown: 60;
+  --layer-popover: 70;
+  --layer-dialog-backdrop: 80;
+  --layer-dialog: 90;
+  --layer-tooltip: 100;
+  --layer-spotlight: 110;
+  /* Alias legados mantidos para compatibilidade */
+  --z-dropdown: var(--layer-dropdown);
+  --z-modal: var(--layer-dialog);
+  --z-popover: var(--layer-popover);
+  --z-tooltip: var(--layer-tooltip);
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
+  --sidebar-background: 240 5.9% 10%;
+  --sidebar-foreground: 240 4.8% 95.9%;
+  --sidebar-primary: 224.3 76.3% 48%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 240 3.7% 15.9%;
+  --sidebar-accent-foreground: 240 4.8% 95.9%;
+  --sidebar-border: 240 3.7% 15.9%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+}
+
+/* ================================ */
+/* 3. RESET GLOBAL                  */
+/* ================================ */
+* {
+  border-color: hsl(var(--border));
+  scrollbar-width: thin;
+  scrollbar-color: #fc5a03d2 #f1f5f9;
+}
+
+html {
+  max-width: 100%;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scroll-behavior: smooth !important;
+  scroll-padding-top: calc(
+    env(safe-area-inset-top, 0px) + 84px
+  ); /* Altura do header fixo + safe area iOS */
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-inter), sans-serif;
+  font-size: 1rem;
+  margin: 0;
+  max-width: 100%;
+  overflow: visible !important;
+  scroll-behavior: smooth !important;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --header-height: 4.5rem;
+  }
+}
+
+/* ================================ */
+/* 4. TIPOGRAFIA                    */
+/* ================================ */
+h1 {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  line-height: 1.2;
+  font-family: var(--font-jost), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.3;
+  font-family: var(--font-jost), sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+h3 {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  line-height: 1.4;
+  font-family: var(--font-jost), sans-serif;
+  font-weight: 600;
+}
+
+p {
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  line-height: 1.6;
+}
+
+small {
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  line-height: 1.5;
+}
+
+/* ================================ */
+/* 5. LAYOUT ESTRUTURAL             */
+/* ================================ */
+
+/* Header fixo (consolidado de 3 duplicações) */
+header {
+  width: 100vw !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 9999 !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  backdrop-filter: blur(8px) !important;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.8) !important;
+}
+
+/* Header específico para admin mobile */
+header.admin-mobile-header {
+  background: rgb(51, 65, 85) !important;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom: none !important;
+}
+
+/* Header específico para admin desktop */
+header.admin-desktop-header {
+  /* Sobrescrever regras gerais de header para permitir posicionamento dinâmico */
+  /* width será controlado via inline style e media queries */
+  left: auto !important;
+  right: auto !important;
+  background: linear-gradient(
+    145deg,
+    rgba(51, 65, 85, 0.98),
+    rgba(30, 41, 59, 0.95)
+  ) !important;
+  background-color: rgba(51, 65, 85, 0.98) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  /* Transição será controlada pela classe transition-all do componente */
+}
+
+header.admin-desktop-header[data-sidebar-collapsed='false'] {
+  left: 14rem !important;
+  width: calc(100% - 14rem) !important;
+}
+
+header.admin-desktop-header[data-sidebar-collapsed='true'] {
+  left: 5rem !important;
+  width: calc(100% - 5rem) !important;
+}
+
+/* Ajustar largura do header desktop em lg+ quando sidebar expandido */
+/* w-64 = 16rem = 256px em lg+ */
+@media (min-width: 1024px) {
+  header.admin-desktop-header[data-sidebar-collapsed='false'] {
+    left: 16rem !important;
+    width: calc(100% - 16rem) !important;
+  }
+
+  header.admin-desktop-header[data-sidebar-collapsed='true'] {
+    left: 5rem !important;
+    width: calc(100% - 5rem) !important;
+  }
+}
+
+/* Garantir que o conteúdo do header não ultrapasse a área visível */
+header .max-w-7xl {
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: max(1rem, calc((100vw - 100%) / 2 + 1rem));
+  padding-left: 1rem;
+}
+
+@media (max-width: 768px) {
+  header .max-w-7xl {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+}
+
+/* Sections e Containers */
+section,
+.container {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.absolute {
+  max-width: 100vw;
+}
+
+/* ================================ */
+/* 6. COMPONENTES RADIX UI          */
+/* ================================ */
+[data-radix-portal] {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-popover);
+  pointer-events: none;
+}
+
+[data-radix-portal] > * {
+  pointer-events: auto;
+}
+
+[data-radix-select-content] {
+  position: absolute !important;
+  z-index: var(--z-dropdown) !important;
+}
+
+/* ================================ */
+/* FIX: Scroll lock do Radix Select */
+/* ================================ */
+/* Prevenir bloqueio de scroll quando Select não-modal está aberto
+   Solução para o problema do wrapper scroll-lock que causa barra branca e deslocamento lateral */
+body.min-h-screen.bg-background[data-scroll-locked],
+body[data-scroll-locked] {
+  overflow: visible !important;
+  overflow-y: visible !important;
+  overflow-x: hidden !important;
+  position: static !important;
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  pointer-events: auto !important;
+  --removed-body-scroll-bar-size: 0 !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+  height: auto !important;
+  overscroll-behavior: auto !important;
+}
+
+/* Remover wrapper de scroll lock que causa a barra branca */
+body > [data-radix-scroll-lock-wrapper],
+[data-radix-scroll-lock-wrapper] {
+  all: unset !important;
+  display: contents !important;
+  padding-right: 0 !important;
+  margin-right: 0 !important;
+  overflow: visible !important;
+  position: static !important;
+}
+
+/* Garantir que o wrapper não adicione padding/margin */
+body:has([data-radix-scroll-lock-wrapper]) {
+  padding-right: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* ================================ */
+/* 7. FORMULÁRIOS E INPUTS          */
+/* ================================ */
+
+/* Estilos para setas do input number - remover setas nativas */
+/* Firefox - remover setas padrão */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* Chrome/Safari/Edge - remover setas nativas (vamos usar setas customizadas) */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Estilos para checkboxes - cor laranja quando marcados */
+input[type='checkbox'] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #d1d5db; /* gray-300 */
+  border-radius: 0.25rem;
+  background-color: white;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+input[type='checkbox']:hover {
+  border-color: #ea580c; /* orange-600 */
+}
+
+input[type='checkbox']:focus {
+  outline: none;
+  border-color: #ea580c; /* orange-600 */
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1); /* orange-600 com opacidade */
+}
+
+input[type='checkbox']:checked {
+  background-color: #ea580c; /* orange-600 */
+  border-color: #ea580c; /* orange-600 */
+}
+
+input[type='checkbox']:checked::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+}
+
+input[type='checkbox']:checked:hover {
+  background-color: #c2410c; /* orange-700 */
+  border-color: #c2410c; /* orange-700 */
+}
+
+input[type='checkbox']:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Estilos para Radix UI Checkbox - cor laranja */
+button[role='checkbox'],
+[data-radix-checkbox-root] {
+  border-color: #d1d5db !important; /* gray-300 */
+}
+
+button[role='checkbox']:hover,
+[data-radix-checkbox-root]:hover {
+  border-color: #ea580c !important; /* orange-600 */
+}
+
+button[role='checkbox']:focus,
+button[role='checkbox']:focus-visible,
+[data-radix-checkbox-root]:focus,
+[data-radix-checkbox-root]:focus-visible {
+  border-color: #ea580c !important; /* orange-600 */
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1) !important; /* orange-600 com opacidade */
+  outline: none !important;
+}
+
+button[role='checkbox'][data-state='checked'],
+[data-radix-checkbox-root][data-state='checked'] {
+  background-color: #ea580c !important; /* orange-600 */
+  border-color: #ea580c !important; /* orange-600 */
+  color: white !important;
+}
+
+button[role='checkbox'][data-state='checked']:hover,
+[data-radix-checkbox-root][data-state='checked']:hover {
+  background-color: #c2410c !important; /* orange-700 */
+  border-color: #c2410c !important; /* orange-700 */
+}
+
+/* Inputs com efeito hover shadow e foco azul obrigatório */
+input:not([type='checkbox']):not([type='radio']),
+select,
+textarea,
+button[role='combobox'],
+button[aria-controls],
+[data-radix-select-trigger],
+.select-trigger {
+  @apply border-gray-200 focus:border-blue-500 focus:outline-blue-500 focus:outline-2 focus:ring-0 transition-all duration-200;
+  /* shadow-md equivalente do Tailwind */
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -2px rgba(0, 0, 0, 0.1) !important;
+}
+
+input:not([type='checkbox']):not([type='radio']):hover,
+select:hover,
+textarea:hover,
+button[role='combobox']:hover,
+button[aria-controls]:hover,
+[data-radix-select-trigger]:hover,
+.select-trigger:hover {
+  /* shadow-lg equivalente do Tailwind */
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+}
+
+input:not([type='checkbox']):not([type='radio']):focus,
+select:focus,
+textarea:focus,
+button[role='combobox']:focus,
+button[aria-controls]:focus:not([aria-haspopup='menu']),
+[data-radix-select-trigger]:focus,
+.select-trigger:focus {
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05),
+    0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Remove outline do botão do dropdown do usuário (sobrescreve regra acima) */
+button[aria-controls][aria-haspopup='menu']:focus,
+button[aria-controls][aria-haspopup='menu']:focus-visible {
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  ring-width: 0 !important;
+  --tw-ring-width: 0 !important;
+  --tw-ring-offset-width: 0 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* Remove box-shadow e outline dos Tabs (Radix UI) - REGRA CRÍTICA: SEM FOCUS OUTLINE */
+/* Esta regra é OBRIGATÓRIA - o usuário NÃO quer focus outline em botões */
+button[role='tab'],
+button[role='tab'][data-state='active'],
+button[role='tab'][data-state='inactive'],
+button[id*='-tab'],
+button[id*='-tab'][role='tab'],
+button[role='tab'][class*='group/tab'] {
+  box-shadow: none !important;
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+  ring: 0 !important;
+  ring-width: 0 !important;
+  ring-offset: 0 !important;
+  --tw-ring-width: 0 !important;
+  --tw-ring-offset-width: 0 !important;
+  --tw-ring-color: transparent !important;
+}
+
+button[role='tab']:hover,
+button[role='tab']:focus,
+button[role='tab']:focus-visible,
+button[role='tab']:active,
+button[id*='-tab']:hover,
+button[id*='-tab']:focus,
+button[id*='-tab']:focus-visible,
+button[id*='-tab']:active,
+button[id*='-tab'][role='tab']:hover,
+button[id*='-tab'][role='tab']:focus,
+button[id*='-tab'][role='tab']:focus-visible,
+button[id*='-tab'][role='tab']:active,
+button[role='tab'][class*='group/tab']:hover,
+button[role='tab'][class*='group/tab']:focus,
+button[role='tab'][class*='group/tab']:focus-visible,
+button[role='tab'][class*='group/tab']:active {
+  box-shadow: none !important;
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+  ring: 0 !important;
+  ring-width: 0 !important;
+  ring-offset: 0 !important;
+  --tw-ring-width: 0 !important;
+  --tw-ring-offset-width: 0 !important;
+  --tw-ring-color: transparent !important;
+}
+
+/* Textarea específico (ShadCN UI) */
+textarea.flex,
+textarea[class*='border-input'],
+textarea[class*='bg-background'] {
+  border-color: #e5e7eb !important; /* gray-200 */
+  box-shadow:
+    0 1px 2px 0 rgba(0, 0, 0, 0.05),
+    0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+textarea.flex:hover,
+textarea[class*='border-input']:hover,
+textarea[class*='bg-background']:hover {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+textarea.flex:focus,
+textarea[class*='border-input']:focus,
+textarea[class*='bg-background']:focus {
+  border-color: #3b82f6 !important; /* blue-500 */
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05),
+    0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Remove focus outline padrão (mantém acessibilidade com box-shadow) */
+input:focus,
+input:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+select:focus,
+select:focus-visible,
+[role='combobox']:focus,
+[role='combobox']:focus-visible,
+button[role='combobox']:focus,
+button[role='combobox']:focus-visible,
+[aria-haspopup='listbox']:focus,
+[aria-haspopup='listbox']:focus-visible,
+[aria-haspopup='menu']:focus,
+[aria-haspopup='menu']:focus-visible,
+button[aria-haspopup='menu']:focus,
+button[aria-haspopup='menu']:focus-visible,
+button[aria-haspopup='menu']:focus-visible:focus,
+button[aria-haspopup='menu']:focus:focus-visible,
+.admin-filter-element:focus,
+.admin-filter-element:focus-visible {
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  ring-width: 0 !important;
+  --tw-ring-width: 0 !important;
+}
+
+/* ================================ */
+/* 8. BOTÕES E INTERAÇÕES          */
+/* ================================ */
+
+/* Remove outline de botões do dropdown do usuário no header */
+header button[aria-haspopup='menu'],
+header button[aria-haspopup='menu']:focus,
+header button[aria-haspopup='menu']:focus-visible,
+header button[aria-haspopup='menu']:focus:focus-visible,
+header button[aria-haspopup='menu']:focus-visible:focus {
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  ring-width: 0 !important;
+  --tw-ring-width: 0 !important;
+  --tw-ring-offset-width: 0 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* Botões do header - sem shadow no estado normal, com shadow no hover e active */
+.header-action-button,
+a.header-action-button,
+button.header-action-button,
+button[aria-controls].header-action-button {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Shadow no hover e quando botão está ativo (página atual ou popover aberto) */
+.header-action-button:hover,
+a.header-action-button:hover,
+button.header-action-button:hover,
+button[aria-controls].header-action-button:hover,
+button[data-state='open'].header-action-button,
+button[aria-expanded='true'].header-action-button,
+a.header-action-button.text-orange-600,
+.header-action-button.text-orange-600 {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* ============================================================ */
+/* BOTÕES DE RESET ADMIN - REGRAS CRÍTICAS OBRIGATÓRIAS        */
+/* ============================================================ */
+/*
+ * ⚠️⚠️⚠️ CRÍTICO - NUNCA VIOLAR ⚠️⚠️⚠️
+ *
+ * ============================================================
+ * O USUÁRIO SOLICITOU EXPLICITAMENTE:
+ * ============================================================
+ *
+ * ✅ OBRIGATÓRIO: hover:text-orange-500 (cor do texto/ícone)
+ * ✅ OBRIGATÓRIO: hover:shadow-lg (sombra aumentada no hover)
+ *
+ * ============================================================
+ * O USUÁRIO NUNCA SOLICITOU:
+ * ============================================================
+ *
+ * ❌ NUNCA ADICIONAR: hover:border-orange-500 (mudança de borda)
+ * ❌ NUNCA ADICIONAR: hover:scale-105 (escala/zoom)
+ *
+ * ============================================================
+ * HISTÓRICO:
+ * ============================================================
+ *
+ * O usuário QUER hover:text-orange-500 + hover:shadow-lg.
+ * Se adicionar hover:border-orange ou hover:scale-105,
+ * o usuário vai reclamar porque ele NUNCA pediu isso.
+ */
+.admin-reset-button,
+.filter-reset-button {
+  @apply border-gray-200 focus:ring-0 transition-all duration-200;
+  /* shadow-md no estado padrão */
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.admin-reset-button:hover,
+.filter-reset-button:hover {
+  /* hover:text-orange-500 (via Button variant="reset"); hover:shadow-lg */
+  /* ❌ NÃO adicione: border-orange, scale ou qualquer outro efeito */
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.admin-reset-button:focus,
+.filter-reset-button:focus {
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Botão de fechar do Dialog - SEM focus ring (conforme preferência do usuário) */
+/* Remove focus ring de todos os botões dentro do header do dialog */
+[data-baseui-dialog-popup]
+  button[class*='absolute'][class*='right-4'][class*='top-4'],
+[data-baseui-dialog-popup]
+  button[class*='absolute'][class*='right-4'][class*='top-4']:focus,
+[data-baseui-dialog-popup]
+  button[class*='absolute'][class*='right-4'][class*='top-4']:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  ring: 0 !important;
+  --tw-ring-width: 0 !important;
+  --tw-ring-offset-width: 0 !important;
+}
+
+/* Regra adicional para garantir que qualquer botão de fechar não tenha focus ring */
+button[aria-label*='Fechar'],
+button[aria-label*='fechar'],
+button[aria-label*='Close'],
+button[aria-label*='close'] {
+  outline: none !important;
+}
+
+button[aria-label*='Fechar']:focus,
+button[aria-label*='Fechar']:focus-visible,
+button[aria-label*='fechar']:focus,
+button[aria-label*='fechar']:focus-visible,
+button[aria-label*='Close']:focus,
+button[aria-label*='Close']:focus-visible,
+button[aria-label*='close']:focus,
+button[aria-label*='close']:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  ring: 0 !important;
+  --tw-ring-width: 0 !important;
+  --tw-ring-offset-width: 0 !important;
+}
+
+/* Remove focus ring dos itens de menu do Dropdown (Radix UI) - SEM focus outline preto */
+[role='menuitem'],
+[role='menuitem']:focus,
+[role='menuitem']:focus-visible,
+[role='menuitem'][data-highlighted],
+[role='menuitem'][data-highlighted]:focus,
+[role='menuitem'][data-highlighted]:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  ring: 0 !important;
+  --tw-ring-width: 0 !important;
+  --tw-ring-offset-width: 0 !important;
+}
+
+/* Botões padrão admin */
+.admin-button {
+  transition: all 0.3s ease-in-out !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.admin-button:hover {
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Botões de ação admin (Eye/Edit/Trash) */
+.admin-action-button:not(.ghost-white-variant) {
+  transition: all 0.2s ease-in-out !important;
+}
+
+.admin-action-button.view-button:not(.ghost-white-variant),
+.admin-action-button.edit-button {
+  color: rgb(51 65 85) !important; /* slate-700 */
+}
+
+.admin-action-button.view-button:not(.ghost-white-variant):hover,
+.admin-action-button.edit-button:hover {
+  background-color: rgb(243 244 246) !important; /* gray-100 */
+  color: rgb(51 65 85) !important;
+  transform: none !important;
+}
+
+/* Variante ghost-white: hover bg white e text orange - transições sincronizadas */
+.admin-action-button.view-button.ghost-white-variant {
+  transition:
+    opacity 0.2s ease-in-out,
+    background-color 0.2s ease-in-out,
+    color 0.2s ease-in-out,
+    transform 0.2s ease-in-out !important;
+}
+
+.admin-action-button.view-button.ghost-white-variant:hover {
+  background-color: rgb(255 255 255) !important; /* white */
+  color: rgb(234 88 12) !important; /* orange-600 */
+  transform: none !important;
+}
+
+.admin-action-button.view-button.ghost-white-variant:hover svg {
+  color: rgb(234 88 12) !important; /* orange-600 */
+  transition: color 0.2s ease-in-out !important;
+}
+
+.admin-action-button.rentals-view-button:hover {
+  background-color: rgb(255 255 255) !important; /* white */
+  color: rgb(234 88 12) !important; /* orange-600 */
+  transform: none !important;
+}
+
+.admin-action-button.view-button:hover svg,
+.admin-action-button.edit-button:hover svg {
+  color: rgb(51 65 85) !important;
+}
+
+.admin-action-button.delete-button {
+  color: rgb(239 68 68) !important; /* red-500 */
+}
+
+.admin-action-button.delete-button:hover {
+  background-color: rgb(254 226 226) !important; /* red-100 */
+  color: rgb(185 28 28) !important; /* red-700 */
+  transform: none !important;
+}
+
+.admin-action-button.delete-button:hover svg {
+  color: rgb(185 28 28) !important;
+}
+
+/* Hover effects genéricos */
+.btn-hover-lift {
+  transition: all 0.3s ease;
+}
+
+.btn-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-hover-float {
+  transition: all 0.3s ease;
+}
+
+.card-hover-float:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* ================================ */
+/* 9. FILTROS E ELEMENTOS ADMIN    */
+/* ================================ */
+
+.filter-container,
+.admin-filter-card {
+  position: relative;
+  z-index: 1;
+  border: none !important;
+  outline: none !important;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+.admin-filter-element {
+  border-color: rgb(229 231 235) !important; /* border-gray-200 */
+  transition: all 0.2s ease-in-out !important;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.admin-filter-element.selected {
+  border-color: rgb(251 146 60) !important; /* border-orange-300 */
+  background-color: rgb(255 247 237) !important; /* bg-orange-50 */
+  color: rgb(234 88 12) !important; /* text-orange-600 */
+}
+
+.admin-filter-element:focus {
+  border-color: rgb(59 130 246) !important; /* border-blue-500 */
+  outline-offset: 0 !important;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05),
+    0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+.admin-filter-card {
+  isolation: isolate;
+  contain: layout;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.filter-active {
+  border-color: rgb(251 146 60) !important; /* border-orange-300 */
+  background-color: rgb(255 247 237) !important; /* bg-orange-50 */
+}
+
+/* ================================ */
+/* 10. SIDEBAR ADMIN                */
+/* ================================ */
+
+body.admin-body-layout {
+  padding-top: 0 !important;
+  /* iOS 26 Safari: body background define a cor da status bar (tinting) */
+  background-color: #334155 !important;
+}
+
+aside.admin-sidebar-dark {
+  background: linear-gradient(
+    145deg,
+    rgba(30, 41, 59, 0.98),
+    rgba(20, 31, 45, 0.95)
+  ) !important;
+  background-color: rgba(30, 41, 59, 0.98) !important;
+  position: relative !important;
+  z-index: 9999 !important;
+}
+
+/* Scrollbar padrão do projeto (sidebar e áreas admin com rolagem nativa) */
+@media (min-width: 768px) {
+  .admin-sidebar-nav,
+  .admin-scrollbar {
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: #ea580c transparent;
+  }
+
+  .admin-sidebar-nav::-webkit-scrollbar,
+  .admin-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .admin-sidebar-nav::-webkit-scrollbar-track,
+  .admin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .admin-sidebar-nav::-webkit-scrollbar-thumb,
+  .admin-scrollbar::-webkit-scrollbar-thumb {
+    background: #ea580c;
+    border-radius: 4px;
+  }
+
+  .admin-sidebar-nav::-webkit-scrollbar-thumb:hover,
+  .admin-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #c2410c;
+  }
+
+  /* Botões de setas (vertical e horizontal) */
+  .admin-sidebar-nav::-webkit-scrollbar-button,
+  .admin-scrollbar::-webkit-scrollbar-button {
+    display: block;
+    height: 0;
+    width: 0;
+  }
+
+  /* Setas vertical (cima/baixo) */
+  .admin-sidebar-nav::-webkit-scrollbar-button:single-button:vertical:decrement,
+  .admin-scrollbar::-webkit-scrollbar-button:single-button:vertical:decrement {
+    border-style: solid;
+    border-width: 0 4px 6px 4px;
+    border-color: transparent transparent #ea580c transparent;
+  }
+
+  .admin-sidebar-nav::-webkit-scrollbar-button:single-button:vertical:decrement:hover,
+  .admin-scrollbar::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+    border-color: transparent transparent #c2410c transparent;
+  }
+
+  .admin-sidebar-nav::-webkit-scrollbar-button:single-button:vertical:increment,
+  .admin-scrollbar::-webkit-scrollbar-button:single-button:vertical:increment {
+    border-style: solid;
+    border-width: 6px 4px 0 4px;
+    border-color: #ea580c transparent transparent transparent;
+  }
+
+  .admin-sidebar-nav::-webkit-scrollbar-button:single-button:vertical:increment:hover,
+  .admin-scrollbar::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+    border-color: #c2410c transparent transparent transparent;
+  }
+
+  /* Setas horizontal (esquerda/direita) - apenas .admin-scrollbar (ex.: viewer de e-mail) */
+  .admin-scrollbar::-webkit-scrollbar-button:single-button:horizontal:decrement {
+    border-style: solid;
+    border-width: 4px 6px 4px 0;
+    border-color: transparent #ea580c transparent transparent;
+  }
+
+  .admin-scrollbar::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {
+    border-color: transparent #c2410c transparent transparent;
+  }
+
+  .admin-scrollbar::-webkit-scrollbar-button:single-button:horizontal:increment {
+    border-style: solid;
+    border-width: 4px 0 4px 6px;
+    border-color: transparent transparent transparent #ea580c;
+  }
+
+  .admin-scrollbar::-webkit-scrollbar-button:single-button:horizontal:increment:hover {
+    border-color: transparent transparent transparent #c2410c;
+  }
+
+  /* Scrollbar visível apenas ao passar o mouse (ex.: viewer de e-mail admin) */
+  .admin-scrollbar-hover-only {
+    scrollbar-width: none; /* Firefox: escondido por padrão */
+  }
+  .admin-scrollbar-hover-only::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+  .admin-scrollbar-hover-only:hover {
+    scrollbar-width: thin;
+    scrollbar-color: #ea580c transparent;
+  }
+  .admin-scrollbar-hover-only:hover::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .admin-scrollbar-hover-only:hover::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .admin-scrollbar-hover-only:hover::-webkit-scrollbar-thumb {
+    background: #ea580c;
+    border-radius: 4px;
+  }
+  .admin-scrollbar-hover-only:hover::-webkit-scrollbar-thumb:hover {
+    background: #c2410c;
+  }
+  .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button {
+    display: block;
+    height: 0;
+    width: 0;
+  }
+  .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:vertical:decrement {
+    border-style: solid;
+    border-width: 0 4px 6px 4px;
+    border-color: transparent transparent #ea580c transparent;
+  }
+  .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+    border-color: transparent transparent #c2410c transparent;
+  }
+  .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:vertical:increment {
+    border-style: solid;
+    border-width: 6px 4px 0 4px;
+    border-color: #ea580c transparent transparent transparent;
+  }
+  .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+    border-color: #c2410c transparent transparent transparent;
+  }
+  .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:horizontal:decrement {
+    border-style: solid;
+    border-width: 4px 6px 4px 0;
+    border-color: transparent #ea580c transparent transparent;
+  }
+  .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {
+    border-color: transparent #c2410c transparent transparent;
+  }
+  .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:horizontal:increment {
+    border-style: solid;
+    border-width: 4px 0 4px 6px;
+    border-color: transparent transparent transparent #ea580c;
+  }
+  .admin-scrollbar-hover-only:hover::-webkit-scrollbar-button:single-button:horizontal:increment:hover {
+    border-color: transparent transparent transparent #c2410c;
+  }
+}
+
+/* Setas reutilizáveis (mesmo visual da sidebar) para ScrollArea e outros */
+.scroll-area-arrow {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.scroll-area-arrow-vertical-up {
+  border-width: 0 4px 6px 4px;
+  border-color: transparent transparent #ea580c transparent;
+}
+.scroll-area-arrow-vertical-up:hover {
+  border-color: transparent transparent #c2410c transparent;
+}
+.scroll-area-arrow-vertical-down {
+  border-width: 6px 4px 0 4px;
+  border-color: #ea580c transparent transparent transparent;
+}
+.scroll-area-arrow-vertical-down:hover {
+  border-color: #c2410c transparent transparent transparent;
+}
+.scroll-area-arrow-horizontal-left {
+  border-width: 4px 6px 4px 0;
+  border-color: transparent #ea580c transparent transparent;
+}
+.scroll-area-arrow-horizontal-left:hover {
+  border-color: transparent #c2410c transparent transparent;
+}
+.scroll-area-arrow-horizontal-right {
+  border-width: 4px 0 4px 6px;
+  border-color: transparent transparent transparent #ea580c;
+}
+.scroll-area-arrow-horizontal-right:hover {
+  border-color: transparent transparent transparent #c2410c;
+}
+
+/* ================================ */
+/* 11. SCROLLBAR CUSTOMIZADO        */
+/* ================================ */
+
+/* Scrollbar para dropdowns de filtros */
+.filter-dropdown-scroll {
+  overflow-y: auto !important;
+  max-height: 280px !important;
+}
+
+.filter-dropdown-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.filter-dropdown-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.filter-dropdown-scroll::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.filter-dropdown-scroll::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Scrollbar para personalização de ícones (aba de emojis) */
+.icon-customization-scroll {
+  scrollbar-color: #ea580c #ffffff;
+}
+
+.icon-customization-scroll::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+.icon-customization-scroll::-webkit-scrollbar-thumb {
+  background: #ea580c;
+  border-radius: 9999px;
+}
+
+.icon-customization-scroll::-webkit-scrollbar-thumb:hover {
+  background: #c2410c;
+}
+
+.icon-customization-scroll::-webkit-scrollbar-button {
+  background: #ea580c;
+}
+
+/* Scrollbar para dropdown de notificações (header admin) */
+.notification-dropdown-scroll {
+  overflow-y: auto !important;
+  scrollbar-color: #ea580c transparent;
+  scrollbar-width: thin;
+  padding-right: 2px;
+  margin-right: -4px; /* Move a scrollbar um pouco para a direita */
+}
+
+.notification-dropdown-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notification-dropdown-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notification-dropdown-scroll::-webkit-scrollbar-thumb {
+  background: #ea580c;
+  border-radius: 4px;
+}
+
+.notification-dropdown-scroll::-webkit-scrollbar-thumb:hover {
+  background: #c2410c;
+}
+
+.notification-dropdown-scroll::-webkit-scrollbar-button {
+  display: block;
+  height: 0;
+  width: 0;
+}
+
+/* Setas (caso o navegador as mostre) - MESMA COR DA SIDEBAR */
+.notification-dropdown-scroll::-webkit-scrollbar-button:single-button:vertical:decrement {
+  border-style: solid;
+  border-width: 0 4px 6px 4px;
+  border-color: transparent transparent #ea580c transparent;
+}
+
+.notification-dropdown-scroll::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+  border-color: transparent transparent #c2410c transparent;
+}
+
+.notification-dropdown-scroll::-webkit-scrollbar-button:single-button:vertical:increment {
+  border-style: solid;
+  border-width: 6px 4px 0 4px;
+  border-color: #ea580c transparent transparent transparent;
+}
+
+.notification-dropdown-scroll::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+  border-color: #c2410c transparent transparent transparent;
+}
+
+/* Scrollbar WhatsApp (verde) */
+.whatsapp-chat-scroll {
+  overflow-y: scroll !important;
+}
+
+.whatsapp-chat-window .whatsapp-chat-scroll::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+
+.whatsapp-chat-window .whatsapp-chat-scroll::-webkit-scrollbar-track {
+  background: #f0f0f0 !important;
+  border-radius: 3px !important;
+}
+
+.whatsapp-chat-window .whatsapp-chat-scroll::-webkit-scrollbar-thumb {
+  background: #25d366 !important;
+  border-radius: 3px !important;
+  opacity: 0.8 !important;
+  border: none !important;
+}
+
+.whatsapp-chat-window .whatsapp-chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: #128c7e !important;
+  opacity: 1 !important;
+}
+
+.whatsapp-chat-window .whatsapp-chat-scroll::-webkit-scrollbar-corner {
+  background: #f0f0f0 !important;
+}
+
+.whatsapp-chat-scroll::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.whatsapp-chat-scroll::-webkit-scrollbar-track {
+  background: #f0f0f0 !important;
+  border-radius: 3px !important;
+}
+
+.whatsapp-chat-scroll::-webkit-scrollbar-thumb {
+  background: #25d366 !important;
+  border-radius: 3px !important;
+  opacity: 0.7 !important;
+}
+
+.whatsapp-chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: #128c7e !important;
+  opacity: 1 !important;
+}
+
+/* ================================ */
+/* 12. WHATSAPP FAB                 */
+/* ================================ */
+
+.whatsapp-green {
+  background-color: #25d366;
+}
+
+.whatsapp-green:hover {
+  background-color: #128c7e;
+}
+
+.whatsapp-header {
+  background-color: #25d366;
+}
+
+.whatsapp-chat-window {
+  max-height: 90vh;
+  min-height: 400px;
+  bottom: 90px !important;
+}
+
+.whatsapp-input-area {
+  position: -webkit-sticky;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+/* ================================ */
+/* 13. BADGES E STATUS              */
+/* ================================ */
+
+/* Badge customizations - bordas arredondadas */
+div[class*='text-xs'][class*='inline-flex'][class*='items-center'][class*='gap-2'] {
+  border-radius: 9999px !important;
+}
+
+/* Status badges - manter cores originais no hover */
+.status-badge-hover:hover {
+  background-color: inherit !important;
+}
+
+.bg-yellow-100.status-badge-hover:hover {
+  background-color: rgb(254 249 195) !important; /* bg-yellow-100 */
+}
+
+.bg-green-100.status-badge-hover:hover {
+  background-color: rgb(220 252 231) !important; /* bg-green-100 */
+}
+
+.bg-red-100.status-badge-hover:hover {
+  background-color: rgb(254 226 226) !important; /* bg-red-100 */
+}
+
+/* ================================ */
+/* 14. SELECTION E UTILITY          */
+/* ================================ */
+
+::selection {
+  background-color: #c7d2fe;
+  color: #1e1b4b;
+}
+
+.input-description {
+  font-size: 12px !important;
+  color: #6b7280 !important;
+}
+
+/* ================================ */
+/* 15. KEYFRAMES (ANIMAÇÕES)        */
+/* ================================ */
+
+@keyframes slideInLeft {
+  0% {
+    opacity: 0;
+    transform: translate3d(-100px, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translate3d(80px, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 60px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeInUpSmooth {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Fade in simples - para elementos que só precisam de opacity */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInHeader {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes float-delayed {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes scale-x {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes count-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes reset {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ================================ */
+/* 16. ANIMAÇÕES DE ILUMINAÇÃO      */
+/* ================================ */
+
+/* Animação de pulso lento para elementos de iluminação */
+@keyframes slow-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+.animate-slow-pulse {
+  animation: slow-pulse 3s ease-in-out infinite;
+}
+
+/* Animação de pulso muito lento para luzes de fundo grandes */
+@keyframes very-slow-pulse {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+.animate-very-slow-pulse {
+  animation: very-slow-pulse 4s ease-in-out infinite;
+}
+
+/* Animação de pulso muito lenta e suave para luzes de fundo */
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 0.015;
+  }
+  50% {
+    opacity: 0.04;
+  }
+}
+
+/* ================================ */
+/* 17. CLASSES DE ANIMAÇÃO          */
+/* ================================ */
+
+/* Scroll reveal animations */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translate3d(0, 30px, 0);
+  transition:
+    opacity 0.8s ease-out,
+    transform 0.8s ease-out;
+  will-change: opacity, transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.animate-on-scroll.animate-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.animate-on-scroll-delayed {
+  opacity: 0;
+  transform: translate3d(0, 30px, 0);
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s ease-out;
+  transition-delay: 0.2s;
+  will-change: opacity, transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.animate-on-scroll-delayed.animate-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Category cards animation */
+.category-card-animate {
+  opacity: 0;
+  transform: translate3d(0, 30px, 0);
+  transition:
+    opacity 0.8s ease-out,
+    transform 0.8s ease-out;
+  will-change: opacity, transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.category-card-animate.animate-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Staggered animation delays */
+.category-card-animate:nth-child(1) {
+  transition-delay: 0.1s;
+}
+.category-card-animate:nth-child(2) {
+  transition-delay: 0.2s;
+}
+.category-card-animate:nth-child(3) {
+  transition-delay: 0.3s;
+}
+.category-card-animate:nth-child(4) {
+  transition-delay: 0.4s;
+}
+.category-card-animate:nth-child(5) {
+  transition-delay: 0.5s;
+}
+.category-card-animate:nth-child(6) {
+  transition-delay: 0.6s;
+}
+.category-card-animate:nth-child(7) {
+  transition-delay: 0.7s;
+}
+.category-card-animate:nth-child(8) {
+  transition-delay: 0.8s;
+}
+
+/* Utility animation classes */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 8s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+.animate-scale-x {
+  animation: scale-x 1s ease-out forwards;
+  animation-delay: 0.5s;
+}
+
+.animate-count-up {
+  animation: count-up 1s ease-out forwards;
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.8s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.4s ease-out;
+}
+
+.animate-reset {
+  animation: reset 0.6s ease-in-out;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1s;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+/* ================================ */
+/* 18. PÁGINA SOBRE (ESPECÍFICA)   */
+/* ================================ */
+
+.sobre-header-block {
+  animation: fadeInHeader 1s ease-out forwards;
+}
+
+.sobre-page {
+  overflow: visible;
+  position: relative;
+  height: auto;
+}
+
+body:has(.sobre-page) {
+  overflow-x: hidden !important;
+}
+
+/* Prevenir FOUC na página Sobre */
+.sobre-page:not(.opacity-100) .material-card,
+.sobre-page:not(.opacity-100) .benefit-card,
+.sobre-page:not(.opacity-100) .cta-section,
+.sobre-page:not(.opacity-100) .sobre-header-block {
+  visibility: hidden !important;
+}
+
+.sobre-page .material-card,
+.sobre-page .benefit-card,
+.sobre-page .cta-section,
+.sobre-page .sobre-header-block {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* ================================ */
+/* 19. ÁREA DO CLIENTE              */
+/* ================================ */
+
+.area-cliente-container {
+  scroll-padding-top: 2rem;
+}
+
+.area-cliente-section {
+  padding-top: 1rem;
+}
+
+.area-cliente-banner {
+  scroll-margin-top: -2rem;
+}
+
+#area-cliente-dashboard,
+#dashboard-banner {
+  scroll-margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  .area-cliente-container {
+    scroll-padding-top: 0.5rem;
+  }
+
+  #area-cliente-dashboard,
+  #dashboard-banner {
+    scroll-margin-top: 84px;
+    padding-top: 0;
+  }
+
+  section.bg-gradient-to-br {
+    scroll-margin-top: 84px;
+  }
+}
+
+@media (min-width: 769px) {
+  #area-cliente-dashboard,
+  #dashboard-banner {
+    scroll-margin-top: 84px;
+  }
+
+  section.bg-gradient-to-br {
+    scroll-margin-top: 84px;
+  }
+}
+
+/* ================================ */
+/* 20. ANIMAÇÕES - CARD HOVERS     */
+/* ================================ */
+
+/* Garantir transições nos cards animados */
+.contact-form,
+.contact-card,
+.benefit-card,
+.category-card {
+  transition: all 0.3s ease !important;
+  overflow: hidden !important;
+}
+
+.material-card {
+  position: relative;
+  transition: all 0.3s ease !important;
+}
+
+.benefit-card,
+.cta-section {
+  position: relative;
+}
+
+.cta-section {
+  overflow: hidden;
+}
+
+.contact-form:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+.contact-card:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Correção específica para transição do formulário de contato */
+.contact-form-hover {
+  transition:
+    box-shadow 0.5s ease,
+    transform 0.3s ease !important;
+}
+
+.contact-form-hover:hover {
+  transform: scale(1.02) !important;
+}
+
+/* ================================ */
+/* 21. ACCESSIBILITY (A11Y)         */
+/* ================================ */
+
+/* Para usuários que preferem movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+  .category-card,
+  .material-card,
+  .benefit-card,
+  .contact-form,
+  .contact-info,
+  .contact-card,
+  .cta-section,
+  .section-title,
+  .section-subtitle,
+  .hero-title,
+  .hero-subtitle,
+  .hero-search,
+  .hero-buttons,
+  .hero-contact,
+  .hero-image {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+/* Garantir transição/hover consistente no hero 3D (fallback caso inline esteja sujo) */
+.hero-image {
+  transition: transform 500ms ease !important;
+}
+
+.hero-image-inner {
+  transition: transform 500ms ease;
+  will-change: transform;
+}
+
+/* ================================ */
+/* 22. UTILITIES E OVERRIDES        */
+/* ================================ */
+
+/* iOS safe-area: compensar padding-top do conteúdo quando viewport-fit=cover */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .pt-\[104px\] {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 104px) !important;
+  }
+}
+
+.min-h-screen {
+  min-height: 100vh !important;
+  overflow: visible !important;
+}
+
+body.min-h-screen {
+  overflow: visible !important;
+  height: auto !important;
+}
+
+.overflow-hidden {
+  overflow: hidden !important;
+}
+
+html.overflow-hidden,
+body.overflow-hidden {
+  overflow: hidden !important;
+  overscroll-behavior: contain;
+}
+
+/* Prevenir scroll chaining em dialogs */
+[role='dialog'] [data-base-ui-focusable] {
+  overscroll-behavior: contain;
+}
+
+/* Prevenir scroll no backdrop do dialog */
+[role='presentation'].fixed.inset-0 {
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
+/* ================================ */
+/* 23. SCROLLBAR HIDE (TABS MOBILE) */
+/* ================================ */
+
+/* Classe para esconder scrollbar mas manter funcionalidade */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+/* ================================ */
+/* 24. REACT-DAY-PICKER V9 STYLES  */
+/* ================================ */
+
+/* Root container */
+.rdp-root {
+  --rdp-accent-color: hsl(var(--primary));
+  --rdp-accent-background-color: hsl(var(--accent));
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Container do mês */
+.rdp-month {
+  width: 100%;
+  position: relative;
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+/* Caption - layout flex centralizado com tudo junto */
+.rdp-month_caption {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
+  position: relative;
+  overflow: visible;
+  flex-wrap: nowrap;
+}
+
+/* Em telas menores que 320px: botões na primeira linha, dropdowns na segunda */
+@media (max-width: 319px) {
+  .rdp-month_caption {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .rdp-button_previous {
+    order: 1;
+  }
+
+  .rdp-button_next {
+    order: 2;
+  }
+
+  .rdp-dropdowns {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    flex-basis: 100%;
+  }
+}
+
+/* Em telas 320px - 1023px: tudo na mesma linha */
+@media (min-width: 320px) and (max-width: 1023px) {
+  .rdp-month_caption {
+    flex-wrap: nowrap;
+  }
+
+  .rdp-button_previous,
+  .rdp-button_next {
+    order: 0;
+  }
+
+  .rdp-dropdowns {
+    order: 0;
+    width: auto;
+    flex-basis: auto;
+  }
+}
+
+/* Em telas 1024px - 1199px: botões na primeira linha, dropdowns na segunda */
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .rdp-month_caption {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .rdp-button_previous {
+    order: 1;
+  }
+
+  .rdp-button_next {
+    order: 2;
+  }
+
+  .rdp-dropdowns {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    flex-basis: 100%;
+  }
+}
+
+/* Em telas 1200px+: tudo na mesma linha */
+@media (min-width: 1200px) {
+  .rdp-month_caption {
+    flex-wrap: nowrap;
+  }
+
+  .rdp-button_previous,
+  .rdp-button_next {
+    order: 0;
+  }
+
+  .rdp-dropdowns {
+    order: 0;
+    width: auto;
+    flex-basis: auto;
+  }
+}
+
+/* Esconde o label padrão quando usando dropdowns */
+.rdp-caption_label {
+  display: none !important;
+}
+
+/* Nav - posicionamento absoluto como shadcn */
+.rdp-nav {
+  display: flex !important;
+  align-items: center;
+  gap: 0.25rem;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Grid do calendário */
+.rdp-month_grid {
+  width: 100%;
+  min-width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+/* Botões de navegação */
+.rdp-button_previous,
+.rdp-button_next {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 1px solid hsl(var(--input));
+  border-radius: 0.375rem;
+  background-color: white;
+  cursor: pointer;
+  opacity: 0.7;
+  transition:
+    opacity 0.15s,
+    background-color 0.15s;
+  pointer-events: auto !important;
+  flex-shrink: 0;
+  visibility: visible !important;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 640px) {
+  .rdp-button_previous,
+  .rdp-button_next {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+}
+
+.rdp-button_previous:hover,
+.rdp-button_next:hover {
+  opacity: 1;
+  background-color: hsl(var(--accent));
+}
+
+.rdp-button_previous:disabled,
+.rdp-button_next:disabled,
+.rdp-button_previous[aria-disabled='true'],
+.rdp-button_next[aria-disabled='true'] {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Dropdowns de mês e ano - centralizados entre os botões */
+.rdp-dropdowns {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+  width: auto;
+  justify-self: center;
+}
+
+@media (min-width: 640px) {
+  .rdp-dropdowns {
+    gap: 0.5rem;
+  }
+}
+
+/* Container do dropdown */
+.rdp-dropdown_root {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Select do dropdown */
+.rdp-dropdown {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  border: 1px solid hsl(var(--input));
+  border-radius: 0.375rem;
+  padding: 0.25rem 1.25rem 0.25rem 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.25rem center;
+  background-repeat: no-repeat;
+  background-size: 0.875rem 0.875rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .rdp-dropdown {
+    padding: 0.25rem 1.5rem 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    background-size: 1rem 1rem;
+  }
+}
+
+.rdp-dropdown:hover {
+  background-color: hsl(var(--accent));
+}
+
+.rdp-dropdown:focus {
+  outline: none;
+  border-color: hsl(var(--ring));
+}
+
+/* Tbody com scroll horizontal */
+.rdp-weeks {
+  display: table-row-group;
+  width: 100%;
+}
+
+/* Cabeçalho dos dias da semana */
+.rdp-weekdays {
+  display: flex;
+  width: 100%;
+}
+
+.rdp-weekday {
+  flex: 1;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: hsl(var(--muted-foreground));
+  padding: 0.375rem 0;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .rdp-weekday {
+    font-size: 0.8rem;
+    padding: 0.5rem 0;
+  }
+}
+
+/* Linhas de semana */
+.rdp-week {
+  display: flex;
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+/* Células de dia */
+.rdp-day {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  padding: 0;
+  min-width: 0;
+}
+
+.rdp-day_button {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  border: none;
+  background: transparent;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+
+@media (min-width: 640px) {
+  .rdp-day {
+    height: 2.25rem;
+  }
+
+  .rdp-day_button {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Hover para botões normais (não selecionados) */
+.rdp-day:not(.rdp-selected):not(.rdp-range_start):not(.rdp-range_end):not(
+    .rdp-range_middle
+  )
+  .rdp-day_button:hover:not(:disabled) {
+  color: #ea580c; /* orange-600 */
+  background-color: hsl(var(--accent));
+}
+
+/* Estados de seleção */
+.rdp-selected .rdp-day_button {
+  background-color: #ea580c; /* orange-600 */
+  color: white;
+}
+
+.rdp-selected .rdp-day_button:hover {
+  background-color: #ea580c; /* orange-600 */
+  color: white;
+}
+
+.rdp-today .rdp-day_button {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+.rdp-outside .rdp-day_button {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.5;
+}
+
+.rdp-disabled .rdp-day_button {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Range selection */
+.rdp-range_start .rdp-day_button,
+.rdp-range_end .rdp-day_button {
+  background-color: #ea580c; /* orange-600 */
+  color: white;
+  border-radius: 0.375rem;
+}
+
+.rdp-range_middle .rdp-day_button {
+  background-color: #ffedd5; /* orange-100 - bem mais fraco ainda para o meio do range */
+  color: #1e293b; /* slate-800 - texto escuro para contraste com bg laranja claro */
+  border-radius: 0;
+}
+
+.rdp-range_start .rdp-day_button {
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.rdp-range_end .rdp-day_button {
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.rdp-range_start.rdp-range_end .rdp-day_button {
+  border-radius: 0.375rem;
+}
+
+/* Hover para botões de range - mantém texto branco */
+.rdp-range_start .rdp-day_button:hover,
+.rdp-range_end .rdp-day_button:hover,
+.rdp-range_middle .rdp-day_button:hover {
+  color: white;
+}
+
+.rdp-range_start .rdp-day_button:hover {
+  background-color: #ea580c; /* orange-600 */
+}
+
+.rdp-range_end .rdp-day_button:hover {
+  background-color: #ea580c; /* orange-600 */
+}
+
+.rdp-range_middle .rdp-day_button:hover {
+  background-color: #ffedd5; /* orange-100 - mantém o mesmo tom fraco */
+  color: #1e293b; /* slate-800 - mantém texto escuro */
+}
+
+/* Esconde elementos desnecessários */
+.rdp-hidden {
+  visibility: hidden;
+}
+
+/* ================================ */
+/* WEEKEND TOGGLE - ESTILOS        */
+/* ================================ */
+
+/* Headers dos dias da semana - por padrão dias úteis são mais destacados */
+/* O calendário pt-BR começa no domingo, então:
+   - 1º elemento (first-child) = domingo
+   - 7º elemento (last-child) = sábado
+*/
+
+/* Por padrão, quando finais de semana NÃO estão incluídos */
+/* Dias da semana (seg-sex) com cor forte */
+.rdp-exclude-weekends .rdp-weekday:not(:first-child):not(:last-child) {
+  color: #1e293b; /* slate-800 - cor forte para dias úteis */
+  font-weight: 500;
+}
+
+/* Finais de semana (dom e sáb) com cor mais fraca quando não incluídos */
+.rdp-exclude-weekends .rdp-weekday:first-child,
+.rdp-exclude-weekends .rdp-weekday:last-child {
+  color: #9ca3af; /* gray-400 - cor fraca para finais de semana */
+  font-weight: 400;
+}
+
+/* Quando finais de semana estão incluídos, todos os dias ficam com mesma cor forte */
+.rdp-include-weekends .rdp-weekday {
+  color: #1e293b; /* slate-800 - cor forte para todos */
+  font-weight: 500;
+}
+
+/* Finais de semana desabilitados quando opção não está marcada */
+.rdp-exclude-weekends .rdp-weekend .rdp-day_button {
+  color: #d1d5db; /* gray-300 - bem fraco para desabilitado */
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.rdp-exclude-weekends .rdp-weekend .rdp-day_button:hover {
+  background-color: transparent;
+  color: #d1d5db;
+}
+
+/* Quando finais de semana estão incluídos, dias normais */
+.rdp-include-weekends .rdp-weekend .rdp-day_button:not(:disabled) {
+  color: inherit;
+  cursor: pointer;
+  opacity: 1;
+}
+
+/* Range selection em finais de semana quando incluídos */
+.rdp-include-weekends .rdp-weekend.rdp-range_middle .rdp-day_button {
+  background-color: #ffedd5; /* orange-100 */
+  color: #1e293b; /* slate-800 */
+}
+
+.rdp-include-weekends .rdp-weekend.rdp-range_start .rdp-day_button,
+.rdp-include-weekends .rdp-weekend.rdp-range_end .rdp-day_button {
+  background-color: #ea580c; /* orange-600 */
+  color: white;
+}
+
+/* Remover outline de foco dos elementos Recharts (sparklines e gráficos) */
+.recharts-surface,
+.recharts-surface:focus,
+.recharts-surface:focus-visible,
+.recharts-surface[tabindex='0'],
+.recharts-surface[tabindex='0']:focus,
+.recharts-surface[tabindex='0']:focus-visible,
+.recharts-curve,
+.recharts-curve:focus,
+.recharts-curve:focus-visible,
+.recharts-line-curve,
+.recharts-line-curve:focus,
+.recharts-line-curve:focus-visible,
+.recharts-dot,
+.recharts-dot:focus,
+.recharts-dot:focus-visible,
+.recharts-wrapper svg,
+.recharts-wrapper svg:focus,
+.recharts-wrapper svg:focus-visible,
+.recharts-wrapper svg[tabindex='0'],
+.recharts-wrapper svg[tabindex='0']:focus,
+.recharts-wrapper svg[tabindex='0']:focus-visible,
+.recharts-wrapper path,
+.recharts-wrapper path:focus,
+.recharts-wrapper path:focus-visible,
+.recharts-wrapper circle,
+.recharts-wrapper circle:focus,
+.recharts-wrapper circle:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}

@@ -20,12 +20,11 @@ Isso vai:
 - Atualizar o Prisma Client com o schema mais recente
 - Resolver erros TS relacionados a modelos faltantes
 
-2. **Aplicar mudanças no banco**
+2. **Aplicar migrations no banco alvo**
 
 ```bash
-pnpm db:push
-# ou criar migração
-pnpm db:migrate dev --name add_saas_features
+# Aplicar somente migrations versionadas e revisadas no banco alvo
+pnpm exec prisma migrate deploy
 ```
 
 ## Modelos Novos

@@ -2,15 +2,15 @@ import { z } from 'zod'
 import { ContactSchema, QuoteRequestSchema } from '../quotations'
 
 /**
- * Esquemas públicos da especificação OpenAPI da API compartilhada (onda 135, C5; antes em lib/openapi/schemas.ts da
- * raiz legada). `pnpm openapi:generate` (scripts/generate-openapi-zod.ts) converte cada export em JSON Schema
+ * Esquemas públicos da especificação OpenAPI da API compartilhada (onda 135, C5; a antiga lib/openapi/schemas.ts
+ * da raiz foi retirada em F). `pnpm openapi:generate` (scripts/generate-openapi-zod.ts) converte cada export em JSON Schema
  * (public-schemas.json, ao lado) e as rotas de apps/services/api os citam pelo nome no JSDoc (`@query`, `@requestBody`,
  * `@response`). Só documentação e conferência de resposta (tests/api/contract.test.ts): as rotas validam a entrada
  * com os contratos de ../quotations.
  */
 
 /**
- * Formato público de um equipamento no catálogo (o mesmo de lib/validations da raiz, que sai no bloco F). Só entra
+ * Formato público de um equipamento no catálogo (o mesmo da antiga lib/validations da raiz, retirada em F). Só entra
  * na especificação por PublicEquipmentList.
  * @internal
  */
@@ -61,7 +61,7 @@ const EquipmentPublicSchema = z
   )
 
 /**
- * Formato público de uma categoria no catálogo (o mesmo de lib/validations da raiz, que sai no bloco F). Só entra na
+ * Formato público de uma categoria no catálogo (o mesmo da antiga lib/validations da raiz, retirada em F). Só entra na
  * especificação por PublicCategoryList.
  * @internal
  */

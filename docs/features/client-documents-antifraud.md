@@ -1,6 +1,7 @@
 # Documentos do cliente — antifraude
 
-Status: crítico. Atualizado localmente em 2026-10-02, sem publicação.
+Status: crítico. Ponteiros pós-F revistos em 2026-10-09; evidências da extração
+de 2026-10-02 preservadas nas seções correspondentes.
 
 ## 1. Objetivo e escopo
 
@@ -20,18 +21,22 @@ durável ZapSign descrita em [Contratos](contracts.md).
 | POST /api/admin/rentals/[id]/client-documents | ADMIN ou OPERATOR do vínculo da locadora selecionada                         |
 | GET /api/admin/clients/[id]/documents         | ADMIN/OPERATOR, ou CLIENT somente quando o id corresponde ao próprio usuário |
 
-Os mesmos caminhos existem no legado e em apps/services/api desde a onda 43.
-FINANCIAL não recebe esses acessos. O principal real, a seleção por host/header/
-cookie e a recusa de mutação de origem irmã continuam nos adapters de
-identidade; sem seleção válida não se escolhe uma locadora automaticamente.
+Os handlers atuais ficam em `apps/services/api/src/app/api` e usam
+`host/private-identity.ts` antes de conferir o papel/ownership. Os mesmos
+caminhos foram caracterizados no legado e no serviço na onda 43; o adapter da
+raiz foi aposentado no checkout pós-F. FINANCIAL não recebe esses acessos. O
+principal real, a seleção por host/header/ cookie e a recusa de mutação de
+origem irmã continuam nos adapters de identidade; sem seleção válida não se
+escolhe uma locadora automaticamente.
 
 A tela operacional permanece em packages/frontend/src/pages/locacoes, consumida
 pelos hosts finos. A onda não altera tela, origem de API ou scheduler.
 
 ## 3. Fluxo e contratos
 
-1. Autorizar o vínculo e verificar a locação por id e tenantId antes de ler o
-   multipart. Referência de outra locadora retorna 404.
+1. Autorizar o vínculo; Content-Length acima de 11 MiB retorna 413 antes da
+   consulta da locação. Dentro do limite, verificar id e tenantId antes de ler o
+   multipart. Referência de outra locadora retorna 404 sem parsing do arquivo.
 2. Receber file, type e captureMetadata opcional. O enum dos quatro tipos,
    parsing e mensagens permanecem os existentes.
 3. Validar tamanho, MIME e conteúdo; produzir SHA-256 dos bytes aceitos.
@@ -60,10 +65,16 @@ ClientProfile na locadora retorna 404.
   regra de negócio.
 - apps/services/api/src/host/client-documents.ts e document-storage.ts:
   composição server-side, SDK lazy compartilhado com contratos.
-- lib/client-documents.ts, lib/client-document-upload.ts e
-  lib/security/private-documents.ts: fachadas/composição legadas.
-- Rotas dos dois hosts: principal, papéis, params, resposta e tratamento de
-  erro.
+- apps/services/api/src/app/api/admin/rentals/[id]/client-documents/route.ts:
+  POST autoriza ADMIN/OPERATOR e delega upload; Zod/InvalidDocumentError viram
+  400 e erros não classificados conservam 500.
+- apps/services/api/src/app/api/admin/clients/[id]/documents/route.ts: GET
+  autoriza ADMIN/OPERATOR ou CLIENT proprietário, traduz CustomerError e
+  conserva private, no-store.
+- No registro da onda 43, lib/client-documents.ts, lib/client-document-upload.ts
+  e lib/security/private-documents.ts eram as fachadas legadas. Foram
+  aposentadas no checkout pós-F; seus owners atuais são os módulos/backend e a
+  composição API acima, sem SDK no cliente.
 
 ## 5. Dados, limites e invariantes
 
@@ -100,18 +111,21 @@ pública permanente.
 
 ## 7. Validação
 
-tests/api-host/client-documents.http.test.ts aplica 44 casos aos dois hosts com
-Better Auth e NextAuth reais, builds de produção locais, PostgreSQL descartável
-e role temporária sem BYPASSRLS. Prova papéis, ownership, isolamento, CSRF,
-precedência da posse, validações, DTO/hash/metadata, TTL, bucket público
-recusado, falhas de upload/assinatura e compensação após INSERT recusado pelo
-banco.
+Na caracterização da onda 43, tests/api-host/client-documents.http.test.ts
+aplicou 44 casos aos dois hosts com Better Auth e NextAuth reais, builds de
+produção locais, PostgreSQL descartável e role temporária sem BYPASSRLS. Prova
+papéis, ownership, isolamento, CSRF, precedência da posse, validações,
+DTO/hash/metadata, TTL, bucket público recusado, falhas de upload/assinatura e
+compensação após INSERT recusado pelo banco.
 
 O SDK Supabase real conversa apenas com tests/api-host/private-storage.ts,
 servidor local que registra operações sem credenciais. Não prova o bucket ou
 provedor de produção. A regressão de contratos e os invariantes SQL/RLS
 passaram; resultados completos e limites na onda 43 de
-[API compartilhada](shared-api-host.md). API legada permanece ativa.
+[API compartilhada](shared-api-host.md). A API legada permanecia ativa naquele
+checkpoint. Após F, o serviço API é o adapter corrente; os resultados antigos
+não provam uma nova rodada nem o bucket de produção. Provas/limites da retomada
+ficam em `docs/guides/wave135-base-validation.md`.
 
 ## 8. Histórico e referências
 

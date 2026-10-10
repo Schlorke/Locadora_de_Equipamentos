@@ -15,38 +15,33 @@ um padrão similar ao iFood.
 
 ## 2. Visão Geral do Fluxo
 
-```
-Usuário preenche formulário de orçamento
-    ↓
-Usuário clica em "Enviar Orçamento"
-    ↓
-Sistema verifica condições:
-    ↓
-┌─────────────────────────────────────┐
-│ Primeira vez (0 endereços) +        │ → Dialog: "Deseja salvar endereço?"
-│ endereço completo                   │ → Salvar ou Não salvar
-└─────────────────────────────────────┘
-    ↓
-┌─────────────────────────────────────┐
-│ Segunda vez (1 endereço) +          │ → Dialog: "Confirma endereço?"
-│ confirmação não dispensada          │ → Checkbox "Não exibir novamente"
-└─────────────────────────────────────┘
-    ↓
-┌─────────────────────────────────────┐
-│ Múltiplos endereços (2+)            │ → Dialog: "Selecione endereço"
-│                                     │ → Lista de endereços salvos
-└─────────────────────────────────────┘
-    ↓
-Enviar orçamento com endereço selecionado/preenchido
-```
+Depois de validar o pedido, `use-quote-page.ts` consulta os endereços da sessão
+na locadora ativa. Para DELIVERY, um endereço completo novo oferece salvamento,
+inclusive quando já existem outros endereços. Endereço igual a um salvo sem
+novos dados do cliente segue sem dialog. Sem endereço manual, uma única opção
+pode pedir confirmação e duas ou mais podem abrir a seleção.
 
----
+Confirmar, selecionar, salvar ou dispensar continua o pedido; cancelar ou
+escolher «outro endereço» apenas fecha o dialog para edição. A preferência de
+confirmação e as leituras pertencem ao par locadora/usuário, não a uma sessão
+global compartilhada entre vitrines.
 
 ## 3. Componentes do Sistema
 
 ### 3.1. API Routes
 
-**Localização**: `app/api/addresses/route.ts`
+**Localização**: `apps/services/api/src/app/api/addresses/route.ts` e
+`addresses/[id]/route.ts`. Composição em `host/customers.ts`, serviço
+`packages/backend/src/modules/customers/addresses.ts` e schemas
+`packages/contracts/src/addresses.ts`. O cliente usa
+`packages/frontend/src/entities/cliente/api/customer-api.ts`, pelo HttpClient
+capturado no escopo, sem consultar o banco diretamente.
+
+O principal vem de `host/private-identity.ts`: sessão, preferência/borda e
+membership são revalidados. Todas as consultas/escritas usam tenantId + userId,
+com `withTenantTransaction`. Escritas ainda conferem mesma origem antes do
+corpo; dados do formulário não escolhem tenantId ou dono. Id alheio no PATCH ou
+DELETE responde 404. CEP/geocoding da UI não substitui essa autorização.
 
 #### GET `/api/addresses`
 
@@ -74,7 +69,7 @@ Enviar orçamento com endereço selecionado/preenchido
 
 **Comportamento**:
 
-- Lista todos os endereços do usuário logado
+- Lista os endereços do usuário logado SOMENTE na locadora resolvida
 - Ordenação: `isPrimary DESC, createdAt DESC` (endereço principal primeiro,
   depois mais recentes)
 
@@ -110,10 +105,13 @@ Enviar orçamento com endereço selecionado/preenchido
 
 **Comportamento**:
 
-- Valida dados com Zod schema
-- Se `isPrimary === true`, marca outros endereços como `isPrimary = false`
-- Se é o primeiro endereço, sempre marca como `isPrimary = true`
-- Cria endereço no banco de dados
+- Valida `AddressInputSchema`: textos aparados/não vazios, UF de duas letras
+  normalizada para maiúsculas e CEP de oito dígitos, com hífen opcional.
+- Sob a trava `tenantId:addresses:userId`, o primeiro endereço vira principal e
+  um novo principal desmarca apenas os outros desse usuário nessa locadora.
+- Cria no banco com o principal resolvido e retorna 201.
+- PATCH usa o schema parcial e preserva o mesmo escopo/trava; DELETE promove o
+  endereço restante mais antigo (createdAt/id) se removeu o principal.
 
 ---
 
@@ -131,6 +129,13 @@ interface SaveAddressDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   address: AddressData
+  isAddressNew?: boolean
+  customerInfo?: {
+    phone?: string
+    cpf?: string
+    cnpj?: string
+    company?: string
+  }
   onSave: () => Promise<void>
   onSkip: () => void
 }
@@ -139,8 +144,9 @@ interface SaveAddressDialogProps {
 **Quando exibir**:
 
 - Usuário está logado
-- Usuário tem 0 endereços salvos
 - Formulário de endereço está completo e válido
+- Endereço novo, inclusive com endereços anteriores; a página também verifica
+  dados comerciais novos. Endereço igual ao salvo não é criado novamente.
 
 **Layout**:
 
@@ -185,8 +191,12 @@ interface ConfirmAddressDialogProps {
 
 **Persistência**:
 
-- Checkbox salva preferência em `localStorage`:
-  `addressConfirmationDismissed-{userId}`
+- A chave atual é `addressConfirmationDismissed:` +
+  `JSON.stringify([tenantSlug, userId])`.
+- O modelo recebe `QuotePagePorts.preferences`; a variante web fornece
+  localStorage e a nativa usa `use-quote-preferences.ts` com storage assíncrono.
+  Não copiar uma chave só por userId: ela vazaria preferência entre locadoras.
+  Falha de persistência nativa é visível, sem apagar a sessão.
 
 #### SelectAddressDialog
 
@@ -258,7 +268,10 @@ function formatAddress(address: {
 
 #### isAddressComplete
 
-**Localização**: `app/orcamento/page.tsx` (função auxiliar)
+**Localização**: `packages/frontend/src/entities/orcamento/model/envio.ts`,
+exportada pelo index da entidade e consumida por `use-quote-page.ts`. A função
+testa presença dos campos; validação do schema HTTP e CEP continuam nas suas
+camadas. Não restaurar a função no wrapper da rota.
 
 **Assinatura**:
 
@@ -278,26 +291,18 @@ function isAddressComplete(address: AddressData): boolean
 
 ### 4.1. Condições para Exibir Dialogs
 
-O sistema verifica as seguintes condições na ordem especificada:
+Ordem real de `use-quote-page.ts`, após validações de formulário/período:
 
-1. **Dialog de Salvamento**:
-   - ✅ Usuário logado (`session?.user?.id`)
-   - ✅ Tipo de entrega = `DELIVERY`
-   - ✅ 0 endereços salvos (`userAddresses.length === 0`)
-   - ✅ Endereço está completo (`isAddressComplete(formData.deliveryAddress)`)
-
-2. **Dialog de Confirmação**:
-   - ✅ Usuário logado
-   - ✅ Tipo de entrega = `DELIVERY`
-   - ✅ 1 endereço salvo (`userAddresses.length === 1`)
-   - ✅ Confirmação não foi dispensada (`!isAddressConfirmationDismissed`)
-   - ✅ Endereço não foi preenchido manualmente (`!formData.deliveryAddress`)
-
-3. **Dialog de Seleção**:
-   - ✅ Usuário logado
-   - ✅ Tipo de entrega = `DELIVERY`
-   - ✅ 2+ endereços salvos (`userAddresses.length >= 2`)
-   - ✅ Endereço não foi preenchido manualmente (`!formData.deliveryAddress`)
+1. Para usuário logado e DELIVERY, carregar endereços no cliente capturado.
+2. Se há endereço completo e novo, oferecer salvamento tanto na primeira vez
+   quanto com endereços prévios. A comparação normaliza CEP e campos textuais em
+   `isAddressDifferent`; dados comerciais novos também são verificados.
+3. Endereço completo igual ao salvo e sem dados comerciais novos segue direto.
+4. Uma opção salva, sem dispensa e sem endereço manual, abre confirmação.
+   Endereço manual não passa pelo dialog de confirmação.
+5. Duas ou mais opções, sem endereço manual, abrem seleção.
+6. Nos demais casos, continuar o pedido e a verificação própria de dados do
+   cliente. Sem sessão não solicitar salvamento privado.
 
 ### 4.2. Regras de Negócio
 
@@ -305,8 +310,8 @@ O sistema verifica as seguintes condições na ordem especificada:
    `isPrimary = true` automaticamente
 2. **Checkbox "Não exibir novamente"**: Funciona apenas quando usuário tem 1
    endereço. Com múltiplos, sempre mostrar dialog de seleção
-3. **Endereço manual vs. salvo**: Se usuário preencher manualmente, não mostrar
-   dialogs (usar o manual)
+3. **Endereço manual vs. salvo**: usa o manual, sem confirmação/seleção; se ele
+   for completo e novo, pode oferecer salvar antes de enviar.
 4. **Sessão expirada**: Se não logado, fluxo normal sem dialogs
 5. **Validação antes de salvar**: Verificar campos obrigatórios antes de POST
    para `/api/addresses`
@@ -319,6 +324,8 @@ O sistema verifica as seguintes condições na ordem especificada:
 
 ```prisma
 model Address {
+  tenantId     String? // Só linhas legadas sem atribuição ficam em quarentena
+  organization Organization? @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   id           String   @id @default(cuid())
   userId       String
   street       String
@@ -332,6 +339,11 @@ model Address {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("addresses")
+  @@index([tenantId])
+  @@unique([id, tenantId])
 }
 ```
 
@@ -365,7 +377,12 @@ interface AddressData {
 
 ## 6. Integração no Formulário de Orçamento
 
-**Localização**: `app/orcamento/page.tsx`
+**Localização**:
+`packages/frontend/src/pages/orcamento/model/use-quote-page.ts`, renderizado por
+`OrcamentoPage.web.tsx`/`OrcamentoPage.native.tsx`. A rota web fina é
+`apps/clients/web/src/app/(public)/[locadora]/(vitrine)/orcamento/page.tsx`. A
+gestão na área do cliente usa `pages/enderecos/model/use-addresses.ts` e
+`EnderecosPage.web.tsx`/`EnderecosPage.native.tsx`.
 
 ### 6.1. Estados Adicionados
 
@@ -378,18 +395,29 @@ const [selectedSavedAddress, setSelectedSavedAddress] =
   useState<Address | null>(null)
 ```
 
-### 6.2. Hook useMemo para localStorage
+### 6.2. Preferência pela porta de persistência
+
+O trecho atual do modelo não acessa DOM nem localStorage:
 
 ```typescript
+const preferenceKey = useCallback(
+  (name: string) =>
+    `${name}:${JSON.stringify([tenantSlug, session?.user?.id])}`,
+  [tenantSlug, session?.user?.id]
+)
 const isAddressConfirmationDismissed = useMemo(() => {
   if (!session?.user?.id) return false
-  if (typeof window === "undefined") return false
   return (
-    localStorage.getItem(`addressConfirmationDismissed-${session.user.id}`) ===
+    ports.preferences.getItem(preferenceKey("addressConfirmationDismissed")) ===
     "true"
   )
-}, [session?.user?.id])
+}, [session?.user?.id, ports.preferences, preferenceKey])
 ```
+
+`useQuotePageScope` inclui locadora, vínculo/papel, usuário, status da sessão e
+revisão do cliente HTTP. A variante remonta o modelo ao mudar o escopo;
+respostas antigas são descartadas pelo cliente capturado. O adapter nativo
+carrega a preferência antes de fornecer a porta síncrona ao modelo.
 
 ### 6.3. Modificação no handleSubmit
 
@@ -402,10 +430,13 @@ orçamento, após todas as validações de formulário.
 
 ### 7.1. handleSaveAddress
 
-- Faz POST para `/api/addresses`
-- Atualiza lista de endereços (`loadUserAddresses`)
-- Fecha dialog
-- Continua com envio do orçamento (`submitQuote`)
+- Se o endereço é novo, chama `api.saveAddress`; se há dados comerciais novos,
+  também chama `api.saveProfile`.
+- Usa Promise.allSettled para conservar sucesso parcial; recusa de uma gravação
+  não desfaz o efeito aceito da outra. AbortError de escopo encerra a
+  continuação.
+- Recarrega os dados aplicáveis, fecha o dialog e continua `submitQuote` apenas
+  pelo caminho previsto do modelo; falhas são apresentadas ao usuário.
 
 ### 7.2. handleSkipSaveAddress
 
@@ -420,8 +451,9 @@ orçamento, após todas as validações de formulário.
 
 ### 7.4. handleDismissConfirmation
 
-- Salva/remove preferência no `localStorage`
-- Formato: `addressConfirmationDismissed-{userId}`
+- Salva/remove pela porta `preferences`.
+- Chave: `addressConfirmationDismissed:` +
+  `JSON.stringify([tenantSlug, userId])`; web e native conservam esse contrato.
 
 ### 7.5. handleSelectAddress
 
@@ -463,9 +495,10 @@ orçamento, após todas as validações de formulário.
    salvamento
 2. ✅ Usuário logado, segunda solicitação, 1 endereço → Dialog de confirmação
 3. ✅ Checkbox "Não exibir novamente" → Não exibir mais (1 endereço)
-4. ✅ Usuário tem 2+ endereços → Sempre dialog de seleção
+4. Usuário tem 2+ endereços e nenhum endereço manual → Dialog de seleção
 5. ✅ Usuário não logado → Fluxo normal (sem dialogs)
-6. ✅ Endereço preenchido manualmente → Não mostrar dialogs
+6. Endereço manual igual ao salvo → Não repetir confirmação; manual novo
+   completo → Pode oferecer salvamento
 7. ✅ Salvamento de endereço → Criar no banco corretamente
 8. ✅ Seleção de endereço → Preencher formulário corretamente
 
@@ -473,10 +506,11 @@ orçamento, após todas as validações de formulário.
 
 ## 10. Referências
 
-- **API de Endereços**: `app/api/addresses/route.ts`
+- **API de Endereços**: `apps/services/api/src/app/api/addresses/route.ts` e
+  `addresses/[id]/route.ts`
 - **Formulário de Orçamento**:
   `packages/frontend/src/pages/orcamento/ui/OrcamentoPage.web.tsx` (rota fina em
-  `app/orcamento/page.tsx`)
+  `apps/clients/web/src/app/(public)/[locadora]/(vitrine)/orcamento/page.tsx`)
 - **Componentes de Dialogs**:
   `packages/frontend/src/pages/orcamento/ui/SalvarEndereco.web.tsx`,
   `packages/frontend/src/pages/orcamento/ui/ConfirmarEndereco.web.tsx`,

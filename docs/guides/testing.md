@@ -44,24 +44,35 @@ relatório.
   instruction instead of falling back to the legacy root.
 - Runs `prisma migrate deploy` against `TEST_DATABASE_URL` before starting the
   server (`tests/global-setup.ts`; the migrations carry the RLS policies)
-- Runs Vitest unit + integration tests; the fixtures and the suite read the
-  database through the backend runtime (`getDatabaseRuntime()` from
-  `@gb-locacoes/backend/runtime`), the same singleton the shared API uses, and
-  the critical payment/quote tests run against the legacy facade and the shared
-  API composition (`apps/services/api/src/host/*`) side by side until the legacy
-  root is removed
+- Runs the integration selection in `vitest.config.ts`; unit tests have their
+  own `pnpm test:unit` command. Fixtures read the database through
+  `getDatabaseRuntime()` from `@gb-locacoes/backend/runtime`, the same singleton
+  the shared API uses. Critical payment/quote cases use the canonical shared API
+  composition (`apps/services/api/src/host/*`). F retains those cases and their
+  assertions once; the retired physical root is no longer a second arm.
 - Stops the server when tests finish
 
 ## API parity (`pnpm test:api`) with or without the legacy root
 
-`tests/api-host/global-setup.ts` reads `API_LEGACY_MODE`:
+The current F profile is explicit; run each supported identity engine with its
+owned disposable fixture and compiled API:
 
-- `production`: `next start` over the legacy root build (CI profile while the
-  root exists);
-- `absent`: only the shared API starts and `context.legacy` is `null`; the log
-  says `service only (legacy root absent)`;
-- empty or `dev`: `next dev` on the root, for local debugging. Any other value
-  is refused before the database is touched.
+```env
+API_LEGACY_MODE=absent
+API_HOST_MODE=production
+API_AUTH_MODE=legacy
+```
+
+Repeat with `API_AUTH_MODE=better-auth`. In `absent`, only the shared API
+starts, `context.legacy` is `null`, and the log says
+`service only (legacy root absent)`.
+
+`tests/api-host/global-setup.ts` still accepts the historical `production`
+(`next start`) and empty/`dev` (`next dev`) physical-root profiles. Its empty
+default is still `dev`: omitting `API_LEGACY_MODE` does not select F. Those root
+profiles require a complete pre-retirement clone and fresh pinned records for a
+C/F comparison; they are not a recipe to recreate the retired root in F. Any
+other value is refused before the database is touched.
 
 Sessions are always created on the shared API (`tests/api-host/identity.ts`) and
 `NEXTAUTH_URL` points at the API's HTTP origin, so NextAuth keeps its cookie
@@ -153,12 +164,12 @@ Siteverify and the leaked-password range are loopback doubles
 
 Real account e-mails go to a loopback Resend double (`RESEND_BASE_URL`,
 `tests/api-host/resend-provider.ts`): `email-links.http.test.ts` follows the
-verification and reset links on both identity engines. Run the CI profile
-(`API_HOST_MODE=production`, both `API_AUTH_MODE` values) after
-`pnpm exec next build`, `pnpm build:api` and `pnpm build:web`.
+verification and reset links on both identity engines. Run the current F profile
+(`API_LEGACY_MODE=absent`, `API_HOST_MODE=production`, both `API_AUTH_MODE`
+values) after `pnpm build:api` and `pnpm build:web`.
 
-`AUTH_MODE` is a private runtime setting in the compiled API/root, so the HTTP
-matrix can exercise both identity engines with those builds. The web browser
+`AUTH_MODE` is a private runtime setting in the compiled shared API, so the HTTP
+matrix can exercise both identity engines with that API build. The web browser
 bundle embeds `NEXT_PUBLIC_AUTH_MODE` at build time. Passing the HTTP matrix
 does not validate browser J1–J7 in both modes: rebuild the web for each mode,
 align the private runtime mode, then run those journeys. Extracting and
@@ -173,6 +184,13 @@ is real; only external providers/captcha are local doubles. Separate canonical
 business/platform roles use an owned disposable database. Cookie artifacts omit
 values. Cleanup observes all owned children and preserves the database/roles if
 any shutdown fails; logs and screenshots stay outside the repository.
+
+## Evidências históricas do checkpoint C (2026-10-08/09)
+
+The events below, through the pre-documentation audit, retain the C sources,
+builds, pending decisions and backlog as recorded then. They do not report the
+current F result. Read [the F checkpoint](wave135-retirement-validation.md) for
+post-retirement receipts, historical failures and remaining limits.
 
 The final Better Auth run passed eight cases and one contractual skip in nine,
 in 84.77s, using web build `r2B-vsczGQAqwkg72XsRq`. Evidence lives in
@@ -299,6 +317,8 @@ PostgreSQL stopped with exit 0 and data preserved. This attestation precedes the
 final Markdown edits; the coordinator will refresh it afterward. Architecture/
 tokens/test names/CSS/hygiene, global lint and broad typing (14 tasks) exited 0.
 
+## Current HTTP contracts
+
 The owner's subscription commands (`activate`, `cancel`, `undo-cancel`,
 `reactivate`) run over real HTTP in `subscription-commands.http.test.ts`, on the
 isolated database and platform role of `receiving-account.ts`. A storefront
@@ -311,6 +331,7 @@ Use a **dedicated test database**. Tests create and delete records.
 
 ```env
 TEST_DATABASE_URL="postgresql://username:password@host:port/database?schema=public"
+TEST_DATABASE_DISPOSABLE="true"
 TEST_PORT="3101"
 TEST_BASE_URL="http://localhost:3101"
 ```
@@ -319,6 +340,8 @@ Notes:
 
 - `TEST_DATABASE_URL` is required; tests abort if it matches `DATABASE_URL` or
   points to the same non-local host.
+- `TEST_DATABASE_DISPOSABLE=true` is required: migrations and test data changes
+  are allowed only on the deliberately selected disposable database.
 - `TEST_PORT` defaults to `3101`.
 - `TEST_BASE_URL` defaults to `http://localhost:${TEST_PORT}`.
 
@@ -380,12 +403,17 @@ helper.
 
 ## How to run
 
-1. Set `TEST_DATABASE_URL` (required).
-2. Run:
+1. Select an owned disposable local database and set `TEST_DATABASE_URL` plus
+   `TEST_DATABASE_DISPOSABLE=true`; never reuse the production database.
+2. Build the canonical shared API and run the integration selection:
 
 ```bash
+pnpm build:api
 pnpm test
 ```
+
+This command does not run all suites. Use the proportional cadence above and
+[the F checkpoint](wave135-retirement-validation.md) for the closing evidence.
 
 ## Critical flows covered
 

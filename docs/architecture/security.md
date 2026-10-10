@@ -19,13 +19,22 @@ diferentes rotas.
 - ✅ Aplicação consistente em todas as rotas `/api/admin/*`
 - ✅ Diferenciação entre operações que requerem ADMIN vs ADMIN+OPERATOR
 
-**Arquivos Modificados:**
+**Arquivos do registro de 2024:**
 
-- `middlewares/require-admin.ts` - Middleware padronizado
-- `app/api/admin/dashboard/route.ts` - Aplicado requireAdminOrOperator
-- `app/api/admin/quotes/route.ts` - Aplicado requireAdminOrOperator
-- `app/api/admin/quotes/[id]/route.ts` - Aplicado middlewares específicos
-- Todas as rotas admin agora usam middleware consistente
+- `middlewares/require-admin.ts` e as rotas `app/api/admin/*` acima são
+  localizações históricas da raiz, aposentadas no checkout pós-F; não são
+  modelos para criar handlers novos.
+- Nesse registro, `app/api/admin/dashboard/route.ts` e
+  `app/api/admin/quotes/route.ts` receberam requireAdminOrOperator;
+  `app/api/admin/quotes/[id]/route.ts` recebeu middlewares específicos.
+- A composição atual está em `apps/services/api/src/host/private-identity.ts` e
+  `permissions.ts`, sobre `createTenantPrincipalResolver` e
+  `createTenantPermissionResolver` de `@gb-locacoes/backend/identity`.
+- A política continua específica por método: no serviço, dashboard GET usa
+  `FINANCIAL/READ`, listagem de quotes usa `QUOTES/READ`, e GET/PATCH de
+  `admin/quotes/[id]` conferem ADMIN/OPERATOR do principal revalidado. Não se
+  substitui essa política pelo papel global de `User` nem por uma única lista de
+  papéis para toda a área administrativa.
 
 ### 2. 🚫 **Rate Limiting - IMPLEMENTADO**
 
@@ -33,19 +42,24 @@ diferentes rotas.
 
 **Solução Implementada:**
 
-- ✅ Sistema de rate limiting em memória (`lib/rate-limit.ts`)
+- ✅ Sistema de rate limiting em memória: a localização histórica
+  `lib/rate-limit.ts` foi aposentada no checkout pós-F; a implementação está em
+  `packages/backend/src/http/memory-rate-limit.ts`, composta por
+  `apps/services/api/src/host/rate-limit.ts`.
 - ✅ Múltiplos perfis de limite conforme criticidade:
-  - `authRateLimit`: 5 tentativas/15min (login)
+  - `authRateLimit`: 5 tentativas/15min (perfil da factory em memória; o login
+    atual usa os limitadores persistentes de identidade descritos abaixo)
   - `apiRateLimit`: 100 req/min (APIs gerais)
   - `adminApiRateLimit`: 200 req/min (operações admin)
   - `strictRateLimit`: 10 req/min (formulários sensíveis)
 - ✅ Headers HTTP padrão (X-RateLimit-\*)
-- ✅ Detecção de IP através de headers de proxy
+- ✅ IP por `clientIpFromHeaders` de backend/identity, com a precedência
+  confiável descrita em “IP do cliente e limites”; não por header cru do cliente
 
 **Aplicado em:**
 
-- `app/api/contact/route.ts` - strictRateLimit (proteção anti-spam)
-- `app/api/admin/equipments/route.ts` - adminApiRateLimit
+- `apps/services/api/src/app/api/contact/route.ts` - strictRateLimit (anti-spam)
+- `apps/services/api/src/app/api/admin/equipments/route.ts` - adminApiRateLimit
 - Outras rotas críticas conforme necessidade
 
 ### 3. 🧹 **Limpeza do Repositório - CONCLUÍDO**
@@ -74,10 +88,20 @@ diferentes rotas.
 - ✅ **SEGURO**: Seed admin também usa bcrypt apropriadamente
 - ✅ **SEGURO**: NextAuth configurado corretamente
 
-**Arquivos Validados:**
+**Localizações e alcance da auditoria:**
 
-- `lib/auth.ts` - Autenticação principal
-- `app/api/admin/seed-admin/route.ts` - Criação de admin
+- `lib/auth.ts` e `app/api/admin/seed-admin/route.ts` são os arquivos históricos
+  auditados em 2024, aposentados no checkout pós-F. O seed não é uma instrução
+  de provisionamento atual: GET e POST de
+  `apps/services/api/src/app/api/admin/seed-admin/route.ts` retornam 410
+  `{ error: 'Endpoint retired' }`.
+- A composição de sessão atual é `apps/services/api/src/host/session.ts`;
+  credenciais e callbacks ficam em `packages/backend/src/modules/identity`.
+  `credential-accounts.ts` usa bcrypt assíncrono com custo 12, e `factory.ts`
+  configura esse custo no Better Auth e revogação de sessões no reset.
+- `application-session.ts` não aceita sessão legacy como fallback em modo
+  `better-auth`, nem após indisponibilidade do motor. As marcas “SEGURO” acima
+  registram a auditoria antiga; não certificam uma implantação atual.
 
 ### 5. 📊 **Tratamento de Erros Melhorado - EM ANDAMENTO**
 
@@ -85,15 +109,19 @@ diferentes rotas.
 
 **Solução Implementada:**
 
-- ✅ Utilitário `lib/api-response.ts` para padronização: hoje exporta
-  `errorResponse`, `successResponse` e `notFoundResponse` (e os tipos
-  `ApiError`/`ApiSuccess`); `app/api/contact/route.ts` usa `successResponse`
+- A fachada histórica `lib/api-response.ts` foi aposentada no checkout pós-F. O
+  contato atual importa `successResponse` de `@gb-locacoes/backend/http`
+  (`packages/backend/src/http/success-response.ts`) e conserva 202 com
+  `{ success, data, message }`: persistência e fila, sem confirmar envio. Não há
+  contrato único obrigatório para todos os erros; cada handler conserva o
+  status, corpo e cabeçalhos caracterizados.
 - Removidos na faxina da onda 9, sem chamador (entrada 225 de
-  `docs/issues/known-issues.md`; versão anterior em
-  `git show 4b02f52f:lib/api-response.ts`): o wrapper `withErrorHandling()` e os
-  tratadores de erro do Zod e do Prisma (`handleValidationError`,
-  `handlePrismaError`), além de `forbiddenResponse` e `badRequestResponse`. Cada
-  rota trata os próprios erros
+  `docs/issues/known-issues.md`; a versão de `lib/api-response.ts` do commit
+  histórico `4b02f52f` pertence ao arquivo local da história anterior, não aos
+  pais da publicação limpa): o wrapper `withErrorHandling()` e os tratadores de
+  erro do Zod e do Prisma (`handleValidationError`, `handlePrismaError`), além
+  de `forbiddenResponse` e `badRequestResponse`. Cada rota trata os próprios
+  erros
 
 **Funcionalidades:**
 
@@ -129,17 +157,31 @@ diferentes rotas.
 
 ### ✅ RLS (Row Level Security)
 
+O registro de 2024 de `equipment_units` descrevia estas políticas antigas:
+
 - `equipment_units` com RLS **ativado** e políticas explícitas:
   - Leitura liberada para `authenticated` e `service_role`
   - Escrita (INSERT/UPDATE/DELETE) restrita a usuários com `role = 'ADMIN'`
   - RLS forçado para prevenir bypass acidental
 
+Na implementação multiempresa, a migration
+`prisma/migrations/202609250005_tenant_row_security/migration.sql` exige
+`tenantId = current_setting('app.tenant_id', true)` em leitura e escrita e FORCE
+RLS, inclusive para `equipment_units`. `withTenantTransaction`, em
+`packages/backend/src/modules/identity/tenant-principal.ts`, define o contexto
+na transação. A conexão de runtime não pode ser superuser nem BYPASSRLS; a
+autorização por membership/permissão acontece antes dos dados. RLS não substitui
+a política de acesso da rota.
+
 ## 🔄 Modernização multiempresa (2026-09-26)
 
-As seções acima descrevem o estado de 2024. O estado atual da identidade, dos
-limites e das integrações está nos itens abaixo; a onda 2 está no commit
-`da19f601`, a onda 3 no commit `be859915`, a onda 4 no commit `4b02f52f` e a
-onda 5 só na árvore de trabalho (sem commit).
+As seções anteriores preservam a auditoria de 2024 e identificam os owners
+atuais quando a localização mudou. Os commits `da19f601`, `be859915` e
+`4b02f52f`, e a nota “onda 5 sem commit”, registram os checkpoints de setembro
+no histórico local arquivado; não são pais da publicação limpa da onda 135.
+Identidade e limites continuam em `packages/backend/src/modules/identity` e
+`directory`, compostos por `apps/services/api/src/host/session.ts`,
+`private-identity.ts`, `permissions.ts`, `rate-limit.ts` e `runtime.ts`.
 
 ### Identidade e sessão
 
@@ -182,23 +224,27 @@ onda 5 só na árvore de trabalho (sem commit).
   `WEB_PUBLIC_ORIGIN` e, sem ela, a da própria requisição; `Origin` diferente
   (inclusive `null`) ou `Sec-Fetch-Site` fora de `same-origin`/`none` dão 403
   `no-store`. `WEB_PUBLIC_ORIGIN` inválida recusa navegador.
-- Aplicação central: primeira instrução de `resolveTenantPrincipal`, o que cobre
-  `requireTenantPermission` e os middlewares de `requireAdmin` (mutações de
-  `/api/admin/**` no host `app`). Quem só enxerga cabeçalhos (`next/headers`)
-  passa `method: null` e `url: null`: sem `Origin` é leitura (especificação
-  Fetch), com `Origin` vale a regra de mutação. `isTrustedMutationOrigin` delega
-  ao guard.
+- Aplicação central: primeira instrução do resolvedor devolvido por
+  `createTenantPrincipalResolver` (`identity/tenant-request-principal.ts`),
+  composto em `host/private-identity.ts`. Cobre `requireTenantPermission` e os
+  métodos que conferem diretamente o papel do principal. Os middlewares
+  `requireAdmin` são consumidores históricos aposentados no checkout pós-F. Quem
+  só enxerga cabeçalhos (`next/headers`), no contrato caracterizado, passa
+  `method: null` e `url: null`: sem `Origin` é leitura (especificação Fetch),
+  com `Origin` vale a regra de mutação. `isTrustedMutationOrigin` delega ao
+  guard.
 - As rotas da área do cliente (onda 4), `register`, `forgot-password`,
   `reset-password`, `POST /api/quotes` e `POST /api/orcamentos` também chamam
   `rejectCrossOriginMutation`. NextAuth e Better Auth usam a defesa própria.
   Entradas 190 e 196.
 - Leituras privadas (onda 132, achado 144): `Origin` explícito vale em qualquer
   método. O principal comum dos dois hosts (`createTenantPrincipalResolver`,
-  logo, `requireTenantPermission` e os middlewares de `requireAdmin`) chama
-  `rejectExplicitCrossOrigin` (`same-origin-mutation.ts`) depois do vínculo
-  revalidado (o papel) e antes da admissão da assinatura e dos dados: `Origin`
-  de locadora irmã, do painel num host de locadora, `null` ou `Sec-Fetch-Site`
-  fora de `same-origin`/`none` com `Origin` presente dão o mesmo 403 `no-store`
+  logo, `requireTenantPermission` e as checagens de papel das rotas;
+  `requireAdmin` era o consumidor histórico) chama `rejectExplicitCrossOrigin`
+  (`same-origin-mutation.ts`) depois do vínculo revalidado (o papel) e antes da
+  admissão da assinatura e dos dados: `Origin` de locadora irmã, do painel num
+  host de locadora, `null` ou `Sec-Fetch-Site` fora de `same-origin`/`none` com
+  `Origin` presente dão o mesmo 403 `no-store`
   `{ "error": "Origem não permitida" }`, também em GET e HEAD. Sem `Origin`
   (navegação de topo, app nativo, servidor-servidor) a leitura segue, e as
   recusas anteriores (401 sem sessão, 400 de seleção, 404 de host, 409 sem
@@ -243,7 +289,8 @@ onda 5 só na árvore de trabalho (sem commit).
     fica fora pelo mesmo motivo;
   - NextAuth (modo `legacy`, o padrão, e `better-auth-v2`, em que ele continua
     em `/api/auth/*`): o envoltório comum das rotas `[...nextauth]` dos dois
-    hosts, `withSignInAvailability(NextAuth(authOptions))`
+    hosts caracterizados antes de F,
+    `withSignInAvailability(NextAuth(authOptions))`
     (`packages/backend/src/http/legacy-auth-response.ts`), aplica
     `refuseNextAuthRead` antes do motor e da releitura da credencial no banco:
     `session`, `csrf`, `providers`, `signin`, `signout`, `verify-request` e
@@ -347,10 +394,10 @@ brecha.
    `INERT_CLASSES`, seladas por nome em todo o código de servidor. A carga do
    módulo lê todos os nós das instruções de topo numa gramática fechada
    (padrões, defaults, chaves calculadas, decorators, membros de classe): tipo
-   não listado reprova. Um especificador que nomeia mais de um arquivo
-   (`lib/x.ts` ao lado de `lib/x.tsx`, `.js` ou `lib/x/index.ts`) reprova,
-   porque Turbopack, webpack e TypeScript podem carregar arquivos diferentes.
-   Pega o acidente e o padrão estático.
+   não listado reprova. Um especificador que nomeia mais de um arquivo (por
+   exemplo, `server/x.ts` ao lado de `server/x.tsx`, `.js` ou
+   `server/x/index.ts`) reprova, porque Turbopack, webpack e TypeScript podem
+   carregar arquivos diferentes. Pega o acidente e o padrão estático.
 2. **Regra de lint** `runtime/no-runtime-rewrite`
    (`tools/eslint-runtime-rewrite.mjs`, ligada em `eslint.config.js`): o código
    de servidor não reescreve o runtime. Proíbe reflexão (`Reflect`,
@@ -402,8 +449,14 @@ comportamento (status, isolamento), que segue nos testes HTTP. Verificação:
 
 ### 🔐 **Melhorias Futuras**
 
-- [ ] Implementar rate limiting com Redis (produção)
-- [ ] Adicionar logs de auditoria para ações admin
+A lista abaixo conserva recomendações de 2024. Redis não é requisito do
+limitador de identidade/diretório atual, que já persiste no PostgreSQL, e
+auditoria por locadora já existe nas operações descritas em
+`docs/features/operations-tenancy.md`. Ampliação ou infraestrutura exigem
+avaliação própria; F não ativa serviço nem substitui esses contratos.
+
+- [ ] Avaliar persistência dos limitadores genéricos hoje em memória
+- [ ] Ampliar cobertura de auditoria administrativa conforme os casos de uso
 - [ ] Implementar 2FA para administradores
 - [ ] Headers de segurança adicionais (CSRF, CORS)
 
@@ -451,7 +504,12 @@ comportamento (status, isolamento), que segue nos testes HTTP. Verificação:
 
 ## 🎉 **Conclusão**
 
-O projeto GB-Locações agora conta com:
+A conclusão abaixo é o registro da auditoria de dezembro de 2024. A publicação
+limpa, o aceite visual e a retirada local de wrappers não certificam produção;
+as provas e limites da onda 135 ficam em
+`docs/guides/wave135-base-validation.md`.
+
+Na conclusão histórica, o projeto GB-Locações contava com:
 
 - ✅ **Segurança robusta** de autenticação e autorização
 - ✅ **Proteção contra ataques** automatizados

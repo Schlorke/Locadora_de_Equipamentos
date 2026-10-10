@@ -1,300 +1,55 @@
-# 🔧 Guia: Resolver Timeouts do Supabase (Erro P1001)
-
-> **Problema**:
-> `Can't reach database server at aws-0-us-east-1.pooler.supabase.com:5432`
-> **Causa**: Database pausa após inatividade (Plano Gratuito) **Solução**:
-> Aumentar timeout + manter database acordado
-
----
-
-## 📊 Entendendo o Problema
-
-### **Comportamento do Supabase Free Tier:**
-
-```
-Inatividade > 1 hora
-       ↓
-Database PAUSA automaticamente
-       ↓
-Primeira requisição chega
-       ↓
-Database começa a ACORDAR (8-15 segundos)
-       ↓
-Prisma aguarda apenas 5 segundos ❌
-       ↓
-TIMEOUT → Erro P1001
-       ↓
-Database acorda (mas tarde demais)
-       ↓
-Próxima requisição funciona ✅
-```
-
-**Erro típico:**
-
-```
-PrismaClientInitializationError: Can't reach database server
-errorCode: P1001
-clientVersion: 6.18.0
-```
-
----
-
-## ✅ Solução 1: Configuração Correta para Serverless (Vercel)
-
-> **⚠️ IMPORTANTE**: Para aplicações serverless (Vercel), a recomendação
-> **OFICIAL** do Supabase e Prisma é usar o **Transaction Pooler (porta 6543)**,
-> não o Session Pooler (porta 5432).
-
-### **1.1. Configuração para Produção (Serverless):**
-
-**✅ CORRETO (Recomendação Oficial Supabase + Prisma):**
-
-```env
-# ✅ PRODUÇÃO - Transaction Pooler (porta 6543) - RECOMENDADO para serverless
-DATABASE_URL="postgresql://postgres.PROJECT_REF:PASSWORD@aws-1-sa-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connect_timeout=15"
-
-# ✅ MIGRATIONS - Conexão direta (porta 5432)
-DIRECT_URL="postgresql://postgres:PASSWORD@db.PROJECT_REF.supabase.co:5432/postgres"
-```
-
-**❌ ERRADO (Session Pooler - causa "Max clients reached" em serverless):**
-
-```env
-# ❌ NÃO USE em produção serverless
-DATABASE_URL="postgresql://postgres.PROJECT_REF:PASSWORD@aws-1-sa-east-1.pooler.supabase.com:5432/postgres?pgbouncer=true&connect_timeout=15&connection_limit=1"
-```
-
-### **1.2. Configuração para Desenvolvimento Local:**
-
-**✅ DESENVOLVIMENTO - Direct Connection (mais rápido):**
-
-```env
-# ✅ DESENVOLVIMENTO - Direct Connection (sem pooler)
-DATABASE_URL="postgresql://postgres:PASSWORD@db.PROJECT_REF.supabase.co:5432/postgres"
-DIRECT_URL="postgresql://postgres:PASSWORD@db.PROJECT_REF.supabase.co:5432/postgres"
-```
-
-### **Parâmetros:**
-
-| Parâmetro         | Valor    | Descrição                                                                   |
-| ----------------- | -------- | --------------------------------------------------------------------------- |
-| `connect_timeout` | `15`     | Aguarda 15s (suficiente para acordar)                                       |
-| `pgbouncer`       | `true`   | **OBRIGATÓRIO** para Transaction Pooler (6543)                              |
-| **Porta**         | **6543** | **Transaction Pooler** (recomendado para serverless)                        |
-| **Porta**         | **5432** | Session Pooler (NÃO recomendado para serverless) ou Direct Connection (dev) |
-
-### **⚠️ Por que Transaction Pooler (6543) para Serverless?**
-
-1. **Mais conexões simultâneas**: Transaction Pooler suporta muito mais conexões
-   que Session Pooler
-2. **Recomendação oficial**: Tanto Supabase quanto Prisma recomendam porta 6543
-   para serverless
-3. **Evita "Max clients reached"**: Session Pooler (5432) tem limite muito baixo
-   para ambientes serverless
-4. **Limitação**: Transaction Pooler não suporta prepared statements (mas Prisma
-   funciona normalmente)
-
-### **1.2. Reiniciar servidor:**
-
-```bash
-# Pare o `pnpm dev` que você iniciou e suba de novo. Apagar `.next` só depois
-# de conferir que não há link nela (seção "Limpeza segura" do troubleshooting)
-pnpm dev
-```
-
----
-
-## ✅ Solução 2: Health Check Automático (RECOMENDADO)
-
-### **2.1. Endpoint já implementado:**
-
-O projeto já tem o endpoint `/api/health` que:
-
-- ✅ Executa `SELECT 1` no database
-- ✅ Mantém conexão ativa
-- ✅ Retorna status em JSON
-
-### **2.2. Configuração Vercel Cron:**
-
-O arquivo `vercel.json` já está configurado:
-
-```json
-{
-  "crons": [
-    {
-      "path": "/api/health",
-      "schedule": "*/5 * * * *"
-    }
-  ]
-}
-```
-
-**Schedule:** `*/5 * * * *` = A cada 5 minutos
-
-### **2.3. Testar localmente:**
-
-```bash
-# Acessar endpoint
-curl http://localhost:3000/api/health
-
-# Resposta esperada:
-{
-  "status": "healthy",
-  "timestamp": "2025-01-30T12:00:00.000Z",
-  "database": "connected"
-}
-```
-
-### **2.4. Deploy na Vercel:**
-
-```bash
-git add .
-git commit -m "fix: adicionar health check para Supabase"
-git push origin main
-```
-
-**Após deploy:** Vercel executará automaticamente `/api/health` a cada 5
-minutos.
-
----
-
-## ✅ Solução 3: Upgrade do Supabase (DEFINITIVO)
-
-### **Comparação Planos:**
-
-| Recurso        | Gratuito         | Pro ($25/mês)  |
-| -------------- | ---------------- | -------------- |
-| **Auto-pause** | ✅ Sim (após 1h) | ❌ Nunca pausa |
-| **RAM**        | 500 MB           | 8 GB           |
-| **Database**   | 500 MB           | 8 GB           |
-| **Banda**      | 5 GB             | 250 GB         |
-| **Backups**    | ❌ Não           | ✅ Diários     |
-
-### **Quando fazer upgrade:**
-
-- ✅ Aplicação em produção com tráfego real
-- ✅ Mais de 100 usuários ativos/mês
-- ✅ Operações críticas de negócio
-- ✅ Necessita de SLA e suporte
-
-### **Como fazer upgrade:**
-
-1. Acesse [Supabase Dashboard](https://app.supabase.com)
-2. Selecione seu projeto
-3. Settings → Billing
-4. Escolha "Pro Plan" ($25/mês)
-5. **Resultado:** Database nunca mais pausa!
-
----
-
-## 🧪 Verificar Conexão
-
-### **Script de diagnóstico:**
-
-```bash
-# Executar script de diagnóstico
-node scripts/diagnose-connection.js
-```
-
-**Verifica:**
-
-- ✅ DATABASE_URL válida
-- ✅ Conectividade com Supabase
-- ✅ Timeout atual
-- ✅ Status do database (paused/active)
-
----
-
-## 🚨 Troubleshooting
-
-### **Erro persiste após aumentar timeout:**
-
-**1. Verificar variáveis no Vercel:**
-
-- Settings → Environment Variables
-- Conferir `DATABASE_URL` em Production
-
-**2. Verificar Supabase:**
-
-- Dashboard → Settings → Database
-- Checar se project está "Active" (não "Paused")
-
-**3. Verificar logs:**
-
-```bash
-# Vercel CLI
-vercel logs --follow
-```
-
-### **Health check não funciona:**
-
-**1. Verificar deploy:**
-
-```bash
-vercel --prod
-```
-
-**2. Verificar cron configuration:**
-
-- Vercel Dashboard → Settings → Cron Jobs
-- Deve aparecer: `/api/health` (Runs every 5 minutes)
-
-**3. Forçar execução manual:**
-
-```bash
-curl https://seu-dominio.vercel.app/api/health
-```
-
----
-
-## 📊 Monitoramento
-
-### **Logs de Health Check:**
-
-```bash
-# Vercel Dashboard → Functions → /api/health
-# Deve mostrar execuções a cada 5 minutos:
-
-[GET] /api/health - 200 OK (45ms)
-[GET] /api/health - 200 OK (42ms)
-[GET] /api/health - 200 OK (38ms)
-```
-
-### **Métricas de Supabase:**
-
-1. Acesse Supabase Dashboard
-2. Reports → Database
-3. Verifique:
-   - **Active connections**: Deve ter pelo menos 1
-   - **Last activity**: Não deve passar de 5 minutos
-   - **Status**: "Active" (não "Paused")
-
----
-
-## 🎯 Resumo da Solução
-
-### **Para Desenvolvimento:**
-
-✅ Aumentar `connect_timeout=15` no `.env.local`
-
-### **Para Produção:**
-
-✅ Aumentar timeout + Health Check automático (Vercel Cron)
-
-### **Para Aplicações Críticas:**
-
-✅ Upgrade para Supabase Pro ($25/mês)
-
----
-
-## 📚 Referências
-
-- [Prisma Connection Pooling](https://www.prisma.io/docs/guides/performance-and-optimization/connection-management#connection-pool-timeout)
-- [Supabase Connection Pooler](https://supabase.com/docs/guides/database/connecting-to-postgres#connection-pooler)
-- [Vercel Cron Jobs](https://vercel.com/docs/cron-jobs)
-- [Análise Crítica do Problema](../internal/prisma-6-15-engine-none-analysis.md)
-
----
-
-**✅ Problema resolvido!** O database agora se mantém acordado e não sofre mais
-timeouts.
+# Diagnosticar indisponibilidade do PostgreSQL
+
+Este procedimento trata a conexão do runtime atual. Não escolhe Supabase como
+provedor, ativa um health check agendado ou muda infraestrutura. A antiga
+receita que atribuía todo P1001 ao plano Free, indicava upgrade e configurava
+cron global está preservada no
+[arquivo histórico](../archive/wave135-pre-f/guides/supabase-timeout-fix.md.source).
+
+## Delimitar o erro
+
+1. Registre horário, host API e operação afetada, sem URL de banco, senha, token
+   ou dados pessoais. Diferencie erro de conexão, timeout de consulta, limite de
+   pool e recusa de isolamento/autorização; o DTO público não deve expor o
+   detalhe interno do banco.
+2. Confirme o alvo e o papel autorizado pelo
+   [manifesto de variáveis](../operations/manifesto-variaveis.md). Não troque
+   automaticamente para superuser, dono das tabelas ou banco da GB.
+3. Confira o runtime em `packages/backend/src/runtime/database.ts`. Ele lê
+   `DATABASE_URL`, cria o pool preguiçosamente e o reutiliza por processo.
+   `:6543/` seleciona max 2, `statement_timeout: 0`; fora desse padrão, max 1.
+   `connectionTimeoutMillis` é 10000 e `idleTimeoutMillis` é 30000. Esses
+   valores descrevem a implementação; não são uma recomendação de alterar
+   timeouts ou uma prova de compatibilidade com qualquer pooler.
+
+## Verificar o serviço e o isolamento
+
+O endpoint `/api/health` do host API compõe
+`packages/backend/src/http/health.ts` com o runtime e consulta `SELECT 1`.
+200/`healthy`/`connected` comprova somente essa consulta; 503 é uma falha a
+investigar. Não use uma recusa de sessão ou tenant como indicação de banco fora.
+
+Com o papel runtime próprio e as variáveis explícitas, as leituras
+`pnpm tenant:check` e `pnpm tenant:check --platform` verificam as fronteiras
+descritas em [ai-database-integration.md](ai-database-integration.md). O
+datasource da CLI em `prisma.config.ts` lê `DATABASE_URL`; configurar
+`DIRECT_URL` sozinha não muda o alvo de migrations. Estado de migrations e
+reparação do schema são separados do readiness do endpoint.
+
+## Reiniciar somente processos próprios
+
+Após corrigir o ambiente do alvo autorizado, encerre somente os filhos que você
+iniciou e inicie novamente o host correspondente. `pnpm dev` inicia web e API
+pelo workspace; não inicia uma aplicação da raiz aposentada. Se uma saída gerada
+do host exigir limpeza, confira o caminho absoluto e a ausência de links antes,
+conforme [troubleshooting](../getting-started/troubleshooting.md). A antiga
+`.next` da raiz foi retirada em F; as saídas atuais pertencem aos hosts.
+
+## Sem reparo ou agenda automática
+
+O antigo `scripts/diagnose-connection.js` e o `vercel.json` da raiz foram
+retirados em F. `apps/services/api/vercel.json` declara somente late-fees,
+expire-quotes e outbox; não há cron de keep-alive de `/api/health` nessa fonte.
+Não recrie a agenda, faça deploy, aplique grants/RLS avulsos ou execute reset
+para obter um diagnóstico verde. Mudança de provedor, plano, rede ou produção
+exige a etapa operacional própria e o runbook revisado.

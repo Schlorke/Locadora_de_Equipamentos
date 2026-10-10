@@ -46,7 +46,6 @@
       "mcp__plugin_github_github__get_file_contents",
       "WebFetch(domain:github.com)",
       "Bash(pnpm test:*)",
-      "Bash(git add \"app/api/admin/quotes/[id]/route.ts\" \"tests/critical/quote-adjustment.test.ts\")",
       "Bash(npx dotenv:*)",
       "Bash(pnpm db:generate:*)",
       "Bash(pnpm db:push:*)",

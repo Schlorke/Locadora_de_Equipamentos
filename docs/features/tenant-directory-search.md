@@ -28,15 +28,17 @@ no Lote 7c, com design ainda por aprovar (decisão U3).
 
 ## 3. Entry Points
 
-- API: `app/api/public/tenants/route.ts`.
-- Substituto em coexistência:
-  `apps/services/api/src/app/api/public/tenants/route.ts`, composto por
-  `backend/http/directory-search.ts`; o legado continua ativo.
+- API atual: `apps/services/api/src/app/api/public/tenants/route.ts`, composta
+  por `apps/services/api/src/host/runtime.ts` e
+  `packages/backend/src/http/directory-search.ts`. O adapter antigo
+  `app/api/public/tenants/route.ts` foi retirado em F.
 - Backend: `packages/backend/src/modules/directory/{search,rate-limit}.ts`,
   exportados por `@gb-locacoes/backend/directory`.
 - Contrato: `DirectorySearchQuerySchema`, `DirectorySearchItemSchema` e
   `DirectorySearchResponseSchema` em `packages/contracts/src/directory.ts`.
-- Cron: `app/api/cron/outbox/route.ts` (limpeza das janelas vencidas).
+- Cron: `apps/services/api/src/app/api/cron/outbox/route.ts`, composto por
+  `host/outbox.ts` e backend/outbox (limpeza das janelas vencidas após
+  autorização).
 
 ## 4. Core Flow
 
@@ -56,12 +58,13 @@ no Lote 7c, com design ainda por aprovar (decisão U3).
 
 - `packages/backend/src/modules/directory/search.ts`
 - `packages/backend/src/modules/directory/security-env.ts` (critério de produção
-  e segredo; a fachada `lib/rate-limit.ts` reexporta o segredo)
+  e segredo; usado na composição do runtime da API). A fachada antiga
+  `lib/rate-limit.ts` foi retirada em F; o segredo nunca é DTO/prop do cliente.
 - `packages/backend/src/modules/identity/client-ip.ts` (IP confiável e /64)
 - `packages/backend/src/modules/directory/rate-limit.ts` (porta
   `RateLimitCounter`, adaptador `prismaRateLimitCounter`,
   `purgeExpiredPlatformRateLimits`)
-- `app/api/public/tenants/route.ts`
+- `apps/services/api/src/app/api/public/tenants/route.ts`
 - `prisma/migrations/202609260006_platform_directory_rate_limit`
 - `tools/tenant-models.json` (`PlatformRateLimit` em `globalModels`)
 

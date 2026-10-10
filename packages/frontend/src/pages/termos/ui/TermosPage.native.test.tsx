@@ -87,11 +87,14 @@ it('com o documento da GB, a árvore de antes da troca (caracterização do B0) 
   expect(introducao.textContent).toBe(GB_LEGAL_DOCUMENTS.terms.intro)
   expect(introducao.nextElementSibling!.tagName).toBe('SECTION')
   introducao.remove()
+  // Só normaliza CRLF do checkout; a árvore completa e a grafia de classe já aprovada continuam comparadas.
   expect(container.innerHTML + '\n').toBe(
     readFileSync(
       path.resolve('tests/unit/__fixtures__/paginas-legais/termos.native.html'),
       'utf8'
-    ).replaceAll('flex-shrink-0', 'shrink-0')
+    )
+      .replace(/\r\n/g, '\n')
+      .replaceAll('flex-shrink-0', 'shrink-0')
   )
 })
 

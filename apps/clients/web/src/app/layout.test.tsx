@@ -1,12 +1,11 @@
 // Onda 135, A11 (decisão do dono D4): o Vercel Analytics e o Speed Insights são da plataforma, por projeto e sem dado de
-// locadora; voltam no layout raiz do host web como a raiz legada fazia (app/layout.tsx, carregados sob demanda). A
+// locadora; o host preserva o carregamento sob demanda da antiga app/layout.tsx, retirada em F. A
 // medição de cada locadora (GA4 e Google Ads) é do layout [locadora], só com os IDs dela.
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const web = path.resolve(__dirname, '..', '..')
-const repoRoot = path.resolve(web, '..', '..', '..')
 const read = (file: string) => readFileSync(file, 'utf8')
 
 describe('layout raiz do host web: medição da plataforma', () => {
@@ -23,14 +22,16 @@ describe('layout raiz do host web: medição da plataforma', () => {
     expect(layout).toContain('{children}<SpeedInsights /><Analytics /></body>')
   })
 
-  it('o host declara as duas dependências na mesma faixa da raiz (sem atualizar versão)', () => {
+  it('o host mantém as duas faixas de versão publicadas na primeira etapa, antes de F', () => {
     const own = JSON.parse(read(path.join(web, 'package.json'))).dependencies
-    const root = JSON.parse(
-      read(path.join(repoRoot, 'package.json'))
-    ).dependencies
-    for (const name of ['@vercel/analytics', '@vercel/speed-insights']) {
+    // Pins do C978ceb; F retirou as dependências da raiz, sem atualizar as do host.
+    const pinned = {
+      '@vercel/analytics': '^2.0.1',
+      '@vercel/speed-insights': '^2.0.0',
+    }
+    for (const [name, version] of Object.entries(pinned)) {
       expect(own[name], name).toBeDefined()
-      expect(own[name], name).toBe(root[name])
+      expect(own[name], name).toBe(version)
     }
   })
 

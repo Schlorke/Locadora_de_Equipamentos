@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { createRentalAvailability } from '@gb-locacoes/backend/rentals'
-import { calculateEquipmentAvailability as legacyCalculateEquipmentAvailability } from '@/lib/equipment-availability'
+
 import { withTenantTransaction as serviceTenantTransaction } from '../../apps/services/api/src/host/tenant-transaction'
 import {
   cleanupTestData,
@@ -20,10 +20,6 @@ import {
 // O serviço monta a disponibilidade com o próprio executor de transação por locadora (`host/tenant-transaction`),
 // como `host/quotations` e `host/rentals` fazem.
 const HOSTS = [
-  {
-    name: 'legacy root',
-    load: async () => legacyCalculateEquipmentAvailability,
-  },
   {
     name: 'service',
     load: async () =>

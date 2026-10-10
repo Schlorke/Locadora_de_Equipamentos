@@ -1,3 +1,26 @@
+import { withTenantTransaction } from '../../apps/services/api/src/host/tenant-transaction'
+import { createRentalTransaction } from '@gb-locacoes/backend/rentals'
+import { createPaymentProcessor } from '@gb-locacoes/backend/billing'
+import {
+  convertQuoteToRental,
+  convertPaidQuotePayment,
+  createQuoteRequest,
+} from '../../apps/services/api/src/host/quotations'
+import {
+  checkoutRental,
+  extendRental,
+  updateRental,
+} from '../../apps/services/api/src/host/rentals'
+import { createRentalAvailability } from '@gb-locacoes/backend/rentals'
+import {
+  runQuoteAdjustmentEffects,
+  runQuoteCreatedEffects,
+  runQuoteStatusEffects,
+} from '../../apps/services/api/src/host/notification-effects'
+import { createTenantBranding } from '@gb-locacoes/backend/communications'
+import { createRentalLifecycle } from '@gb-locacoes/backend/rentals'
+import { getMissingClientDocumentsInTransaction } from '@gb-locacoes/backend/customers'
+import { getDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 import { withTestPlatformTransaction } from '../helpers/platform-fixture'
 import type { TenantContext } from '@gb-locacoes/domain/tenancy'
 import { randomUUID } from 'node:crypto'
@@ -18,12 +41,22 @@ const mail = vi.hoisted(() => ({
     return { data: { id: 'test-message' }, error: null }
   }),
 }))
-const fixtureDatabase = vi.hoisted(() => ({ prisma: undefined as unknown }))
-vi.mock('@/lib/resend', () => ({
-  default: () => ({ emails: { send: mail.send } }),
+const fixtureDatabase = vi.hoisted(() => ({
+  prisma: undefined as unknown,
+  pool: undefined as import('pg').Pool | undefined,
 }))
-vi.mock('@/lib/prisma', async () => {
-  if (!process.env.TEST_DATABASE_URL) return { prisma: undefined }
+import { NextRequest } from 'next/server'
+import { publishTestOrganizations } from '../helpers/public-site'
+import { enqueueOutbox } from '@gb-locacoes/backend/outbox'
+let sessionUserId: string | null | undefined
+let adminId: string
+// Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
+// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()
+  if (!process.env.TEST_DATABASE_URL)
+    return { ...actual, getDatabaseRuntime: () => ({ prisma: undefined }) }
   const { requireTestDatabase } = await import('../helpers/test-database')
   const connectionString = requireTestDatabase(process.env)
   if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
@@ -32,56 +65,22 @@ vi.mock('@/lib/prisma', async () => {
   const { PrismaPg } = await import('@prisma/adapter-pg')
   const { PrismaClient } = await import('@prisma/client')
   const pool = new Pool({ connectionString, max: 12 })
+  fixtureDatabase.pool = pool
+  const fixturePrisma = (fixtureDatabase.prisma = new PrismaClient({
+    adapter: new PrismaPg(pool),
+  }))
+  fixtureDatabase.prisma = fixturePrisma
   return {
-    prisma: (fixtureDatabase.prisma = new PrismaClient({
-      adapter: new PrismaPg(pool),
-    })),
-    testPool: pool,
+    ...actual,
+    ...(await (async () => {
+      const F = await (() => ({
+        default: () => ({ emails: { send: mail.send } }),
+      }))()
+      return { createResendClient: () => F.default() }
+    })()),
+    getDatabaseRuntime: () => ({ prisma: fixturePrisma }),
   }
 })
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () =>
-    sessionUserId === null ? null : { user: { id: sessionUserId ?? adminId } },
-}))
-vi.mock('@/lib/rate-limit', () => ({
-  checkRateLimit: () => ({ allowed: true }),
-  adminApiRateLimit: {},
-  strictRateLimit: {},
-}))
-import { NextRequest } from 'next/server'
-import { runQuoteAdjustmentEffects } from '@/lib/quote-adjustment-effects'
-import { loadTenantBranding } from '@/lib/email-branding'
-import { createQuoteRequest } from '@/lib/quote-request'
-import { runQuoteCreatedEffects } from '@/lib/quote-created-effects'
-import { prisma } from '@/lib/prisma'
-import { publishTestOrganizations } from '../helpers/public-site'
-import { convertQuoteToRental } from '@/lib/rental-converter'
-import {
-  createManualRental,
-  checkoutRental,
-  extendRental,
-  updateRental,
-} from '@/lib/rental-lifecycle'
-import { runQuoteStatusEffects } from '@/lib/quote-status-effects'
-import { enqueueOutbox } from '@gb-locacoes/backend/outbox'
-import { withTenantTransaction } from '@/lib/tenant'
-import { processPayment } from '@/lib/payment-processor'
-import { convertPaidQuotePayment } from '@/lib/quote-payment-conversion'
-import { calculateEquipmentAvailability } from '@/lib/equipment-availability'
-let sessionUserId: string | null | undefined
-let adminId: string
-// Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
-// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
-  ...(await (async () => {
-    const F = await (() => ({
-      default: () => ({ emails: { send: mail.send } }),
-    }))()
-    return { createResendClient: () => F.default() }
-  })()),
-}))
 vi.mock('../../apps/services/api/src/host/rate-limit', () => ({
   checkRateLimit: () => ({ allowed: true }),
   adminApiRateLimit: {},
@@ -98,31 +97,14 @@ vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
         : { user: { id: sessionUserId ?? adminId } },
   }))()),
 }))
-import * as legacyRoute0 from '@/app/api/contact/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/contact/route'
-import * as legacyRoute1 from '@/app/api/admin/quotes/[id]/adjustments/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/admin/quotes/[id]/adjustments/route'
-import * as legacyRoute2 from '@/app/api/quotes/route'
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/quotes/route'
-import * as legacyRoute3 from '@/app/api/equipments/[id]/availability/route'
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/equipments/[id]/availability/route'
-import * as legacyRoute4 from '@/app/api/admin/quotes/[id]/route'
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/admin/quotes/[id]/route'
-import * as legacyRoute5 from '@/app/api/admin/rentals/route'
 import * as serviceRoute5 from '../../apps/services/api/src/app/api/admin/rentals/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      postContact: legacyRoute0.POST,
-      postAdjustment: legacyRoute1.POST,
-      postQuote: legacyRoute2.POST,
-      publicAvailability: legacyRoute3.GET,
-      patchQuote: legacyRoute4.PATCH,
-      listAdminRentals: legacyRoute5.GET,
-    },
-  ],
   [
     'service',
     {
@@ -818,9 +800,7 @@ describe.each(HOSTS)(
         })
         it('conversion reuses the rental of a concurrent writer that won the unique index', async () => {
           const source = await quote()
-          const { testPool } = (await import('@/lib/prisma')) as unknown as {
-            testPool: import('pg').Pool
-          }
+          const { testPool } = { testPool: requireFixturePool() }
           const writer = await testPool.connect()
           const competitorId = `rental_${randomUUID()}`
           let finished = false
@@ -887,9 +867,7 @@ describe.each(HOSTS)(
           ).toMatchObject({ rentalId: competitorId, quoteId: null })
         })
         it('rental status is a closed lifecycle enum, required and PENDING by default', async () => {
-          const { testPool } = (await import('@/lib/prisma')) as unknown as {
-            testPool: import('pg').Pool
-          }
+          const { testPool } = { testPool: requireFixturePool() }
           const insert = (status: string | null | undefined) => {
             const id = `rental_${randomUUID()}`
             const columns = status === undefined ? '' : ', status'
@@ -1454,10 +1432,27 @@ describe.each(HOSTS)(
 // O cliente e o pool do banco descartável são da fábrica deste arquivo: fecham uma vez, depois dos dois hosts.
 afterAll(async () => {
   if (!process.env.TEST_DATABASE_URL) return
-  const database = (await import('@/lib/prisma')) as unknown as {
-    prisma: { $disconnect(): Promise<void> }
-    testPool: { end(): Promise<void> }
-  }
+  const database = { prisma, testPool: requireFixturePool() }
   await database.prisma.$disconnect()
   await database.testPool.end()
+})
+
+const prisma = getDatabaseRuntime().prisma
+function requireFixturePool() {
+  const pool = fixtureDatabase.pool
+  if (!pool) throw new Error('Owned fixture pool was not initialized')
+  return pool
+}
+
+const { withRentalTransaction } = createRentalTransaction({
+  withTenantTransaction,
+})
+const { processPayment } = createPaymentProcessor({ withRentalTransaction })
+const { calculateEquipmentAvailability, assertRentalItemsAvailability } =
+  createRentalAvailability({ withTenantTransaction })
+const { loadTenantBranding } = createTenantBranding({ withTenantTransaction })
+const { createManualRental } = createRentalLifecycle({
+  withRentalTransaction,
+  assertRentalItemsAvailability,
+  getMissingClientDocuments: getMissingClientDocumentsInTransaction,
 })

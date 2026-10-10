@@ -226,13 +226,13 @@ describe('vitrine da GB com o conteúdo do script igual aos goldens de 55763c1e'
       )
     )
     expect(textos(sobre)).toEqual(golden('sobre.json').textos)
+    // Git stores the reference as LF; normalize only checkout CRLF before the exact markup comparison.
     // Approved canonical spelling (2026-10-08): both classes compile to flex-shrink: 0.
     // Keep the historical golden intact and translate only this known equivalent.
     expect(sobre + '\n').toBe(
-      readFileSync(path.join(FIXTURES, 'sobre.markup.html'), 'utf8').replaceAll(
-        'flex-shrink-0',
-        'shrink-0'
-      )
+      readFileSync(path.join(FIXTURES, 'sobre.markup.html'), 'utf8')
+        .replace(/\r\n/g, '\n')
+        .replaceAll('flex-shrink-0', 'shrink-0')
     )
   })
 })

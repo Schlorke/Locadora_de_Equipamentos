@@ -2,8 +2,6 @@ export { formatQuoteCode, parseQuoteCodeSequence } from './codigo'
 export {
   validateCPF,
   validateCNPJ,
-  formatCPF,
-  formatCNPJ,
   formatDocument,
   formatAddress,
 } from './documento'
@@ -27,7 +25,7 @@ export {
   ADJUSTMENT_CATEGORY_LABELS,
   parseAdjustmentBlocks,
 } from './reajuste'
-export { isQuoteValid } from './validade'
+
 export { calculateFreight } from './frete'
 export type {
   FreightCalculationRequest,

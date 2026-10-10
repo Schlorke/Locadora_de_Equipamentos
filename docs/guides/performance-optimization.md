@@ -101,7 +101,10 @@ periodicCheck = setInterval(processPeriodicCheck, 2000)
 
 ### 2. Funções Utilitárias de Performance
 
-**Arquivo:** `lib/utils.ts`
+**Owner atual de debounce:** `packages/frontend/src/shared/lib/debounce-fn.ts`,
+exportado pelo index da shared/lib. O hook de valor `debounce.ts` (useDebounce)
+tem outro contrato; não unificar os dois. A antiga lib/utils.ts foi aposentada
+em F.
 
 **Novas Funções Adicionadas:**
 
@@ -120,7 +123,12 @@ export function debounce<T extends (...args: unknown[]) => void>(
 - Input handlers que fazem cálculos pesados
 - Window resize handlers
 
-#### b) Throttle
+#### b) Throttle — registro histórico
+
+A assinatura abaixo pertence ao helper da raiz aposentado em F. Não há export
+genérico equivalente na shared/lib atual a apontar como substituto.
+ScrollStack.web.tsx mantém seu controle local de scroll; portar um utilitário
+novo requer consumidor e contrato reais, não restauração por esta receita.
 
 ```typescript
 export function throttle<T extends (...args: unknown[]) => void>(
@@ -135,11 +143,12 @@ export function throttle<T extends (...args: unknown[]) => void>(
 - Mouse move handlers
 - Eventos que precisam executar periodicamente mas não a cada frame
 
-**Benefícios:**
+**Benefícios registrados na etapa de Janeiro 2026:**
 
 - Redução de execuções desnecessárias
 - Melhor controle de frequência de callbacks
-- Reutilizáveis em todo o projeto
+- Reuso do debounce atual pelo contrato da shared; a assinatura throttle acima
+  não é uma API nova do monorepo
 
 ---
 
@@ -182,6 +191,12 @@ export function throttle<T extends (...args: unknown[]) => void>(
 ## 🧪 Como Validar as Otimizações
 
 ### 1. Executar Testes de Performance
+
+Preparar API/web e fixture de locadora próprias; medir a vitrine, não o catálogo
+global. scripts/performance-config.json define a origem e o destino do
+relatório; performance-test.js aceita --base-url. Os scripts não sobem servidor
+nem criam uma sessão válida por conta própria. As métricas de Janeiro acima
+permanecem históricas; repetir medição no build/alvo atual.
 
 ```bash
 # Testes Puppeteer
@@ -230,7 +245,7 @@ O relatório é gerado em `reports/performance/performance-analysis.md` e inclui
    - Lazy load de componentes não críticos
    - Reduzir bundle size inicial
 
-### Admin Dashboard (Janeiro 2026)
+### Admin Dashboard (Janeiro 2026 — histórico e owners atuais)
 
 4. **Otimização da Página /admin/dashboard**
    - **Problema:** LCP de 5.48s–7.52s (Poor) reportado pelo Speed Insights da
@@ -248,10 +263,18 @@ O relatório é gerado em `reports/performance/performance-analysis.md` e inclui
        página exibe header + skeletons dos cards imediatamente; LCP passa a ser
        o primeiro conteúdo pintado (header/cards) em vez de esperar a API
      - **API paralela:** `availableEquipments` movido para `Promise.all` na rota
-   - **Arquivos:** `app/admin/dashboard/page.tsx`,
-     `app/api/admin/dashboard/route.ts`,
-     `packages/frontend/src/pages/dashboard/ui/*.tsx` (era
-     `components/admin/dashboard/*.tsx`)
+   - **Owners atuais:**
+     `packages/frontend/src/pages/dashboard/ui/DashboardPage.web.tsx` e
+     `model/carga.ts`; wrapper em
+     `apps/clients/web/src/app/(admin)/admin/dashboard/page.tsx`; adapter
+     `apps/services/api/src/app/api/admin/dashboard/route.ts` sobre
+     `packages/backend/src/modules/billing/dashboard-read.ts`.
+   - **Fluxo atual conferido:** o modelo inicia stats e as leituras secundárias
+     em paralelo; libera stats antes de aguardar as demais e descarta respostas
+     fora do escopo. O dashboard usa dynamic para Kpis.web; os demais módulos da
+     UI estão em .web. Os nomes de charts e as métricas do relato de Janeiro são
+     história, não garantia atual de um chunk/ganho medido. O backend mantém
+     availableEquipments no Promise.all sob o principal da locadora.
 
 ### Média Prioridade
 

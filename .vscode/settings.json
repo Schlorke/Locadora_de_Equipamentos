@@ -4,6 +4,9 @@
   "explorer.fileNesting.patterns": {
     "README.md": "*.md, LICENSE",
     "AGENTS.md": "CLAUDE.md",
+    // This property nests basenames at every folder, including the current packages and hosts; it declares no root source.
+    // The former root Dockerfile, proxy.ts, next-env.d.ts, tsconfig.tsbuildinfo and components.json were retired in F;
+    // current host configs/generated files use overlapping basenames, so the user's generic nesting patterns remain unchanged.
     "package.json": "*.config.js, *.config.cjs, *.config.mjs, *.config.ts, *.config.mts, *.config.json, tsconfig*.json, tsconfig.tsbuildinfo, next-env.d.ts, components.json, vercel*.json, next.openapi.json, app.json, eas.json, pnpm-lock.yaml, pnpm-workspace.yaml, docker-compose.yml, Dockerfile, proxy.ts, knip.jsonc, _config.yml, .env*, .gitignore, .gitattributes, .npmrc, .nvmrc, .node-version, .prettierrc*, .prettierignore, .editorconfig, .browserslistrc, .dockerignore, .hintrc, .markdownlint*, .stylelintrc*",
     "schema.prisma": "seed.ts",
 

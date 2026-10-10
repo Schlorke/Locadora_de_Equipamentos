@@ -10,7 +10,10 @@ quando os cartoes recebem `transform` ou `filter`.
 - Componente:
   `packages/frontend/src/widgets/por-que-escolher/ui/ScrollStack.web.tsx`
 - Cartao base: `ScrollStackItem`
-- Caso de referencia: `app/playground/page.tsx`
+- Caso de referencia: `apps/clients/web/src/app/(labs)/playground/page.tsx`,
+  host fino que monta
+  `packages/frontend/src/pages/playground/ui/PlaygroundPage.web.tsx` pela
+  entrada pública `@gb-locacoes/frontend/pages/playground`.
 
 ## Como funciona
 

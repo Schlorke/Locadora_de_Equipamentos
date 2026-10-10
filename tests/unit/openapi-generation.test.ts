@@ -6,18 +6,23 @@ import ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
 /**
- * OpenAPI da API compartilhada (onda 135, Lote C, C5; E15 do plano de aposentadoria da raiz): `pnpm openapi:generate`
- * lê as rotas de `apps/services/api` e os esquemas públicos de `@gb-locacoes/contracts/openapi` (antes em
- * `lib/openapi`), nunca `app/api` nem `lib/` da raiz legada, e grava `public/openapi.json` (copiado para o host web
- * por tools/sync-web-public.mjs). O `@openapi` das nove rotas que o tinham na raiz foi portado para o serviço, e as
- * rotas públicas que só reexportavam a composição de `host/runtime` passaram a exportar `const GET`, que o gerador
- * enxerga: a especificação documenta tudo o que a raiz documentava.
+ * OpenAPI da API compartilhada (C5/E15). A estrutura app/ e lib/ da raiz foi aposentada no bloco F:
+ * `pnpm openapi:generate` lê apps/services/api e os esquemas públicos de @gb-locacoes/contracts/openapi,
+ * gravando public/openapi.json (sincronizado com o web por tools/sync-web-public.mjs).
+ * Os nove blocos @openapi do checkpoint público pré-exclusão ficam numa fixture documental congelada,
+ * independente das rotas atuais. Os handlers e a superfície do serviço continuam conferidos pela AST
+ * e pelos contratos versionados; a geração --check deve reproduzir a especificação sem regravá-la.
  */
 const ROOT = path.resolve(import.meta.dirname, '../..')
 const SERVICE_API = 'apps/services/api/src/app/api'
 const SPEC = 'public/openapi.json'
 const SCHEMAS_JSON = 'packages/contracts/src/openapi/public-schemas.json'
 const API_SURFACE_FIXTURE = 'tests/security/fixtures/api-surface.json'
+const HISTORICAL_ANNOTATIONS =
+  'tests/fixtures/openapi/annotations.pre-exclusion.json'
+const HISTORICAL_REVISION = '978ceb9244c81c7cb2888b798fad8ce90edad25e'
+const HISTORICAL_CONTENT_SHA256 =
+  'f85c2a0732d740414b355f0aad75cdd887f6ccced445c9a41fdd4ccc58bcac48'
 const HTTP_METHODS = [
   'GET',
   'POST',
@@ -28,7 +33,7 @@ const HTTP_METHODS = [
   'OPTIONS',
 ]
 
-/** As nove rotas com bloco `@openapi` na raiz legada (E15); o bloco foi portado sem mudança para o serviço. */
+/** E15: as nove anotações históricas do host raiz aposentado, congeladas antes da exclusão. */
 const PORTED_OPENAPI = [
   'admin/dashboard',
   'admin/equipments',
@@ -63,6 +68,11 @@ const UNDOCUMENTED: Record<string, string> = {
     'handler de identidade compartilhado por GET e POST (Better Auth)',
   'POST /api/auth/v2/[...all]':
     'handler de identidade compartilhado por GET e POST (Better Auth)',
+}
+
+interface HistoricalAnnotations {
+  origin: { revision: string }
+  routes: Record<string, { blocks: string[] }>
 }
 
 interface Operation {
@@ -199,7 +209,7 @@ describe('OpenAPI gerado da API compartilhada', () => {
   })
 
   it.each(PORTED_OPENAPI)(
-    '%s leva o bloco @openapi portado da raiz no handler do serviço',
+    '%s preserva o bloco @openapi do checkpoint pré-exclusão no handler do serviço',
     (route) => {
       const service = `${SERVICE_API}/${route}/route.ts`
       const blocks = openapiBlocks(read(service))
@@ -213,8 +223,21 @@ describe('OpenAPI gerado da API compartilhada', () => {
           ),
           `${service}: bloco @openapi fora de um handler exportado`
         ).toBe(true)
-      // Metade legada (sai no bloco F, junto com app/): o texto é o mesmo da rota da raiz, sem perda nem acréscimo.
-      expect(blocks).toEqual(openapiBlocks(read(`app/api/${route}/route.ts`)))
+      // O host raiz foi aposentado: o oracle independente vem dos nove blobs do checkpoint público pré-exclusão.
+      const historical = JSON.parse(
+        read(HISTORICAL_ANNOTATIONS)
+      ) as HistoricalAnnotations
+      expect(historical.origin.revision).toBe(HISTORICAL_REVISION)
+      expect(Object.keys(historical.routes).sort()).toEqual(
+        [...PORTED_OPENAPI].sort()
+      )
+      expect(
+        createHash('sha256').update(JSON.stringify(historical)).digest('hex')
+      ).toBe(HISTORICAL_CONTENT_SHA256)
+      const expected = historical.routes[route]
+      expect(expected, route).toBeDefined()
+      expect(expected!.blocks.length, route).toBeGreaterThan(0)
+      expect(blocks).toEqual(expected!.blocks)
     }
   )
 

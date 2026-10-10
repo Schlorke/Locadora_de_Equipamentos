@@ -39,7 +39,7 @@ const BETTER_AUTH_NAVIGATIONS: readonly RegExp[] = [
   /^\/error$/,
 ]
 
-/** Onde o NextAuth atende nos dois hosts: a rota `app/api/auth/[...nextauth]` (também no modo `better-auth-v2`). */
+/** O host API atende NextAuth em `apps/services/api/src/app/api/auth/[...nextauth]/route.ts` (também no modo `better-auth-v2`). */
 const NEXTAUTH_BASE_PATH = '/api/auth'
 
 /**

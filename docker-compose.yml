@@ -1,21 +1,32 @@
-version: '3.8'
+# Ambiente local isolado da nova Locadora; não lê .env.docker do legado.
+# PostgreSQL 18 usa volume novo: nunca apontar este volume para os dados PostgreSQL 15.
+name: locadora-equipamentos-saas
 services:
-  app:
-    build: .
-    env_file: .env.docker
+  api:
+    build:
+      context: .
+      dockerfile: apps/services/api/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://locadora_local:local-only@db:5432/locadora_workspace
+      NEXTAUTH_URL: http://localhost:3002
+      NEXTAUTH_URL_INTERNAL: http://localhost:3002
+      NEXTAUTH_SECRET:
+        ${LOCAL_NEXTAUTH_SECRET:?Defina um segredo sintético exclusivo deste
+        ambiente local}
     ports:
-      - '3000:3000'
+      - '127.0.0.1:3002:3002'
     depends_on:
       - db
   db:
-    image: postgres:15
+    image: postgres:18
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: gblocacoes
+      POSTGRES_USER: locadora_local
+      POSTGRES_PASSWORD: local-only
+      POSTGRES_DB: locadora_workspace
     ports:
-      - '5432:5432'
+      - '127.0.0.1:5434:5432'
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - workspace-db-v18:/var/lib/postgresql
 volumes:
-  db-data:
+  workspace-db-v18:
+    name: locadora-equipamentos-saas-pg18

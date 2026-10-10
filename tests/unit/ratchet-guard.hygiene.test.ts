@@ -21,6 +21,7 @@ const knip = (body: string) =>
 const BASE_CONFIG = knip(
   '  "ignore": ["tests/fixtures/**"],\n  "workspaces": {\n    ".": { "entry": ["tools/**/*.mjs"], "project": ["**/*.ts"], "ignoreDependencies": ["a"] },\n  },'
 )
+// A antiga lib/ foi retirada em F; BASE_BASELINE é texto sintético passado a hygieneNarrowing, não a dívida deste checkout.
 const BASE_BASELINE = baseline([
   { type: 'files', path: 'lib/velho.ts', reason: 'espera decisão do dono' },
   {

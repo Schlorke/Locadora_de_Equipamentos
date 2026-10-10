@@ -5,6 +5,7 @@
     "types": ["node"],
     "plugins": [{ "name": "next" }]
   },
+  // O antigo next-env.d.ts da raiz foi retirado em F; este include resolve o gerado do proprio host.
   "include": ["next-env.d.ts", "src", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }

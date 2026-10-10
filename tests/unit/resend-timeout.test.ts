@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { getResend as legacyGetResend } from '@/lib/resend'
 import { createResendClient } from '@gb-locacoes/backend/runtime'
 afterEach(() => {
   vi.restoreAllMocks()
@@ -9,7 +8,6 @@ afterEach(() => {
 // Contraparte da API compartilhada (onda 135, B5): o serviço monta o cliente pelo runtime do backend com a chave do
 // ambiente (`apps/services/api/src/host/credential-accounts.ts`, `host/session.ts`).
 describe.each([
-  ['legacy root', legacyGetResend],
   ['service', () => createResendClient(process.env.RESEND_API_KEY)],
 ] as const)('%s', (_host, getResend) => {
   describe('bounded mail transport', () => {

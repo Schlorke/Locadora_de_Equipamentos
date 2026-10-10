@@ -1,4 +1,4 @@
-// lib/category-design.tsx
+// Portado da antiga lib/category-design.tsx, retirada em F; o dono atual é esta fatia do frontend.
 import type { ReactElement } from 'react'
 
 import { renderIcon as renderLibraryIcon } from './constants/all-icons'

@@ -1,7 +1,15 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return { prisma: database.prisma }
+}
 /**
  * S13 (ADR docs/architecture/adr-saas-subscription.md, B.5 "Site público", B.10 "Público", D1 e D23; ADR de hosts,
- * D10): as APIs públicas dos DOIS hosts HTTP (app/api legado e apps/services/api) seguem a mesma regra do
- * resolvedor. Fiscalização on:
+ * D10): a antiga app/api foi retirada em F; as APIs públicas de apps/services/api seguem a regra do
+ * resolvedor canônico. Fiscalização on:
  * - LIVE (FULL e publicada): responde;
  * - PAUSED (RESTRICTED e publicada): catálogo, busca, disponibilidade, orçamento e contato respondem 503
  *   `SITE_PAUSED` com Retry-After, sem cache e noindex, sem tocar no banco da locadora; cartão e configurações
@@ -78,21 +86,28 @@ const database = vi.hoisted(() => {
   }
   return { prisma: { organization: { findUnique }, $transaction: transaction } }
 })
-vi.mock('@/lib/prisma', () => ({ prisma: database.prisma }))
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: database.prisma }),
-}))
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => null,
-}))
+
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({ prisma: database.prisma }),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
+
 vi.mock('../../apps/services/api/src/host/session', () => ({
   getServerSession: async () => null,
 }))
-vi.mock('@/lib/rate-limit', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/lib/rate-limit')>()),
-  checkRateLimit: () => ({ allowed: true }),
-}))
+
 vi.mock(
   '../../apps/services/api/src/host/rate-limit',
   async (importOriginal) => ({
@@ -104,19 +119,7 @@ vi.mock(
 )
 
 import { NextRequest } from 'next/server'
-import { GET as legacyCategories } from '@/app/api/categories/route'
-import { GET as legacyEquipments } from '@/app/api/equipments/route'
-import { GET as legacySearch } from '@/app/api/equipamentos/search/route'
-import { GET as legacyAvailability } from '@/app/api/equipments/[id]/availability/route'
-import { GET as legacyDetail } from '@/app/api/equipments/[id]/route'
-import { POST as legacyQuote } from '@/app/api/quotes/route'
-import { POST as legacyOrcamento } from '@/app/api/orcamentos/route'
-import { POST as legacyContact } from '@/app/api/contact/route'
-import { GET as legacySettings } from '@/app/api/settings/public/route'
-import { GET as legacyLegalDocument } from '@/app/api/settings/public/legal-documents/[kind]/route'
-import { GET as legacyCard } from '@/app/api/public/tenants/[slug]/route'
-import { GET as legacyCurrent } from '@/app/api/auth/organizations/current/route'
-import { POST as legacyEnroll } from '@/app/api/client/enroll/route'
+
 import { GET as serviceCategories } from '../../apps/services/api/src/app/api/categories/route'
 import { GET as serviceEquipments } from '../../apps/services/api/src/app/api/equipments/route'
 import { GET as serviceSearch } from '../../apps/services/api/src/app/api/equipamentos/search/route'
@@ -198,39 +201,21 @@ const contact = { name: 'Contato', email: 'c@example.test', message: 'Olá' }
 
 type Call = (_slug: string) => Promise<Response>
 type Host = {
-  categories: typeof legacyCategories
-  equipments: typeof legacyEquipments
-  search: typeof legacySearch
-  availability: typeof legacyAvailability
-  detail: typeof legacyDetail
-  quote: typeof legacyQuote
-  orcamento: typeof legacyOrcamento
-  contact: typeof legacyContact
-  settings: typeof legacySettings
-  legalDocument: typeof legacyLegalDocument
-  card: typeof legacyCard
-  current: typeof legacyCurrent
-  enroll: typeof legacyEnroll
+  categories: typeof serviceCategories
+  equipments: typeof serviceEquipments
+  search: typeof serviceSearch
+  availability: typeof serviceAvailability
+  detail: typeof serviceDetail
+  quote: typeof serviceQuote
+  orcamento: typeof serviceOrcamento
+  contact: typeof serviceContact
+  settings: typeof serviceSettings
+  legalDocument: typeof serviceLegalDocument
+  card: typeof serviceCard
+  current: typeof serviceCurrent
+  enroll: typeof serviceEnroll
 }
 const HOSTS: Array<[string, Host]> = [
-  [
-    'legado (app/api)',
-    {
-      categories: legacyCategories,
-      equipments: legacyEquipments,
-      search: legacySearch,
-      availability: legacyAvailability,
-      detail: legacyDetail,
-      quote: legacyQuote,
-      orcamento: legacyOrcamento,
-      contact: legacyContact,
-      settings: legacySettings,
-      legalDocument: legacyLegalDocument,
-      card: legacyCard,
-      current: legacyCurrent,
-      enroll: legacyEnroll,
-    },
-  ],
   [
     'serviço (apps/services/api)',
     {
@@ -611,31 +596,6 @@ describe.each(HOSTS)('%s', (_host, host) => {
   })
 })
 
-it('os dois hosts respondem a mesma área do cliente, byte a byte', async () => {
-  const [legacy, service] = HOSTS.map(([, host]) => host)
-  for (const slug of ['loc-unpublished', 'loc-paused', 'loc-archived']) {
-    expect(
-      await snapshot(await clientAreaCardOf(service!, slug)),
-      slug
-    ).toEqual(await snapshot(await clientAreaCardOf(legacy!, slug)))
-    expect(
-      await snapshot(
-        await enrollOf(service!, slug, { consent: true, tenantSlug: slug })
-      ),
-      slug
-    ).toEqual(
-      await snapshot(
-        await enrollOf(legacy!, slug, { consent: true, tenantSlug: slug })
-      )
-    )
-  }
-})
-
-it('os dois hosts respondem a mesma pausa, byte a byte', async () => {
-  const [legacy, service] = HOSTS.map(([, host]) => storefront(host))
-  for (const [index, [route, call]] of legacy!.entries()) {
-    const fromLegacy = await snapshot(await call('loc-paused'))
-    const fromService = await snapshot(await service![index]![1]('loc-paused'))
-    expect(fromService, route).toEqual(fromLegacy)
-  }
-})
+// As duas comparações byte a byte entre a antiga raiz e o serviço foram
+// executadas antes da aposentadoria no bloco F. A matriz ativa acima mantém
+// LIVE/PAUSED/OFF, área do cliente, cabeçalhos e ausência de efeitos no serviço.

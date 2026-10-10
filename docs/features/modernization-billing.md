@@ -116,8 +116,11 @@ cancelamento `CONFIRMED`. O critério mora em
 `packages/backend/src/modules/billing/cancelled-charges.ts`
 (`withCancelledChargeProof`: preparar, ler o provedor fora de SQL, conciliar sob
 o lock de quem chamou e preparar de novo) e vale para o boleto do orçamento
-(`ensureQuoteBoletoPayment`, `lib/quote-boleto.ts`) e para o pedido de PIX ou
-boleto (`requestPayment`, `lib/payment-request.ts`):
+(`ensureQuoteBoletoPayment`,
+`packages/backend/src/modules/quotations/boleto.ts`) e para o pedido de
+PIX/boleto (`requestPayment`,
+`packages/backend/src/modules/billing/payment-request.ts`), compostos por
+`apps/services/api/src/host/payments.ts`:
 
 - aberta no Asaas com o mesmo valor e meio: a linha volta a ser a cobrança
   vigente;
@@ -126,13 +129,15 @@ boleto (`requestPayment`, `lib/payment-request.ts`):
 - `REFUNDED`, outro valor ou meio, 404, mais de uma aberta ou outra cobrança
   vigente de qualquer meio (inclusive `PAID` parcial): 409, nada muda.
 
-A leitura vem de `readTenantProviderCharge` (`lib/payment-obligation.ts`): a
-única integração `ASAAS` `ACTIVE` da locadora, com a credencial dela, e o `get`
-do `createAsaasGateway`. Integração ausente, ambígua ou sem chave é
-indisponibilidade (503), nunca prova de cancelamento; chave recusada pelo
-provedor (401/403) ou resposta fora do contrato é 502; divergência é 409.
-Nenhuma dessas respostas emite segunda cobrança, e as mensagens ("Cobrança
-anterior…") são as mesmas para PIX e boleto (entradas 187 e 199 de
+A leitura vem de `readTenantProviderCharge`, criado por
+`createTenantProviderChargeReader` de
+`packages/backend/src/modules/billing/payment-obligation.ts` e injetado pelo
+host `payments.ts`: a única integração `ASAAS` `ACTIVE` da locadora, com a
+credencial dela, e o `get` do `createAsaasGateway`. Integração ausente, ambígua
+ou sem chave é indisponibilidade (503), nunca prova de cancelamento; chave
+recusada pelo provedor (401/403) ou resposta fora do contrato é 502; divergência
+é 409. Nenhuma dessas respostas emite segunda cobrança, e as mensagens
+("Cobrança anterior…") são as mesmas para PIX e boleto (entradas 187 e 199 de
 `docs/issues/known-issues.md`). O valor cobrado é sempre o saldo em centavos de
 `obligationBalance` (entrada 186).
 
@@ -166,12 +171,16 @@ são conciliados à mão: relatório somente leitura
 
 ## Arquivos
 
-Backend em packages/backend/src/modules/billing e outbox; adaptação Prisma/HTTP
-composta em lib/payment-*.ts, lib/quote-boleto.ts e nos hosts
-legado/compartilhado. Obrigação, pedido, confirmação, emissão e reemissão têm
-implementação única em packages/backend; lib conserva a composição com as
-dependências reais. A extração de todos os consumidores, verificadores e jobs
-ainda está pendente.
+Backend em `packages/backend/src/modules/billing`, quotations e outbox;
+adaptação Prisma/HTTP composta em `apps/services/api/src/host/payments.ts`,
+`payment-webhooks.ts`, `financial-mutations.ts` e `outbox.ts`. Obrigação,
+pedido, confirmação, emissão e reemissão têm implementação única no backend. As
+antigas fachadas `lib/payment-*.ts`/`lib/quote-boleto.ts` foram retiradas em F.
+
+`outbox.ts` compõe emissão, conciliação e reemissão pelo runner existente; a
+rota `apps/services/api/src/app/api/cron/outbox/route.ts` autoriza o cron antes
+de dispatch. Isso não certifica agendamento real, provedor ou permissões de
+produção.
 
 ## Erros e limites
 
@@ -286,13 +295,14 @@ B.7.3 a B.7.6). Nenhuma chamada real ao Asaas foi feita.
 
 ## Retirada da emissão simulada
 
-O gateway legado `lib/payment-gateways/boleto.ts` e seu gerador de PDF não
-possuíam consumidores produtivos após a migração. Foram retirados junto dos
-mocks obsoletos e da opção `BOLETO_GATEWAY_TYPE=direct`. A emissão passa
+O gateway antigo já retirado `lib/payment-gateways/boleto.ts` e seu gerador de
+PDF não possuíam consumidores produtivos após a migração. Foram retirados junto
+dos mocks obsoletos e da opção `BOLETO_GATEWAY_TYPE=direct`. A emissão passa
 exclusivamente pela obrigação persistida, tentativa e adapter tenant de
 `packages/backend`; nenhum fallback fabrica uma cobrança. O parser/verificador
-Asaas ainda consumido pelo webhook e cron permanece até sua extração
-incremental.
+Asaas ainda consumido pelo webhook e cron permaneceu até a extração incremental;
+hoje seus owners são billing/boleto-webhook.ts, boleto-verification.ts e
+verify-boleto-payments.ts, compostos na API.
 
 ## Confirmação e reemissão compartilhadas (onda 39, 2026-10-02)
 
@@ -300,17 +310,22 @@ payment-errors, payment-processor e boleto-reissue em backend/billing guardam as
 implementações únicas antes presentes em lib. createPaymentProcessor recebe a
 transação de locação; createBoletoReissueRequest recebe a mesma transação;
 createBoletoReissueWorker recebe transação, credencial por locadora e
-processPayment. lib/payment-processor e lib/payment-reissue apenas compõem essas
-factories para seus consumidores existentes. PaymentRequestError conserva uma
-única identidade, inclusive na fachada de payment-obligation.
+processPayment. Na onda39, as fachadas antigas lib/payment-processor e
+lib/payment-reissue compunham essas factories; foram retiradas em F. Os owners
+atuais são host/payment-webhooks.ts, financial-mutations.ts e outbox.ts da API.
+PaymentRequestError conserva uma única identidade; a fachada de
+payment-obligation da época foi retirada em F.
 
 O host compartilhado instala as mutações de settings, status, vencimento e
 preservação do histórico. O pedido de reemissão é durável/idempotente (202), sem
-acesso ao provedor pelo handler; execução e crons continuam legados. Paridade
-estrutural dos corpos, banco real, falhas SQL, concorrência entre hosts e
-contrato fake registrados na onda 39 de [API compartilhada](shared-api-host.md).
-Emissão/cancelamento externos, reconciliação e operação de jobs ainda não
-migraram.
+acesso ao provedor pelo handler; naquele corte execução/crons ainda eram
+legados. Hoje a outbox do host API compõe esses workers, conforme mapa acima.
+Paridade estrutural dos corpos, banco real, falhas SQL, concorrência entre hosts
+e contrato fake registrados na onda 39 de
+[API compartilhada](shared-api-host.md). Na onda39, emissão/cancelamento
+externos, reconciliação e operação de jobs ainda não haviam migrado. A
+composição posterior atual não comprova operação externa ou agendamento de
+produção.
 
 ## Pedidos e emissão compartilhados (onda 40, 2026-10-02)
 
@@ -321,16 +336,18 @@ backend/runtime, com leitura por chamada e mesma validação. O schema de pedido
 existente pertence a contracts/payments.
 
 O serviço monta PIX, geração/regeneração de boleto, geração administrativa e
-consulta do documento do provedor. Legado usa as mesmas factories. Locks,
-centavos, titular, ownership, prova do cancelamento, tentativas e gravação
-atômica da outbox preservados. PDF mantém 409 ou redirect https privado para o
-Asaas, sem baixar o documento no servidor.
+consulta do documento do provedor. Na onda40, o adapter antigo usava as mesmas
+factories; foi retirado em F. Locks, centavos, titular, ownership, prova do
+cancelamento, tentativas e gravação atômica da outbox preservados. PDF mantém
+409 ou redirect https privado para o Asaas, sem baixar o documento no servidor.
 
-issueTenantPayment e scheduleIssuanceReconciliation continuam executados pelo
-legado; nenhum job foi adicionado ao serviço. Paridade HTTP nos dois motores,
-rollback SQL, concorrência, contrato fake e resultados consolidados na onda 40
-de [API compartilhada](shared-api-host.md). Saída externa foi desabilitada nas
-provas HTTP; não há certificação de operação no Asaas real ou cutover.
+Na onda40, issueTenantPayment e scheduleIssuanceReconciliation ainda eram
+executados pelo legado, sem job novo no serviço naquele corte. Após a extração,
+ambos são injetados em createScheduledOutbox pelo host/outbox.ts da API.
+Paridade HTTP nos dois motores, rollback SQL, concorrência, contrato fake e
+resultados consolidados na onda 40 de [API compartilhada](shared-api-host.md).
+Saída externa foi desabilitada nas provas HTTP; não há certificação de operação
+no Asaas real ou cutover.
 
 ## Verificação e eventos no host compartilhado (onda 41)
 
@@ -338,7 +355,9 @@ POST boleto/verify e recepção PIX/Asaas, com e sem integrationId, agora existe
 nos dois hosts. URLs sem integração conservam 410. Auth/HMAC/token, lookup de
 recurso e tenant em backend/identity; inbox e lease em backend/outbox;
 consumidores e verificação em backend/billing; schemas existentes em
-contracts/payments. lib e apps/services/api fazem a composição real.
+contracts/payments. Na onda41, lib e apps/services/api faziam a composição real.
+As fachadas antigas lib foram retiradas em F; payment-webhooks.ts da API é o
+owner atual, preservando inbox e credencial por integração/tenant.
 
 A inbox e seu evento durável precedem efeitos. Dedupe e identidade conflitante,
 lease entre hosts, retry, terminal 400/403, confronto de valor, refund,

@@ -158,14 +158,15 @@ Provas e limites na onda 119 de shared-api-host.md.
 - CLI: `pnpm platform:provision`, em `tools/platform-provision-tenant.mjs`.
 - HTTP (B.13): `GET /api/onboarding/slug-availability`,
   `POST /api/onboarding/organizations`, `GET /api/onboarding/status`, em
-  `app/api/onboarding` e `apps/services/api/src/app/api/onboarding`. Os handlers
-  compartilhados ficam em `packages/backend/src/http`; a composição de criação é
+  `apps/services/api/src/app/api/onboarding`. Na onda113 coexistiam também em
+  `app/api/onboarding` da raiz antiga, retirada em F. Os handlers compartilhados
+  ficam em `packages/backend/src/http`; a composição de criação é
   `handleConfiguredOnboarding`, no runtime existente. As fachadas de leitura dos
   hosts somente fornecem a transação de locadora.
-- Opções de cadastro: `GET /api/onboarding/options`, nos dois hosts, sobre
+- Opções de cadastro: `GET /api/onboarding/options`, no host API, sobre
   `handleConfiguredOnboardingOptions`. Leitura anônima limitada ao contexto
   genuíno do painel; não cria conta, não consulta banco e não publica segredos.
-- Publicação: `POST /api/admin/site/publish`, nos dois hosts, delegando para
+- Publicação: `POST /api/admin/site/publish`, no host API, delegando para
   `handleConfiguredSitePublication` no runtime compartilhado. Caso de uso em
   `packages/backend/src/modules/onboarding/site-publication.ts`; corpo vazio ou
   `{}`, resposta estrita `SitePublicationResponseSchema`.
@@ -226,8 +227,8 @@ eventos PENDING sem reclamar o tópico ou consumir tentativas.
 Antes de cada tentativa, confere organização ONBOARDING/ACTIVE, dono atual com
 vínculo ADMIN ativo, contato verificado e não descartável, e ausência de equipe
 ativa. O envelope de um destinatário é congelado antes de chamar o transporte;
-inclui link canônico app/admin, texto e HTML escapado. Não usa SMTP, logo,
-scripts ou marca de uma locadora para a mensagem da plataforma.
+inclui link canônico `https://app.<raiz>/admin`, texto e HTML escapado. Não usa
+SMTP, logo, scripts ou marca de uma locadora para a mensagem da plataforma.
 
 Retry conserva o envelope e a chave do evento. Mudança de dono, contato,
 conteúdo ou perda de elegibilidade exige conciliação. A janela local é de 23

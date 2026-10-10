@@ -1,14 +1,9 @@
-import { randomUUID } from 'node:crypto'
-import { NextRequest } from 'next/server'
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-const session = vi.hoisted(() => ({ userId: '' }))
-const fixtureDatabase = vi.hoisted(() => ({ prisma: undefined as unknown }))
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => ({
-    user: { id: session.userId, role: 'ADMIN' },
-  }),
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
 }))
-vi.mock('@/lib/prisma', async () => {
+async function createFPreparedDatabase() {
   const { requireTestDatabase } = await import('../helpers/test-database')
   if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
     throw new Error('Disposable database opt-in required')
@@ -19,21 +14,45 @@ vi.mock('@/lib/prisma', async () => {
     connectionString: requireTestDatabase(process.env),
     max: 6,
   })
+  fPreparedDatabase.pool = pool
   return {
     prisma: (fixtureDatabase.prisma = new PrismaClient({
       adapter: new PrismaPg(pool),
     })),
     testPool: pool,
   }
+}
+import { getDatabaseRuntime as getFPreparedDatabaseRuntime } from '@gb-locacoes/backend/runtime'
+import { randomUUID } from 'node:crypto'
+import { NextRequest } from 'next/server'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+const session = vi.hoisted(() => ({ userId: '' }))
+const fixtureDatabase = vi.hoisted(() => ({ prisma: undefined as unknown }))
+
+const { prisma } = getFPreparedDatabaseRuntime()
+import { createAdminNotificationService } from '../../packages/backend/src/modules/communications/admin-notifications'
+import { withTenantTransaction as notificationTenantTransaction } from '../../apps/services/api/src/host/tenant-transaction'
+const { createAdminNotifications } = createAdminNotificationService({
+  withTenantTransaction: notificationTenantTransaction,
 })
-import { prisma } from '@/lib/prisma'
-import { createAdminNotifications } from '@/lib/notification-service'
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
-}))
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
   ...(await importOriginal<
     typeof import('../../apps/services/api/src/host/session')
@@ -44,30 +63,18 @@ vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
     }),
   }))()),
 }))
-import * as legacyRoute0 from '@/app/api/user/profile/route'
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/user/profile/route'
-import * as legacyRoute1 from '@/app/api/client/rentals/route'
+
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/client/rentals/route'
-import * as legacyRoute2 from '@/app/api/client/rentals/[id]/route'
+
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/client/rentals/[id]/route'
-import * as legacyRoute3 from '@/app/api/client/notifications/mark-all-read/route'
+
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/client/notifications/mark-all-read/route'
-import * as legacyRoute4 from '@/app/api/client/rentals/[id]/request-pickup/route'
+
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/client/rentals/[id]/request-pickup/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      getProfile: legacyRoute0.GET,
-      putProfile: legacyRoute0.PUT,
-      listRentals: legacyRoute1.GET,
-      readRental: legacyRoute2.GET,
-      deleteRental: legacyRoute2.DELETE,
-      markAll: legacyRoute3.POST,
-      pickup: legacyRoute4.POST,
-    },
-  ],
   [
     'service',
     {
@@ -324,7 +331,9 @@ describe.each(HOSTS)(
 // O cliente e o pool do banco descartável são da fábrica deste arquivo: fecham uma vez, depois dos dois hosts.
 afterAll(async () => {
   if (!process.env.TEST_DATABASE_URL) return
-  const database = (await import('@/lib/prisma')) as unknown as {
+  const database = (await Promise.resolve(
+    fPreparedDatabase.value!
+  )) as unknown as {
     prisma: { $disconnect(): Promise<void> }
     testPool: { end(): Promise<void> }
   }

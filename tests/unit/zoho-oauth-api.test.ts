@@ -16,27 +16,6 @@ const mocks = vi.hoisted(() => ({
   disconnect: vi.fn(),
   tx: vi.fn(),
 }))
-vi.mock('@/middlewares/require-admin', () => ({
-  requireAdminOrOperator: mocks.gate,
-}))
-vi.mock('@/lib/zoho-mail', () => ({
-  getZohoOAuthUrl: mocks.url,
-  isZohoOAuthConfigured: mocks.configured,
-  exchangeCodeForTokens: mocks.exchange,
-  makeZohoMailRequest: mocks.mail,
-}))
-vi.mock('@/lib/tenant', () => ({
-  withTenantTransaction: async (
-    context: unknown,
-    operation: (_tx: unknown) => Promise<unknown>
-  ) => {
-    mocks.tx(context)
-    return operation({
-      authVerification: { create: mocks.create, deleteMany: mocks.consume },
-      zohoMailToken: { upsert: mocks.upsert, deleteMany: mocks.disconnect },
-    })
-  },
-}))
 vi.mock('next/headers', () => ({
   cookies: async () => {
     mocks.cookieReader()
@@ -55,9 +34,7 @@ vi.mock(
       requireAdminOrOperator: mocks.gate,
     }))()) as Record<
       string,
-      (
-        request?: unknown
-      ) => Promise<{
+      (request?: unknown) => Promise<{
         success: boolean
         principal?: unknown
         error?: string
@@ -94,9 +71,7 @@ vi.mock(
       requireAdminOrOperator: mocks.gate,
     }))()) as Record<
       string,
-      (
-        request?: unknown
-      ) => Promise<{
+      (request?: unknown) => Promise<{
         success: boolean
         principal?: unknown
         error?: string
@@ -160,22 +135,11 @@ vi.mock(
     }))()),
   })
 )
-import * as legacyRoute0 from '@/app/api/admin/zoho-mail/oauth/authorize/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/admin/zoho-mail/oauth/authorize/route'
-import * as legacyRoute1 from '@/app/api/admin/zoho-mail/oauth/callback/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/admin/zoho-mail/oauth/callback/route'
-import * as legacyRoute2 from '@/app/api/admin/zoho-mail/oauth/disconnect/route'
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/admin/zoho-mail/oauth/disconnect/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      authorize: legacyRoute0.GET,
-      callback: legacyRoute1.GET,
-      disconnect: legacyRoute2.DELETE,
-    },
-  ],
   [
     'service',
     {
@@ -497,13 +461,6 @@ describe.each(HOSTS)('%s', (host, { authorize, callback, disconnect }) => {
     })
     // Só o contrato do require-admin da raiz admite "sucesso sem usuário"; o principal do serviço
     // (resolveTenantPrincipal) sempre traz o userId, então o caso não existe nele.
-    it.runIf(host === 'legacy root')(
-      'disconnect preserves missing-user refusal',
-      async () => {
-        mocks.gate.mockResolvedValue({ success: true, user: {}, principal })
-        expect((await disconnect()).status).toBe(401)
-        expect(mocks.tx).not.toHaveBeenCalled()
-      }
-    )
+    // F: the deleted root require-admin success-without-user state is outside the service principal contract.
   })
 })

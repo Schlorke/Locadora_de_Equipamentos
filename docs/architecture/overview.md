@@ -2,40 +2,22 @@
 
 > **Documentação técnica completa da arquitetura do sistema GB-Locações**
 
-> **Estado atual (conferido em 2026-09-30)**: a estrutura e as versões reais
-> estão no `AGENTS.md` (seção 7) e no `CLAUDE.md` ("Project Structure"):
-> monorepo pnpm com hosts finos (`apps/clients/web`, `apps/clients/mobile`)
-> sobre `packages/frontend` (Feature-Sliced Design), `packages/ui` e
-> `packages/design-tokens`, servidor em `packages/backend` e a raiz legada
-> (`app/`, `lib/`) como backend das rotas `/api`. Pagamentos pelo Asaas, uma
-> subconta por locadora (`docs/architecture/adr-saas-subscription.md`); não há
-> Stripe (o `lib/stripe.ts` e a dependência saíram). Tailwind 4.3.3 com a paleta
-> e as escalas da produção (3.4.17). Os diagramas, a tabela de versões e os
-> exemplos de código abaixo que citam Stripe, Style Dictionary, `components/`,
-> `hooks/` ou `equipmentSchema` são históricos. A pipeline do Style Dictionary
-> saiu em 2026-09-30; os tokens canônicos ficam em `packages/design-tokens/src`
-> (entrada 227 de `docs/issues/known-issues.md`).
+> **Estrutura após a retirada local da raiz**: três hosts finos — web Next
+> (`apps/clients/web`), mobile Expo (`apps/clients/mobile`) e API Next
+> (`apps/services/api`). O frontend do produto está em `packages/frontend`
+> (FSD), com UI e tokens compartilhados. O backend é um monólito modular em
+> `packages/backend/src/modules`, com transporte em `http` e composição em
+> `runtime` e no host. Regras puras e contratos ficam em `packages/domain` e
+> `packages/contracts`.
 
-Host HTTP compartilhado parcial: `apps/services/api` atende categories/health,
-equipamentos, busca, configurações públicas, disponibilidade, detalhe, cartão da
-locadora, busca do diretório e leituras autenticadas de vínculos/seleção e do
-vínculo da locadora do host (`/current`), além dos GETs privados de motoristas e
-endereços do cliente, categorias administrativas e unidades físicas (lista e
-detalhe), lista/detalhe administrativo de equipamento, permissões
-administrativas, perfil comercial, listagem e estatísticas de notificações do
-usuário na locadora, além de marcação/exclusão e mark-all-read e das escritas de
-endereços, leitura/sincronização/mesclagem do carrinho e atualização do perfil
-comercial, vínculo explícito com a locadora e criação administrativa de
-motoristas, categorias, unidades físicas e equipamentos e edição/exclusão de
-categorias, unidades e equipamentos por id, veículos, logística, portal de
-locações, pedidos locais, consultas de orçamentos, atividades e ciclo
-administrativo de locação, mutações de orçamento e PDFs/ofícios (41 GETs e 43
-mutações em 59 rotas), composto por `packages/backend`. Cobranças do ciclo e
-outbox usam as mesmas transações; emissão externa e consumidores permanecem
-legados. A política granular de permissão também é compartilhada. A raiz
-continua ativa e os clientes ainda usam sua origem; ver
-[ADR de extração](adr-backend-extraction.md) e
-[API compartilhada](../features/shared-api-host.md).
+As árvores `app/` e `lib/` da raiz foram aposentadas localmente. Os clientes
+consomem o host API; não importam handlers ou Prisma. Essa topologia não
+certifica hospedagem, banco cloud, ativação de integração ou corte do projeto
+GB. A sequência e as provas de retirada ficam em
+[modernization.md](modernization.md) e
+[shared-api-host.md](../features/shared-api-host.md). O namespace
+`@gb-locacoes/*` continua sendo a API dos packages, não uma conexão com um
+provedor ou ambiente antigo.
 
 ## 📋 Índice
 
@@ -68,120 +50,45 @@ desenvolvimento web.
 
 ## 🏛️ Arquitetura do Sistema
 
-### **Stack Tecnológico Moderno**
+### **Topologia corrente**
 
 ```mermaid
-graph TB
-    subgraph "🖥️ Frontend Layer"
-        A[Next.js 16.0.3<br/>App Router]
-        B[React 19.1.1<br/>Server Components]
-        C[TypeScript 5.9.2<br/>Strict Mode]
-        D[Tailwind CSS 3.4.17<br/>Design System]
-    end
-
-    subgraph "🧩 Component Layer"
-        E[Radix UI<br/>Accessible Primitives]
-        F[Custom Components<br/>Business Logic]
-        G[Design Tokens<br/>Style Dictionary]
-        H[Storybook 9.1.1<br/>Documentation]
-    end
-
-    subgraph "⚡ State & Logic"
-        I[Zustand 5.0.7<br/>Global State]
-        J[React Hook Form 7.62.0<br/>Form Management]
-        K[NextAuth.js 4.24.11<br/>Authentication]
-        L[Zod 4.0.17<br/>Validation]
-    end
-
-    subgraph "🌐 API Layer"
-        M[API Routes<br/>RESTful APIs]
-        N[Server Actions<br/>Server Functions]
-        O[Middleware<br/>Request Processing]
-        P[Rate Limiting<br/>Security]
-    end
-
-    subgraph "🗄️ Data Layer"
-        Q[Prisma ORM<br/>Database]
-        R[PostgreSQL 15+<br/>Database]
-        S[Supabase<br/>BaaS Platform]
-        T[Redis<br/>Caching - Future]
-    end
-
-    subgraph "🔌 External Services"
-        U[Stripe<br/>Payments]
-        V[ZapSign<br/>Contracts]
-        W[Resend<br/>Email]
-        X[Melhor Envio<br/>Logistics]
-        Y[Vercel Blob<br/>Storage]
-    end
-
-    A --> B
-    B --> C
-    C --> D
-    A --> E
-    E --> F
-    F --> G
-    G --> H
-    A --> I
-    I --> J
-    J --> K
-    K --> L
-    A --> M
-    M --> N
-    N --> O
-    O --> P
-    M --> Q
-    Q --> R
-    R --> S
-    S --> T
-    M --> U
-    M --> V
-    M --> W
-    M --> X
-    M --> Y
-
-    style A fill:#007acc,stroke:#333,stroke-width:2px,color:#fff
-    style R fill:#336791,stroke:#333,stroke-width:2px,color:#fff
-    style U fill:#6772e5,stroke:#333,stroke-width:2px,color:#fff
+flowchart TD
+  Web[apps/clients/web] --> Frontend[packages/frontend: FSD]
+  Mobile[apps/clients/mobile] --> Frontend
+  Frontend --> UI[packages/ui]
+  Frontend --> Contracts[packages/contracts]
+  UI --> Tokens[packages/design-tokens]
+  Web --> API[apps/services/api: HTTP e composição]
+  Mobile --> API
+  API --> Backend[packages/backend: monólito modular]
+  Backend --> Domain[packages/domain]
+  Backend --> Contracts
+  Backend --> Runtime[Runtime: Prisma e adapters de integração]
 ```
+
+O diagrama representa responsabilidades; não significa que uma integração está
+configurada ou autorizada a executar.
+
+### **Registro histórico do stack anterior**
+
+O desenho anterior está preservado no checkpoint Git
+`checkpoint/onda-135-pre-exclusao`, no mesmo arquivo. A topologia corrente acima
+substitui esse desenho; as versões atuais ficam em
+[dependencies.md](../references/dependencies.md).
 
 ### **Camadas da Aplicação**
 
-#### **1. 🖥️ Presentation Layer**
-
-- **Next.js App Router** - Roteamento file-based e Server Components
-- **React 19** - Biblioteca de UI com concurrent features
-- **TypeScript** - Tipagem estática e IntelliSense
-- **Tailwind CSS** - Framework CSS utility-first
-
-#### **2. 🧩 Component Layer**
-
-- **Radix UI** - Componentes primitivos acessíveis
-- **Custom Components** - Componentes específicos do negócio
-- **Design System** - Sistema de design tokens consistente
-- **Storybook** - Documentação visual de componentes
-
-#### **3. ⚡ Business Logic Layer**
-
-- **Server Actions** - Funções server-side para mutations
-- **API Routes** - Endpoints RESTful para dados
-- **Custom Hooks** - Lógica de estado reutilizável
-- **Validation** - Schemas Zod para validação de dados
-
-#### **4. 🗄️ Data Access Layer**
-
-- **Prisma ORM** - Type-safe database client
-- **PostgreSQL** - Banco relacional principal
-- **Supabase** - Backend-as-a-Service
-- **Caching Strategy** - Redis para cache (futuro)
-
-#### **5. 🔌 Integration Layer**
-
-- **Payment Gateway** - Stripe para pagamentos
-- **Document Signing** - ZapSign para contratos
-- **Email Service** - Resend para transacional
-- **Logistics** - Melhor Envio para cálculo de frete
-- **File Storage** - Vercel Blob e Supabase Storage
+- **Hosts clientes:** rotas, bootstrap, ambiente e integração de plataforma.
+- **Frontend FSD:** `app → pages → widgets → features → entities → shared`. Uma
+  fatia importa somente camadas inferiores por suas APIs públicas.
+- **Fundação:** `packages/ui` e `packages/design-tokens` não importam frontend,
+  clientes, Prisma ou módulos de servidor.
+- **Servidor:** o host API compõe `packages/backend`; FSD não se aplica ao
+  backend. Domínio puro e contratos não dependem de Next ou Prisma.
+- **Dados e integrações:** runtime injeta Prisma e adapters nos módulos.
+  Transações de locadora recebem contexto explícito e RLS; o cliente nunca
+  recebe uma credencial do provedor ou acesso direto ao banco.
 
 ---
 
@@ -191,27 +98,17 @@ graph TB
 
 ```mermaid
 sequenceDiagram
-    participant U as 👤 Usuário
-    participant N as ⚡ Next.js
-    participant A as 🌐 API Layer
-    participant P as 🗄️ Prisma
-    participant D as 💾 Database
-    participant E as 🔌 External APIs
-
-    U->>N: 1. HTTP Request
-    N->>A: 2. Server Action/API Route
-    A->>P: 3. Database Query
-    P->>D: 4. SQL Query
-    D->>P: 5. Result Set
-    P->>A: 6. Typed Data
-
-    alt External Service Required
-        A->>E: 7. API Call
-        E->>A: 8. Response
-    end
-
-    A->>N: 9. Processed Data
-    N->>U: 10. HTML/JSON Response
+  participant C as Cliente web/mobile
+  participant H as Host API
+  participant B as Módulo backend
+  participant P as Prisma/PostgreSQL
+  C->>H: HTTP com contexto da locadora
+  H->>H: Validação, identidade, origem e permissão aplicáveis
+  H->>B: Operação com contexto explícito
+  B->>P: Transação da locadora sob RLS
+  P-->>B: Resultado
+  B-->>H: Resultado do contrato
+  H-->>C: Status, headers e corpo HTTP
 ```
 
 ### **Data Flow Patterns**
@@ -219,44 +116,46 @@ sequenceDiagram
 #### **📖 Read Operations (Queries)**
 
 ```typescript
-// 1. Component Request
-const equipments = await getEquipments()
+// apps/services/api/src/app/api/equipments/route.ts (composição existente)
+import { publicEquipments } from "../../../host/runtime"
 
-// 2. Server Action/API Route
-export async function getEquipments() {
-  const { prisma } = await import("@/lib/prisma")
-  return prisma.equipment.findMany({
-    include: { category: true }
-  })
-}
-
-// 3. Prisma Query → Database
-// 4. Typed Response
+export const dynamic = "force-dynamic"
+export const runtime = "nodejs"
+export const revalidate = 0
+export const GET = publicEquipments
 ```
+
+O catálogo público seleciona a locadora explicitamente; o módulo
+`packages/backend/src/modules/catalog/public.ts` usa `withTenantTransaction`. O
+web SSR lê essa API pela composição
+`apps/clients/web/src/host/server/public-api.ts`, não por uma consulta global do
+antigo `@/lib/prisma`.
 
 #### **✏️ Write Operations (Mutations)**
 
-```typescript
-// 1. Form Submission
-const result = await createEquipment(formData)
-
-// 2. Validation
-const validated = equipmentSchema.parse(formData)
-
-// 3. Database Transaction
-await prisma.$transaction([
-  prisma.equipment.create(data),
-  prisma.auditLog.create(audit)
-])
-
-// 4. Response/Redirect
-```
+A rota administrativa de settings em
+`apps/services/api/src/app/api/admin/settings/route.ts` exige `SETTINGS/WRITE`,
+origem confiável e `SettingsSchema` antes de delegar a `host/branding`.
+Contratos ficam em `packages/contracts`, regras de negócio em domain/backend e
+composição no host. Os snippets antigos de `equipmentSchema` e Server Actions
+não são uma implementação a copiar.
 
 ---
 
 ## 📊 Tecnologias Principais
 
-### **🎯 Versões Estáveis (Testadas)**
+### **🎯 Versões e validação**
+
+A versão instalada é fixada pelos manifests, `.node-version`, `packageManager` e
+`pnpm-lock.yaml`; consulte [dependencies.md](../references/dependencies.md)
+antes de alterá-la. A presença da versão não equivale à execução de todos os
+gates ou à compatibilidade com todo navegador/dispositivo.
+
+### **Registro histórico da tabela de versões**
+
+A tabela e as incompatibilidades abaixo preservam o estado anterior à migração.
+A trava de Tailwind 3 e o bloqueio antigo de Prisma 6 foram substituídos pela
+configuração corrente; não são recomendações de upgrade.
 
 | Categoria         | Tecnologia      | Versão      | Status       | Notas               |
 | ----------------- | --------------- | ----------- | ------------ | ------------------- |
@@ -274,7 +173,7 @@ await prisma.$transaction([
 | **Testing**       | Vitest          | 3.2.4       | ✅ Estável   | Fast testing        |
 | **E2E**           | Playwright      | 1.54.2      | ✅ Estável   | Cross-browser       |
 
-### **⚠️ Incompatibilidades Críticas**
+### **⚠️ Incompatibilidades registradas no stack anterior**
 
 ```bash
 # ❌ BLOQUEADORES - NÃO ATUALIZAR
@@ -293,6 +192,11 @@ lucide-react → Sempre compatível
 ## 🗄️ Modelo de Dados
 
 ### **📊 Entidades Principais**
+
+O esquema autoritativo é `prisma/schema.prisma`, com suas migrations. O diagrama
+abaixo resume as entidades comerciais; não representa todos os vínculos,
+permissões, assinaturas, credenciais ou políticas multiempresa. Identidade e
+seleção de locadora seguem [adr-tenant-hosts.md](adr-tenant-hosts.md).
 
 ```mermaid
 erDiagram
@@ -368,7 +272,12 @@ erDiagram
 - `Quote → QuoteItem` (1:N) - Um orçamento contém múltiplos itens
 - `Rental → RentalItem` (1:N) - Uma locação contém múltiplos itens
 
-### **📝 Schemas Principais**
+### **📝 Registro histórico de schemas demonstrativos**
+
+Os schemas abaixo são ilustrações antigas, não contratos HTTP atuais.
+`equipmentSchema` da implementação antiga foi aposentado sem consumidor. Schemas
+atuais são exportados por `packages/contracts`; não copie estes objetos para
+criar uma segunda validação ou ignorar tenant/permissão.
 
 ```typescript
 // User Schema
@@ -416,69 +325,34 @@ integração com Stripe que não existe mais.
 
 ### **📄 Contracts - ZapSign**
 
-```typescript
-// Document Signing
-export const zapSign = new ZapSign({
-  apiKey: process.env.ZAPSIGN_TOKEN!,
-  sandbox: process.env.NODE_ENV !== "production"
-})
-
-// Contract Creation
-const contract = await zapSign.createDocument({
-  templateId: "rental-contract",
-  variables: { customerName, equipmentList, total }
-})
-```
+O módulo é `packages/backend/src/modules/documents`; o adapter ZapSign está em
+`zapsign.ts`, e a composição HTTP em `apps/services/api/src/host/contracts.ts`.
+Assinatura, arquivo e callback têm contratos próprios; não crie um cliente
+global com uma credencial de outra locadora.
 
 ### **📧 Email - Resend**
 
-```typescript
-// Transactional Email
-export const resend = new Resend(process.env.RESEND_API_KEY!)
+O runtime exporta `createResendClient` em
+`packages/backend/src/runtime/mail.ts`, consumido pela composição de
+communications. Remetente e credencial pertencem ao ambiente/locadora
+configurados, não a uma constante empresarial deste guia.
 
-// Send Quote Email
-await resend.emails.send({
-  from: "noreply@gblocacoes.com.br",
-  to: customer.email,
-  subject: "Seu orçamento GB Locações",
-  react: QuoteEmailTemplate({ quote, customer })
-})
-```
+### **🚚 Logistics**
 
-### **🚚 Logistics - Melhor Envio**
+Frete é regra do contrato de domínio em
+`packages/domain/src/orcamento/frete.ts`; veículos e entregas são compostos por
+`apps/services/api/src/host/operations.ts` e pelo módulo backend `operations`. O
+exemplo antigo de Melhor Envio não certificava um adapter corrente; não
+configure um novo serviço para reproduzir esse desenho.
 
-```typescript
-// Shipping Calculation
-export const melhorEnvio = new MelhorEnvio({
-  token: process.env.MELHOR_ENVIO_TOKEN!,
-  sandbox: process.env.NODE_ENV !== "production"
-})
+### **☁️ Storage**
 
-// Calculate Shipping
-const shipping = await melhorEnvio.calculate({
-  from: { postal_code: "01310-100" },
-  to: { postal_code: customer.postalCode },
-  dimensions: equipmentDimensions
-})
-```
-
-### **☁️ Storage - Supabase + Vercel Blob**
-
-```typescript
-// File Upload Strategy
-export async function uploadFile(file: File) {
-  // Small files → Vercel Blob (fast)
-  if (file.size < 4.5 * 1024 * 1024) {
-    return await put(file.name, file, {
-      access: "public",
-      token: process.env.BLOB_READ_WRITE_TOKEN
-    })
-  }
-
-  // Large files → Supabase Storage (cost-effective)
-  return await supabase.storage.from("equipment-images").upload(file.name, file)
-}
-```
+Os adapters de imagem/documento estão em
+`packages/backend/src/runtime/document-storage.ts` e são exportados por
+`@gb-locacoes/backend/runtime`. O antigo exemplo que dividia uploads entre
+Vercel Blob e Supabase por tamanho não é a política atual. Infraestrutura
+hospedada e credenciais próprias serão definidas depois; a existência do adapter
+não prova integração configurada.
 
 ---
 
@@ -486,31 +360,35 @@ export async function uploadFile(file: File) {
 
 ### **🗂️ Organização de Diretórios**
 
-```
-apps/clients/web/        # Host Next.js fino: rotas, bootstrap, proxy para a API
-apps/clients/mobile/     # Host Expo fino
-apps/services/api/       # Host HTTP parcial: catálogo público e health
-packages/frontend/src/   # Produto em FSD: app → pages → widgets → features →
-                         #   entities → shared (cada fatia com index.ts público)
-packages/ui/src/         # Design system: contrato + variantes .web/.native
-packages/design-tokens/  # Tokens e temas canônicos (theme.css, tokens.css,
-                         #   palette.css, scales.css)
-packages/backend/        # Módulos de servidor (identidade, cobrança, locação...)
-packages/domain/         # Regras puras (dinheiro em Decimal.js)
-packages/contracts/      # Contratos compartilhados (zod)
-app/api/                 # Raiz legada: rotas REST (o backend do host web)
-lib/                     # Servidor e utilitários da raiz legada
-prisma/                  # Schema e migrations (RLS por locadora)
+```text
+Locadora_de_Equipamentos/
+├── apps/clients/web/        # Next: rotas, bootstrap, proxy e integração de plataforma
+├── apps/clients/mobile/     # Expo: bootstrap e integração nativa
+├── apps/services/api/       # Next: src/app/api e composição em src/host
+├── packages/frontend/src/  # FSD: app → pages → widgets → features → entities → shared
+├── packages/ui/            # Contratos e implementações web/native do design system
+├── packages/design-tokens/ # Tokens e temas canônicos
+├── packages/backend/src/   # modules/, http/ e runtime/; somente servidor
+├── packages/domain/        # Regras puras, sem dependências dos hosts
+├── packages/contracts/     # Schemas e contratos compartilhados
+├── types/                  # Inclui next-auth.d.ts; não é apagada com a raiz antiga
+├── public/                 # Assets compartilhados e OpenAPI
+├── prisma/                 # Schema e migrations com RLS
+├── tools/                  # Gates e geração do Prisma
+├── scripts/                # Ferramentas conservadas; operações exigem runbook
+├── tests/                  # Suítes e ferramentas de prova
+├── stories/                # Storybook
+└── docs/                   # Guias, decisões e runbooks
 ```
 
 ### **🔧 Padrões de Módulos**
 
-O padrão de módulo é o Feature-Sliced Design do contrato do `AGENTS.md` (seção
-"Context Window"): uma fatia só importa camadas abaixo dela, nunca uma irmã, e
-sempre pelo `index.ts` da outra; `shared` não tem regra de negócio e `shared/ui`
-só delega ao `packages/ui`. `pnpm arch` confere. Os padrões "Feature Module" e
-"Shared Module" com `components/`/`hooks/` que ficavam aqui eram anteriores à
-migração.
+O padrão de módulo do frontend é o Feature-Sliced Design do contrato do
+`AGENTS.md` (seção "Context Window"): uma fatia só importa camadas abaixo dela,
+nunca uma irmã, e sempre pelo `index.ts` da outra; `shared` não tem regra de
+negócio e `shared/ui` só delega ao `packages/ui`. `pnpm arch` confere. Os
+padrões "Feature Module" e "Shared Module" com `components/`/`hooks/` que
+ficavam aqui eram anteriores à migração.
 
 ---
 
@@ -527,7 +405,15 @@ Para entender aspectos específicos da arquitetura:
 
 ---
 
-_Última atualização: dezembro 2024_
+_A topologia corrente acima descreve a retirada local; as provas do clone e o
+corte de produção são registrados separadamente._
+
+## Registro histórico — extração parcial de 2026-10-02
+
+Os saldos, fachadas e origens legadas abaixo pertencem a essa data e foram
+superados pela extração posterior. A raiz `app/`/`lib/` citada nesses registros
+foi aposentada localmente; preserve os números como cronologia, não como
+instrução para reconstruir o host antigo.
 
 Atualização local de 2026-10-02, ondas 38–40: consultas/mutações financeiras,
 pedidos de PIX/boleto e leitura privada do documento compostos em

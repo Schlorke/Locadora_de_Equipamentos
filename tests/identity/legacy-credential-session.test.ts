@@ -1,3 +1,27 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  const { requireTestDatabase } = await import('../helpers/test-database')
+  if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
+    throw new Error('Disposable database opt-in required')
+  const { Pool } = await import('pg')
+  const { PrismaPg } = await import('@prisma/adapter-pg')
+  const { PrismaClient } = await import('@prisma/client')
+  const pool = new Pool({
+    connectionString: requireTestDatabase(process.env),
+    max: 4,
+  })
+  fPreparedDatabase.pool = pool
+  return {
+    prisma: (fixtureDatabase.prisma = new PrismaClient({
+      adapter: new PrismaPg(pool),
+    })),
+  }
+}
+import { getDatabaseRuntime as getFPreparedDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 import { createHash, randomUUID } from 'node:crypto'
 import { NextRequest } from 'next/server'
 import {
@@ -11,68 +35,51 @@ import {
 } from 'vitest'
 
 const mocks = vi.hoisted(() => {
-  // lib/auth and NextAuth read these when the modules are evaluated.
+  // The API host's session composition and NextAuth read these when the modules are evaluated.
   process.env.NEXTAUTH_SECRET = 'fixture-legacy-session-secret-identity-tests'
   process.env.NEXTAUTH_URL = 'http://localhost:3000'
   return { send: vi.fn() }
 })
 const fixtureDatabase = vi.hoisted(() => ({ prisma: undefined as unknown }))
-vi.mock('@/lib/prisma', async () => {
-  const { requireTestDatabase } = await import('../helpers/test-database')
-  if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
-    throw new Error('Disposable database opt-in required')
-  const { Pool } = await import('pg')
-  const { PrismaPg } = await import('@prisma/adapter-pg')
-  const { PrismaClient } = await import('@prisma/client')
-  const pool = new Pool({
-    connectionString: requireTestDatabase(process.env),
-    max: 4,
-  })
-  return {
-    prisma: (fixtureDatabase.prisma = new PrismaClient({
-      adapter: new PrismaPg(pool),
-    })),
-  }
-})
-vi.mock('@/lib/resend', () => ({
-  default: () => ({ emails: { send: mocks.send } }),
-}))
 
 import bcrypt from 'bcryptjs'
 import NextAuth, { getServerSession, type User } from 'next-auth'
 import { decode, type JWT } from 'next-auth/jwt'
-import { authOptions as legacyAuthOptions } from '@/lib/auth'
+
 import { authOptions as serviceAuthOptions } from '../../apps/services/api/src/host/session'
-import { prisma } from '@/lib/prisma'
+const { prisma } = getFPreparedDatabaseRuntime()
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
-// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
-  ...(await (async () => {
-    const F = await (() => ({
-      default: () => ({ emails: { send: mocks.send } }),
-    }))()
-    return { createResendClient: () => F.default() }
-  })()),
-}))
-import * as legacyRoute0 from '@/app/api/auth/forgot-password/route'
+// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade da raiz foi retirada no bloco F.
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
+    ...(await (async () => {
+      const F = await (() => ({
+        default: () => ({ emails: { send: mocks.send } }),
+      }))()
+      return { createResendClient: () => F.default() }
+    })()),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/auth/forgot-password/route'
-import * as legacyRoute1 from '@/app/api/auth/reset-password/route'
+
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/auth/reset-password/route'
-import * as legacyRoute2 from '@/app/api/auth/register/route'
+
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/auth/register/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      authOptions: legacyAuthOptions,
-      forgotPassword: legacyRoute0.POST,
-      resetPassword: legacyRoute1.POST,
-      register: legacyRoute2.POST,
-    },
-  ],
   [
     'service',
     {
@@ -597,3 +604,13 @@ describe.each(HOSTS)(
     })
   }
 )
+
+// Close the fixture-created Prisma and Pool after original row cleanup.
+afterAll(async () => {
+  if (!fPreparedDatabase.pool) return
+  try {
+    await getFPreparedDatabaseRuntime().prisma.$disconnect()
+  } finally {
+    await fPreparedDatabase.pool.end()
+  }
+})

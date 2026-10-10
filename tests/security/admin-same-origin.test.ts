@@ -1,3 +1,23 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  // Qualquer acesso ao cliente é um efeito (leitura ou escrita no banco).
+  const client: object = new Proxy(() => undefined, {
+    get: (_target, property) => {
+      if (property === 'then') return undefined
+      state.effects.push(`prisma.${String(property)}`)
+      return client
+    },
+    apply: () => {
+      state.effects.push('prisma()')
+      return Promise.reject(new Error('database access in a CSRF test'))
+    },
+  })
+  return { prisma: client, default: client }
+}
 /**
  * CSRF entre locadoras irmãs no painel (lote de endurecimento da onda 4): todo
  * `{slug}.<raiz>` e o `app.<raiz>` são o mesmo site, então um script de
@@ -13,9 +33,8 @@
  * mesma requisição da origem do app, e a de um cliente nativo (sem borda e
  * sem cabeçalhos de navegador), chegam à sessão (controles positivos).
  *
- * A varredura roda nas duas árvores de rotas (onda 135, E6): a raiz legada
- * (`app/api/admin`, que sai no bloco F) e a API compartilhada
- * (`apps/services/api/src/app/api/admin`), com a sessão do serviço
+ * A antiga app/api/admin foi retirada em F; a varredura atual roda na API
+ * compartilhada (`apps/services/api/src/app/api/admin`), com a sessão do serviço
  * (`host/session`) e o banco do runtime (`getDatabaseRuntime`) como dublês.
  */
 import fs from 'node:fs'
@@ -28,27 +47,6 @@ const state = vi.hoisted(() => ({
   headers: new Headers(),
 }))
 
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: async () => {
-    state.effects.push('session')
-    return null
-  },
-}))
-vi.mock('@/lib/prisma', () => {
-  // Qualquer acesso ao cliente é um efeito (leitura ou escrita no banco).
-  const client: object = new Proxy(() => undefined, {
-    get: (_target, property) => {
-      if (property === 'then') return undefined
-      state.effects.push(`prisma.${String(property)}`)
-      return client
-    },
-    apply: () => {
-      state.effects.push('prisma()')
-      return Promise.reject(new Error('database access in a CSRF test'))
-    },
-  })
-  return { prisma: client, default: client }
-})
 const recordingClient = vi.hoisted(() => {
   // Qualquer acesso ao cliente é um efeito (leitura ou escrita no banco).
   const client: object = new Proxy(() => undefined, {
@@ -73,10 +71,22 @@ vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
     return null
   },
 }))
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: recordingClient }),
-}))
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({ prisma: recordingClient }),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 vi.mock('server-only', () => ({}))
 vi.mock('next/headers', () => ({
   headers: async () => state.headers,
@@ -184,23 +194,11 @@ afterEach(() => {
 
 const RETIRED = 410
 
-const ROOTS = [
-  ['legacy root', 'app/api/admin'],
-  ['service', 'apps/services/api/src/app/api/admin'],
-] as const
+const ROOTS = [['service', 'apps/services/api/src/app/api/admin']] as const
 
-describe('the two admin route trees expose the same mutations', () => {
-  it('every method and path of the legacy root exists in the service (and nothing else)', async () => {
-    const names = async (root: string) =>
-      (await adminMutations(root)).map(({ name }) =>
-        name.replace(root, '<admin>')
-      )
-    const [legacy, service] = await Promise.all(
-      ROOTS.map(([, root]) => names(root))
-    )
-    expect(service).toEqual(legacy)
-  }, 120_000)
-})
+// A comparação entre a antiga raiz e o serviço foi validada antes da aposentadoria
+// da raiz no bloco F. Aqui todos os handlers ativos do serviço mantêm as provas CSRF
+// e os controles positivos abaixo; não se compara o serviço consigo mesmo.
 
 describe.each(ROOTS)(
   '%s: every /api/admin/** mutation on the app host refuses a sibling tenant origin',

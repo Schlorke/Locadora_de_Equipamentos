@@ -1,17 +1,22 @@
 # 📋 Guia Completo: Formulários e Emails - GB Locações
 
-> **Status**: ✅ 100% Funcional **Última atualização**: Dezembro 2024
-> **Compatibilidade**: Todos os clientes de email
+> **Registro visual original**: Dezembro 2024; layouts de email preservados
+> abaixo como exemplos daquela época. Fluxo HTTP, persistência e assinaturas
+> atuais foram conferidos nas fontes do backend e da API.
 
 ---
 
 ## 🎯 Visão Geral dos 3 Formulários
 
-O projeto GB Locações possui **3 formulários** diferentes que enviam emails:
+Os três formulários criam solicitações na locadora e agendam notificações.
+`/api/contact` confirma 202 com `messageId`/`deliveryStatus: queued`;
+`/api/orcamentos` e `/api/quotes` confirmam 201 após persistência. Nenhuma
+dessas respostas comprova entrega de email. A marca vem da Organization, sem
+fallback GB:
 
 | #     | Página                     | API               | Email Enviado         | ID de Orçamento | Equipamentos    |
 | ----- | -------------------------- | ----------------- | --------------------- | --------------- | --------------- |
-| **1** | Homepage (Contact Section) | `/api/contact`    | Contato Simples       | ✅ CTT-XXXXX    | Texto livre     |
+| **1** | Homepage (Contact Section) | `/api/contact`    | Contato Simples       | ✅ Quote ID     | Texto livre     |
 | **2** | Homepage (Quote Form)      | `/api/orcamentos` | Orçamento com Valores | ✅ DB ID        | Lista calculada |
 | **3** | `/orcamento`               | `/api/quotes`     | Orçamento Completo    | ✅ DB ID        | Lista calculada |
 
@@ -24,7 +29,7 @@ O projeto GB Locações possui **3 formulários** diferentes que enviam emails:
 - **URL**: http://localhost:3000/ (seção "Entre em Contato")
 - **Componente**:
   `packages/frontend/src/widgets/contato-home/ui/ContatoHome.web.tsx`
-- **API**: `app/api/contact/route.ts`
+- **API**: `apps/services/api/src/app/api/contact/route.ts`
 - **Template**: `generateContactEmailHTML()`
 
 ### **Campos do Formulário**
@@ -41,7 +46,7 @@ O projeto GB Locações possui **3 formulários** diferentes que enviam emails:
 ✅ Mensagem *
 ```
 
-### **Email Enviado**
+### **Exemplo visual histórico do email (Dezembro 2024)**
 
 ```
 📧 Assunto: 🎯 Novo Orçamento #CTT-XXXXX - [Nome do Cliente]
@@ -75,8 +80,10 @@ Footer:
 
 ### **Características**
 
-- ✅ **ID Único**: Gerado como `CTT-{timestamp}-{random}`
-- ✅ **Não salva no banco** (apenas envia email)
+- ✅ **ID persistido**: `Quote.id`, criado na mesma transação tenant da outbox.
+- ✅ **Salva no banco**: Quote PENDING com total zero, código gerado sob lock
+  por locadora e evento `quote.created.notify` de tipo contact na mesma
+  transação.
 - ✅ **Campos opcionais** mostrados condicionalmente
 - ✅ **Validação**: CPF ou CNPJ obrigatório
 
@@ -88,7 +95,7 @@ Footer:
 
 - **URL**: http://localhost:3000/ (quando clica em equipamento específico)
 - **Componente**: `packages/frontend/src/pages/orcamento/ui/QuoteForm.web.tsx`
-- **API**: `app/api/orcamentos/route.ts`
+- **API**: `apps/services/api/src/app/api/orcamentos/route.ts`
 - **Template**: `generateQuoteEmailHTML()`
 
 ### **Campos do Formulário**
@@ -106,7 +113,7 @@ Footer:
 ✅ Mensagem
 ```
 
-### **Email Enviado**
+### **Exemplo visual histórico do email (Dezembro 2024)**
 
 ```
 📧 Assunto: 🎯 Novo Orçamento #ABCD1234 - [Nome do Cliente]
@@ -162,8 +169,9 @@ Footer:
 ### **Localização**
 
 - **URL**: http://localhost:3000/orcamento
-- **Componente**: `app/orcamento/page.tsx`
-- **API**: `app/api/quotes/route.ts`
+- **Componente**:
+  `packages/frontend/src/pages/orcamento/ui/OrcamentoPage.web.tsx`
+- **API**: `apps/services/api/src/app/api/quotes/route.ts`
 - **Template**: `generateQuoteEmailHTML()`
 
 ### **Campos do Formulário**
@@ -179,7 +187,7 @@ Footer:
 ✅ Equipamento(s) selecionado(s) (via QuoteForm)
 ```
 
-### **Email Enviado**
+### **Exemplo visual histórico do email (Dezembro 2024)**
 
 **IDÊNTICO ao Formulário 2** - usa a mesma função `generateQuoteEmailHTML()`
 
@@ -233,15 +241,20 @@ Footer:
 
 ---
 
-## ✅ Garantias de Funcionamento
+## ✅ Contratos de persistência e apresentação
+
+A API resolve a locadora e a origem antes da criação; dados e equipamentos
+pertencem ao mesmo tenant. O servidor usa o pricing canônico, não os valores
+calculados ou enviados pelo navegador.
 
 ### **Formulário 1 - Contact Section**
 
-- ✅ **ID Único**: Gerado como `CTT-{timestamp}-{random}`
+- ✅ **ID persistido**: `Quote.id`, criado na mesma transação tenant da outbox.
 - ✅ **Todos os campos exibidos**: Nome, Email, Telefone, CEP, Empresa,
   Equipamento, CPF, CNPJ, Mensagem
-- ✅ **Email enviado** com template profissional
-- ✅ **Toast de sucesso** após envio
+- ✅ **Email agendado** com template profissional; entrega depende do
+  worker/provider.
+- ✅ **Toast de solicitação aceita** após resposta; não é recibo do provedor.
 - ✅ **URL limpa** (dados sensíveis removidos)
 
 ### **Formulário 2 - Homepage Orçamento**
@@ -264,6 +277,12 @@ Footer:
 
 ## 🧪 Como Testar
 
+Use a URL da vitrine da locadora no host web configurado. Os exemplos abaixo
+usam localhost para ilustrar a navegação; precisam da mesma locadora/tenantSlug
+resolvidos pelo host/API. Utilize banco descartável e transporte de email de
+fixture; observar um 201/202 não substitui conferir a execução do efeito. Envio
+real a provedores exige ambiente e autorização próprios.
+
 ### **Teste 1: Formulário de Contato Simples**
 
 1. Acesse http://localhost:3000/
@@ -273,7 +292,7 @@ Footer:
    Equipamento, CPF/CNPJ, Mensagem)
 5. Clique "Enviar Solicitação"
 6. Verifique o email recebido:
-   - ✅ ID do Orçamento: #CTT-XXXXX
+   - ✅ ID do Orçamento: o Quote.id persistido (não o CTT do exemplo antigo)
    - ✅ Todos os campos preenchidos aparecem
    - ✅ CEP aparece com emoji 📍
    - ✅ Empresa aparece com emoji 🏢
@@ -360,11 +379,11 @@ Mensagem:
 
 ---
 
-## ✅ Status de Implementação
+## ✅ Campos do contrato atual e exemplos do registro original
 
 | Feature          | Formulário 1   | Formulário 2       | Formulário 3       |
 | ---------------- | -------------- | ------------------ | ------------------ |
-| **ID Orçamento** | ✅ CTT-ID      | ✅ DB ID           | ✅ DB ID           |
+| **ID Orçamento** | ✅ DB ID       | ✅ DB ID           | ✅ DB ID           |
 | **Nome**         | ✅             | ✅                 | ✅                 |
 | **Email**        | ✅             | ✅                 | ✅                 |
 | **Telefone**     | ✅             | ✅                 | ✅                 |
@@ -383,31 +402,32 @@ Mensagem:
 
 ### **Geração de IDs**
 
-#### **Formulário 1 (Contact)**
+`packages/backend/src/modules/quotations/contact.ts` usa `createContactRequests`
+com `withRentalTransaction`: persiste o contato como Quote da locadora e retorna
+seu ID. `quoteCode` vem de `generateNextQuoteCode`, protegido por lock; não é um
+timestamp aleatório. Quotes/orcamentos usam o serviço de criação compartilhado,
+com itens do catálogo da mesma locadora e outbox na transação.
 
-```typescript
-const contactId = `CTT-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`
-// Exemplo: CTT-L8KQXZ2-A3B9F
-```
-
-#### **Formulários 2 e 3 (Quotes)**
-
-```typescript
-const quote = await prisma.quote.create({ ... })
-const quoteId = quote.id // ID do PostgreSQL
-// Exemplo: cme0n8pld0003kytghr9tcl5n
-```
+O antigo ID `CTT-{timestamp}-{random}` exibido nos layouts de Dezembro 2024 é
+somente histórico; não deve ser recriado pelo frontend nem usado como recibo.
 
 ### **Templates Utilizados**
 
-#### **generateContactEmailHTML(data, contactId)**
+Os renderizadores são internos a
+`packages/backend/src/modules/communications/email-templates.ts`. O efeito
+`createQuoteCreatedEffects` lê o pedido e memberships ADMIN/OPERATOR ativos do
+tenant; usa marca carregada pelo backend e chaves de idempotência por evento e
+destinatário. Os hosts consomem factories públicas, sem importar HTML no
+cliente.
+
+#### **generateContactEmailHTML(branding, data, contactId)**
 
 - Para formulário de contato simples
 - Não tem tabela de equipamentos
 - Não tem valor total
-- Tem ID único gerado (CTT-XXXXX)
+- Recebe o ID persistido do contato e o branding da locadora
 
-#### **generateQuoteEmailHTML(data, equipments[], total, quoteId)**
+#### **generateQuoteEmailHTML(branding, data, equipments[], total, quoteId)**
 
 - Para orçamentos completos
 - Tem tabela de equipamentos com valores
@@ -425,7 +445,7 @@ const quoteId = quote.id // ID do PostgreSQL
    ```
    URL: http://localhost:3000/
    Preencha: TODOS os campos
-   Verifique: ID #CTT-XXXXX no email
+   Verifique: ID persistido no email; CTT é apenas o exemplo visual antigo
    ```
 
 2. **Teste Formulário 2** (Homepage - Quote):
@@ -447,7 +467,7 @@ const quoteId = quote.id // ID do PostgreSQL
 
 ---
 
-## ✅ Checklist Final
+## ✅ Checklist visual declarado no registro de Dezembro 2024
 
 - [x] ✅ ID de Orçamento em TODOS os formulários
 - [x] ✅ CEP sendo enviado e exibido
@@ -463,9 +483,10 @@ const quoteId = quote.id // ID do PostgreSQL
 
 ---
 
-## 🎉 Sistema 100% Funcional!
+## 🎉 Conclusão registrada em Dezembro 2024
 
-**Todos os 3 formulários agora:**
+**A conclusão original declarou as seguintes características dos três
+formulários:**
 
 - ✅ Geram ID de Orçamento único
 - ✅ Enviam TODOS os campos preenchidos
@@ -476,5 +497,6 @@ const quoteId = quote.id // ID do PostgreSQL
 
 ---
 
-**Última atualização**: Dezembro 2024 **Status**: ✅ **PRODUÇÃO - 100%
-FUNCIONAL**
+**Registro original**: Dezembro 2024, com declaração de produção da época. Esta
+revisão não certifica entrega real, compatibilidade universal ou nova aprovação
+visual. O contrato atual de fila está descrito nas unidades acima.

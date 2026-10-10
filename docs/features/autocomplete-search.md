@@ -21,7 +21,12 @@ redirecionamento contextual.
    autocomplete
 2. **`packages/frontend/src/widgets/hero/ui/Hero.web.tsx`** - Integração na
    página inicial
-3. **`app/api/equipamentos/search/route.ts`** - API endpoint para busca
+3. **`apps/services/api/src/app/api/equipamentos/search/route.ts`** - endpoint
+   de busca composto por `host/runtime.ts`
+   (`createPublicEquipmentSearchHandler`) e
+   `packages/backend/src/modules/catalog/public.ts` (`searchPublicEquipments`).
+   O Hero envia a locadora explícita em `tenantSlug`; o backend resolve o
+   contexto antes da consulta e não escolhe uma locadora padrão.
 
 ### Fluxo de Dados
 

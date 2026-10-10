@@ -1,4 +1,5 @@
 {
+  "$comment": "Fixture sintética de compatibilidade: as antigas app/, lib/ e proxy.ts da raiz foram retiradas em F; estes caminhos existem só nos objetos/cópias temporárias de tests/unit/token-check.test.ts, para provar catraca, arquivo movido e css-important absoluto. Não define o escopo da configuração produtiva.",
   "tokens": {
     "scope": ["packages/ui/src"],
     "legacyScope": ["app", "lib", "proxy.ts"]

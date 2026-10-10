@@ -95,6 +95,7 @@ function arquivos(dir: string): string[] {
     if (entrada.isSymbolicLink()) continue
     const relativo = path.posix.join(dir, entrada.name)
     if (entrada.isDirectory()) {
+      // A .next antiga da raiz saiu em F; este basename também exclui gerados dos hosts, não dados-fonte da plataforma.
       if (
         ['node_modules', '__fixtures__', '.next', 'dist'].includes(entrada.name)
       )

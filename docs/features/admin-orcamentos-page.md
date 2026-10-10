@@ -167,11 +167,17 @@ const [nestedDialogOpen, setNestedDialogOpen] = useState(false)
 
 ### Arquivos Relacionados
 
-- `app/admin/orcamentos/page.tsx` - Página principal
-- `app/api/admin/quotes/route.ts` - API de listagem
-- `app/api/admin/quotes/[id]/route.ts` - API de ações individuais
-- `app/api/admin/quotes/[id]/send-adjusted-quote/route.ts` - Envio de orçamento
-  ajustado
+- `packages/frontend/src/pages/orcamentos-admin/ui/Lista.web.tsx` e variante
+  native - apresentação compartilhada da página
+- `apps/clients/web/src/app/(admin)/admin/orcamentos/page.tsx` - host fino
+- `apps/services/api/src/app/api/admin/quotes/route.ts` - API de listagem
+- `apps/services/api/src/app/api/admin/quotes/[id]/route.ts` - API de ações
+  individuais
+- `apps/services/api/src/app/api/admin/quotes/[id]/send-adjusted-quote/route.ts` -
+  Envio de orçamento ajustado
+- `apps/services/api/src/host/quotations.ts` e
+  `packages/backend/src/modules/quotations` - composição HTTP e comandos por
+  tenant
 - `packages/frontend/src/widgets/quadro-kanban/ui/Quadro.web.tsx` - Componente
   Kanban
 

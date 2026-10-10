@@ -1,7 +1,8 @@
 # Contexto de IA - GB Locações Design System
 
-> **ARQUIVO CRÍTICO**: Este arquivo é a fonte de verdade para IAs trabalhando no
-> Storybook do GB Locações. Leia SEMPRE antes de criar ou modificar componentes.
+> **Contexto do Storybook**: leia antes de criar stories. Os contratos atuais de
+> componentes e tokens pertencem a `packages/ui` e `packages/design-tokens`; as
+> regras do produto estão em `AGENTS.md` e `docs/features/design-system.md`.
 
 ---
 
@@ -43,7 +44,9 @@
 }
 ```
 
-**Fonte de Verdade**: `design-tokens/base.json`
+**Fontes canônicas do runtime**: `packages/design-tokens/src/palette.css`,
+`scales.css` e `theme.css`. `design-tokens/base.json` continua como referência
+das stories; não substitui os contratos de componentes ou os tokens do runtime.
 
 ---
 
@@ -219,7 +222,7 @@ Componentes usados em ambos os domínios:
 ### Template de Story (.stories.tsx)
 
 ```typescript
-import type { Meta, StoryObj } from '@storybook/nextjs';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { ComponentName } from '@gb-locacoes/ui';
 
 const meta = {
@@ -386,7 +389,8 @@ Antes de marcar como concluído, verificar:
 
 ### Stories Obrigatórias
 
-- [ ] `Default` story criada (baseline visual)
+- [ ] `Default` story criada (referência da story; não aprova a baseline do
+      host)
 - [ ] `Playground` story criada (todos os controles)
 - [ ] Feature stories para TODAS as variantes
 - [ ] Feature stories para TODOS os tamanhos
@@ -408,7 +412,7 @@ Antes de marcar como concluído, verificar:
 
 - [ ] Tag `autodocs` adicionada
 - [ ] Testado no Storybook (`pnpm storybook`)
-- [ ] Acessibilidade validada com addon A11y (zero violações)
+- [ ] Acessibilidade inspecionada com addon A11y e teclado; registrar os limites
 - [ ] Responsividade verificada
 - [ ] Todos os estados visuais funcionando
 
@@ -419,7 +423,8 @@ Antes de marcar como concluído, verificar:
 ### SEMPRE FAÇA
 
 1. ✅ **SEMPRE consulte o Storybook** antes de criar novos componentes
-2. ✅ **SEMPRE use design tokens** de `design-tokens/base.json`
+2. ✅ **SEMPRE use os tokens canônicos** de `packages/design-tokens`; confira a
+   referência das stories em `design-tokens/base.json`
 3. ✅ **SEMPRE use classes Tailwind** do design system
 4. ✅ **SEMPRE documente "quando usar" e "quando NÃO usar"**
 5. ✅ **SEMPRE teste acessibilidade** com addon A11y
@@ -433,7 +438,8 @@ Antes de marcar como concluído, verificar:
 2. ❌ **NUNCA use cores hardcoded** - sempre use classes Tailwind
 3. ❌ **NUNCA ignore responsividade** - mobile-first obrigatório
 4. ❌ **NUNCA pule a documentação MDX** - é obrigatória
-5. ❌ **NUNCA ignore acessibilidade** - WCAG 2.1 AA compliance
+5. ❌ **NUNCA ignore acessibilidade** - uma story ou addon não prova
+   conformidade completa; preserve verificação de teclado, foco e estados reais
 6. ❌ **NUNCA use `any` em TypeScript** - sempre tipos específicos
 7. ❌ **NUNCA quebre a hierarquia** - respeite Public/Atoms, Admin/Layout, etc.
 8. ❌ **NUNCA ignore os design tokens** - são a base de tudo
@@ -454,8 +460,9 @@ acessíveis:
 - **Tabs, Accordion, Collapsible** - Navegação e organização
 - **Select, Combobox** - Seletores
 
-**Sempre prefira componentes Radix UI** quando disponíveis - eles são acessíveis
-por padrão.
+Consuma os componentes públicos de `@gb-locacoes/ui`, que encapsulam Radix UI.
+Não crie uma segunda implementação do primitivo na story nem presuma que o
+primitivo sozinho comprova a acessibilidade da composição.
 
 ### Lucide React
 
@@ -473,9 +480,15 @@ import { Plus, Trash2, Edit, Search } from "lucide-react"
 
 ### Arquivos Importantes
 
-- **Design Tokens**: `design-tokens/base.json`
-- **Tailwind Config**: `tailwind.config.cjs`
-- **Estilos Globais**: `app/globals.css`
+- **Tokens do runtime**: `packages/design-tokens/src/`;
+  `design-tokens/base.json` é a referência das stories
+- **Configuração Tailwind compartilhada**: `tailwind.config.cjs`, carregada pelo
+  CSS do frontend; as fontes do produto usam seus `@source` explícitos
+- **Estilos do preview**: entrada pública `@gb-locacoes/frontend/app/styles.css`
+  em `.storybook/preview.tsx`, com fonte em
+  `packages/frontend/src/app/styles/globals.web.css`
+- **Configuração Storybook**: `.storybook/main.ts`, usando
+  `apps/clients/web/next.config.mjs`
 - **Componentes UI**: `packages/ui/src/web/` (catálogo em
   `packages/ui/src/catalog.ts`)
 - **Componentes de produto e admin**: `packages/frontend/src/`
@@ -486,6 +499,15 @@ import { Plus, Trash2, Edit, Search } from "lucide-react"
 - **Design System**: `docs/features/design-system.md`
 - **Admin System**: `docs/features/admin-system.md`
 - **Troubleshooting**: `docs/getting-started/troubleshooting.md`
+- **Operação Storybook**: `docs/guides/storybook.md` e `stories/QUICK_START.md`
+
+Os exemplos de identidade visual acima são referências de documentação, não
+autorização para alterar cores, escalas ou variantes do produto. Confira o
+contrato do componente, especialmente `packages/ui/src/contract/button.ts`,
+antes de propor mudanças. O conteúdo anterior a esta revisão está preservado sem
+alterações em `docs/archive/wave135-pre-f/stories/AI_CONTEXT.md.source`, com
+proveniência no README desse diretório. Essa versão histórica não é o
+procedimento atual.
 
 ### Ferramentas Externas
 

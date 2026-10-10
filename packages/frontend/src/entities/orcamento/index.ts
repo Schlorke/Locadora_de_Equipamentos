@@ -47,8 +47,6 @@ export {
 export type { WhatsAppQuoteData } from './model/whatsapp'
 export {
   formatAddress,
-  formatCNPJ,
-  formatCPF,
   formatDocument,
   validateCNPJ,
   validateCPF,

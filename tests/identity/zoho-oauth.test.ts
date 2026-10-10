@@ -1,3 +1,11 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  return { prisma: {} }
+}
 // OAuth do Zoho Mail com a plataforma multi-host (ADR adr-tenant-hosts, Lote 6): redirect URI fixo no host app,
 // nunca derivado do Host da requisição; o state continua preso à locadora e ao usuário; a volta ao painel é
 // relativa ao host que recebeu o callback (o app), não a uma origem configurada à parte.
@@ -12,7 +20,7 @@ import {
 } from 'vitest'
 
 const mocks = vi.hoisted(() => {
-  // lib/zoho-mail/client.ts lê o client id ao carregar o módulo.
+  // A fixture fornece o client id antes de montar createZohoMailClient do backend.
   process.env.ZOHO_CLIENT_ID = 'fixture-zoho-client'
   process.env.ZOHO_CLIENT_SECRET = 'fixture-zoho-secret'
   return {
@@ -24,26 +32,7 @@ const mocks = vi.hoisted(() => {
     },
   }
 })
-vi.mock('@/lib/tenant', () => ({
-  withTenantTransaction: async (
-    _context: unknown,
-    operation: (_tx: unknown) => Promise<unknown>
-  ) => operation(mocks.tx),
-}))
-vi.mock('@/lib/prisma', () => ({ prisma: {} }))
-vi.mock('@/middlewares/require-admin', () => ({
-  requireAdminOrOperator: async () => ({
-    success: true,
-    user: { id: 'user-A' },
-    tenantId: 'tenant-A',
-    principal: {
-      tenantId: 'tenant-A',
-      userId: 'user-A',
-      membershipId: 'membership-A',
-      role: 'ADMIN',
-    },
-  }),
-}))
+
 vi.mock('next/headers', () => ({
   cookies: async () => ({
     get: () => ({ value: mocks.cookie }),
@@ -52,17 +41,27 @@ vi.mock('next/headers', () => ({
 }))
 
 import { NextRequest } from 'next/server'
-import {
-  exchangeCodeForTokens,
-  getZohoOAuthUrl,
-  getZohoRedirectUri,
-} from '@/lib/zoho-mail/client'
+import { createZohoMailClient } from '@gb-locacoes/backend/communications'
+const { exchangeCodeForTokens, getZohoOAuthUrl, getZohoRedirectUri } =
+  createZohoMailClient()
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
-// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: {} }),
-}))
+// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade da raiz foi retirada no bloco F.
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({ prisma: {} }),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
 vi.mock(
   '../../apps/services/api/src/host/private-identity',
   async (importOriginal) => {
@@ -80,9 +79,7 @@ vi.mock(
       }),
     }))()) as Record<
       string,
-      (
-        request?: unknown
-      ) => Promise<{
+      (request?: unknown) => Promise<{
         success: boolean
         principal?: unknown
         error?: string
@@ -128,9 +125,7 @@ vi.mock(
       }),
     }))()) as Record<
       string,
-      (
-        request?: unknown
-      ) => Promise<{
+      (request?: unknown) => Promise<{
         success: boolean
         principal?: unknown
         error?: string
@@ -173,16 +168,10 @@ vi.mock(
     }))()),
   })
 )
-import * as legacyRoute0 from '@/app/api/admin/zoho-mail/oauth/callback/route'
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/admin/zoho-mail/oauth/callback/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      callback: legacyRoute0.GET,
-    },
-  ],
   [
     'service',
     {

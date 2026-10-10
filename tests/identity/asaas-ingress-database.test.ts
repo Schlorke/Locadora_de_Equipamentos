@@ -11,7 +11,7 @@ import { createPlatformAsaasIngress } from '../../packages/backend/src/modules/p
 import { createWebhookInbox } from '../../packages/backend/src/modules/outbox/index'
 import { withTenantTransaction } from '../../packages/backend/src/modules/identity/tenant-principal'
 import { getPlatformDatabaseRuntime } from '../../packages/backend/src/runtime/platform-database'
-import { POST as legacyRoot } from '../../app/api/webhooks/asaas/platform/route'
+
 import { POST as apiRoot } from '../../apps/services/api/src/app/api/webhooks/asaas/platform/route'
 
 describe.skipIf(!process.env.TEST_DATABASE_URL)(
@@ -604,10 +604,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
         })
       ).toBe(1)
     })
-    it.each([
-      ['legacy', legacyRoot],
-      ['service', apiRoot],
-    ] as const)(
+    it.each([['service', apiRoot]] as const)(
       '%s root adapter enforces authentication and returns only after persistence',
       async (name, handler) => {
         const body = event('adapter-' + name)

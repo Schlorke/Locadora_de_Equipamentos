@@ -74,13 +74,7 @@ describe('Configurações admin', () => {
       "from '../../../../../../components/admin/header-footer-preview'"
     )
 
-    const route = readFileSync(
-      new URL('../../../../../../app/admin/settings/page.tsx', import.meta.url),
-      'utf8'
-    )
-    expect(route).toContain("from '@gb-locacoes/frontend/pages/configuracoes'")
-    expect(route).toContain('return <AdminConfiguracoesPage />')
-    // Onda 135 (A8): a mesma página no host web; a asserção sobre a raiz sai no bloco F.
+    // A rota do host web mantém a composição compartilhada.
     const webRoute = readFileSync(
       new URL(
         '../../../../../../apps/clients/web/src/app/(admin)/admin/settings/page.tsx',

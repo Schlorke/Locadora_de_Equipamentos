@@ -26,12 +26,15 @@ exibe resumo final (itens + frete).
    - `PICKUP`: esconde endereco e frete.
    - `DELIVERY`: renderiza `AddressForm` e, com CEP valido/endereco definido,
      chama `calculateFreight` para montar `freightOptions`.
-7. Dropdown de frete usa o `Select` do design system em modo nao modal
-   (`modal={false}` por padrao). A neutralizacao do scroll-lock do Radix em
-   `app/globals.css` (regra `body[data-scroll-locked]`) + guard no
-   `app/orcamento/page.tsx` (remove `data-scroll-locked` e styles `data-rs*`)
-   garantem que o dropdown nao insira padding/margin extra nem bloqueie o scroll
-   global. Cada opcao exibe nome, transportadora e preco formatado.
+7. Dropdown de frete usa o `Select` do design system e preserva rolagem livre. O
+   Radix Select não declara `modal`: `modal={false}` é compatibilidade da
+   fachada, não a proteção efetiva. `SelectContent` liga
+   `useReleaseScrollLockRef`, de `packages/ui/src/web/release-scroll-lock.ts`,
+   enquanto o conteúdo está conectado: remove `data-scroll-locked`, libera
+   `pointer-events: none` e usa `data-scroll-released` para o recorte global.
+   Observador/registro encerram no ref solto ou conteúdo desconectado. Os guards
+   antigos de `app/globals.css`/`app/orcamento/page.tsx` foram retirados em F;
+   não devem ser recriados. Cada opção mantém nome, transportadora e preço.
 8. Resumo (sidebar sticky) soma subtotais calculados pelo pricing inteligente e
    inclui o valor da opcao de frete selecionada. Desde as ondas 6 e 7, o
    subtotal de cada item e `buildQuotePricing(...).total` (preco exato em
@@ -50,8 +53,10 @@ exibe resumo final (itens + frete).
 
 ## 3. Arquitetura e Dependencias
 
-- `app/orcamento/page.tsx` — pagina principal, controle de formulario, frete e
-  submissao.
+- `packages/frontend/src/pages/orcamento/ui/OrcamentoPage.web.tsx` —
+  apresentação da página. `model/use-quote-page.ts` é o fluxo compartilhado; o
+  host fino está em
+  `apps/clients/web/src/app/(public)/[locadora]/(vitrine)/orcamento/page.tsx`.
 - `packages/frontend/src/features/carrinho/model/carrinho.ts` — estado do
   carrinho, `hydrateItems`, `updateItem*`.
 - `packages/frontend/src/entities/equipamento/model/preco.ts` e
@@ -72,16 +77,17 @@ exibe resumo final (itens + frete).
 - Para frete: defina `deliveryType = 'DELIVERY'`, preencha CEP/endereco; a
   pagina busca opcoes via `calculateFreight` e mostra no select (scroll
   permanece livre enquanto o dropdown esta aberto).
-- `Select` aceita `modal` para casos especiais; manter `modal={false}` no fluxo
-  publico para evitar travar scroll ou inserir padding lateral.
+- A fachada `Select` mantém `modal={false}` por compatibilidade; a liberação do
+  scroll depende do ref do `SelectContent`, não dessa prop. Preserve esse ref no
+  fluxo público e seu cleanup, sem copiar observadores para a página.
 - Totais e badges de preco sao recalculados automaticamente ao alterar dias,
   quantidades ou opcao de frete.
 - O envio do orcamento exige aceite dos Termos de Uso (checkbox + dialog).
 
 ## 5. Armadilhas a Evitar
 
-- Evite usar `modal={true}` no `Select` de frete ou campos similares da area
-  publica; isso bloqueia o scroll global e cria faixa branca na lateral.
+- Não remova a liberação de scroll do conteúdo Select de frete. Alterar apenas
+  `modal` não desativa o RemoveScroll do Radix Select.
 - Nao enviar itens sem datas (`startDate`/`endDate`/`days`) — a API bloqueia.
 - Nao pular a reidratacao de precos (`hydrateItems`), senao valores podem ficar
   defasados.
@@ -91,9 +97,9 @@ exibe resumo final (itens + frete).
 
 ## 6. Licoes Aprendidas
 
-- O modo modal padrao do Radix Select ativa `RemoveScroll` no `body`, travando o
-  scroll e adicionando padding visivel; manter `modal={false}` para dropdowns
-  simples resolve o problema sem afetar a experiencia.
+- O Radix Select ativa `RemoveScroll` no body. A solução antiga de2025 descrevia
+  `modal={false}`/guard da página; o owner atual é o ref de liberação do design
+  system, que evita trava/padding e encerra o registro ao fechar.
 - Manter frete e endereco condicionais ao `deliveryType` reduz erros de
   submissao e evita requisicoes de frete desnecessarias.
 

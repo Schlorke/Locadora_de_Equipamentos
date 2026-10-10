@@ -1,0 +1,237 @@
+# Arquivo historico anterior ao corte F da onda 135
+
+Origem: `docs/google-merchant-checklist.md`. Texto e receitas anteriores preservados integralmente abaixo; nao sao procedimentos atuais. Consulte o guia ativo no caminho de origem e a base validada.
+
+---
+
+# ✅ Checklist de Configuração - Google Merchant Center
+
+O checklist abaixo conserva a configuração global anterior da GB-Locações.
+Não representa uma integração habilitada para esta plataforma SaaS.
+
+## Estado operacional atual
+
+A família portada para `scripts/ops/google-merchant/` está em quarentena COD-04:
+`createGoogleMerchantClient` recusa com `GOOGLE_MERCHANT_LEGACY_DISABLED`.
+No host `apps/services/api`, os handlers administrativos resolvem primeiro o
+principal da locadora e exigem papel ADMIN; quando autorizados, retornam 503
+com `TENANT_MERCHANT_ADAPTER_UNAVAILABLE`. O cron também exige sua autorização
+e retorna 503. Ausência de sessão/permissão não deve ser interpretada como
+falha de credencial Google.
+
+O feed e o adapter por locadora continuam sem aprovação. Não configure
+credenciais globais, não sincronize produtos, não habilite agenda nem altere os
+serviços da GB para completar este checklist. A escolha de infraestrutura e a
+integração externa têm etapa própria, posterior. Consulte o
+[owner em quarentena](../scripts/ops/google-merchant/README.md).
+
+## Checklist histórico da integração global
+
+As contas, nomes, domínio GB e ações externas nas seções seguintes pertencem ao
+procedimento antigo, agora aposentado como receita operacional deste produto.
+Os exemplos de segredo são placeholders; não copie credenciais reais para docs.
+
+## 📋 Pré-configuração histórica da GB
+
+- [ ] Você tem uma conta Google Business ativa
+- [ ] Seu site está verificado no Google Search Console
+- [ ] Você tem acesso ao Google Cloud Console
+- [ ] Você tem pelo menos 1 equipamento cadastrado no sistema
+
+## 🔧 Configuração Google histórica — não executar neste fechamento
+
+### 1. Google Merchant Center
+
+- [ ] Acessou [merchants.google.com](https://merchants.google.com)
+- [ ] Criou ou selecionou conta Merchant
+- [ ] Preencheu dados da empresa (nome, país, fuso)
+- [ ] Verificou e reivindicou o site `locacoesgb.com.br`
+- [ ] **Anotou o Merchant ID** (10 dígitos)
+
+### 2. Google Cloud Console
+
+- [ ] Acessou [console.cloud.google.com](https://console.cloud.google.com)
+- [ ] Criou ou selecionou um projeto
+- [ ] Ativou a **Content API for Shopping**
+- [ ] Criou um Service Account (`merchant-api-service`)
+- [ ] Gerou e **baixou** a chave JSON
+- [ ] **Anotou** o email do Service Account (`xxx@xxx.iam.gserviceaccount.com`)
+
+### 3. Vincular Service Account
+
+- [ ] Voltou ao Merchant Center > Configurações > Acesso de usuários
+- [ ] Adicionou o email do Service Account
+- [ ] Concedeu função **Administrador**
+- [ ] Salvou as alterações
+
+### 4. Criar Feed API
+
+- [ ] No Merchant Center, foi em Produtos > Feeds
+- [ ] Clicou em "Adicionar produtos"
+- [ ] Selecionou **"Adicionar produtos usando a API"**
+- [ ] Nomeou como `GB Locações - API Feed`
+- [ ] Configurou país (Brasil) e idioma (Português)
+- [ ] Marcou destinos: Shopping + Performance Max
+- [ ] Criou o feed
+
+## 💻 Configuração do código anterior (aposentada)
+
+As variáveis globais abaixo eram do serviço antigo, não do frontend atual.
+Adicionar esses valores aos hosts novos não habilita a fábrica em quarentena.
+
+### 5. Variáveis de Ambiente
+
+- [ ] Abriu o arquivo JSON baixado do Service Account
+- [ ] Copiou o `client_email` para `GOOGLE_MERCHANT_SERVICE_ACCOUNT_EMAIL`
+- [ ] Copiou a `private_key` para `GOOGLE_MERCHANT_SERVICE_ACCOUNT_KEY`
+- [ ] Copiou o Merchant ID para `GOOGLE_MERCHANT_ID`
+- [ ] Adicionou as 3 variáveis ao `.env.local`
+- [ ] Reiniciou o servidor de desenvolvimento
+
+**Exemplo `.env.local`:**
+
+```bash
+GOOGLE_MERCHANT_ID="1234567890"
+GOOGLE_MERCHANT_SERVICE_ACCOUNT_EMAIL="merchant-api@project.iam.gserviceaccount.com"
+GOOGLE_MERCHANT_SERVICE_ACCOUNT_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQI...\n-----END PRIVATE KEY-----\n"
+```
+
+### 6. Instalação
+
+- [ ] Executou `pnpm install` (dependência `googleapis` já incluída)
+- [ ] Build passou sem erros: `pnpm build`
+- [ ] Types estão ok: `pnpm type-check`
+
+## 🧪 Verificações históricas da integração global
+
+As expectativas `configured: true`/`connected: true` e os curls abaixo descrevem
+o serviço anterior. Não são o contrato atual nem prova de autenticação por
+Bearer genérico: o handler atual usa o principal do vínculo. Após a autorização,
+a resposta esperada enquanto durar a quarentena é 503, não sincronização real.
+
+### 7. Testar Localmente
+
+- [ ] Servidor rodando: `pnpm dev`
+- [ ] Acessou `/api/admin/google-merchant/status`
+- [ ] Status retornou `configured: true` e `connected: true`
+- [ ] Testou sincronização manual via Postman/Insomnia
+
+**Teste manual via curl:**
+
+```bash
+# Verificar status
+curl http://localhost:3000/api/admin/google-merchant/status
+
+# Sincronizar (precisa estar autenticado como admin)
+curl -X POST http://localhost:3000/api/admin/google-merchant/sync \
+  -H "Authorization: Bearer SEU_TOKEN_ADMIN"
+```
+
+### 8. Verificar no Google Merchant
+
+- [ ] Acessou Merchant Center > Produtos > Todos os produtos
+- [ ] Viu os produtos sincronizados
+- [ ] Verificou imagens carregando corretamente
+- [ ] Conferiu preços e disponibilidade
+
+## 🚀 Publicação e agenda históricas — não habilitar
+
+Os comandos de Vercel e a agenda da raiz deste roteiro foram aposentados como
+instruções para a nova plataforma. `apps/clients/web/vercel.json` não declara
+crons; `apps/services/api/vercel.json` declara late-fees, expire-quotes e outbox,
+sem sync-google-merchant. Não acrescente o cron antigo ou conecte um projeto
+existente da GB para satisfazer estes itens. Publicação Git não é deploy.
+
+### 9. Deploy em Produção
+
+- [ ] Adicionou variáveis ao Vercel (ou provedor de hospedagem)
+
+```bash
+vercel env add GOOGLE_MERCHANT_ID
+vercel env add GOOGLE_MERCHANT_SERVICE_ACCOUNT_EMAIL
+vercel env add GOOGLE_MERCHANT_SERVICE_ACCOUNT_KEY
+```
+
+- [ ] Fez deploy: `git push` ou `vercel --prod`
+- [ ] Deploy passou com sucesso
+- [ ] Testou endpoint em produção
+
+### 10. Agenda anterior da raiz aposentada
+
+- [ ] Verificou que `vercel.json` tem o cron configurado
+- [ ] Cron está agendado para `0 2 * * *` (2h da manhã)
+- [ ] Deploy do `vercel.json` foi feito
+- [ ] Cron aparece no painel do Vercel
+
+## 🎯 Critérios finais históricos
+
+Os itens abaixo só teriam significado para a integração global antiga.
+Marcar o checklist ou passar um build local não aprova o feed por locadora nem
+transforma a recusa 503 em integração concluída.
+
+### 11. Tudo Funcionando
+
+- [ ] Sincronização manual funciona
+- [ ] Produtos aparecem no Google Merchant Center
+- [ ] Imagens carregam corretamente
+- [ ] Preços estão corretos
+- [ ] Disponibilidade está correta
+- [ ] Cron job está configurado e ativo
+- [ ] Logs não mostram erros críticos
+
+### 12. Diagnóstico de Produtos
+
+- [ ] No Merchant Center, foi em Produtos > Diagnóstico
+- [ ] **Todos** os produtos estão "Aprovados" ✅
+- [ ] Não há erros críticos ❌
+- [ ] Avisos (se houver) foram revisados ⚠️
+
+## 📊 Próximos passos do roteiro antigo (histórico)
+
+### 13. Campanhas Google Ads (Opcional)
+
+- [ ] Criou conta Google Ads (se ainda não tiver)
+- [ ] Vinculou Merchant Center ao Google Ads
+- [ ] Criou campanha Performance Max ou Shopping
+- [ ] Configurou orçamento e lances
+- [ ] Ativou campanhas
+
+### 14. Monitoramento
+
+- [ ] Configurou alertas no Merchant Center
+- [ ] Adicionou monitoramento de logs (Sentry, LogRocket, etc.)
+- [ ] Criou dashboard de métricas
+- [ ] Definiu KPIs (cliques, impressões, conversões)
+
+## 🆘 Diagnóstico atual e problemas do roteiro anterior
+
+`TENANT_MERCHANT_ADAPTER_UNAVAILABLE`/503 significa quarentena intencional.
+Não contorne a fábrica, troque credenciais ou reative o cron. As soluções na
+tabela abaixo eram aplicáveis ao serviço global antigo; não são recuperação
+operacional dos hosts atuais.
+
+| Problema                   | Solução                                           |
+| -------------------------- | ------------------------------------------------- |
+| Status `configured: false` | Verifique variáveis de ambiente                   |
+| Status `connected: false`  | Verifique Service Account no Merchant Center      |
+| Produtos não aparecem      | Aguarde até 24h, verifique diagnóstico            |
+| Erro de autenticação       | Verifique chave privada (com quebras `\n`)        |
+| Imagens não carregam       | Use URLs HTTPS válidas                            |
+| Cron não executa           | Verifique `CRON_SECRET` e deploy do `vercel.json` |
+
+## 📚 Documentação de Referência
+
+- [📖 Guia Completo](./google-merchant-setup.md)
+- [📁 Código da Integração](../scripts/ops/google-merchant/) (porte da onda 135;
+  em quarentena, a fábrica recusa com `GOOGLE_MERCHANT_LEGACY_DISABLED`)
+- [💡 Exemplos de Uso](../scripts/ops/google-merchant/README.md)
+
+---
+
+**Limite de conclusão:** este registro histórico não certifica integração
+externa. O fechamento atual conserva a quarentena; um futuro aceite exige feed,
+credenciais e adapter isolados por locadora, além de validação autorizada.
+
+**Precisa de ajuda?** Consulte a
+[documentação completa](./google-merchant-setup.md) ou abra uma issue no
+repositório.

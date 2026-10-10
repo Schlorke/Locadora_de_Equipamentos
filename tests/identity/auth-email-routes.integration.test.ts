@@ -1,5 +1,30 @@
+const fPreparedDatabase = vi.hoisted(() => ({
+  value: undefined as
+    undefined | Awaited<ReturnType<typeof createFPreparedDatabase>>,
+  pool: null as null | import('pg').Pool,
+}))
+async function createFPreparedDatabase() {
+  const { requireTestDatabase } = await import('../helpers/test-database')
+  if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
+    throw new Error('Disposable database opt-in required')
+  const { Pool } = await import('pg')
+  const { PrismaPg } = await import('@prisma/adapter-pg')
+  const { PrismaClient } = await import('@prisma/client')
+  const pool = new Pool({
+    connectionString: requireTestDatabase(process.env),
+    max: 4,
+  })
+  fPreparedDatabase.pool = pool
+  return {
+    prisma: (fixtureDatabase.prisma = new PrismaClient({
+      adapter: new PrismaPg(pool),
+    })),
+    testPool: pool,
+  }
+}
+import { getDatabaseRuntime as getFPreparedDatabaseRuntime } from '@gb-locacoes/backend/runtime'
 // H6 (known-issues 180): as rotas próprias /api/auth/forgot-password e /api/auth/register, no modo better-auth.
-// Caminho real: route handler → lib/identity → Better Auth → Prisma no PostgreSQL descartável, com a requisição
+// Caminho real: route handler do host API → identity do backend → Better Auth → Prisma no PostgreSQL descartável, com a requisição
 // chegando ao backend como o proxy do host web a entrega (URL do backend + contexto de borda assinado + Origin).
 // Achados 5 e 8 da revisão da onda 4:
 // - resposta NEUTRA: mesmo status e corpo para e-mail existente ou não, documento em uso ou falha do motor, e
@@ -27,27 +52,7 @@ const mocks = vi.hoisted(() => ({
   pending: [] as Array<() => unknown>,
 }))
 const fixtureDatabase = vi.hoisted(() => ({ prisma: undefined as unknown }))
-vi.mock('@/lib/prisma', async () => {
-  const { requireTestDatabase } = await import('../helpers/test-database')
-  if (process.env.TEST_DATABASE_DISPOSABLE !== 'true')
-    throw new Error('Disposable database opt-in required')
-  const { Pool } = await import('pg')
-  const { PrismaPg } = await import('@prisma/adapter-pg')
-  const { PrismaClient } = await import('@prisma/client')
-  const pool = new Pool({
-    connectionString: requireTestDatabase(process.env),
-    max: 4,
-  })
-  return {
-    prisma: (fixtureDatabase.prisma = new PrismaClient({
-      adapter: new PrismaPg(pool),
-    })),
-    testPool: pool,
-  }
-})
-vi.mock('@/lib/resend', () => ({
-  default: () => ({ emails: { send: mocks.send } }),
-}))
+
 vi.mock('next/server', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next/server')>()),
   after: (task: () => unknown) => {
@@ -56,35 +61,39 @@ vi.mock('next/server', async (importOriginal) => ({
 }))
 
 import bcrypt from 'bcryptjs'
-import { prisma } from '@/lib/prisma'
-import { handleIdentityRequest as legacyHandleIdentityRequest } from '@/lib/identity'
+const { prisma } = getFPreparedDatabaseRuntime()
+
 import { handleIdentityRequest as serviceHandleIdentityRequest } from '../../apps/services/api/src/host/session'
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
-vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
-  getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
-  ...(await (async () => {
-    const F = await (() => ({
-      default: () => ({ emails: { send: mocks.send } }),
-    }))()
-    return { createResendClient: () => F.default() }
-  })()),
-}))
-import * as legacyRoute0 from '@/app/api/auth/forgot-password/route'
+vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => {
+  fPreparedDatabase.value = await createFPreparedDatabase()
+  const originalComposition = await (async (
+    importOriginal: <T = unknown>() => Promise<T>
+  ) => ({
+    ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
+    getDatabaseRuntime: () => ({ prisma: fixtureDatabase.prisma }),
+    ...(await (async () => {
+      const F = await (() => ({
+        default: () => ({ emails: { send: mocks.send } }),
+      }))()
+      return { createResendClient: () => F.default() }
+    })()),
+  }))(importOriginal)
+  return {
+    ...originalComposition,
+    getDatabaseRuntime: () => ({
+      prisma: fPreparedDatabase.value!.prisma,
+      ...(fPreparedDatabase.pool ? { pool: fPreparedDatabase.pool } : {}),
+    }),
+  }
+})
+
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/auth/forgot-password/route'
-import * as legacyRoute1 from '@/app/api/auth/register/route'
+
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/auth/register/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      handleIdentityRequest: legacyHandleIdentityRequest,
-      forgotPassword: legacyRoute0.POST,
-      register: legacyRoute1.POST,
-    },
-  ],
   [
     'service',
     {
@@ -554,7 +563,9 @@ describe.each(HOSTS)(
 // O cliente e o pool do banco descartável são da fábrica deste arquivo: fecham uma vez, depois dos dois hosts.
 afterAll(async () => {
   if (!process.env.TEST_DATABASE_URL) return
-  const database = (await import('@/lib/prisma')) as unknown as {
+  const database = (await Promise.resolve(
+    fPreparedDatabase.value!
+  )) as unknown as {
     prisma: { $disconnect(): Promise<void> }
     testPool: { end(): Promise<void> }
   }

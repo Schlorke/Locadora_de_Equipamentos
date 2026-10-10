@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 35
     services:
       postgres:
-        image: postgres:18
+        image: public.ecr.aws/docker/library/postgres@sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336
         env:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test

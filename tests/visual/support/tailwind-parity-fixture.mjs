@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 // Gera tests/visual/tailwind-parity/production.json: o estilo canônico que a PRODUÇÃO (main eb4c0098, Tailwind 3.4.17 +
-// tailwind.config.cjs + app/globals.css da main, lidos do git) dá a cada utilitário, cadeia de variantes e combinação
+// tailwind.config.cjs + app/globals.css fixados em production-sources/) dá a cada utilitário, cadeia de variantes e combinação
 // usados hoje no código do produto. O teste tests/visual/tailwind-parity.test.ts compara o CSS atual com essa fixture.
+// A antiga app/globals.css da raiz foi retirada em F; a fonte acima é um blob histórico fixado, não runtime atual.
 //
 // Precisa do Tailwind 3.4.17 e dos plugins da main instalados (não são dependências do projeto): por padrão, no
 // armazenamento do pnpm do repositório; --pnpm <pasta> aponta outro. Os tokens nomeados do design-tokens (tokens.css e
 // theme.css) entram antes do CSS da main: `bg-[var(--brand)]` compara o mecanismo da classe (o valor de cada token é
 // conferido com a produção em primitives.test.ts).
 //
-// Uso: node tests/visual/support/tailwind-parity-fixture.mjs [--pnpm <node_modules/.pnpm>] [--work <pasta temporária>]
-import { execFileSync } from 'node:child_process'
+// Uso: node tests/visual/support/tailwind-parity-fixture.mjs [--pnpm <node_modules/.pnpm>] [--work <pasta temporária>] [--out <arquivo>]
+import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import Module, { createRequire } from 'node:module'
 import os from 'node:os'
@@ -26,34 +27,107 @@ const PNPM = path.resolve(
   opt('--pnpm', path.join(repo, 'node_modules', '.pnpm'))
 )
 const MAIN = 'eb4c0098'
+const SOURCE_COMMIT = 'eb4c0098d5d8686b8d72e9aaf560968bb65274e4'
+const OUTPUT = path.resolve(
+  opt('--out', path.join(repo, 'tests/visual/tailwind-parity/production.json'))
+)
 const TW3 = {
   tailwindcss: 'tailwindcss@3.4.17/node_modules/tailwindcss',
   'tailwindcss-animate':
     'tailwindcss-animate@1.0.7_tailwindcss@3.4.17/node_modules/tailwindcss-animate',
   'tailwind-scrollbar': /^tailwind-scrollbar@4\.0\.2_.*tailwindcss@3\.4\.17$/,
-  autoprefixer: /^autoprefixer@10\./,
+  autoprefixer: /^autoprefixer@10\.4\.24(?:_|$)/,
 }
 const requireRoot = createRequire(path.join(repo, 'package.json'))
 const postcss = requireRoot('postcss')
 const tailwind4 = requireRoot('@tailwindcss/postcss')
 
-// ---- fontes da main (git) -------------------------------------------------------------------------------------
-const work = fs.mkdtempSync(
-  path.join(path.resolve(opt('--work', os.tmpdir())), 'tailwind-parity-main-')
+// ---- fontes canônicas arquivadas (sem depender do histórico Git) ------------------------------------------------
+const sources = path.join(
+  repo,
+  'tests/visual/tailwind-parity/production-sources'
 )
-const written = []
-for (const file of [
+const sourcePaths = [
   'tailwind.config.cjs',
   'postcss.config.cjs',
   'app/globals.css',
   'design-tokens/output/tokens-tailwind.json',
-]) {
+]
+const readSource = (file) => {
+  const segments = file.split('/')
+  if (
+    segments.some((segment) => !segment || segment === '.' || segment === '..')
+  )
+    throw new Error('Caminho de fonte canônica inválido')
+  let current = sources
+  if (
+    !fs.lstatSync(current).isDirectory() ||
+    fs.lstatSync(current).isSymbolicLink()
+  )
+    throw new Error('Pasta de fontes canônicas inválida')
+  for (let index = 0; index < segments.length; index++) {
+    current = path.join(current, segments[index])
+    const stat = fs.lstatSync(current)
+    if (
+      stat.isSymbolicLink() ||
+      (index === segments.length - 1 ? !stat.isFile() : !stat.isDirectory())
+    )
+      throw new Error(
+        'Fonte canônica deve ser arquivo regular sem links: ' + file
+      )
+  }
+  return fs.readFileSync(current)
+}
+const sourceManifest = JSON.parse(readSource('manifest.json').toString())
+if (
+  sourceManifest.schemaVersion !== 1 ||
+  sourceManifest.sourceCommit !== SOURCE_COMMIT ||
+  sourceManifest.tailwindVersion !== '3.4.17' ||
+  !Array.isArray(sourceManifest.files) ||
+  sourceManifest.files.length !== sourcePaths.length ||
+  new Set(sourceManifest.files.map((file) => file.path)).size !==
+    sourcePaths.length ||
+  sourceManifest.files.some((file) => !sourcePaths.includes(file.path))
+)
+  throw new Error(
+    'Manifesto de fontes canônicas ausente, incompleto ou divergente da produção'
+  )
+const canonical = sourcePaths.map((file) => {
+  const expected = sourceManifest.files.find((entry) => entry.path === file)
+  if (
+    !Number.isSafeInteger(expected.bytes) ||
+    expected.bytes <= 0 ||
+    !/^[a-f0-9]{64}$/.test(expected.sha256) ||
+    !/^[a-f0-9]{40}$/.test(expected.gitBlob) ||
+    !['100644', '100755'].includes(expected.mode)
+  )
+    throw new Error('Metadados de fonte canônica inválidos: ' + file)
+  if (expected.fixture !== file + '.source')
+    throw new Error('Caminho de fixture canônica inválido: ' + file)
+  const bytes = readSource(expected.fixture)
+  const gitBlob = createHash('sha1')
+    .update('blob ' + bytes.length + '\0')
+    .update(bytes)
+    .digest('hex')
+  if (
+    bytes.length !== expected.bytes ||
+    createHash('sha256').update(bytes).digest('hex') !== expected.sha256 ||
+    gitBlob !== expected.gitBlob
+  )
+    throw new Error(
+      'Fonte canônica não corresponde aos bytes da produção: ' + file
+    )
+  return { file, bytes }
+})
+// Valida todas as fontes antes de criar ou escrever qualquer saída temporária.
+const work = fs.mkdtempSync(
+  path.join(path.resolve(opt('--work', os.tmpdir())), 'tailwind-parity-main-')
+)
+const written = []
+for (const { file, bytes } of canonical) {
   const out = path.join(work, file)
   fs.mkdirSync(path.dirname(out), { recursive: true })
-  fs.writeFileSync(
-    out,
-    execFileSync('git', ['show', `${MAIN}:${file}`], { cwd: repo })
-  )
+  fs.writeFileSync(out, bytes)
   written.push(out)
 }
 
@@ -68,9 +142,22 @@ const dirOf = (spec) => {
 const MAP = Object.fromEntries(
   Object.entries(TW3).map(([name, spec]) => [name, dirOf(spec)])
 )
-for (const [name, dir] of Object.entries(MAP))
-  if (!fs.existsSync(path.join(dir, 'package.json')))
-    throw new Error(`${name}: ${dir} sem package.json`)
+const expectedVersions = {
+  tailwindcss: '3.4.17',
+  'tailwindcss-animate': '1.0.7',
+  'tailwind-scrollbar': '4.0.2',
+  autoprefixer: '10.4.24',
+}
+for (const [name, dir] of Object.entries(MAP)) {
+  const packageFile = path.join(dir, 'package.json')
+  if (!fs.existsSync(packageFile))
+    throw new Error(name + ': ' + dir + ' sem package.json')
+  const version = JSON.parse(fs.readFileSync(packageFile, 'utf8')).version
+  if (version !== expectedVersions[name])
+    throw new Error(
+      name + ' ' + version + '; a produção usa ' + expectedVersions[name]
+    )
+}
 const original = Module._resolveFilename
 Module._resolveFilename = function resolve(request, parent, ...rest) {
   for (const [name, dir] of Object.entries(MAP))
@@ -258,13 +345,7 @@ const fixture = {
   elementos: elements,
   foco: focus,
 }
-const out = path.join(
-  repo,
-  'tests',
-  'visual',
-  'tailwind-parity',
-  'production.json'
-)
+const out = OUTPUT
 fs.mkdirSync(path.dirname(out), { recursive: true })
 fs.writeFileSync(out, `${JSON.stringify(fixture, null, 1)}\n`)
 for (const f of written.reverse()) fs.unlinkSync(f)

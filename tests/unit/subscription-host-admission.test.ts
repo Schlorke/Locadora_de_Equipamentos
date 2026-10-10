@@ -14,30 +14,20 @@ const state = vi.hoisted(() => ({
   read: vi.fn(),
   headers: new Headers(),
 }))
-vi.mock('@/lib/application-session', () => ({
-  getServerSession: state.session,
-}))
 vi.mock('../../apps/services/api/src/host/session', () => ({
   getServerSession: state.session,
 }))
-vi.mock('@/lib/prisma', () => ({ prisma: { $transaction: state.transaction } }))
 vi.mock('@gb-locacoes/backend/runtime', () => ({
   getDatabaseRuntime: () => ({ prisma: { $transaction: state.transaction } }),
 }))
 vi.mock('next/headers', () => ({ headers: async () => state.headers }))
-vi.mock('@/lib/whatsapp-write', () => ({ sendConversationMessage: state.send }))
 vi.mock('../../apps/services/api/src/host/whatsapp-write', () => ({
   sendConversationMessage: state.send,
 }))
-vi.mock('@/lib/whatsapp-read', () => ({ readMessages: state.read }))
 vi.mock('../../apps/services/api/src/host/whatsapp-read', () => ({
   readMessages: state.read,
 }))
 
-import {
-  GET as legacyRead,
-  POST as legacySend,
-} from '../../app/api/admin/whatsapp/conversations/[conversationId]/messages/route'
 import {
   GET as apiRead,
   POST as apiSend,
@@ -100,10 +90,7 @@ beforeEach(() => {
   state.read.mockImplementation(async () => Response.json({ messages: [] }))
 })
 
-describe.each([
-  ['legacy', legacyRead, legacySend],
-  ['api', apiRead, apiSend],
-] as const)(
+describe.each([['api', apiRead, apiSend]] as const)(
   '%s actual HTTP adapter with shared subscription admission',
   (_host, get, post) => {
     it('off keeps the legacy write/body and does not read subscription data', async () => {

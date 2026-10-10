@@ -1,3 +1,19 @@
+import {
+  createClientDocumentService,
+  REQUIRED_CLIENT_DOCUMENT_TYPES,
+} from '@gb-locacoes/backend/customers'
+import { withTenantTransaction } from '../../apps/services/api/src/host/tenant-transaction'
+import { getPrivateDocumentStorage } from '../../apps/services/api/src/host/document-storage'
+import {
+  isOwnedDocumentPath,
+  PRIVATE_DOCUMENT_URL_TTL,
+} from '@gb-locacoes/backend/documents'
+vi.mock('@gb-locacoes/backend/documents', async (importOriginal) => {
+  privateStorage.requestedDuring ??=
+    expect.getState().currentTestName ?? 'collection'
+  return importOriginal<typeof import('@gb-locacoes/backend/documents')>()
+})
+import '@gb-locacoes/backend/documents'
 /**
  * Caracterização dos fluxos de cliente: carrinho, perfil comercial, documentos
  * privados, pendências documentais e ClientProfile financeiro. Handlers e
@@ -34,25 +50,9 @@ const mocked = vi.hoisted(() => {
     bucket: { getBucket: vi.fn(), createSignedUrl: vi.fn() },
   }
 })
-vi.mock('@/lib/prisma', () => ({
-  prisma: { $transaction: mocked.transaction },
-}))
-vi.mock('@/lib/application-session', () => ({ getServerSession: vi.fn() }))
-vi.mock('@/lib/tenant', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/lib/tenant')>()),
-  resolveTenantPrincipal: mocked.principal,
-}))
-vi.mock('@/lib/supabase-admin', () => ({
-  supabaseAdmin: {
-    storage: {
-      from: () => mocked.bucket,
-      getBucket: mocked.bucket.getBucket,
-    },
-  },
-}))
 /**
- * A listagem de documentos carrega o armazenamento privado sob demanda (lib/client-documents importa
- * lib/security/private-documents, que puxa o barril @gb-locacoes/backend/documents: pdfkit, exceljs, dompurify, sharp).
+ * No incidente histórico, a antiga lib/client-documents importava lib/security/private-documents, ambas retiradas em F,
+ * que puxava o barril @gb-locacoes/backend/documents: pdfkit, exceljs, dompurify, sharp.
  * Essa importação fria levou 8,9 s no caso que a disparava com o arquivo quase sozinho e passou do prazo de 20 s sob a
  * carga do test:unit (onda 131); o handler pendente seguia depois do prazo e o caso seguinte recebia 500. A importação
  * acontece na coleta do arquivo, sem prazo de caso; o mock só repassa o módulo real e anota quando ele foi pedido
@@ -61,20 +61,9 @@ vi.mock('@/lib/supabase-admin', () => ({
 const privateStorage = vi.hoisted(() => ({
   requestedDuring: undefined as string | undefined,
 }))
-vi.mock('@/lib/security/private-documents', async (importOriginal) => {
-  privateStorage.requestedDuring ??=
-    expect.getState().currentTestName ?? 'collection'
-  return importOriginal<typeof import('@/lib/security/private-documents')>()
-})
-
-import '@/lib/security/private-documents'
-import {
-  getMissingClientDocuments,
-  REQUIRED_CLIENT_DOCUMENT_TYPES,
-} from '@/lib/client-documents'
 import { loadFinancialCustomers } from '@gb-locacoes/backend/customers'
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
-// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
+// composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade da raiz foi retirada no bloco F.
 vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@gb-locacoes/backend/runtime')>()),
   getDatabaseRuntime: () => ({ prisma: { $transaction: mocked.transaction } }),
@@ -83,13 +72,13 @@ vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
   createSupabaseDocumentStorage: () => {
     let storage:
       | ReturnType<
-          typeof import('@gb-locacoes/backend/documents').createPrivateDocumentStorage
+          typeof import('../../packages/backend/src/modules/documents/private-documents').createPrivateDocumentStorage
         >
       | undefined
     return {
       async getPrivateDocumentStorage() {
         const { createPrivateDocumentStorage } =
-          await import('@gb-locacoes/backend/documents')
+          await import('../../packages/backend/src/modules/documents/private-documents')
         storage ??= createPrivateDocumentStorage({
           getClient: async () =>
             ({
@@ -121,27 +110,12 @@ vi.mock(
     }))()),
   })
 )
-import * as legacyRoute0 from '@/app/api/cart/sync/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/cart/sync/route'
-import * as legacyRoute1 from '@/app/api/cart/merge/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/cart/merge/route'
-import * as legacyRoute2 from '@/app/api/user/profile/route'
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/user/profile/route'
-import * as legacyRoute3 from '@/app/api/admin/clients/[id]/documents/route'
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/admin/clients/[id]/documents/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      readCart: legacyRoute0.GET,
-      syncCart: legacyRoute0.POST,
-      mergeCart: legacyRoute1.POST,
-      getProfile: legacyRoute2.GET,
-      putProfile: legacyRoute2.PUT,
-      listDocumentsRoute: legacyRoute3.GET,
-    },
-  ],
   [
     'service',
     {
@@ -979,3 +953,23 @@ describe.each(HOSTS)(
     })
   }
 )
+
+const { getMissingClientDocuments } = createClientDocumentService({
+  withTenantTransaction,
+  storage: {
+    async open() {
+      const bucket = await getPrivateDocumentStorage()
+      return {
+        isOwnedPath: isOwnedDocumentPath,
+        async signedUrl(filePath, fileName) {
+          const signed = await bucket.createSignedUrl(
+            filePath,
+            PRIVATE_DOCUMENT_URL_TTL,
+            { download: fileName }
+          )
+          return signed.data?.signedUrl || null
+        },
+      }
+    },
+  },
+})

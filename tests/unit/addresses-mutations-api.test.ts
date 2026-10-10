@@ -17,13 +17,6 @@ const state = vi.hoisted(() => ({
     },
   },
 }))
-vi.mock('@/lib/tenant', () => ({ resolveTenantPrincipal: state.principal }))
-vi.mock('@/lib/prisma', () => ({ prisma: { $transaction: state.transaction } }))
-import { POST as legacyPost } from '@/app/api/addresses/route'
-import {
-  PATCH as legacyPatch,
-  DELETE as legacyDelete,
-} from '@/app/api/addresses/[id]/route'
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: state.principal,
 }))
@@ -62,7 +55,6 @@ const row = {
 }
 const params = () => ({ params: Promise.resolve({ id: row.id }) })
 const adapters = [
-  ['legacy', legacyPost, legacyPatch, legacyDelete],
   ['service', servicePost, servicePatch, serviceDelete],
 ] as const
 beforeEach(() => {

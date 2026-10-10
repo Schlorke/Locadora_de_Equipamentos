@@ -1,6 +1,6 @@
 /**
  * Debounce function - delays execution until after wait time has passed
- * (legado lib/utils.ts). NÃO unificar com useDebounce em debounce.ts.
+ * (origem na antiga lib/utils.ts, retirada em F). NÃO unificar com useDebounce em debounce.ts.
  */
 export function debounce<T extends (..._args: unknown[]) => void>(
   fn: T,

@@ -39,64 +39,9 @@ function callsIn(node: ts.Node, names: Set<string>): ts.CallExpression[] {
   return result
 }
 
-it('every actual legacy role-helper adapter and its API counterpart forward the original HTTP request', () => {
-  let files = 0
-  let checked = 0
-  for (const file of routeFiles(path.join(root, 'app/api'))) {
-    const source = sourceOf(file)
-    const roleHelpers = new Set<string>()
-    for (const statement of source.statements) {
-      if (
-        !ts.isImportDeclaration(statement) ||
-        !ts.isStringLiteral(statement.moduleSpecifier) ||
-        statement.moduleSpecifier.text !== '@/middlewares/require-admin'
-      )
-        continue
-      const imports = statement.importClause?.namedBindings
-      if (imports && ts.isNamedImports(imports))
-        for (const entry of imports.elements) roleHelpers.add(entry.name.text)
-    }
-    if (!roleHelpers.size) continue
-    files++
-    const counterpart = sourceOf(
-      path.join(root, 'apps/services/api/src', path.relative(root, file))
-    )
-    for (const handler of source.statements) {
-      if (
-        !ts.isFunctionDeclaration(handler) ||
-        !handler.name ||
-        !methods.has(handler.name.text)
-      )
-        continue
-      const request = handler.parameters[0]?.name.getText()
-      for (const call of callsIn(handler, roleHelpers)) {
-        checked++
-        const message = `${path.relative(root, file)} ${handler.name.text}`
-        expect(request, message).toBeTruthy()
-        expect(call.arguments.at(-1)?.getText(), message).toBe(request)
-        const apiHandler = counterpart.statements.find(
-          (statement) =>
-            ts.isFunctionDeclaration(statement) &&
-            statement.name?.text === handler.name?.text
-        )
-        expect(apiHandler, message).toBeDefined()
-        if (!apiHandler || !ts.isFunctionDeclaration(apiHandler))
-          throw new Error(message)
-        const apiCalls = callsIn(
-          apiHandler,
-          new Set(['resolveTenantPrincipal'])
-        )
-        expect(apiCalls, message).toHaveLength(1)
-        expect(apiCalls[0]?.arguments[0]?.getText(), message).toBe(
-          apiHandler.parameters[0]?.name.getText()
-        )
-        expect(apiCalls[0]?.arguments, message).toHaveLength(1)
-      }
-    }
-  }
-  expect(files).toBe(20)
-  expect(checked).toBe(21)
-})
+// A prova dos 20 adapters de papéis da antiga raiz (21 chamadas) foi encerrada
+// antes da aposentadoria local no bloco F. A prova ativa abaixo continua selando
+// 111 rotas e 144 chamadas da API, sem consultar a estrutura aposentada.
 
 // Onda 135 (E6): o mesmo invariante sem depender da raiz legada. Toda rota da API compartilhada que resolve o principal
 // ou a permissão da locadora no próprio handler entrega a esse resolvedor a requisição HTTP original (a seleção da
@@ -129,7 +74,7 @@ it('every API route handler that resolves the tenant principal or permission for
       }
     }
   }
-  // As rotas do adaptador de papéis da raiz (o primeiro teste) continuam entre elas.
+  // A rota de categorias continua entre as 111 rotas da superfície compartilhada.
   expect(files).toContain(
     'apps/services/api/src/app/api/admin/categories/route.ts'
   )

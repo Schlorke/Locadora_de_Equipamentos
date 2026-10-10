@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "target": "ES6",
     "skipLibCheck": true,
@@ -16,28 +12,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "incremental": false,
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@gb-locacoes/frontend/app": [
-        "./packages/frontend/src/app/index.web.ts"
-      ],
+      "@/*": ["./*"],
+      "@gb-locacoes/frontend/app": ["./packages/frontend/src/app/index.web.ts"],
       "@gb-locacoes/frontend/pages/*": [
         "./packages/frontend/src/pages/*/index.ts"
       ],
-      "@gb-locacoes/ui": [
-        "./packages/ui/src/index.web.ts"
-      ],
-      "@gb-locacoes/design-tokens": [
-        "./packages/design-tokens/src/index.ts"
-      ]
+      "@gb-locacoes/ui": ["./packages/ui/src/index.web.ts"],
+      "@gb-locacoes/design-tokens": ["./packages/design-tokens/src/index.ts"]
     },
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
@@ -46,26 +29,11 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": [
-    "next-env.d.ts",
-    "app/**/*.ts",
-    "app/**/*.tsx",
-    "lib/**/*.ts",
-    "middlewares/**/*.ts",
-    "schemas/**/*.ts",
-    "types/**/*.ts",
-    "prisma/**/*.ts",
-    "prisma.config.ts",
-    "proxy.ts",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    ".next/dev/dev/types/**/*.ts"
-  ],
+  "include": ["types/next-auth.d.ts", "prisma/**/*.ts", "prisma.config.ts"],
   "exclude": [
     "node_modules",
     "dist",
     "build",
-    ".next/dev",
     "**/*.native.ts",
     "**/*.native.tsx",
     "**/*.test.ts",

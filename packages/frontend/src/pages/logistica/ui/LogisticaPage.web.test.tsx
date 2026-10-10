@@ -16,16 +16,7 @@ describe('Logística admin', () => {
     expect(source).toContain('#3B82F6')
     expect(source).toContain('#8B5CF6')
     expect(source).toContain('addHours(now, 2)')
-    const route = readFileSync(
-      new URL(
-        '../../../../../../app/admin/logistics/page.tsx',
-        import.meta.url
-      ),
-      'utf8'
-    )
-    expect(route).toContain("from '@gb-locacoes/frontend/pages/logistica'")
-    expect(route).toContain('return <AdminLogisticsPage />')
-    // Onda 135 (A8): a mesma página no host web; a asserção sobre a raiz sai no bloco F.
+    // A rota do host web mantém a composição compartilhada.
     const webRoute = readFileSync(
       new URL(
         '../../../../../../apps/clients/web/src/app/(admin)/admin/logistics/page.tsx',

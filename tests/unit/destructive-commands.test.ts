@@ -188,6 +188,7 @@ describe('scripts do repositório: nada de matar todo Node nem apagar node_modul
       "await fs.promises.rm('node_modules', {\n  recursive: true,\n})",
     ])
       expect.soft(forbiddenCommands(command), command).not.toEqual([])
+    // A antiga .next da raiz foi retirada em F; o texto rm -rf .next abaixo é um controle do lexer, não limpeza executada.
     for (const command of [
       'pnpm install --force',
       'pnpm store prune',

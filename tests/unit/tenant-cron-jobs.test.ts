@@ -3,7 +3,7 @@ import path from 'node:path'
 import ts from 'typescript'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-// ADR SaaS B.5/B.10: os dois hosts de cron usam o mesmo runner e declaram o job de cada rota.
+// ADR SaaS B.5/B.10: após a aposentadoria do host raiz, as rotas API usam o runner e declaram cada job.
 const state = vi.hoisted(() => {
   const organizations: Array<{ id: string; access: string }> = []
   const database = {
@@ -24,11 +24,6 @@ const state = vi.hoisted(() => {
     transaction: vi.fn(),
   }
 })
-vi.mock('@/lib/prisma', () => ({ prisma: state.database }))
-vi.mock('@/lib/tenant', () => ({ withTenantTransaction: state.transaction }))
-vi.mock('@/lib/late-fee-calculator', () => ({
-  calculateAndApplyLateFees: state.lateFees,
-}))
 vi.mock('@gb-locacoes/backend/runtime', () => ({
   getDatabaseRuntime: () => ({ prisma: state.database }),
 }))
@@ -38,17 +33,12 @@ vi.mock('../../apps/services/api/src/host/tenant-transaction', () => ({
 vi.mock('../../apps/services/api/src/host/quotations', () => ({
   calculateAndApplyLateFees: state.lateFees,
 }))
-import { runTenantCron as legacyRunner } from '@/lib/security/tenant-cron'
 import { runTenantCron as serviceRunner } from '../../apps/services/api/src/host/tenant-cron'
-import { GET as legacyLateFees } from '@/app/api/cron/late-fees/route'
 import { GET as serviceLateFees } from '../../apps/services/api/src/app/api/cron/late-fees/route'
 
 const ROOT = path.resolve(__dirname, '../..')
 const SECRET = 'tenant-cron-host-fixture-secret'
-const HOSTS = [
-  ['legacy', 'app/api/cron'],
-  ['service', 'apps/services/api/src/app/api/cron'],
-] as const
+const HOSTS = [['service', 'apps/services/api/src/app/api/cron']] as const
 const OBLIGATION_ROUTES = [
   'auto-convert-quotes',
   'boleto-overdue-alerts',
@@ -124,7 +114,7 @@ function hostDeclarations(directory: string) {
   return { declared: declared.sort(), problems }
 }
 
-describe('tenant cron routes declare their job on both hosts', () => {
+describe('tenant cron routes declare their job on the API host', () => {
   it.each(HOSTS)(
     '%s routes declare one catalog job per runner call',
     (_host, directory) => {
@@ -134,7 +124,7 @@ describe('tenant cron routes declare their job on both hosts', () => {
     }
   )
 
-  // A autocrítica roda sobre a rota de cada host (onda 135, B8): a da API compartilhada continua depois que a raiz sair.
+  // B8 pós-F: após a aposentadoria do host raiz, a autocrítica continua nas rotas da API compartilhada.
   it.each(HOSTS)(
     '%s: rejects a runner call without its declaration',
     (_host, directory) => {
@@ -156,65 +146,65 @@ describe('tenant cron routes declare their job on both hosts', () => {
   )
 })
 
-describe.each([
-  ['legacy', legacyRunner],
-  ['service', serviceRunner],
-] as const)('%s cron facade', (_host, runTenantCron) => {
-  const job = vi.fn(async (context: { tenantId: string }) =>
-    Response.json({ ran: context.tenantId })
-  )
-  const ran = () => job.mock.calls.map((call) => call[0].tenantId)
-  beforeEach(() => {
-    job.mockClear()
-  })
-
-  it('skips the promotion job outside FULL with enforcement on', async () => {
-    const response = await runTenantCron(request(), job, {
-      job: 'sync-google-merchant',
+describe.each([['service', serviceRunner]] as const)(
+  '%s cron facade',
+  (_host, runTenantCron) => {
+    const job = vi.fn(async (context: { tenantId: string }) =>
+      Response.json({ ran: context.tenantId })
+    )
+    const ran = () => job.mock.calls.map((call) => call[0].tenantId)
+    beforeEach(() => {
+      job.mockClear()
     })
-    expect(response.status).toBe(200)
-    expect((await response.json()).skippedTenants).toEqual([
-      { tenantId: 'tenant-setup', access: 'SETUP' },
-      { tenantId: 'tenant-restricted', access: 'RESTRICTED' },
-      { tenantId: 'tenant-archived', access: 'ARCHIVED' },
-    ])
-    expect(ran()).toEqual(['tenant-full'])
-  })
 
-  it('records without skipping in shadow and has no effect in off', async () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
-    vi.stubEnv('PLATFORM_SUBSCRIPTION_ENFORCEMENT', 'shadow')
-    await runTenantCron(request(), job, { job: 'sync-google-merchant' })
-    expect(ran()).toHaveLength(4)
-    expect(warn).toHaveBeenCalledWith('[tenant-cron-shadow]', {
-      tenantId: 'tenant-archived',
-      job: 'sync-google-merchant',
-      access: 'ARCHIVED',
+    it('skips the promotion job outside FULL with enforcement on', async () => {
+      const response = await runTenantCron(request(), job, {
+        job: 'sync-google-merchant',
+      })
+      expect(response.status).toBe(200)
+      expect((await response.json()).skippedTenants).toEqual([
+        { tenantId: 'tenant-setup', access: 'SETUP' },
+        { tenantId: 'tenant-restricted', access: 'RESTRICTED' },
+        { tenantId: 'tenant-archived', access: 'ARCHIVED' },
+      ])
+      expect(ran()).toEqual(['tenant-full'])
     })
-    warn.mockClear()
-    job.mockClear()
-    vi.stubEnv('PLATFORM_SUBSCRIPTION_ENFORCEMENT', 'off')
-    await runTenantCron(request(), job, { job: 'sync-google-merchant' })
-    expect(ran()).toHaveLength(4)
-    expect(warn).not.toHaveBeenCalled()
-  })
-})
 
-describe.each([
-  ['legacy', legacyLateFees],
-  ['service', serviceLateFees],
-] as const)('%s obligation route', (_host, GET) => {
-  it('still charges late fees for SETUP, RESTRICTED and ARCHIVED with enforcement on', async () => {
-    state.lateFees.mockClear()
-    const response = await GET(request())
-    expect(response.status).toBe(200)
-    const body = await response.json()
-    expect(body).not.toHaveProperty('skippedTenants')
-    expect(state.lateFees.mock.calls.map((call) => call[0])).toEqual([
-      { tenantId: 'tenant-full' },
-      { tenantId: 'tenant-setup' },
-      { tenantId: 'tenant-restricted' },
-      { tenantId: 'tenant-archived' },
-    ])
-  })
-})
+    it('records without skipping in shadow and has no effect in off', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+      vi.stubEnv('PLATFORM_SUBSCRIPTION_ENFORCEMENT', 'shadow')
+      await runTenantCron(request(), job, { job: 'sync-google-merchant' })
+      expect(ran()).toHaveLength(4)
+      expect(warn).toHaveBeenCalledWith('[tenant-cron-shadow]', {
+        tenantId: 'tenant-archived',
+        job: 'sync-google-merchant',
+        access: 'ARCHIVED',
+      })
+      warn.mockClear()
+      job.mockClear()
+      vi.stubEnv('PLATFORM_SUBSCRIPTION_ENFORCEMENT', 'off')
+      await runTenantCron(request(), job, { job: 'sync-google-merchant' })
+      expect(ran()).toHaveLength(4)
+      expect(warn).not.toHaveBeenCalled()
+    })
+  }
+)
+
+describe.each([['service', serviceLateFees]] as const)(
+  '%s obligation route',
+  (_host, GET) => {
+    it('still charges late fees for SETUP, RESTRICTED and ARCHIVED with enforcement on', async () => {
+      state.lateFees.mockClear()
+      const response = await GET(request())
+      expect(response.status).toBe(200)
+      const body = await response.json()
+      expect(body).not.toHaveProperty('skippedTenants')
+      expect(state.lateFees.mock.calls.map((call) => call[0])).toEqual([
+        { tenantId: 'tenant-full' },
+        { tenantId: 'tenant-setup' },
+        { tenantId: 'tenant-restricted' },
+        { tenantId: 'tenant-archived' },
+      ])
+    })
+  }
+)

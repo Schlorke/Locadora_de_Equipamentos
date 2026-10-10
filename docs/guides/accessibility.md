@@ -8,7 +8,11 @@ Resolver problemas de acessibilidade e consistência identificados na
 documentação do design system e README, garantindo conformidade com WCAG 2.1 e
 melhor experiência para usuários com necessidades especiais.
 
-### 📊 Status Geral: ✅ CONCLUÍDO
+### 📊 Status do registro anterior: correções documentadas
+
+Os itens 1–4 registram a etapa anterior, não uma auditoria atual completa de
+WCAG. Contratos/versões atuais ficam em design-system.md e dependencies.md;
+conformidade de contraste, teclado e dispositivos exige sua própria evidência.
 
 ### 1. Problema do Storybook Resolvido ✅
 
@@ -17,7 +21,9 @@ melhor experiência para usuários com necessidades especiais.
 - **Storybook core**: 9.1.1
 - **@storybook/addon-essentials**: 8.6.14 (incompatível)
 
-**Solução**: Atualização para versão compatível
+**Solução histórica**: Atualização para versão compatível naquela etapa. O
+comando abaixo é o registro executado então, não receita atual de instalar
+@next; o workspace atual usa o lockfile e o guia de Storybook.
 
 ```bash
 pnpm add -D @storybook/addon-essentials@next -w
@@ -98,24 +104,26 @@ focus:outline-none focus:ring-2 focus:ring-ring
 focus:outline-none focus:ring-2 focus:ring-ring
 ```
 
-### 5. Padrão Global de Foco
+### 5. Foco atual por owner e camada
 
-O projeto já possui um padrão global de foco definido em `app/globals.css`:
+A entrada atual é `packages/frontend/src/app/styles/globals.web.css`, com
+camadas theme/base/components/utilities e imports de estilos com dono. A antiga
+receita de reset universal em app/globals.css é histórica; a ponte CSS da raiz
+foi aposentada em F. Nunca reintroduzir !important ou apagar todos os
+indicadores de foco.
 
-```css
-*:focus,
-*:focus-visible,
-*:focus-within {
-  outline: none !important;
-}
-```
+- `packages/ui/src/web/focus-ring.ts` define FOCUS_RING de teclado,
+  MENU_FOCUS_RING por modalidade de entrada e HALO_FOCUS_OUTLINE para controles
+  cuja sombra desaparece em forced-colors. Consultar o componente, não aplicar
+  uma classe global indistintamente.
+- `packages/frontend/src/app/styles/forms.web.css` trata controles nativos sem
+  componente dono em base, com :where e tokens/halo próprios. Input, Checkbox e
+  Select de packages/ui mantêm seus estilos.
+- `outline.web.css` conserva a semântica Tailwind 3 da produção em Tailwind 4;
+  `vendor/recharts.web.css` trata o foco da superfície do gráfico.
 
-**Componentes com Estilos de Foco Específicos**:
-
-- **Inputs**: `box-shadow` com borda azul
-- **Textareas**: `border-color` azul com sombra
-- **Botões admin**: sombra sem borda azul
-- **Elementos de filtro**: borda azul com sombra
+A inspeção destes owners descreve implementação e limitações; não certifica nova
+auditoria de contraste, teclado, leitor de tela ou alto contraste real.
 
 ## Diretrizes de Acessibilidade
 

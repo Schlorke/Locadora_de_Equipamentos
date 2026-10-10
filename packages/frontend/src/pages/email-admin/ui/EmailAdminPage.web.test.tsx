@@ -49,13 +49,7 @@ describe('E-mail admin', () => {
       '/api/admin/zoho-mail/messages/${messageId}/reply'
     )
 
-    const route = readFileSync(
-      new URL('../../../../../../app/admin/email/page.tsx', import.meta.url),
-      'utf8'
-    )
-    expect(route).toContain("from '@gb-locacoes/frontend/pages/email-admin'")
-    expect(route).toContain('return <AdminEmailPage />')
-    // Onda 135 (A8): a mesma página no host web; a asserção sobre a raiz sai no bloco F.
+    // A rota do host web mantém a composição compartilhada.
     const webRoute = readFileSync(
       new URL(
         '../../../../../../apps/clients/web/src/app/(admin)/admin/email/page.tsx',
@@ -68,11 +62,6 @@ describe('E-mail admin', () => {
     )
     expect(webRoute).toContain('return <AdminEmailPage />')
 
-    const loading = readFileSync(
-      new URL('../../../../../../app/admin/email/loading.tsx', import.meta.url),
-      'utf8'
-    )
-    expect(loading).toContain('export default function AdminEmailLoading()')
     // Onda 135 (A6): o carregamento da rota no host web, pela mesma marcação (AdminEmailLoading da página).
     const webLoading = readFileSync(
       new URL(

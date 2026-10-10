@@ -1,13 +1,11 @@
 import { beforeEach, expect, it, vi } from 'vitest'
 const mock = vi.hoisted(() => ({ gate: vi.fn(), read: vi.fn() }))
-vi.mock('../../lib/tenant', () => ({ resolveTenantPrincipal: mock.gate }))
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: mock.gate,
 }))
 vi.mock('@gb-locacoes/backend/runtime', () => ({
   handleConfiguredPaymentAccount: mock.read,
 }))
-import { GET as legacy } from '../../app/api/admin/payment-account/route'
 import { GET as api } from '../../apps/services/api/src/app/api/admin/payment-account/route'
 const principal = {
   tenantId: 'alfa',
@@ -27,10 +25,7 @@ beforeEach(() => {
     )
   )
 })
-it.each([
-  ['legacy', legacy],
-  ['api', api],
-] as const)(
+it.each([['api', api]] as const)(
   '%s keeps refusals private and never calls storage before identity/role',
   async (_name, route) => {
     mock.gate.mockResolvedValueOnce({
@@ -67,10 +62,7 @@ it.each([
     expect(mock.read).not.toHaveBeenCalled()
   }
 )
-it.each([
-  ['legacy', legacy],
-  ['api', api],
-] as const)(
+it.each([['api', api]] as const)(
   '%s delegates the original request/principal and hides internal failures',
   async (_name, route) => {
     const request = new Request('https://api.test/api/admin/payment-account')

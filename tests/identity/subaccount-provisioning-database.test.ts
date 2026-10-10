@@ -40,7 +40,6 @@ import { createPlatformAsaasIngress } from '../../packages/backend/src/modules/p
 import { PLATFORM_EDGE_HEADER } from '@gb-locacoes/contracts/platform'
 import { handleConfiguredPaymentAccountCreation } from '@gb-locacoes/backend/runtime'
 import { getPlatformDatabaseRuntime } from '../../packages/backend/src/runtime/platform-database'
-import { GET as legacyCron } from '../../app/api/cron/platform/route'
 import { GET as apiCron } from '../../apps/services/api/src/app/api/cron/platform/route'
 import {
   companyDataVersion,
@@ -3678,7 +3677,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
       )
     })
 
-    describe('composition of both API hosts (B8)', () => {
+    describe('configured HTTP creation and API cron phases (B8)', () => {
       const EDGE = 'synthetic-edge-secret-with-more-than-32-characters'
       const APP = 'https://app.locadora.example.test'
       let configured = false
@@ -3764,9 +3763,8 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
             authenticatedAt: Date.now(),
           })
         )
-      const crons = [legacyCron, apiCron] as const
-      const cron = async (handle: (typeof crons)[number]) => {
-        const response = await handle(
+      const cron = async () => {
+        const response = await apiCron(
           new Request('http://localhost/api/cron/platform', {
             headers: { authorization: 'Bearer synthetic-subaccount-cron' },
           })
@@ -3780,7 +3778,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
           data: { availableAt: new Date('2100-01-01T00:00:00.000Z') },
         })
 
-      it('S18: the real HTTP composition accepts the request and the two crons create once and configure the account', async () => {
+      it('S18: the real HTTP composition accepts the request and successive API cron runs create once then configure the account', async () => {
         environment()
         const f = await realTimeCompany()
         // PLATFORM_SUBACCOUNT_REQUIRES_PAID absent means true (M23).
@@ -3811,7 +3809,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
           where: { aggregateId: created.id, status: 'PENDING' },
           data: { availableAt: created.nextAttemptAt },
         })
-        await cron(legacyCron)
+        await cron()
         expect(posts(f.document)).toBe(1)
         // The value typed in the HTTP request is, exactly, the one the cron sends to the provider.
         expect(
@@ -3844,7 +3842,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
           data: { availableAt: later },
         })
         fake.clearRecords()
-        await cron(apiCron)
+        await cron()
         expect(posts(f.document)).toBe(0)
         expect(
           fake.requests
@@ -3888,7 +3886,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
         const created = await current(f.tenantId)
         await park()
         fake.clearRecords()
-        for (const handle of crons) await cron(handle)
+        await cron()
         expect(fake.requests).toHaveLength(0)
         expect(await account(created.id)).toMatchObject({
           status: 'DISCONNECTED',

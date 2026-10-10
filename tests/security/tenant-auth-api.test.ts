@@ -31,6 +31,7 @@ const TENANT_MINIMAL: Record<string, string> = {
 /**
  * Caminhos do Better Auth em `/api/auth` que uma rota própria do backend atende antes do catch-all (Next prioriza o
  * segmento estático): a vitrine chama a rota própria, com as regras dela.
+ * As descrições preservam as antigas app/api/auth/reset-password/route.ts e app/api/auth/verify-email/route.ts, retiradas em F; são metadados dos consumidores originais, não imports da raiz.
  */
 const OWN_ROUTE_SHADOWS: Record<string, string> = {
   '/reset-password': 'app/api/auth/reset-password/route.ts (ResetPasswordPage)',

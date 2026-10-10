@@ -51,13 +51,6 @@ async function transaction<T>(
     state.transaction = false
   }
 }
-vi.mock('@/lib/tenant', () => ({
-  resolveTenantPrincipal: state.principal,
-  withTenantTransaction: transaction,
-}))
-vi.mock('@/lib/tenant-permissions', () => ({
-  requireTenantPermission: state.permission,
-}))
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: state.principal,
 }))
@@ -78,11 +71,6 @@ vi.mock(
   '../../packages/backend/src/modules/documents/oficio-generator',
   () => ({ generateOficioPdf: state.oficioPdf })
 )
-import { GET as legacyAdmin } from '@/app/api/admin/quotes/[id]/download/route'
-import { GET as legacyClient } from '@/app/api/quotes/[id]/download/route'
-import { GET as legacyAdjustments } from '@/app/api/admin/quotes/[id]/adjustments/download/route'
-import { GET as legacyQuoteOficio } from '@/app/api/admin/quotes/[id]/pdf-oficio/route'
-import { GET as legacyPaymentOficio } from '@/app/api/admin/financial/entries/[id]/pdf-oficio/route'
 import { GET as serviceAdmin } from '../../apps/services/api/src/app/api/admin/quotes/[id]/download/route'
 import { GET as serviceClient } from '../../apps/services/api/src/app/api/quotes/[id]/download/route'
 import { GET as serviceAdjustments } from '../../apps/services/api/src/app/api/admin/quotes/[id]/adjustments/download/route'
@@ -171,16 +159,6 @@ beforeEach(() => {
 })
 afterEach(() => vi.restoreAllMocks())
 for (const [host, handlers] of [
-  [
-    'legacy',
-    [
-      legacyAdmin,
-      legacyClient,
-      legacyAdjustments,
-      legacyQuoteOficio,
-      legacyPaymentOficio,
-    ],
-  ],
   [
     'service',
     [

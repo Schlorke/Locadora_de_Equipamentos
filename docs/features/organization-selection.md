@@ -45,13 +45,14 @@ históricos.
 
 ## 5. Components and Files
 
-- lib/organization-selection.ts e
-  apps/services/api/src/host/organization-selection.ts: composição de sessão,
-  consulta de vínculo, origem e cookie.
-- lib/tenant.ts: fachada da leitura de cookie e principal obrigatório nas
-  operações de negócio.
+- apps/services/api/src/host/organization-selection.ts: composição atual de
+  sessão, consulta de vínculo, origem e cookie. A fachada antiga
+  lib/organization-selection.ts foi retirada em F.
+- apps/services/api/src/host/private-identity.ts: principal obrigatório por
+  createTenantPrincipalResolver; parser/formatter de cookie permanece em
+  backend/identity. A antiga lib/tenant.ts foi retirada em F.
 - packages/backend/src/modules/identity/organization-memberships.ts: consulta e
-  DTO de vínculos ativos da identidade, usados pelos dois adapters HTTP.
+  DTO de vínculos ativos da identidade, usados pelo adapter HTTP atual.
 - packages/backend/src/modules/identity/organization-selection.ts e
   tenant-preference.ts: política de leitura e parser/formatter da preferência.
 - packages/backend/src/http/organization-selection.ts: resposta HTTP sem I/O de
@@ -65,9 +66,10 @@ históricos.
   cabeçalhos originais das respostas de vínculo.
 - apps/services/api/src/app/api/auth/organizations/route.ts e selection/route.ts
   e current/route.ts: operações autenticadas incrementais. GET/POST/DELETE da
-  seleção e os motores de login estão montados nos dois hosts; as rotas antigas
-  continuam instaladas, delegando às mesmas políticas do backend. URLs dos
-  clientes e callbacks externos ainda apontam para o legado.
+  seleção e motores de login estão montados na API do workspace. As rotas
+  antigas foram retiradas em F; web encaminha para a API configurada e o Expo
+  injeta transporte escopado. Callbacks externos precisam ser configurados no
+  ambiente real; não são certificados por essa reancoragem documental.
 - packages/contracts/src/tenancy.ts: contrato público TenantContext.
 - tests/unit/organization-selection.test.ts: handlers com Prisma e vínculos
   reais.

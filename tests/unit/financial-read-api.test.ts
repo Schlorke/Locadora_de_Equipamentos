@@ -45,22 +45,12 @@ async function transaction<T>(
     organization: { findUniqueOrThrow: state.organization },
   } as unknown as Prisma.TransactionClient)
 }
-vi.mock('@/lib/tenant', () => ({ withTenantTransaction: transaction }))
-vi.mock('@/lib/tenant-permissions', () => ({
-  requireTenantPermission: state.permission,
-}))
 vi.mock('../../apps/services/api/src/host/tenant-transaction', () => ({
   withTenantTransaction: transaction,
 }))
 vi.mock('../../apps/services/api/src/host/permissions', () => ({
   requireTenantPermission: state.permission,
 }))
-import { GET as la } from '@/app/api/admin/financial/aging/route'
-import { GET as lc } from '@/app/api/admin/financial/calendar/route'
-import { GET as le } from '@/app/api/admin/financial/entries/route'
-import { GET as lr } from '@/app/api/admin/financial/revenue/route'
-import { GET as ls } from '@/app/api/admin/financial/settings/route'
-import { GET as lx } from '@/app/api/admin/financial/export/route'
 import { GET as sa } from '../../apps/services/api/src/app/api/admin/financial/aging/route'
 import { GET as sc } from '../../apps/services/api/src/app/api/admin/financial/calendar/route'
 import { GET as se } from '../../apps/services/api/src/app/api/admin/financial/entries/route'
@@ -87,10 +77,7 @@ beforeEach(() => {
   vi.spyOn(console, 'error').mockImplementation(() => {})
 })
 afterEach(() => vi.restoreAllMocks())
-for (const [host, handlers] of [
-  ['legacy', [la, lc, le, lr, ls, lx]],
-  ['service', [sa, sc, se, sr, ss, sx]],
-] as const)
+for (const [host, handlers] of [['service', [sa, sc, se, sr, ss, sx]]] as const)
   describe(host, () => {
     it.each(handlers.map((handler, index) => [names[index], handler] as const))(
       'requires FINANCIAL READ before SQL on %s',

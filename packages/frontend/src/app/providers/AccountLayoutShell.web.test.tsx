@@ -14,8 +14,8 @@ import { AccountLayoutShell } from './AccountLayoutShell.web'
 /**
  * Moldura da área do cliente no host web (onda 135, A5; E13 do plano de aposentadoria da raiz). A raiz legada montava
  * o menu lateral da área do cliente (Dashboard, Notificações, Perfil, Orçamentos, Endereços, Suporte e Sair) no
- * `app/area-cliente/layout.tsx`; o host web só aplicava o `noindex` e o portão de modo, e as páginas apareciam sem o
- * menu. A composição passa a morar na camada app do frontend, como a do painel (AdminLayoutShell, entrada 295).
+ * antigo `app/area-cliente/layout.tsx`, retirado em F; o host web só aplicava o `noindex` e o portão de modo, e as páginas
+ * apareciam sem o menu. A composição passou a morar na camada app do frontend, como a do painel (AdminLayoutShell, entrada 295).
  */
 const route = vi.hoisted(() => ({
   pathname: '/area-cliente',

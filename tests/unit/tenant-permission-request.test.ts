@@ -6,23 +6,6 @@ const state = vi.hoisted(() => ({
   tx: { $queryRaw: vi.fn(), permission: { findFirst: vi.fn() } },
   trace: [] as string[],
 }))
-vi.mock('@/lib/prisma', () => ({
-  prisma: { $transaction: state.transaction },
-}))
-vi.mock('@/lib/tenant', async () => {
-  const { withTenantTransaction } =
-    await import('@gb-locacoes/backend/identity')
-  return {
-    resolveTenantPrincipal: state.principal,
-    withTenantTransaction: (context: { tenantId: string }, operation: never) =>
-      withTenantTransaction(
-        { $transaction: state.transaction } as never,
-        context,
-        operation
-      ),
-  }
-})
-import { requireTenantPermission as legacy } from '@/lib/tenant-permissions'
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: state.principal,
 }))
@@ -69,10 +52,7 @@ beforeEach(() => {
   })
 })
 
-describe.each([
-  ['legacy', legacy],
-  ['service', service],
-] as const)(
+describe.each([['service', service]] as const)(
   '%s tenant permission characterization',
   (_host, requirePermission) => {
     it.each([400, 401, 403, 404, 409])(

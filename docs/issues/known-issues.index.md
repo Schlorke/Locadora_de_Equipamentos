@@ -1,5 +1,23 @@
 # Known Issues Index (AI Quick Use)
 
+- 340: checkpoint pré-publicação F: unit 4.104/4.104, visual 80/536/31.065 e P2
+  v6/B11 v3 scoped fechados. Gates documentais após aplicar;
+  publicação/CI/transferência têm recibos posteriores. C e 25 .source
+  preservados, testing CRLF→LF explícito; devices/Slow 3G/foundations NOT_PROVEN
+  separados.
+
+- 339: gerador Tailwind reproduz referência por quatro blobs fixados na história
+  limpa; mirror ECR público conserva os manifests oficiais. Linux CI candidato
+  pré-F passou, fonte final exige execução própria.
+- 338: consumidores de teste após F: cron M31, wrapper NextAuth, mock Zoho,
+  quatro comparações obsoletas, reader de pontuação e oracle real de
+  arquitetura; guardas e controles adversariais mantidos.
+
+- 337: aposentadoria da família RLS/Supabase avulsa e db:push:26 arquivos/18
+  comandos;12 allowances obsoletos e objeto safe-postinstall saem após retirada
+  real, sem reduzir asserções. Migrations/tenant:check/ops/storage mantidos;
+  validação do clone separada.
+
 - 336: revisão útil dos testes: cópia tributária e coleta duplicada de upload
   retiradas, schemas puros unitários, multa com piso/teto efetivos e
   persistência literal por tenant. Comparador/writer visual recusam vazios e
@@ -400,8 +418,8 @@ Examples:
   → portão da área privada, open redirect, orçamento durante loading (161–163)
 - `rg -n "JSON-LD|serializeJsonLd|ld\+json" docs/issues/known-issues.md` → XSS
   no JSON-LD (164)
-- `rg -n "proxy.ts|build:web|soft 404|notFound" docs/issues/known-issues.md` →
-  host web (165, 166)
+- `rg -n "src/proxy.ts|build:web|soft 404|notFound" docs/issues/known-issues.md`
+  → host web (165, 166)
 - `rg -n "ViewStyle|react-native-web.d.ts|TS2322" docs/issues/known-issues.md` →
   tipos do Expo no `packages/ui` native (168)
 - `rg -n "OKLCH|oklch|#ea580c|fontSize em tupla|text-base" docs/issues/known-issues.md`

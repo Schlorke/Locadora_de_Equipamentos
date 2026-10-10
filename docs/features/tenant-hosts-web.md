@@ -1,6 +1,6 @@
 # Hosts da plataforma no host web
 
-> **Status**: Critical **Last updated**: 2026-10-08
+> **Status**: Critical **Last updated**: 2026-10-09
 
 ---
 
@@ -42,7 +42,8 @@ do cabeçalho Host. Decisão de produto registrada em
   `host/routing/decide.ts`; tabelas em `host/routing/route-table.ts`.
 - Rotas: `apps/clients/web/src/app/(public)/[locadora]/**`,
   `(platform)/plataforma/**`, `(auth)`, `(admin)` e `(labs)` do host `app`, e
-  `app/not-found.tsx` neutro.
+  `apps/clients/web/src/app/not-found.tsx` neutro. O host `app.<raiz>` é um
+  domínio do painel, não o antigo diretório `app/` da raiz, retirado em F.
 - Providers:
   `apps/clients/web/src/host/providers/{TenantSiteProviders,AppHostProviders,PlatformProviders}.tsx`.
 - Gateway: `apps/clients/web/src/host/server/public-api.ts` (`server-only`).
@@ -53,9 +54,10 @@ do cabeçalho Host. Decisão de produto registrada em
 - Contrato: `@gb-locacoes/contracts/platform` (`classifyHost`,
   `resolvePlatformEnv`, `resolveWebPlatformEnv`, origens e
   `PLATFORM_EDGE_HEADERS`). O web lê o ambiente só por `resolveWebPlatformEnv`
-  (`proxy.ts` e `public-api.ts`), que exige `WEB_API_ORIGIN` em produção; o
-  backend usa `resolvePlatformEnv`, que não depende dela (entrada 188 de
-  `docs/issues/known-issues.md`).
+  (`apps/clients/web/src/proxy.ts` e
+  `apps/clients/web/src/host/server/public-api.ts`), que exige `WEB_API_ORIGIN`
+  em produção; o backend usa `resolvePlatformEnv`, que não depende dela (entrada
+  188 de `docs/issues/known-issues.md`).
 
 ## 4. Core Flow
 
@@ -137,16 +139,16 @@ Detalhes:
   ausentes ou com falha caem nos padrões. As páginas `(public)/page.tsx` e
   `equipamentos/[id]` não usam mais Prisma (`WORKSPACE-ESCAPE` do arch-check
   caiu de 3 para 0).
-- **`next.config.mjs`**: desde a onda 58, os arquivos públicos são servidos pelo
-  próprio web. `predev`/`prebuild` sincronizam a fonte canônica `public/` para
-  uma pasta real em `apps/clients/web/public`; não há links nem cópia de regras
-  de negócio. `beforeFiles`, `afterFiles` e `fallback` vazios: somente o proxy
-  encaminha `/api` a `WEB_API_ORIGIN`. Trocar a API não muda modelos, fontes ou
-  imagens. `robots.txt`, `sitemap.xml` e `manifest.json` conservam a política de
-  metadata por host. `www` → apex via `has host` (o destino mantém a porta).
-  `X-Robots-Tag: noindex` no host `app` e fora de produção.
-  `@gb-locacoes/contracts` em `transpilePackages`. `createNextConfig(env)` tem
-  paridade testada com `resolvePlatformEnv`.
+- **`apps/clients/web/next.config.mjs`**: desde a onda 58, os arquivos públicos
+  são servidos pelo próprio web. `predev`/`prebuild` sincronizam a fonte
+  canônica `public/` para uma pasta real em `apps/clients/web/public`; não há
+  links nem cópia de regras de negócio. `beforeFiles`, `afterFiles` e `fallback`
+  vazios: somente o proxy encaminha `/api` a `WEB_API_ORIGIN`. Trocar a API não
+  muda modelos, fontes ou imagens. `robots.txt`, `sitemap.xml` e `manifest.json`
+  conservam a política de metadata por host. `www` → apex via `has host` (o
+  destino mantém a porta). `X-Robots-Tag: noindex` no host `app` e fora de
+  produção. `@gb-locacoes/contracts` em `transpilePackages`.
+  `createNextConfig(env)` tem paridade testada com `resolvePlatformEnv`.
 - **Modo host do frontend**:
   - `usePublicTenantRouting({ mode: 'host', pathname, tenantSlug })`: slug fixo,
     `resolveHref` identidade, sem leitura ou gravação de storage e
@@ -223,11 +225,11 @@ Detalhes:
 - `robots.txt` e `sitemap.xml` do host de locadora são rotas da árvore
   `[locadora]`, por estado do site (S13; `docs/features/site-por-estado.md`).
   Desde a onda 135 (A7), o `sitemap.xml` tem a frequência, a prioridade e a data
-  de cada URL do `app/sitemap.ts` da raiz legada e as categorias com equipamento
-  disponível (`/equipamentos?categoria=<slug>`, com a data de alteração da
-  categoria); o equipamento sai sem `lastmod`, porque a leitura pública do
-  catálogo não traz a data de alteração dele. O `manifest.json` do host e os
-  arquivos do apex continuam 404 (Lote 7c).
+  de cada URL do antigo `app/sitemap.ts` da raiz legada, retirado em F, e as
+  categorias com equipamento disponível (`/equipamentos?categoria=<slug>`, com a
+  data de alteração da categoria); o equipamento sai sem `lastmod`, porque a
+  leitura pública do catálogo não traz a data de alteração dele. O
+  `manifest.json` do host e os arquivos do apex continuam 404 (Lote 7c).
 - Os seis widgets que ainda importavam `usePathname` (`cabecalho/Cabecalho`,
   `Busca`, `AreaCliente`, `menu-admin/BarraLateral`, `BarraLateralMobile` e
   `cabecalho-admin-barra/BarraMobile`) passaram a usar `useVisiblePathname` na
@@ -235,7 +237,7 @@ Detalhes:
   aviso do `eslint.config.js` saiu na onda 4: a regra é erro em todo o
   `packages/frontend`.
 - `images.localPatterns` (risco R9) não foi aplicado. Desde a onda 135 (A3,
-  E11), o `next.config.mjs` do host tem
+  E11), `apps/clients/web/next.config.mjs` tem
   `images: { unoptimized: true, remotePatterns }` como a raiz legada: as fotos
   do Supabase Storage saem direto da origem. Antes, o next/image apontava a foto
   para `/_next/image` e o otimizador respondia 400 ("url" parameter is not
@@ -264,11 +266,22 @@ Detalhes:
 - O `ScrollRevealInit` ficou na mesma posição (`publicExtras` do
   `ClientLayoutShell`, `dynamic` com `ssr: false`) e só passou a ler o caminho
   por `useVisiblePathname`. Sem `Suspense` no layout raiz, o conteúdo chega
-  junto com o shell. O teste visual do primeiro modelo 3D sem zoom não foi
-  executado (ver `docs/features/equipment-3d-carousel.md`).
+  junto com o shell. Na fotografia inicial desta extração, o teste visual do
+  primeiro modelo 3D sem zoom ainda não tinha sido executado. O registro A10
+  posterior fica em `docs/features/equipment-3d-carousel.md`; a prova da
+  primeira etapa está em `docs/guides/wave135-base-validation.md`. Não inferir
+  uma nova prova de pixels ou aparelho a partir desta revisão pós-F.
 - `aria-busy` no botão "Solicitar Orçamento" enquanto o clique espera a sessão.
 
 ## 10. Tests and Validation
+
+Os hosts workspace `apps/clients/web` e `apps/services/api` permanecem no clone
+pós-F; o antigo host Next da raiz saiu. Os comandos T5/T6 e jornadas abaixo usam
+esses dois processos atuais, a antiga raiz `app/` foi retirada em F e não é um
+processo desse teste. Banco de ensaio deve ser local descartável, migrado, com
+processos próprios encerrados antes do drop. A publicação `978ceb` preserva a
+fonte de pré-exclusão; F foi aplicado somente no clone, e sua validação final
+continua pendente.
 
 - `pnpm test:web` (`vitest.web.config.ts`): no commit `da19f601`, 109 testes
   passaram e 7 foram pulados (o e2e sem `TENANT_HOSTS_E2E=1`). Inclui
@@ -282,18 +295,19 @@ Detalhes:
 - Na árvore da onda 3, `decide.visible-routes.test.ts` ainda não conhecia
   `/vincular`; a lista foi corrigida antes do commit `be859915`.
 - Na árvore da onda 4 (2026-09-26): 145 passaram e 7 foram pulados. Entraram
-  `apps/clients/web/src/proxy.test.ts` (o `proxy.ts` real com `vi.stubEnv`), os
+  `apps/clients/web/src/proxy.test.ts` (o proxy web real com `vi.stubEnv`), os
   `page.test.tsx` do login da equipe, de `/admin/login`, de `/admin` e das duas
   páginas `reset-password`, e o teste de `decide.visible-routes.test.ts` que
   extrai do código os destinos reais de login e painel e prova que cada um abre
   uma página do host `app`. `tests/security/tenant-auth-api.test.ts` (em
   `pnpm test:security`) percorre todos os endpoints da instância real do Better
   Auth nos dois basePath.
-- Onda 5 (sem contagem consolidada): `app/(auth)/layout.test.tsx` e
-  `app/(auth)/recuperar-senha/page.test.tsx` (casca da plataforma no host
-  `app`), casos novos nos testes das páginas de conta e das rotas,
-  `ClientLayoutShell.casca.web.test.tsx` e os `*.casca.native.test.tsx` das três
-  páginas. `decide.visible-routes.test.ts` lê o destino do "Entrar" em
+- Onda 5 (sem contagem consolidada):
+  `apps/clients/web/src/app/(auth)/layout.test.tsx` e
+  `apps/clients/web/src/app/(auth)/recuperar-senha/page.test.tsx` (casca da
+  plataforma no host `app`), casos novos nos testes das páginas de conta e das
+  rotas, `ClientLayoutShell.casca.web.test.tsx` e os `*.casca.native.test.tsx`
+  das três páginas. `decide.visible-routes.test.ts` lê o destino do "Entrar" em
   `const SIGN_IN_PATH` do `RuntimeBootstrap` e continua exigindo que `/login`
   seja página do host `app`.
 - E2E T5/T6 contra servidores no ar, sem a raiz legada (onda 135, B7): a API
@@ -329,7 +343,10 @@ Detalhes:
   hosts `{slug}.localhost`, `app.localhost` e `localhost`.
 - Entradas de `public/`: `node tools/generate-public-entries.mjs` (use `--check`
   para só conferir).
-- `pnpm build:web` passa com o proxy do host.
+- `pnpm build:web` valida o proxy e a árvore do host web. O resultado da
+  primeira etapa publicada em `978ceb` está em
+  `docs/guides/wave135-base-validation.md`; o fechamento da fonte final pós-F
+  depende da rodada própria, não apenas de compilar ou preparar este texto.
 - Teste 1 do carrossel 3D em navegador real (onda 135, A10): registro em
   `docs/features/equipment-3d-carousel.md`, "Registro da modernização".
 
@@ -353,7 +370,8 @@ Detalhes:
 - 2026-09-26 (onda 4, commit `4b02f52f`): login da equipe em `app.<raiz>/login`,
   API de conta mínima no host de locadora (`TENANT_ACCOUNT_API` e
   `TENANT_API_DENYLIST`), `resolveWebPlatformEnv` no proxy e no gateway, testes
-  do `proxy.ts` real e fim da exceção de `usePathname` no ESLint.
+  de `apps/clients/web/src/proxy.ts` e fim da exceção de `usePathname` no
+  ESLint.
 - 2026-09-29 (onda 5, sem commit): casca da plataforma nas páginas de conta do
   host `app` (`chrome="platform"` e prop `shell`), `TENANT_ACCOUNT_API` só no
   `basePath` do modo, "Entrar" da área privada com `callbackUrl` e carrinho
@@ -364,12 +382,12 @@ Detalhes:
   Insights no layout raiz (A11).
 - 2026-10-08 (onda 135, lote A, parte 2, sem commit): moldura da área do cliente
   no layout `(account)` (`AccountLayoutShell` da camada app do frontend, com o
-  menu, as notificações e a saída do `app/area-cliente/layout.tsx` da raiz; A5);
-  portão do painel com o papel do vínculo (FINANCIAL só no financeiro,
-  configurações só para ADMIN) e `loading.tsx` de orçamentos, detalhe do
-  orçamento, categorias e e-mail (A6); `sitemap.xml` com categorias, frequência,
-  prioridade e data como a raiz (A7); Teste 1 do carrossel 3D em navegador real
-  (A10).
+  menu, as notificações e a saída do antigo `app/area-cliente/layout.tsx` da
+  raiz, depois retirado em F; A5); portão do painel com o papel do vínculo
+  (FINANCIAL só no financeiro, configurações só para ADMIN) e `loading.tsx` de
+  orçamentos, detalhe do orçamento, categorias e e-mail (A6); `sitemap.xml` com
+  categorias, frequência, prioridade e data como a raiz (A7); Teste 1 do
+  carrossel 3D em navegador real (A10).
 
 ---
 

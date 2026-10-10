@@ -38,21 +38,6 @@ const mocked = vi.hoisted(() => {
     rateLimit: vi.fn(),
   }
 })
-vi.mock('@/lib/prisma', () => ({
-  prisma: {
-    $transaction: mocked.transaction,
-    organization: { findUnique: mocked.publicOrganization },
-  },
-}))
-vi.mock('@/lib/application-session', () => ({ getServerSession: vi.fn() }))
-vi.mock('@/lib/tenant', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/lib/tenant')>()),
-  resolveTenantPrincipal: mocked.principal,
-}))
-vi.mock('@/lib/rate-limit', () => ({
-  checkRateLimit: mocked.rateLimit,
-  adminApiRateLimit: {},
-}))
 // Contraparte da API compartilhada (onda 135, E5/B5): as mesmas rotas montadas pelo serviço, com os mesmos dublês nas
 // composições dele (`apps/services/api/src/host/*` e o banco do runtime do backend). A metade legada sai no bloco F.
 vi.mock('@gb-locacoes/backend/runtime', async (importOriginal) => ({
@@ -77,51 +62,18 @@ vi.mock('../../apps/services/api/src/host/session', async (importOriginal) => ({
 vi.mock('../../apps/services/api/src/host/private-identity', () => ({
   resolveTenantPrincipal: mocked.principal,
 }))
-import * as legacyRoute0 from '@/app/api/categories/route'
 import * as serviceRoute0 from '../../apps/services/api/src/app/api/categories/route'
-import * as legacyRoute1 from '@/app/api/equipments/route'
 import * as serviceRoute1 from '../../apps/services/api/src/app/api/equipments/route'
-import * as legacyRoute2 from '@/app/api/equipamentos/search/route'
 import * as serviceRoute2 from '../../apps/services/api/src/app/api/equipamentos/search/route'
-import * as legacyRoute3 from '@/app/api/settings/public/route'
 import * as serviceRoute3 from '../../apps/services/api/src/app/api/settings/public/route'
-import * as legacyRoute4 from '@/app/api/admin/categories/route'
 import * as serviceRoute4 from '../../apps/services/api/src/app/api/admin/categories/route'
-import * as legacyRoute5 from '@/app/api/admin/categories/[id]/route'
 import * as serviceRoute5 from '../../apps/services/api/src/app/api/admin/categories/[id]/route'
-import * as legacyRoute6 from '@/app/api/admin/equipments/route'
 import * as serviceRoute6 from '../../apps/services/api/src/app/api/admin/equipments/route'
-import * as legacyRoute7 from '@/app/api/admin/equipments/[id]/route'
 import * as serviceRoute7 from '../../apps/services/api/src/app/api/admin/equipments/[id]/route'
-import * as legacyRoute8 from '@/app/api/admin/equipment-units/route'
 import * as serviceRoute8 from '../../apps/services/api/src/app/api/admin/equipment-units/route'
-import * as legacyRoute9 from '@/app/api/admin/equipment-units/[id]/route'
 import * as serviceRoute9 from '../../apps/services/api/src/app/api/admin/equipment-units/[id]/route'
 
 const HOSTS = [
-  [
-    'legacy root',
-    {
-      publicCategories: legacyRoute0.GET,
-      publicEquipments: legacyRoute1.GET,
-      searchEquipments: legacyRoute2.GET,
-      publicSettings: legacyRoute3.GET,
-      listCategories: legacyRoute4.GET,
-      createCategory: legacyRoute4.POST,
-      updateCategory: legacyRoute5.PUT,
-      deleteCategory: legacyRoute5.DELETE,
-      listEquipments: legacyRoute6.GET,
-      createEquipment: legacyRoute6.POST,
-      readEquipment: legacyRoute7.GET,
-      updateEquipment: legacyRoute7.PUT,
-      deleteEquipment: legacyRoute7.DELETE,
-      listUnits: legacyRoute8.GET,
-      createUnit: legacyRoute8.POST,
-      readUnit: legacyRoute9.GET,
-      updateUnit: legacyRoute9.PATCH,
-      deleteUnit: legacyRoute9.DELETE,
-    },
-  ],
   [
     'service',
     {
