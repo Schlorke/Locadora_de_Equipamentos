@@ -1,5 +1,64 @@
 # 🐛 Problemas Conhecidos e Soluções - GB Locações
 
+## 341. CI Linux pós-F revela checkout sem tag, fixture de fuso e IDs internos OpenAPI
+
+**Data:** 2026-10-10, checkpoint do CI F. **Status:** RED observado; correções
+preparadas e validação posterior pendente.
+
+A
+[execução 38046450904](https://github.com/Schlorke/Locadora_de_Equipamentos/actions/runs/38046450904)
+falhou em três casos da unit no job `tests`. Os jobs `architecture`, `builds` e
+`api-docker` passaram nessa execução. Esse RED permanece como registro
+histórico; os resultados Windows anteriores não comprovam a correção no Linux.
+
+Causas: o checkout do job `tests` não buscava a tag de pré-exclusão exigida pelo
+fallback imutável de `env-manifest`; somente `architecture` tinha
+`fetch-depth: 0`. A fixture de ofício criava `2030-01-01` à meia-noite UTC, mas
+esperava dezembro de 2029 ao formatar no fuso local do Windows. O gerador
+OpenAPI expunha os contadores transitórios do TypeScript em propriedades como
+`__@iterator@ID`, variando a especificação entre execuções e plataformas.
+
+Correções preparadas: buscar o histórico/tag no job `tests`, mantendo a recusa
+de fallback incompleto ou inválido; usar datas de calendário local explícitas na
+fixture, sem mudar a regra produtiva de formatação; estabilizar somente as
+propriedades `__@(iterator|toPrimitive|unscopables)@digits` de SchemaObjects e
+seus nomes correspondentes em `required`. O hook `documentBuilt` cobre generate,
+`--check` e cada regeneração de `--watch`. Colisões e `required` opaco sem
+propriedade correspondente devem reprovar. Títulos, exemplos, enums, defaults,
+strings e o comparador estrito permanecem fora dessa transformação; o JSON
+versionado exige geração real, sem aceite automático de diferenças.
+
+Na validação completa posterior, os 4.107 testes unitários passaram, mas o gate
+`format:check` encontrou 3.261 arquivos com CRLF do checkout Windows normal
+(`core.autocrlf=true`). Os 12 gates anteriores não incluíam esse check. O
+formatador passa a explicitar `endOfLine: "auto"`: conserva o final de linha do
+arquivo, mantendo as regras de espaçamento e sintaxe, a configuração Git e os
+bytes das referências seladas. A nova verificação integral ainda exige recibo
+próprio; os oracles API, visual, segurança e B11 não mudam.
+
+A repetição integral com `auto` terminou RED em 839 arquivos anteriores. A
+conferência individual de todos os seus blobs canônicos contra F confirmou
+conteúdo inalterado; restam diferenças antigas de aspas, ponto e vírgula e
+quebra de linhas. O plano de aposentadoria, seções 5.3.2 e 6.5, exige lint, CSS,
+tipos, arquitetura, documentação e testes, sem incluir formatação global. Essa
+dívida permanece registrada, sem ignore novo ou declaração de green global. A
+formatação dos arquivos desta entrega terá check próprio; a bateria obrigatória
+do plano permanece integral e estrita.
+
+Arquivos previstos: `.github/workflows/ci.yml`,
+`tests/unit/quote-documents-api.test.ts`, `scripts/generate-openapi-zod.ts`,
+`scripts/openapi-symbols.mjs`, seu teste colocado
+`scripts/openapi-symbols.test.ts`, `vitest.unit.config.ts` e
+`public/openapi.json` e `.prettierrc`. Contrato de geração em
+[API/OpenAPI](../architecture/api.md); as entradas 328 e 340 conservam suas
+provas e estados históricos.
+
+Validar o foco de manifesto/fallback, documentos e OpenAPI, incluindo o novo
+teste colocado; repetir a fixture sob UTC e America/Sao_Paulo e conferir
+`pnpm openapi:generate --check` contra a saída realmente regenerada.
+`pnpm test:unit`, gates afetados e a nova execução Linux precisam de recibos
+próprios. Este checkpoint não declara correção validada nem CI F verde.
+
 ## 340. Fechamento pós-F precisa de provas da fonte e do motor realmente executados
 
 ### Fechamento atual do clone — 2026-10-10

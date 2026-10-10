@@ -25,6 +25,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { z } from 'zod'
 import * as publicSchemas from '@gb-locacoes/contracts/openapi'
+import { stabilizeOpenApiSymbols } from './openapi-symbols.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const CONFIG = path.join(ROOT, 'next.openapi.json')
@@ -116,6 +117,19 @@ function runCli(
   return result
 }
 
+/** The public documentBuilt hook runs before every write, including each --watch generation. */
+function writeCliConfig(configFile: string, config: GeneratorConfig) {
+  const normalizer = import.meta.resolve('./openapi-symbols.mjs')
+  fs.writeFileSync(
+    configFile,
+    `import { stabilizeOpenApiSymbols } from ${JSON.stringify(normalizer)}\n` +
+      `const config = ${JSON.stringify(config, null, 2)}\n` +
+      'config.hooks = { documentBuilt({ document }) {\n' +
+      '  Object.assign(document, stabilizeOpenApiSymbols(document))\n' +
+      '} }\nexport default config\n'
+  )
+}
+
 /**
  * Forma canônica para o --check: chaves em ordem e cada array como conjunto. Em OpenAPI, `anyOf`, `enum`,
  * `required`, `parameters` e `tags` não dependem da ordem, e a ordem dos membros de uma união inferida pelo
@@ -186,18 +200,14 @@ function check(config: GeneratorConfig): number {
   try {
     const schemaFile = path.join(folder, 'public-schemas.json')
     fs.writeFileSync(schemaFile, publicSchemaDocument())
-    const configFile = path.join(folder, 'next.openapi.json')
-    fs.writeFileSync(
+    const configFile = path.join(folder, 'next.openapi.mjs')
+    writeCliConfig(
       configFile,
-      JSON.stringify(
-        absoluteConfig(config, {
-          outputDir: folder,
-          workspace: folder,
-          schemaFile,
-        }),
-        null,
-        2
-      )
+      absoluteConfig(config, {
+        outputDir: folder,
+        workspace: folder,
+        schemaFile,
+      })
     )
     const result = runCli(configFile, [], 'pipe')
     if (result.status !== 0) {
@@ -216,6 +226,10 @@ function check(config: GeneratorConfig): number {
     let stale = 0
     for (const [generated, versioned] of pairs) {
       const fresh = JSON.parse(fs.readFileSync(generated, 'utf8')) as unknown
+      if (!sameDocument(fresh, stabilizeOpenApiSymbols(fresh)))
+        throw new Error(
+          'OpenAPI generation left unstable TypeScript symbol names.'
+        )
       const current = fs.existsSync(versioned)
         ? (JSON.parse(fs.readFileSync(versioned, 'utf8')) as unknown)
         : null
@@ -250,17 +264,13 @@ function generate(config: GeneratorConfig, watch: boolean): number {
     publicSchemaDocument()
   )
   fs.mkdirSync(WORKSPACE, { recursive: true })
-  const configFile = path.join(WORKSPACE, 'next.openapi.service.json')
-  fs.writeFileSync(
+  const configFile = path.join(WORKSPACE, 'next.openapi.service.mjs')
+  writeCliConfig(
     configFile,
-    JSON.stringify(
-      absoluteConfig(config, {
-        outputDir: path.resolve(ROOT, config.outputDir),
-        workspace: WORKSPACE,
-      }),
-      null,
-      2
-    )
+    absoluteConfig(config, {
+      outputDir: path.resolve(ROOT, config.outputDir),
+      workspace: WORKSPACE,
+    })
   )
   console.log(
     `OpenAPI a partir de ${config.apiDir.replace(/^\.\//, '')} (cwd ${slash(path.relative(ROOT, SERVICE))}).`

@@ -19,6 +19,7 @@ export default defineConfig({
     include: [
       'tests/unit/**/*.{test,spec}.{ts,tsx}',
       'tests/pricing.intelligent.test.ts',
+      'scripts/openapi-symbols.test.ts',
     ],
     clearMocks: true,
     restoreMocks: true,

@@ -8,6 +8,26 @@ adere ao [Versionamento Semântico](HTTPS://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
+### CI F no Linux — 2026-10-10 (correções em validação)
+
+- A execução 38046450904 terminou RED na unit do job `tests`, com três falhas;
+  `architecture`, `builds` e `api-docker` passaram. Esse evento fica histórico.
+- Correções preparadas: checkout com histórico/tag para o fallback imutável,
+  datas locais explícitas na fixture de ofício e estabilização dos três nomes
+  internos TypeScript no OpenAPI, com `required` correspondente e recusa de
+  colisões. O hook cobre generate, check e watch; comparador e conteúdo público
+  continuam estritos.
+- O check integral de formatação revelou CRLF normal do checkout Windows;
+  `endOfLine: "auto"` conserva esse final de linha sem mudar as demais regras, a
+  configuração Git ou os bytes das referências seladas. Nova execução pendente.
+- A repetição global ainda aponta 839 arquivos antigos, todos com blob canônico
+  igual a F; dívida histórica registrada, sem green global. O check dos arquivos
+  desta entrega e todos os controles obrigatórios do plano seguem exigidos.
+- O teste colocado do normalizador, focos sob UTC/America/Sao_Paulo, geração
+  real, unit e gates afetados ainda exigem validação. A aprovação do CI Linux
+  posterior terá recibo externo; nenhum resultado verde é antecipado. Causa,
+  arquivos e receita na entrada 341 de `docs/issues/known-issues.md`.
+
 ### Fechamento de código no clone — 2026-10-10
 
 Nova unit 4.104/4.104 em 179 arquivos, sem skips, exit 0, em 406,99 s.

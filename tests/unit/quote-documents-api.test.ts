@@ -250,7 +250,12 @@ for (const [host, handlers] of [
     it.each([3, 4])(
       'keeps FINANCIAL READ and inline oficio %i including preview semantics',
       async (index) => {
-        const q = { ...quote(), quoteCode: 'A-100' }
+        const q = {
+          ...quote(),
+          quoteCode: 'A-100',
+          // Use a local December date, distinct from the payment month.
+          createdAt: new Date(2029, 11, 31, 12),
+        }
         state.quote.mockResolvedValue(q)
         state.payment.mockResolvedValue({
           id: 'pay-A',

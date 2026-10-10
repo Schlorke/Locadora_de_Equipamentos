@@ -87,6 +87,13 @@ React 19.
 > (`tests/unit/openapi-generation.test.ts`, em `pnpm test:unit`).
 > `pnpm openapi:dev` regenera a cada mudança.
 >
+> Desde a correção de portabilidade de 2026-10-10, o hook `documentBuilt`
+> estabiliza os contadores internos dos símbolos TypeScript `iterator`,
+> `toPrimitive` e `unscopables` em propriedades de schemas e seus nomes em
+> `required`. Geração, check e watch usam o mesmo hook; colisões reprovam.
+> Exemplos, valores, títulos e comparação com o arquivo versionado permanecem
+> estritos. Causa e receita de validação: entrada 341 dos problemas conhecidos.
+>
 > O gerador só lê handlers declarados (`export function GET` ou
 > `export const GET`). Por isso as rotas públicas exportam
 > `export const GET = <composição de host/runtime>`. Ficam fora da especificação

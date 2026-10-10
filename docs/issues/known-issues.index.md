@@ -1,5 +1,10 @@
 # Known Issues Index (AI Quick Use)
 
+- 341: CI Linux pós-F RED: tag ausente no checkout de tests, fixture de ofício
+  dependente de fuso e IDs internos TypeScript no OpenAPI; formato CRLF do
+  checkout Windows explicitado no Prettier. Correções preparadas; focos, geração
+  real e nova aprovação Linux pendentes.
+
 - 340: checkpoint pré-publicação F: unit 4.104/4.104, visual 80/536/31.065 e P2
   v6/B11 v3 scoped fechados. Gates documentais após aplicar;
   publicação/CI/transferência têm recibos posteriores. C e 25 .source
