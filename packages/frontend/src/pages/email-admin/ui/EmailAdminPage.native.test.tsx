@@ -102,7 +102,9 @@ it('conta, pastas, HTML, download autenticado e arquivamento usam contratos comu
             ? Response.json({})
             : bootstrap(String(url))
       )
-  render(ui(fetcher, d))
+  await act(async () => {
+    render(ui(fetcher, d))
+  })
   fireEvent.click(await screen.findByRole('button', { name: 'Assunto' }))
   expect((await screen.findByTestId('html-body')).textContent).toContain(
     'HTML preservado'

@@ -479,6 +479,45 @@ describe('Tailwind usado pelo web (paleta da produção, escalas do 4.3.3)', () 
     return m[1].trim()
   }
   const tailwindKey = (tone: string) => tone.replace(/-(\d+)$/, '$1')
+  const orange600Definition = /\borange600:\s*(["'])(#[0-9A-Fa-f]{6})\1/g
+  const colorDefinition = (key: string) =>
+    new RegExp(
+      `(?:^|[\\s{,"'])${key}["']?:\\s*(["'])#[0-9A-Fa-f]{3,8}\\1`,
+      'gm'
+    )
+  const countDefinitions = (sources: readonly string[], pattern: RegExp) =>
+    sources.reduce(
+      (total, text) => total + [...text.matchAll(pattern)].length,
+      0
+    )
+
+  it('a definição de orange600 aceita aspas pareadas e exatamente seis dígitos hex', () => {
+    const count = (source: string) =>
+      countDefinitions([source], orange600Definition)
+    expect(count("orange600: '#ea580c',")).toBe(1)
+    expect(count('orange600: "#ea580c",')).toBe(1)
+    expect(count(`orange600: '#ea580c",`)).toBe(0)
+    expect(count(`orange600: "#ea580c',`)).toBe(0)
+    expect(count("orange600: '#ea580',")).toBe(0)
+    expect(count("orange600: '#ea580ca',")).toBe(0)
+  })
+
+  it('a contagem de tons reconhece ambas as aspas e continua detectando cópias literais', () => {
+    const pattern = colorDefinition('orange600')
+    expect(countDefinitions(["orange600: '#ea580c',"], pattern)).toBe(1)
+    expect(countDefinitions(['orange600: "#ea580c",'], pattern)).toBe(1)
+    expect(
+      countDefinitions(
+        ["orange600: '#ea580c',", 'orange600: "#ea580c",'],
+        pattern
+      )
+    ).toBe(2)
+    expect(countDefinitions([`orange600: '#ea580c",`], pattern)).toBe(0)
+    expect(countDefinitions([`orange600: "#ea580c',`], pattern)).toBe(0)
+    expect(countDefinitions(['orange600: tailwind.orange600,'], pattern)).toBe(
+      0
+    )
+  })
 
   it('usa o tailwindcss 4.3.3 medido', () => {
     expect(
@@ -571,26 +610,11 @@ describe('Tailwind usado pelo web (paleta da produção, escalas do 4.3.3)', () 
       )
       .map((file) => fs.readFileSync(path.join(srcDir, file), 'utf8'))
     expect(sources.length).toBeGreaterThan(3)
-    const count = (pattern: RegExp) =>
-      sources.reduce(
-        (total, text) => total + [...text.matchAll(pattern)].length,
-        0
-      )
+    const count = (pattern: RegExp) => countDefinitions(sources, pattern)
     // A mesma expressão do portão.
-    expect(count(/\borange600:\s*"(#[0-9A-Fa-f]{6})"/g)).toBe(1)
+    expect(count(orange600Definition)).toBe(1)
     const repeated = Object.keys(primitives.tailwind)
-      .map(
-        (key) =>
-          [
-            key,
-            count(
-              new RegExp(
-                `(?:^|[\\s{,"'])${key}["']?:\\s*"#[0-9A-Fa-f]{3,8}"`,
-                'gm'
-              )
-            ),
-          ] as const
-      )
+      .map((key) => [key, count(colorDefinition(key))] as const)
       .filter(
         ([key, total]) => total !== 1 && !(key === 'white' && total === 2)
       )

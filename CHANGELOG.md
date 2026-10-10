@@ -8,6 +8,28 @@ adere ao [Versionamento Semântico](HTTPS://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
+### CI G e preparação H — 2026-10-10
+
+- A primeira tentativa Linux de G passou os 4.107 testes unitários, mas o job
+  terminou RED por erro não capturado `57P01` durante a limpeza forçada de uma
+  fixture PostgreSQL exclusiva. Na segunda, a unit passou; a plataforma reprovou
+  a leitura do hex canônico com aspas simples. Ambos ficam históricos.
+- H prepara correções somente em três testes: gramática hex com aspas pareadas
+  em `primitives.test.ts` e espera limitada por zero sessões da fixture antes de
+  `DROP DATABASE` simples em `migration-preflight-rls.test.ts`. Valores,
+  definição única, assertions de negócio, código produtivo e referências
+  permanecem; erros de limpeza continuam reprovando. O bootstrap do primeiro
+  caso de e-mail nativo usa act assíncrono antes do clique, mantendo todas as
+  verificações de HTML, download autenticado e arquivamento e os timeouts.
+- Duas tentativas locais H ficam preservadas: a primeira passou a plataforma e
+  falhou em leituras Git de fixtures por TEMP profundo no Windows; a segunda,
+  com TEMP curto, encontrou o caso intermitente de bootstrap de e-mail. Sem
+  alterar configuração Git, sleep, guardas ou assertions para aceitar falhas.
+- Focos, unit/plataforma integrais, controles obrigatórios, formatação dos seis
+  arquivos H, OpenAPI estrito e build de produção ainda exigem recibos reais.
+  Fechamento no original e CI H são posteriores; nenhum verde ou SHA H é
+  antecipado. Receita e limites na continuidade da entrada 341.
+
 ### CI F no Linux — 2026-10-10 (correções em validação)
 
 - A execução 38046450904 terminou RED na unit do job `tests`, com três falhas;

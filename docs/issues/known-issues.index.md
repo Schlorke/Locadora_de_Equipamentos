@@ -3,7 +3,13 @@
 - 341: CI Linux pós-F RED: tag ausente no checkout de tests, fixture de ofício
   dependente de fuso e IDs internos TypeScript no OpenAPI; formato CRLF do
   checkout Windows explicitado no Prettier. Correções preparadas; focos, geração
-  real e nova aprovação Linux pendentes.
+  real e nova aprovação Linux pendentes. Continuidade G/H: primeira CI G teve
+  4.107 testes unitários aprovados e RED `57P01` no cleanup; na segunda, unit
+  passou e plataforma reprovou o leitor hex com aspas simples. H prepara três
+  ajustes só de teste: aspas pareadas e espera de zero sessões da fixture antes
+  de DROP simples e bootstrap assíncrono do primeiro caso de e-mail nativo. Os
+  RED locais de TEMP profundo e preview intermitente ficam preservados.
+  Validação/publicação H e CI posterior pendentes; checkpoints F/G preservados.
 
 - 340: checkpoint pré-publicação F: unit 4.104/4.104, visual 80/536/31.065 e P2
   v6/B11 v3 scoped fechados. Gates documentais após aplicar;

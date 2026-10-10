@@ -1605,12 +1605,34 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
     }, 120_000)
 
     afterAll(async () => {
-      await owner?.end().catch(() => undefined)
-      await database?.end()
-      if (admin) {
-        await admin.query(`DROP DATABASE IF EXISTS "${name}" WITH (FORCE)`)
-        await admin.query(`DROP ROLE IF EXISTS "${ownerRole}"`)
-        await admin.end()
+      try {
+        await owner?.end()
+        await database?.end()
+        if (admin) {
+          if (!/^mig_force_[0-9a-f]{16}_test$/.test(name))
+            throw new Error('Unexpected dedicated fixture database name')
+          const deadline = Date.now() + 10_000
+          while (true) {
+            const { n } = first(
+              (
+                await admin.query<{ n: number }>(
+                  'SELECT count(*)::int AS n FROM pg_stat_activity WHERE datname = $1',
+                  [name]
+                )
+              ).rows
+            )
+            if (!Number.isInteger(n) || n < 0)
+              throw new Error('Invalid dedicated fixture connection count')
+            if (n === 0) break
+            if (Date.now() >= deadline)
+              throw new Error('Dedicated fixture connections did not close')
+            await new Promise((resolve) => setTimeout(resolve, 50))
+          }
+          await admin.query(`DROP DATABASE IF EXISTS "${name}"`)
+          await admin.query(`DROP ROLE IF EXISTS "${ownerRole}"`)
+        }
+      } finally {
+        await admin?.end()
       }
     }, 60_000)
 

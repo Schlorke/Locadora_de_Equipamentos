@@ -2,6 +2,58 @@
 
 ## 341. CI Linux pós-F revela checkout sem tag, fixture de fuso e IDs internos OpenAPI
 
+### Continuidade em G e candidato H — 2026-10-10
+
+Na primeira tentativa Linux de G, os 4.107 testes unitários passaram, mas o job
+terminou RED por erro não capturado `57P01` na limpeza de uma fixture PostgreSQL
+exclusiva. `DROP DATABASE ... WITH (FORCE)` podia encerrar uma sessão cujo
+fechamento ainda era observado pelo cliente. Na segunda tentativa, a unit
+passou; `test:platform` reprovou o leitor de literal hex em
+`primitives.test.ts`, que reconhecia somente aspas duplas enquanto o arquivo
+canônico formatado usava aspas simples. Os dois checkpoints permanecem
+históricos; unit verde isolada não encerra a CI.
+
+H prepara mudanças somente em `packages/design-tokens/src/primitives.test.ts` e
+`tests/unit/migration-preflight-rls.test.ts` e
+`packages/frontend/src/pages/email-admin/ui/EmailAdminPage.native.test.tsx`,
+além destes três registros documentais. O teste de tokens usa aspas pareadas e
+aceita o hex de seis dígitos; novos casos cobrem as duas aspas, fechamento
+incompatível e duplicata. Valores canônicos e limites de definição única
+continuam estritos. A fixture fecha seus próprios clientes, valida o nome
+exclusivo e consulta `pg_stat_activity` por `datname` parametrizado até observar
+zero sessões, com polling de até 10 s e hook de 60 s. Então usa `DROP DATABASE`
+simples, sem FORCE ou encerramento de conexões externas. Erros e timeout
+propagam; o pool administrativo fecha em `finally`. As demais fixtures
+PostgreSQL permanecem intactas.
+
+A primeira tentativa local H passou 647 arquivos/3.770 testes de plataforma, com
+dois skips existentes, mas a unit reprovou sete casos do ratchet. Uma probe Git
+real confirmou que TEMP profundo fazia git show commit:path falhar com Filename
+too long, mesmo com arquivo físico abaixo do limite. O executor externo passa a
+usar TEMP/TMP curto exclusivo, sem alterar Git, o ratchet, suas assertions ou o
+produto. Esse RED permanece como evidência ambiental.
+
+A segunda tentativa local, com TEMP curto, encontrou um caso intermitente de
+e-mail nativo: a lista estava presente e o preview vazio depois da seleção. O
+teste já aguardava HTML com findByTestId; não há justificativa para aumentar
+timeout nem remover guardas de escopo. A preparação do primeiro caso passa a
+aguardar act assíncrono no render inicial, antes do clique existente, para
+concluir os efeitos do bootstrap com storage e HTTP imediatos da fixture. HTML,
+URL/header do download, payload de arquivamento, toast, classes e os demais
+casos permanecem estritos. O mecanismo exato da intermitência ainda não foi
+provado; focos repetidos e a plataforma integral precisam de novos recibos da
+fonte final. Não se declara correção produtiva, novo SLO ou aceite de UI.
+
+Validar os três focos, unit e plataforma integrais, controles obrigatórios e
+lint documental, Prettier dos seis arquivos H, geração/check e casos OpenAPI
+estritos, ausência de artefatos aposentados e build real de produção. Snapshots
+e recibos devem vincular a fonte efetivamente executada. Esta preparação não
+declara H aplicado, testes H verdes ou publicação H; fechamento no diretório
+original e nova CI Linux terão recibos externos próprios. Código produtivo, CSS,
+referências e oracles de negócio não são alterados pela proposta.
+
+### Checkpoint histórico F — 2026-10-10
+
 **Data:** 2026-10-10, checkpoint do CI F. **Status:** RED observado; correções
 preparadas e validação posterior pendente.
 
